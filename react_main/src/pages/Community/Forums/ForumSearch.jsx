@@ -1,26 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Box,
-  Typography,
-  IconButton,
-  InputAdornment,
-} from "@mui/material";
+import { FormControl, InputLabel, Box } from "@mui/material";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 
 import { useErrorAlert } from "../../../components/Alerts";
 
 import detective from "images/roles/village/detective-vivid.png";
+import { UiField as TextField, UiSelect as Select, UiMenuItem as MenuItem, UiText as Typography, UiAction, UiDialog, UiIcon } from "components/ui";
 
 export default function ForumSearch({ open, onClose }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -88,104 +74,76 @@ export default function ForumSearch({ open, onClose }) {
   };
 
   return (
-    <Dialog
+    <UiDialog
       open={open}
       onClose={handleClose}
-      maxWidth="sm"
-      fullWidth
-      PaperProps={{
-        sx: {
-          borderRadius: 2,
-        },
-      }}
+      title={
+        <span style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <img
+            src={detective}
+            alt="detective"
+            width="60"
+            height="60"
+            style={{ flexShrink: 0 }}
+          />
+          <span>Search Forums</span>
+        </span>
+      }
+      actions={
+        <>
+          <UiAction variant="ghost" onClick={handleClose}>
+            Cancel
+          </UiAction>
+          <UiAction
+            variant="primary"
+            onClick={handleSearch}
+            disabled={loading || (!searchQuery.trim() && !username.trim())}
+          >
+            <UiIcon name="search" size={18} />
+            {loading ? "Searching..." : "Search"}
+          </UiAction>
+        </>
+      }
     >
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: 1.5,
-          p: 2,
-          flexWrap: "wrap",
-        }}
-      >
-        <img
-          src={detective}
-          alt="detective"
-          width="60"
-          height="60"
-          style={{ flexShrink: 0 }}
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
+        <TextField
+          fullWidth
+          label="Filter by content"
+          placeholder="🔎 Search thread/post content"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={handleKeyPress}
+          helperText="Search in thread titles and post content"
         />
-        <DialogTitle
-          sx={{
-            p: 0,
-            flex: 1,
-            fontSize: "1.25rem",
-            lineHeight: 1.3,
-            fontFamily: "var(--primaryFont)",
-            fontWeight: 700,
-            whiteSpace: "normal",
-            wordBreak: "break-word",
-          }}
-        >
-          Search Forums
-        </DialogTitle>
+
+        <TextField
+          fullWidth
+          label="Filter by username"
+          placeholder="Enter username..."
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          onKeyPress={handleKeyPress}
+        />
+
+        <FormControl fullWidth>
+          <InputLabel>Filter by board</InputLabel>
+          <Select
+            value={selectedBoard}
+            onChange={(e) => setSelectedBoard(e.target.value)}
+            label="Filter by board"
+          >
+            <MenuItem value="">
+              <Box sx={{ fontWeight: 700, opacity: 0.7 }}>All boards</Box>
+            </MenuItem>
+            {Array.isArray(boards) &&
+              boards.map((board) => (
+                <MenuItem key={board.id} value={board.id}>
+                  {board.name}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
       </Box>
-
-      <DialogContent>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
-          <TextField
-            fullWidth
-            label="Filter by content"
-            placeholder="🔎 Search thread/post content"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            helperText="Search in thread titles and post content"
-          />
-
-          <TextField
-            fullWidth
-            label="Filter by username"
-            placeholder="Enter username..."
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-
-          <FormControl fullWidth>
-            <InputLabel>Filter by board</InputLabel>
-            <Select
-              value={selectedBoard}
-              onChange={(e) => setSelectedBoard(e.target.value)}
-              label="Filter by board"
-            >
-              <MenuItem value="">
-                <Box sx={{ fontWeight: 700, opacity: 0.7 }}>All boards</Box>
-              </MenuItem>
-              {Array.isArray(boards) &&
-                boards.map((board) => (
-                  <MenuItem key={board.id} value={board.id}>
-                    {board.name}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Box>
-      </DialogContent>
-
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={handleClose} color="inherit">
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSearch}
-          variant="contained"
-          disabled={loading || (!searchQuery.trim() && !username.trim())}
-          startIcon="🔎"
-        >
-          {loading ? "Searching..." : "Search"}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    </UiDialog>
   );
 }

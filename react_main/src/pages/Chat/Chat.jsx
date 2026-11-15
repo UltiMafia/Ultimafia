@@ -9,27 +9,7 @@ import React, {
 } from "react";
 import axios from "axios";
 import update from "immutability-helper";
-import {
-  Badge,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Badge, Box, List, ListItemButton, ListItemIcon, ListItemText, Menu, Paper, Stack } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { useTheme } from "@mui/material/styles";
 
@@ -52,6 +32,7 @@ import { socketEndpoint } from "../../utils/socketEndpoint.mjs";
 import EmotePicker from "../../components/EmotePicker";
 
 import "css/chat.css";
+import { UiMenuItem as MenuItem, UiSelect as Select, UiField as TextField, UiText as Typography, UiAction, UiDialog } from "components/ui";
 
 // The site chatbox. The homepage shows every channel; the floating DM window
 // (components/dms/FloatingDmWindow.jsx) mounts this same component with
@@ -766,14 +747,14 @@ export default function Chat({
         >
           {navChannelItems}
         </Select>
-        <Button
-          size="small"
-          variant="contained"
-          color="secondary"
+        <UiAction
+           variant="primary" size="small" 
+          
+          
           onClick={onOpenNewChatDialog}
         >
           New chat
-        </Button>
+        </UiAction>
       </Stack>
 
       <Box
@@ -851,55 +832,58 @@ export default function Chat({
         </Box>
       </Box>
 
-      <Dialog open={newChatDialogOpen} onClose={onCloseNewChatDialog} fullWidth>
-        <DialogTitle>Start New Chat</DialogTitle>
-        <DialogContent dividers>
-          <TextField
-            value={userSearchVal}
-            onChange={onUserSearch}
-            placeholder="Search users"
-            fullWidth
-            size="small"
-            sx={{ mb: 2 }}
-          />
-          <List
-            disablePadding
-            sx={{
-              maxHeight: 300,
-              overflowY: "auto",
-            }}
-          >
-            {makeRoomItems.length ? (
-              makeRoomItems
-            ) : (
-              <Box
-                sx={{
-                  py: 6,
-                  textAlign: "center",
-                  color: "text.secondary",
-                }}
-              >
-                <Typography variant="body2">
-                  No users found. Try another search.
-                </Typography>
-              </Box>
-            )}
-          </List>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onCloseNewChatDialog}>Cancel</Button>
-          <Button
-            variant="contained"
-            onClick={() => {
-              onCreateDM();
-              onCloseNewChatDialog();
-            }}
-            disabled={Object.keys(newDMUsers).length === 0}
-          >
-            Create DM ({Object.keys(newDMUsers).length})
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <UiDialog
+        open={newChatDialogOpen}
+        onClose={onCloseNewChatDialog}
+        title="Start New Chat"
+        actions={
+          <>
+            <UiAction variant="ghost" onClick={onCloseNewChatDialog}>Cancel</UiAction>
+            <UiAction
+              variant="primary"
+              onClick={() => {
+                onCreateDM();
+                onCloseNewChatDialog();
+              }}
+              disabled={Object.keys(newDMUsers).length === 0}
+            >
+              Create DM ({Object.keys(newDMUsers).length})
+            </UiAction>
+          </>
+        }
+      >
+        <TextField
+          value={userSearchVal}
+          onChange={onUserSearch}
+          placeholder="Search users"
+          fullWidth
+          size="small"
+          sx={{ mb: 2 }}
+        />
+        <List
+          disablePadding
+          sx={{
+            maxHeight: 300,
+            overflowY: "auto",
+          }}
+        >
+          {makeRoomItems.length ? (
+            makeRoomItems
+          ) : (
+            <Box
+              sx={{
+                py: 6,
+                textAlign: "center",
+                color: "text.secondary",
+              }}
+            >
+              <Typography variant="body2">
+                No users found. Try another search.
+              </Typography>
+            </Box>
+          )}
+        </List>
+      </UiDialog>
     </Paper>
   );
 }

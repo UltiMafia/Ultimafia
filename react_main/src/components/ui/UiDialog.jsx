@@ -10,21 +10,21 @@ let nextDialogId = 0;
 
 // Site and minigame dialogs share one frame, focus behavior and action region.
 // Required decisions opt out of dismissal. Global ready checks stay separate.
-export default function UiDialog({ open = true, title, description, onClose, actions, children, maxWidth = "sm", dismissible = !!onClose }) {
+export default function UiDialog({ open = true, title, description, onClose, actions, children, maxWidth, size = "sm", overflowVisible = false, dismissible = !!onClose, className = "" }) {
   const active = useViewActive();
   const [id] = useState(() => `ui-dialog-${++nextDialogId}`);
   const visible = open && active;
   useDismissOnBack(visible && dismissible, onClose);
   if (!active) return null;
   return <Dialog open={visible} onClose={dismissible ? onClose : undefined}
-    disableEscapeKeyDown={!dismissible} fullWidth maxWidth={maxWidth}
+    disableEscapeKeyDown={!dismissible} fullWidth maxWidth={maxWidth || size}
     aria-labelledby={`${id}-title`} aria-describedby={description ? `${id}-description` : undefined}
-    className="ui-dialog">
+    className={`ui-dialog ${className}`.trim()}>
     <DialogTitle id={`${id}-heading`} className="ui-dialog-title">
       <span id={`${id}-title`}>{title}</span>
       {dismissible && <UiAction variant="ghost" iconOnly aria-label="Close" onClick={onClose}><UiIcon name="close" size={20} /></UiAction>}
     </DialogTitle>
-    <DialogContent className="ui-dialog-content">
+    <DialogContent className={`ui-dialog-content${overflowVisible ? " ui-dialog-content--visible" : ""}`}>
       {description && <p id={`${id}-description`} className="ui-dialog-description">{description}</p>}
       {children}
     </DialogContent>

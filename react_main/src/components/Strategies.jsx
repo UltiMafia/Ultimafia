@@ -1,23 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Collapse,
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Stack,
-  TextField,
-  Typography,
-  Tooltip,
-} from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Collapse, Box, Button, Dialog, IconButton, Stack, Tooltip } from "@mui/material";
 
 import { useTheme } from "@mui/material/styles";
 
@@ -32,8 +16,8 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { useStrategyWindows } from "components/strategyWindows/StrategyWindowsContext";
 import UiAction from "./ui/UiAction";
 import UiIcon from "./ui/UiIcon";
-import { UiSection } from "./ui";
-import { confirmAction } from "components/ui";
+import { UiSection, UiDialog } from "./ui";
+import { confirmAction, UiField as TextField, UiText as Typography } from "components/ui";
 
 function sortStrategies(strategies) {
   if (!Array.isArray(strategies)) return [];
@@ -495,16 +479,29 @@ function StrategiesBase({
   );
 
   const dialog = (
-    <Dialog
+    <UiDialog
       open={dialogOpen}
       onClose={handleDialogClose}
-      fullWidth
-      maxWidth="md"
+      title={editingStrategy ? "Edit Strategy" : "New Strategy"}
+      size="md"
+      actions={<>
+        <Button onClick={handleDialogClose} disabled={submitting}>
+          Cancel
+        </Button>
+        <Button
+          onClick={onDialogSubmit}
+          disabled={
+            submitting ||
+            titleInput.trim().length === 0 ||
+            contentInput.trim().length === 0 ||
+            titleInput.length > maxTitleLength ||
+            contentInput.length > maxContentLength
+          }
+        >
+          {editingStrategy ? "Save" : "Post"}
+        </Button>
+      </>}
     >
-      <DialogTitle>
-        {editingStrategy ? "Edit Strategy" : "New Strategy"}
-      </DialogTitle>
-      <DialogContent dividers>
         <Stack spacing={2}>
           <TextField
             label="Title"
@@ -522,25 +519,7 @@ function StrategiesBase({
             {contentInput.length}/{maxContentLength}
           </Typography>
         </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleDialogClose} disabled={submitting}>
-          Cancel
-        </Button>
-        <Button
-          onClick={onDialogSubmit}
-          disabled={
-            submitting ||
-            titleInput.trim().length === 0 ||
-            contentInput.trim().length === 0 ||
-            titleInput.length > maxTitleLength ||
-            contentInput.length > maxContentLength
-          }
-        >
-          {editingStrategy ? "Save" : "Post"}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    </UiDialog>
   );
 
   // Full-screen reader for phones: the guide gets the whole screen and its own

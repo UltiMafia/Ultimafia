@@ -1,12 +1,12 @@
 {
-  "count": 306,
+  "count": 136,
   "byKind": {
-    "mui-inline-scale": 210,
+    "mui-inline-scale": 41,
     "native-hidden": 2,
     "native-file": 10,
     "native-confirm": 2,
-    "native-widget": 35,
+    "native-widget": 34,
     "native-form": 47
   },
-  "updatedAt": "2026-11-14T16:03:10.283Z"
+  "updatedAt": "2026-11-15T03:32:39.484Z"
 }

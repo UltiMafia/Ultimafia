@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import update from "immutability-helper";
-import { Popover, List, ListItem, Typography } from "@mui/material";
+import { Popover, List, ListItem } from "@mui/material";
 
 import CustomMarkdown from "components/CustomMarkdown";
 import { useErrorAlert } from "components/Alerts";
@@ -17,7 +17,7 @@ import { appendForumQuote, canComposeForumReply } from "./forumReplyComposer.mjs
 import { pastedForumReplyImage } from "./forumReplyImagePaste.mjs";
 
 import { VoteWidget } from "components/VoteWidget";
-import { UiAction, UiIcon, confirmAction } from "components/ui";
+import { UiAction, UiIcon, confirmAction, UiText as Typography } from "components/ui";
 import { EmoteReactions } from "components/EmoteReactions";
 import "css/emote-reactions.css";
 import "css/comments.css";

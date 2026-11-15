@@ -1,25 +1,12 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
-import {
-  Stack,
-  Typography,
-  Box,
-  Paper,
-  Button,
-  Chip,
-  LinearProgress,
-  Switch,
-  FormControlLabel,
-  Grid,
-  useTheme,
-  Tooltip,
-} from "@mui/material";
+import { Stack, Box, Chip, LinearProgress, FormControlLabel, Grid, useTheme, Tooltip } from "@mui/material";
 import { NameWithAvatar } from "./UserWidgets";
 import { SiteInfoContext, UserContext } from "Contexts";
 import Sparkline from "components/Sparkline";
 import TradeDialog from "components/TradeDialog";
 import { PageNav } from "components/Nav";
-import { UiAction, UiDialog, UiField, UiIcon } from "components/ui";
+import { UiAction, UiDialog, UiField, UiIcon, UiText as Typography, UiSwitch as Switch, UiCard } from "components/ui";
 import CoinIcon from "components/CoinIcon";
 import { LatestRequest } from "../../lib/latestRequest";
 
@@ -95,7 +82,7 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
   }
 
   return (
-    <Paper className="ui-card family-treasury">
+    <UiCard className="family-treasury">
       <Typography variant="h3" sx={headingStyle}>
         Treasury
       </Typography>
@@ -126,7 +113,7 @@ export function FamilyTreasury({ family, familyId, refreshFamilyTools }) {
         </Stack>
       )}
       {confirmation.dialog}
-    </Paper>
+    </UiCard>
   );
 }
 
@@ -163,7 +150,7 @@ export function FamilyLedger({ familyId, refreshKey }) {
   if (ledger.length === 0) return null;
 
   return (
-    <Paper className="ui-card">
+    <UiCard className="">
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
         <Typography variant="h3" sx={{ ...headingStyle, mb: 0 }}>
           History
@@ -216,7 +203,7 @@ export function FamilyLedger({ familyId, refreshKey }) {
           );
         })}
       </Stack>
-    </Paper>
+    </UiCard>
   );
 }
 
@@ -274,7 +261,7 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
   if (!family.canManageApplications) return null;
 
   return (
-    <Paper className="ui-card family-applications">
+    <UiCard className="family-applications">
       <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Typography variant="h3" sx={headingStyle}>
           Applications
@@ -330,7 +317,7 @@ export function FamilyApplications({ familyId, family, refreshFamilyTools }) {
         ))}
       </Stack>
       {confirmation.dialog}
-    </Paper>
+    </UiCard>
   );
 }
 
@@ -351,7 +338,7 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
   }
 
   return (
-    <Paper className="ui-card family-perks">
+    <UiCard className="family-perks">
       <Typography variant="h3" sx={headingStyle}>
         Perks
       </Typography>
@@ -421,7 +408,7 @@ export function FamilyPerks({ family, familyId, refreshFamilyTools }) {
         )}
       </Stack>
       {confirmation.dialog}
-    </Paper>
+    </UiCard>
   );
 }
 
@@ -454,7 +441,7 @@ export function FamilyJoinFee({ family, familyId, refreshFamilyTools }) {
   }
 
   return (
-    <Paper className="ui-card">
+    <UiCard className="">
       <Typography variant="h3" sx={headingStyle}>
         Join Fee
       </Typography>
@@ -475,7 +462,7 @@ export function FamilyJoinFee({ family, familyId, refreshFamilyTools }) {
           Applicants pay this fee when requesting to join. Rejected applications are refunded.
         </Typography>
       </Stack>
-    </Paper>
+    </UiCard>
   );
 }
 
@@ -539,7 +526,7 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
   return (
     <>
       {!isFamilyMember && family.hasPendingApplication && (
-        <Paper className="ui-card">
+        <UiCard className="">
           <Typography variant="h3" sx={headingStyle}>
             Pending Application
           </Typography>
@@ -557,10 +544,10 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
               Cancel Application
             </UiAction>
           </Stack>
-        </Paper>
+        </UiCard>
       )}
       {canApply && (
-        <Paper className="ui-card family-apply">
+        <UiCard className="family-apply">
           <Typography variant="h3" sx={headingStyle}>
             Apply
           </Typography>
@@ -584,7 +571,7 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
               {Number(family.joinFee || 0) > 0 ? "Pay Fee and Apply" : "Submit Application"}
             </UiAction>
           </Stack>
-        </Paper>
+        </UiCard>
       )}
       {confirmation.dialog}
     </>
@@ -595,7 +582,7 @@ export function FamilyApply({ family, familyId, refreshFamilyTools }) {
 export function FamilyProgress({ family }) {
   if (!family.quests || family.quests.length === 0) return null;
   return (
-    <Paper className="ui-card">
+    <UiCard className="">
       <Typography variant="h3" sx={headingStyle}>
         Family Progress
       </Typography>
@@ -626,7 +613,7 @@ export function FamilyProgress({ family }) {
           </Box>
         ))}
       </Stack>
-    </Paper>
+    </UiCard>
   );
 }
 
@@ -657,7 +644,7 @@ export function FamilyStockCard({ stockInfo, family, familyId, refreshFamilyTool
         }
         onSuccess={refreshFamilyTools}
       />
-      <Paper className="ui-card">
+      <UiCard className="">
         <Typography variant="h3" sx={headingStyle}>
           Stock &amp; Equity
         </Typography>
@@ -732,7 +719,7 @@ export function FamilyStockCard({ stockInfo, family, familyId, refreshFamilyTool
             Trade Shares
           </UiAction>
         </Box>
-      </Paper>
+      </UiCard>
     </>
   );
 }

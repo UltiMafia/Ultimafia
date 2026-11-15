@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Alert } from "@mui/material";
 import axios from "axios";
 import { Loading } from "../Loading";
 import { LatestRequest } from "../../lib/latestRequest";
 import { useViewActive } from "../../hooks/useViewActivity";
-import { useDismissOnBack } from "../../hooks/useDismissOnBack";
 import { urlifyText } from "../../utilsFolder";
+import { UiAction, UiDialog } from "components/ui";
 
 // The existing announcements endpoint returns descending batches of five.
 const PAGE_SIZE = 5;
@@ -81,7 +81,6 @@ export function Announcement({ showAnnouncementTemporarily, setShowAnnouncementT
     }
   }, [setShowAnnouncementTemporarily]);
 
-  useDismissOnBack(open && active, closeDialog);
   useEffect(() => {
     if (active && showAnnouncementTemporarily) {
       openDialog();
@@ -116,20 +115,23 @@ export function Announcement({ showAnnouncementTemporarily, setShowAnnouncementT
       </button>
       <button className="utility-button" type="button" onClick={closeDialog} aria-label="Dismiss announcement"><i className="fas fa-times" aria-hidden="true" /></button>
     </div>}
-    <Dialog open={open && active} onClose={closeDialog} fullWidth maxWidth="sm" aria-labelledby="announcement-title">
-      <DialogTitle id="announcement-title" sx={{ fontSize: 18, fontWeight: 600 }}>Announcements</DialogTitle>
-      <DialogContent dividers aria-busy={loading}>
-        {error && <Alert severity="error" action={<Button onClick={() => {
+    <UiDialog
+      open={open}
+      onClose={closeDialog}
+      title="Announcements"
+      actions={<>
+        <UiAction  variant="ghost"  onClick={newer} disabled={loading || index === 0}>Newer</UiAction>
+        <UiAction  variant="ghost"  onClick={older} disabled={loading || !current || (index + 1 >= announcements.length && !hasMore)}>Older</UiAction>
+        <UiAction  variant="ghost" onClick={closeDialog}>Close</UiAction>
+      </>}
+    >
+      <div aria-busy={loading}>
+        {error && <Alert severity="error" action={<UiAction  variant="ghost" onClick={() => {
           const request = retry.current;
           loadPage(request.lastDate, request.append, request.targetIndex, ++selectionVersion.current);
-        }}>Retry</Button>}>Could not load announcements.</Alert>}
+        }}>Retry</UiAction>}>Could not load announcements.</Alert>}
         {loading && !current ? <Loading small /> : current ? <div className="announcement-content">{urlifyText(current.content)}</div> : !error && "No announcements."}
-      </DialogContent>
-      <DialogActions>
-        <Button variant="text" onClick={newer} disabled={loading || index === 0}>Newer</Button>
-        <Button variant="text" onClick={older} disabled={loading || !current || (index + 1 >= announcements.length && !hasMore)}>Older</Button>
-        <Button onClick={closeDialog}>Close</Button>
-      </DialogActions>
-    </Dialog>
+      </div>
+    </UiDialog>
   </>;
 }

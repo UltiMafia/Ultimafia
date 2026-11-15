@@ -1,22 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  Divider,
-  FormControl,
-  Grid2,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  TableSortLabel,
-  Tabs,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Divider, FormControl, Grid2, InputLabel, Stack, TableSortLabel, Tooltip } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
 import { useErrorAlert } from "components/Alerts";
@@ -26,7 +10,7 @@ import TrophyCase from "components/TrophyCase";
 import { UserContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { NameWithAvatar } from "pages/User/UserWidgets";
-import { UiAction, UiDialog, UiIcon, UiPageHeader, UiTabs, UiTab } from "components/ui";
+import { UiAction, UiCard, UiDialog, UiIcon, UiPageHeader, UiTabs, UiTab, UiMenuItem as MenuItem, UiSelect as Select, UiTabs as Tabs, UiField as TextField, UiText as Typography } from "components/ui";
 
 import { TIER_ICONS } from "utils/skillRating";
 import { MIN_RATED_GAMES } from "Constants";
@@ -420,7 +404,7 @@ export default function HallOfFame() {
         ))}
       </UiTabs>
 
-      <Paper elevation={2} sx={{ p: 2 }}>
+      <UiCard>
         <Stack direction="column" spacing={1}>
           <Grid2 container columns={isPhoneDevice ? 1 : 5} spacing={1}>
             <Grid2 size={1}>
@@ -500,9 +484,9 @@ export default function HallOfFame() {
             </Grid2>
           </Grid2>
         </Stack>
-      </Paper>
+      </UiCard>
 
-      <Paper elevation={2} sx={{ p: 2 }}>
+      <UiCard>
         <Stack direction="column" spacing={1}>
           <Stack
             direction={isPhoneDevice ? "column" : "row"}
@@ -533,13 +517,13 @@ export default function HallOfFame() {
                 {user.loggedIn && (
                   <Tooltip title={data?.myRank ? "Jump to your page" : "You are currently unranked"}>
                     <span>
-                      <Button
-                        variant="outlined"
+                      <UiAction
+                         variant="secondary" 
                         onClick={handleJumpToMyRank}
                         disabled={!data?.myRank}
                       >
                         Jump to My Rank
-                      </Button>
+                      </UiAction>
                     </span>
                   </Tooltip>
                 )}
@@ -568,7 +552,7 @@ export default function HallOfFame() {
             <Typography variant="body2">No ranked users matched the current filters.</Typography>
           )}
         </Stack>
-      </Paper>
+      </UiCard>
 
       <UiDialog title="About the Skill Rating System"
         open={skillRatingAboutOpen}

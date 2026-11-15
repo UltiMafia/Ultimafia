@@ -10,8 +10,8 @@ import { UserContext } from "../../Contexts";
 import "css/forums.css";
 import "css/comments.css";
 import { Loading } from "../../components/Loading";
-import { Box, Stack, Typography } from "@mui/material";
-import { UiAction } from "components/ui";
+import { Box, Stack } from "@mui/material";
+import { UiAction, UiText as Typography } from "components/ui";
 import { Comment } from "./Comment";
 
 export default function Comments(props) {

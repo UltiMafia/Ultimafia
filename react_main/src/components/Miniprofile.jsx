@@ -1,7 +1,7 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import axios from "axios";
 
-import { Box, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, IconButton, Stack, Tooltip } from "@mui/material";
 import { Link } from "react-router-dom";
 
 import { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "pages/User/profileIcons";
@@ -17,7 +17,7 @@ import {
   getLosses,
   getAbandons,
 } from "utils/mafiaStats";
-import { confirmAction } from "components/ui";
+import { confirmAction, UiText as Typography } from "components/ui";
 
 function Miniprofile(props) {
   const user = props.user;

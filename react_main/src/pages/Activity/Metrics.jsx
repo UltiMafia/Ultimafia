@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Stack, Typography } from "@mui/material";
-import { UiSection } from "components/ui";
+import { Box, Stack } from "@mui/material";
+import { UiSection, UiText as Typography } from "components/ui";
 
 import { useErrorAlert } from "components/Alerts";
 import { PieChart } from "pages/Learn/Setup/PieChart";

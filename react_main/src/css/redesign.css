@@ -119,10 +119,11 @@ button, select { font: inherit; }
 .light-mode .game-state-label.is-open { color: #227747; }
 .game-row-host { margin-top: 4px; color: var(--um-muted); font-size: var(--ui-text-small); overflow-wrap: anywhere; }
 .setup-summary { min-width: 0; }
-.setup-name-trigger { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; padding: 0; border: 0; background: transparent; color: var(--scheme-color-text); font: inherit; font-size: var(--ui-text-body); font-weight: var(--ui-weight-strong); line-height: 1.45; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
+.setup-name-trigger { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; min-height: 24px; padding: 0; border: 0; background: transparent; color: var(--scheme-color-text); font: inherit; font-size: var(--ui-text-body); font-weight: var(--ui-weight-strong); line-height: 1.45; text-align: left; cursor: pointer; overflow-wrap: anywhere; }
 .setup-name-trigger > span { min-width: 0; overflow-wrap: anywhere; }
 .setup-name-trigger > .ui-icon { flex: 0 0 auto; color: var(--um-muted); }
 .setup-name-trigger:hover { color: var(--um-accent); text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 900px), (pointer: coarse) { .setup-name-trigger { min-height: var(--ui-touch-height); padding: 0 4px; } }
 .setup-summary-roles { display: flex; flex-wrap: wrap; align-items: center; gap: 0; margin-top: 4px; }
 .setup-more-roles { padding: 6px 8px; min-height: 32px; border: 1px solid var(--scheme-color-border); border-radius: 4px; color: var(--um-muted); background: transparent; cursor: pointer; font-size: 12px; }
 .game-row-status { display: flex; align-items: center; gap: 24px; }

@@ -1,5 +1,6 @@
 import React, { useState, Suspense, lazy } from "react";
-import { Button, Stack } from "@mui/material";
+import { Stack } from "@mui/material";
+import { UiAction } from "components/ui";
 
 // Auth pulls in firebase/auth — only load it when the dialog is actually opened.
 const Auth = lazy(() =>
@@ -23,28 +24,12 @@ export const GuestAuthButtons = () => {
   return (
     <>
       <Stack direction="row" spacing={1}>
-        <Button
-          variant="outlined"
-          size="small"
-          onClick={openLoginDialog}
-          sx={{
-            textTransform: "none",
-            fontSize: "14px",
-          }}
-        >
+        <UiAction variant="secondary" size="small" onClick={openLoginDialog}>
           Login
-        </Button>
-        <Button
-          variant="contained"
-          size="small"
-          onClick={openRegisterDialog}
-          sx={{
-            textTransform: "none",
-            fontSize: "14px",
-          }}
-        >
+        </UiAction>
+        <UiAction variant="primary" size="small" onClick={openRegisterDialog}>
           Register
-        </Button>
+        </UiAction>
       </Stack>
       {authDialogOpen && (
         <Suspense fallback={null}>

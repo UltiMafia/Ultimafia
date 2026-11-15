@@ -3,8 +3,9 @@ import { filterProfanity } from "./Basic";
 import { UserContext } from "../Contexts";
 import "css/deck.css";
 import { usePopover, InfoPopover } from "components/Popover";
-import { Typography } from "@mui/material";
+
 import { UiAction } from "./ui";
+import { UiText as Typography } from "components/ui";
 
 export default function AnonymousDeck(props) {
   const user = useContext(UserContext);

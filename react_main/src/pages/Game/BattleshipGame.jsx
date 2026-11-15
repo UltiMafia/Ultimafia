@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState, useMemo, useCallback } from "react";
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 
 import {
   useSocketListeners,
@@ -18,6 +18,7 @@ import { battleshipAudioConfig } from "../../audio/audioConfigs";
 
 import "css/game.css";
 import "css/gameBattleship.css";
+import { UiText as Typography } from "components/ui";
 
 const COL_LABELS = "ABCDEFGHIJ".split("");
 const DEFAULT_SHIP_SPECS = {

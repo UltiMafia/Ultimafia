@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
-import { UiCard, UiPage, UiPageHeader, UiSegmentedControl, confirmAction } from "components/ui";
+import { UiCard, UiPage, UiPageHeader, UiSegmentedControl, confirmAction, UiField as TextField, UiText as Typography } from "components/ui";
 import ProfileStatsSummary from "./ProfileStatsSummary";
 const PieChart = lazy(() => import("./PieChart").then((module) => ({ default: module.PieChart })));
 
@@ -56,24 +56,7 @@ import AdminVisuals from "./AdminVisuals";
 import { ProfileSkeleton } from "components/Skeletons";
 import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Grid,
-  IconButton,
-  Paper,
-  Popover,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Divider, Grid, Paper, Popover, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
@@ -130,7 +113,7 @@ function FavoritedRolesPanel({
       title={`Favorited Roles`}
       panelStyle={panelStyle}
       headingStyle={headingStyle}
-      className="box-panel ui-card favorited-roles"
+      className="favorited-roles"
       emptyMessage="No favorited roles"
     >
       {items.map(({ gameType, roleName, id }) => (
@@ -164,7 +147,7 @@ function RoleIconCreditsPanel({
       title={`Role Icon Credits (${items.length})`}
       panelStyle={panelStyle}
       headingStyle={headingStyle}
-      className="box-panel ui-card role-icon-credits"
+      className="role-icon-credits"
       emptyMessage="No role icon credits"
     >
       {items.map(({ roleName, skin, key }) => (
@@ -1193,24 +1176,21 @@ export default function Profile() {
         <Stack direction="row" className="options">
           {!isSelf && user.loggedIn && (
             <>
-              <IconButton aria-label="friend user">
-                <i
-                  className={`fas fa-user-plus ${isFriend || isFriendRequested ? "sel" : ""}`}
-                  onClick={onFriendUserClick}
-                />
-              </IconButton>
+              <UiAction iconOnly variant="ghost" aria-label="friend user" onClick={onFriendUserClick}>
+                <i className={`fas fa-user-plus ${isFriend || isFriendRequested ? "sel" : ""}`} />
+              </UiAction>
               {userFamily &&
                 userFamily.isLeader &&
                 userFamily.memberCount < (userFamily.memberLimit || 20) && (
-                  <IconButton
+                  <UiAction
+                    iconOnly
+                    variant="ghost"
                     aria-label="request to join family"
                     title={`Invite to ${userFamily.name}`}
+                    onClick={onFamilyJoinRequestClick}
                   >
-                    <i
-                      className="fas fa-users"
-                      onClick={onFamilyJoinRequestClick}
-                    />
-                  </IconButton>
+                    <i className="fas fa-users" />
+                  </UiAction>
                 )}
               <LoveIcon
                 isLove={isLove}
@@ -1228,14 +1208,15 @@ export default function Profile() {
                 isMarried={isMarried}
                 onClick={onMarryUserClick}
               />
-              <IconButton
+              <UiAction
+                iconOnly
+                variant="ghost"
                 aria-label="block user"
                 onClick={onBlockUserClick}
                 title="Block user"
-                sx={{ cursor: "pointer", touchAction: "manipulation" }}
               >
                 <i className={`fas fa-ban ${isBlocked ? "sel" : ""}`} />
-              </IconButton>
+              </UiAction>
               <UiAction variant="ghost" iconOnly aria-label="Report user" onClick={onReportClick}>
                 <UiIcon name="flag" />
               </UiAction>
@@ -1251,40 +1232,30 @@ export default function Profile() {
               {isFriend && !pokesDisabled && !user.settings?.disablePokes && (
                 <>
                   {pokeStatus.status === "none" && (
-                    <IconButton
-                      aria-label="poke user"
-                      title="Poke"
-                      onClick={onPokeClick}
-                    >
+                    <UiAction iconOnly variant="ghost" aria-label="poke user" title="Poke" onClick={onPokeClick}>
                       <i className="fas fa-hand-pointer btn-poke" />
-                    </IconButton>
+                    </UiAction>
                   )}
                   {pokeStatus.status === "pending_sent" && (
-                    <IconButton
-                      aria-label="poke sent"
-                      title="You already poked this person."
-                      disabled
-                    >
+                    <UiAction iconOnly variant="ghost" aria-label="poke sent" title="You already poked this person." disabled>
                       <i className="fas fa-hand-pointer btn-poke disabled" />
-                    </IconButton>
+                    </UiAction>
                   )}
                   {pokeStatus.status === "pending_received" && (
-                    <IconButton
+                    <UiAction
+                      iconOnly
+                      variant="ghost"
                       aria-label="poke back"
                       title={`Poke back${pokeStatus.count > 1 ? ` (streak: ${pokeStatus.count})` : ""}`}
                       onClick={() => onPokeBackClick(userId)}
                     >
                       <i className="fas fa-hand-pointer btn-poke sel" />
-                    </IconButton>
+                    </UiAction>
                   )}
                   {pokeStatus.status === "cooldown" && (
-                    <IconButton
-                      aria-label="poke cooldown"
-                      title="You cannot poke this person yet."
-                      disabled
-                    >
+                    <UiAction iconOnly variant="ghost" aria-label="poke cooldown" title="You cannot poke this person yet." disabled>
                       <i className="fas fa-hand-pointer btn-poke disabled" />
-                    </IconButton>
+                    </UiAction>
                   )}
                 </>
               )}
@@ -1606,10 +1577,7 @@ export default function Profile() {
               justifyContent: "center",
             }}
           >
-            <div
-              className="box-panel ui-card profile-header-panel"
-              style={{ ...panelStyle, width: "100%" }}
-            >
+            <UiCard className="profile-header-panel profile-tinted">
               <div className="content" style={{ gap: "8px" }}>
                 {showBanner && (
                   <div className="banner" style={bannerStyle}>
@@ -1643,12 +1611,12 @@ export default function Profile() {
                 )}
                 <Grid container>{aviGridItems}</Grid>
               </div>
-            </div>
+            </UiCard>
           </Stack>
         </Grid>
         <Grid item xs={12} md={8}>
           <Stack direction="column" spacing={2}>
-            <div className="box-panel ui-card" style={panelStyle}>
+            <UiCard className="profile-tinted">
               <div
                 className={`bio${isSelf && !editingBio ? " edit" : ""}`}
                 onClick={onBioClick}
@@ -1675,7 +1643,7 @@ export default function Profile() {
                   </>
                 )}
               </div>
-            </div>
+            </UiCard>
             <Scrapbook
               stamps={stamps}
               hiddenStamps={hiddenStamps}
@@ -1684,7 +1652,6 @@ export default function Profile() {
               onTradeAction={refetchProfile}
               profileUserId={profileUserId}
               profileUserName={name}
-              panelStyle={panelStyle}
               headingStyle={headingStyle}
             />
             {!isPhoneDevice && (
@@ -1698,7 +1665,7 @@ export default function Profile() {
         <Grid item xs={12} md={4}>
           <Stack direction="column" spacing={2}>
             {mediaUrl && (
-              <div className="box-panel ui-card" style={panelStyle}>
+              <UiCard className="profile-tinted">
                 <MediaEmbed
                   key={`${profileUserId}:${mediaUrl}`}
                   mediaUrl={mediaUrl}
@@ -1706,9 +1673,9 @@ export default function Profile() {
                   collapsible
                   collapsed={collapseMedia}
                 ></MediaEmbed>
-              </div>
+              </UiCard>
             )}
-            <div className="box-panel ui-card" style={panelStyle}>
+            <UiCard className="profile-tinted">
               <div className="content trophies-content">
                 <div className="trophies-grid">
                   <Tooltip
@@ -1806,13 +1773,13 @@ export default function Profile() {
                   </Tooltip>
                 </div>
               </div>
-            </div>
+            </UiCard>
             {(isSelf || user.perms.seeModPanel) && (
               <RapSheet userId={profileUserId} />
             )}
             {trophyCase}
             {stockInfo && (
-              <div className="box-panel ui-card" style={panelStyle}>
+              <UiCard className="profile-tinted">
                 <Typography variant="h3" sx={headingStyle}>
                   Stock & Equity
                 </Typography>
@@ -1867,19 +1834,18 @@ export default function Profile() {
                   </Grid>
 
                   {user.loggedIn && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
+                    <UiAction
+                      variant="primary"
+                      block
+                      className="profile-trade-action"
                       onClick={handleOpenTrade}
-                      sx={{ mt: 1, fontWeight: "bold" }}
-                      startIcon={<i className="fas fa-chart-line" />}
                     >
+                      <i className="fas fa-chart-line" />
                       Trade Shares
-                    </Button>
+                    </UiAction>
                   )}
                 </div>
-              </div>
+              </UiCard>
             )}
             {hasAnyStats &&
               !settings.hideStatistics && (
@@ -2007,15 +1973,14 @@ export default function Profile() {
                       </Stack>
 
                       <Box sx={{ display: "flex", justifyContent: "center" }}>
-                        <Button
-                          variant="text"
+                        <UiAction
+                          variant="ghost"
                           size="small"
                           onClick={() => setRatingsTab(ratingsTab === "query" ? "wins" : "query")}
-                          startIcon={<i className={ratingsTab === "query" ? "fas fa-chevron-up" : "fas fa-chevron-down"} />}
-                          sx={{ textTransform: "none", fontWeight: 700 }}
                         >
+                          <i className={ratingsTab === "query" ? "fas fa-chevron-up" : "fas fa-chevron-down"} />
                           {ratingsTab === "query" ? "Hide Detailed Stats Breakdown" : "Show Detailed Stats Breakdown"}
-                        </Button>
+                        </UiAction>
                       </Box>
 
                       {ratingsTab === "query" && (
@@ -2034,11 +1999,10 @@ export default function Profile() {
                 stamps={stamps}
                 lockedCountsByRoleKey={lockedCountsByRoleKey}
                 onAction={refetchProfile}
-                panelStyle={panelStyle}
                 headingStyle={headingStyle}
               />
             )}
-            <div className="box-panel ui-card recent-games" style={panelStyle}>
+            <UiCard className="recent-games profile-tinted">
               <Typography variant="h3" style={headingStyle}>
                 Recent Games
               </Typography>
@@ -2079,17 +2043,17 @@ export default function Profile() {
                   />
                 )}
               </div>
-            </div>
+            </UiCard>
             {friendRequests.length > 0 && (
-              <div className="box-panel ui-card" style={panelStyle}>
+              <UiCard className="profile-tinted">
                 <Typography variant="h3" style={headingStyle}>
                   Friend Requests
                 </Typography>
                 <div className="content">{friendRequestRows}</div>
-              </div>
+              </UiCard>
             )}
             {incomingPokes.length > 0 && !user.settings?.disablePokes && (
-              <div className="box-panel ui-card" style={panelStyle}>
+              <UiCard className="profile-tinted">
                 <Typography variant="h3" style={headingStyle}>
                   Pokes
                 </Typography>
@@ -2125,9 +2089,9 @@ export default function Profile() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </UiCard>
             )}
-            <div className="box-panel ui-card" style={panelStyle}>
+            <UiCard className="profile-tinted">
               <Typography variant="h3" style={headingStyle}>
                 Friends
               </Typography>
@@ -2145,8 +2109,8 @@ export default function Profile() {
                 )}
                 <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
               </div>
-            </div>
-            <div className="box-panel ui-card" style={panelStyle}>
+            </UiCard>
+            <UiCard className="profile-tinted">
               <Typography variant="h3" style={headingStyle}>
                 Setups Created
               </Typography>
@@ -2179,7 +2143,7 @@ export default function Profile() {
                   />
                 )}
               </div>
-            </div>
+            </UiCard>
             <AchievementPanel
               achievements={achievements}
               panelStyle={panelStyle}
@@ -2198,7 +2162,7 @@ export default function Profile() {
               siteInfo={siteInfo}
             />
             {archivedGamesRows.length !== 0 && (
-              <div className="box-panel ui-card archived-games" style={panelStyle}>
+              <UiCard className="archived-games profile-tinted">
                 <Typography variant="h3" sx={headingStyle}>
                   Archived Games{" "}
                   {showDelete && (
@@ -2213,7 +2177,7 @@ export default function Profile() {
                     {archivedGamesRows}
                   </Stack>
                 </div>
-              </div>
+              </UiCard>
             )}
           </Stack>
         </Grid>

@@ -121,7 +121,7 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
         {user.loggedIn ? (
           <form id={formId} className="ui-form-stack" aria-busy={submitting || undefined}
             onSubmit={event => { event.preventDefault(); handleSubmit(); }}>
-            <UiText variant="body2" color="text.secondary">
+            <UiText color="text.secondary">
               Please provide as much detail as possible when reporting rule or
               policy violations.
             </UiText>

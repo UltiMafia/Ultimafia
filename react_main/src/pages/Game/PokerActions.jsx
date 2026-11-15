@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { GameContext } from "../../Contexts";
-import { Slider } from "@mui/material";
-import { UiAction, UiDialog, UiField } from "components/ui";
+
+import { UiAction, UiDialog, UiField, UiSlider as Slider } from "components/ui";
 
 export default function PokerActions() {
   const game = useContext(GameContext);

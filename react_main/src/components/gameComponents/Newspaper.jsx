@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Divider, Popover, Stack, Typography } from "@mui/material";
+import { Divider, Popover, Stack } from "@mui/material";
 
 import { emotify } from "../Emotes";
 import { Avatar } from "../../pages/User/UserWidgets";
@@ -10,6 +10,7 @@ import { hyphenDelimit } from "../../utils";
 import { obituaryDeath } from "../../utils/newspaperPlayers";
 
 import "css/newspaper.css";
+import { UiText as Typography } from "components/ui";
 
 export default function Newspaper(props) {
   const title = props.title || "Obituary";

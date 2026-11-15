@@ -1,23 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
 import update from "immutability-helper";
-import {
-  Dialog,
-  DialogContent,
-  Typography,
-  Grid,
-  Stack,
-  TextField,
-  Box,
-  Button,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Autocomplete,
-} from "@mui/material";
+import { Dialog, DialogContent, Grid, Stack, Box, Button, FormControl, InputLabel } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
-import { UiAction, UiDialog } from "components/ui";
+import { UiAction, UiDialog, UiText as Typography, UiField as TextField, UiSelect as Select, UiMenuItem as MenuItem, UiAutocomplete as Autocomplete } from "components/ui";
 import { UserSearchSelect } from "components/Form";
 import { SearchBar } from "components/Nav";
 import { UserContext, SiteInfoContext } from "Contexts";

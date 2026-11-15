@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { UiPageHeader } from "components/ui";
+import { UiPageHeader, UiText as Typography } from "components/ui";
 import { useTheme } from "@mui/material/styles";
-import { Typography, Link, List, ListItem, ListItemText, Box, Divider } from "@mui/material";
+import { Link, List, ListItem, ListItemText, Box, Divider } from "@mui/material";
 
 export default function PrivacyPolicy() {
   const theme = useTheme();

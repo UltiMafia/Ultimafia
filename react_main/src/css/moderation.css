@@ -10,7 +10,6 @@
 .moderation-action-entry { padding-bottom: 24px; border-bottom: 1px solid var(--scheme-color-border); }
 .moderation-command-result { margin-top: 12px; }
 .moderation-recent { padding-top: 4px; }
-.moderation .box-panel { border-radius: var(--mui-shape-borderRadius); background-color: var(--scheme-color-background); }
 .moderation-list { list-style: none; margin: 0; padding: 0; }
 .moderation-list-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--scheme-color-border); min-width: 0; }
 .moderation-list-row > :first-child { min-width: 0; flex: 1 1 auto; }

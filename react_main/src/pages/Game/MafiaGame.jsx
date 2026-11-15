@@ -24,10 +24,11 @@ import { nextStateBell } from "shared/stateBell";
 import { GameContext, SiteInfoContext } from "../../Contexts";
 import { mafiaAudioConfig } from "../../audio/audioConfigs";
 import { SideMenu } from "./Game";
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { StrategiesPanel, StrategiesSection } from "components/Strategies";
 import TutorialOverlay from "components/TutorialOverlay";
+import { UiText as Typography } from "components/ui";
 
 function MissionScoreKeeper() {
   const game = useContext(GameContext);

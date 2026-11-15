@@ -1,18 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
-import {
-  Menu,
-  MenuItem,
-  ListSubheader,
-  Box,
-  Divider,
-  IconButton,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Menu, ListSubheader, Box, Divider, IconButton, Button } from "@mui/material";
 import { useIsPhoneDevice } from "../hooks/useIsPhoneDevice";
 import { InGameContext } from "Contexts";
 import UiIcon from "./ui/UiIcon";
+import { UiMenuItem as MenuItem, UiText as Typography, UiAction } from "components/ui";
 
 export default function NavDropdown({
   label,
@@ -94,9 +86,9 @@ export default function NavDropdown({
       {customTrigger}
     </IconButton>
   ) : isMobileMenu ? (
-    <IconButton {...menuTriggerProps} aria-label="Menu" size="large">
+    <UiAction iconOnly variant="ghost" {...menuTriggerProps} aria-label="Menu">
       <UiIcon name="menu" />
-    </IconButton>
+    </UiAction>
   ) : (
     <Button
       className={`site-nav-trigger ${isActive ? "is-current" : ""}`}

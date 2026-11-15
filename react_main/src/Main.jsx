@@ -28,6 +28,7 @@ import { getSiteTheme } from "./constants/themes";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import { ConfirmHost } from "./components/ui";
 import { ConnectionBanner } from "./components/ConnectionBanner";
+import { RemoteBackendBanner } from "./components/RemoteBackendBanner";
 import UserNavSection from "./pages/User/UserNavSection";
 import CookieBanner from "./components/CookieBanner";
 import { IOS_BETA_URL } from "./constants/iosBeta";
@@ -53,22 +54,14 @@ import "css/accessibility.css";
 import "css/redesign.css";
 
 // Navigation icons removed - now using text-only navigation
-import {
-  Box,
-  Stack,
-  Paper,
-  Typography,
-  Button,
-  Snackbar,
-  Alert,
-  AlertTitle,
-} from "@mui/material";
+import { Box, Stack, Paper, Button, Snackbar, Alert, AlertTitle } from "@mui/material";
 
 import { Announcement } from "./components/alerts/Announcement";
 import SiteLogo from "./components/SiteLogo";
 import { useIsPhoneDevice } from "./hooks/useIsPhoneDevice";
 import { useSnowstorm } from "./hooks/useSnowstorm";
 import { GuestAuthButtons } from "./components/GuestAuthButtons";
+import { UiText as Typography, UiAction } from "components/ui";
 
 // Component to handle snowstorm with user settings
 function SnowstormController() {
@@ -106,7 +99,7 @@ function ErrorBox({ error, resetErrorBoundary }) {
         <Typography color="red" sx={{ wordBreak: "break-word" }}>
           {error.message}
         </Typography>
-        <Button onClick={resetErrorBoundary}>Refresh</Button>
+        <UiAction  variant="ghost" onClick={resetErrorBoundary}>Refresh</UiAction>
       </Stack>
     </Paper>
   );
@@ -276,6 +269,7 @@ function Main(props) {
             <AlertList />
             <ConfirmHost />
             <ConnectionBanner />
+            <RemoteBackendBanner />
             <FloatingStrategyWindows />
           </ProfileSheetProvider>
         </SheetProvider>

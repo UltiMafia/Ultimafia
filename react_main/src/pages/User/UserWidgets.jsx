@@ -12,7 +12,7 @@ import "css/user.css";
 import { Time, youtubeRegex } from "components/Basic";
 
 import { Popover } from "@mui/material";
-import { Box, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
@@ -26,6 +26,7 @@ import { observeNameAnimation } from "utils/nameAnimationViewport";
 import { nameGlowStyle, applyNameGlowStyle } from "utils/nameGlowStyle";
 
 import santaDir from "images/holiday/santahat.png";
+import { UiText as Typography, UiAction } from "components/ui";
 
 // Names without a miniprofile must not subscribe to every game update.
 const NameOnlyGameContext = React.createContext(null);
@@ -332,9 +333,9 @@ export function MediaEmbed(props) {
       <div className="media-embed-body" aria-hidden={isCollapsed}>
         {body}
       </div>
-      <IconButton
-        className="media-embed-toggle"
-        size="small"
+      <UiAction
+         variant="ghost" size="small" className="media-embed-toggle"
+        
         onClick={() => setIsCollapsed((c) => !c)}
         aria-expanded={!isCollapsed}
         aria-label={isCollapsed ? "Expand media player" : "Collapse media player"}
@@ -348,7 +349,7 @@ export function MediaEmbed(props) {
         ) : (
           <ExpandLessIcon />
         )}
-      </IconButton>
+      </UiAction>
     </div>
   );
 }
@@ -993,12 +994,12 @@ export function LoveIcon(props) {
     (isLove && loveType !== "Married" && love.id === userId)
   ) {
     return (
-      <IconButton aria-label="love user">
+      <UiAction  variant="ghost" iconOnly aria-label="love user">
         <i
           className={`fas fa-heart  ${isLove ? "sel-love" : ""}`}
           onClick={onLoveClick}
         />
-      </IconButton>
+      </UiAction>
     );
   }
   return null;
@@ -1015,12 +1016,12 @@ export function MarriedIcon(props) {
   if (userId === love.id) {
     if ((saved && isLove && loveType === "Lover") || isMarried) {
       return (
-        <IconButton aria-label="marry user">
+        <UiAction  variant="ghost" iconOnly aria-label="marry user">
           <i
             className={`fas fa-ring ${isMarried ? "sel-married" : ""}`}
             onClick={onMarryClick}
           />
-        </IconButton>
+        </UiAction>
       );
     }
   }

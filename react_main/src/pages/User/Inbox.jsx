@@ -1,16 +1,10 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { UiPage, UiList, UiListItem } from "components/ui";
+import { UiPage, UiList, UiListItem, UiText as Typography } from "components/ui";
 import { Link } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
 
-import {
-  Box,
-  Typography,
-  Stack,
-  Divider,
-  Chip,
-} from "@mui/material";
+import { Box, Stack, Divider, Chip } from "@mui/material";
 import { PageNav } from "components/Nav";
 
 import { UserContext, SiteInfoContext } from "Contexts";

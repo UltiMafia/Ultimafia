@@ -1,17 +1,12 @@
 import React, { useState, useMemo, useContext } from "react";
 import axios from "axios";
-import {
-  Stack,
-  Box,
-  Typography,
-  Paper,
-  useTheme
-} from "@mui/material";
+import { Stack, Box, Paper, useTheme } from "@mui/material";
 import { UserContext, SiteInfoContext } from "Contexts";
 import { Avatar } from "pages/User/UserWidgets"; // Reuse existing custom Avatar component
 import { FamilyAvatarImage } from "utils/avatarUrl";
 import { UiDialog, UiAction, UiIcon, UiField } from "./ui";
 import { boundedShareCount, MAX_SHARES_PER_TRADE } from "../utils/stockTradeInput.mjs";
+import { UiText as Typography } from "components/ui";
 
 export default function TradeDialog({ open, onClose, stock, initialType = "buy", onSuccess }) {
   const user = useContext(UserContext);
@@ -109,7 +104,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
 
 
   return (
-    <UiDialog open={open} onClose={submitting ? undefined : onClose} title="Trade shares" maxWidth="xs"
+    <UiDialog open={open} onClose={submitting ? undefined : onClose} title="Trade shares" size="sm"
       actions={<><UiAction onClick={onClose} disabled={submitting}>Cancel</UiAction><UiAction variant="primary" busy={submitting} onClick={handleConfirmTrade} disabled={!user.loggedIn || shareCount < 1 || shareCount > MAX_SHARES_PER_TRADE || (tradeType === "buy" && user.coins < tradePreview.total) || (tradeType === "sell" && (stock.sharesOwned < shareCount || stock.shareSupply - shareCount < 1))}>{tradeType === "buy" ? "Buy" : "Sell"}</UiAction></>}>
         <Stack direction="row" spacing={1.5} alignItems="center">
           {stock.targetType === "player" ? (
@@ -140,7 +135,7 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
             )
           )}
           <Box sx={{ minWidth: 0, overflowWrap: "anywhere" }}>
-            <Typography sx={{ fontWeight: "bold", fontSize: "0.875rem", lineHeight: 1.2 }}>
+            <Typography sx={{ fontWeight: "bold", fontSize: "var(--ui-text-body)", lineHeight: 1.2 }}>
               {stock.name}
             </Typography>
             <Typography variant="caption" color="text.secondary">

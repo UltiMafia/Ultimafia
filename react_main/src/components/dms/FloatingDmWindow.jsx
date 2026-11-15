@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
-import { IconButton, Paper, Stack } from "@mui/material";
+import { Paper, Stack } from "@mui/material";
 import FocusTrap from "@mui/material/Unstable_TrapFocus";
 import UiIcon from "../ui/UiIcon";
 import { useDismissOnBack } from "../../hooks/useDismissOnBack";
@@ -17,6 +17,7 @@ import {
 } from "../../utils/dmWindow";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { UserContext } from "../../Contexts";
+import { UiAction } from "components/ui";
 
 // Floating DM window. Same drag-by-header / collapse pattern as the tutorial
 // box (components/TutorialOverlay.jsx); the body is the homepage chatbox
@@ -135,24 +136,24 @@ export default function FloatingDmWindow() {
           </span>
         )}
         {actions}
-        {!isPhone && <IconButton
-          size="small"
+        {!isPhone && <UiAction
+           variant="ghost" size="small" 
           data-testid="dm-collapse"
           aria-label={dm.collapsed ? "Expand messages" : "Collapse messages"}
           title={dm.collapsed ? "Expand" : "Collapse"}
           onClick={() => dm.setCollapsed(!dm.collapsed)}
         >
           <UiIcon name={dm.collapsed ? "up" : "down"} size={18} />
-        </IconButton>}
-        <IconButton
-          size="small"
+        </UiAction>}
+        <UiAction
+           variant="ghost" size="small" 
           data-testid="dm-close"
           aria-label="Close messages"
           title="Close"
           onClick={dm.close}
         >
           <UiIcon name="close" size={20} />
-        </IconButton>
+        </UiAction>
       </Stack>
     );
   }

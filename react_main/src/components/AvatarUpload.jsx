@@ -1,10 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Box,
-  Typography,
-} from "@mui/material";
+import { Box } from "@mui/material";
 import { UiAction, UiDialog, UiIcon, UiSlider } from "./ui";
 import { avatarCropSource, AVATAR_CROP_OUTPUT_SIZE } from "../utils/avatarCropGeometry.mjs";
+import { UiText as Typography } from "components/ui";
 
 export default function AvatarUpload(props) {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);

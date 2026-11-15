@@ -11,16 +11,7 @@ import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import update from "immutability-helper";
 import axios from "axios";
 
-import {
-  Typography,
-  Stack,
-  Box,
-  Grid2,
-  Stepper,
-  Step,
-  StepButton,
-  Chip,
-} from "@mui/material";
+import { Stack, Box, Grid2, Stepper, Step, StepButton, Chip } from "@mui/material";
 
 import { MaxModifiersPerRole } from "Constants";
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -34,7 +25,7 @@ import {
 } from "components/Roles";
 import { Cell } from "components/CellSearch";
 import Form from "components/Form";
-import { UiAction, UiCard, UiField, UiIcon, UiSection, UiDialog, UiStepNavigation } from "components/ui";
+import { UiAction, UiCard, UiField, UiIcon, UiSection, UiDialog, UiStepNavigation, UiText as Typography } from "components/ui";
 import { useErrorAlert } from "components/Alerts";
 import "css/createSetup.css";
 import { Loading } from "components/Loading";

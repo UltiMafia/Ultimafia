@@ -553,6 +553,10 @@
 
   margin-top: 6px;
 }
+/* Comment and forum author typography are the same role; the forum keeps its
+   extra metadata but not a second name/time scale. */
+.thread-wrapper .post .post-info .user-name { font-size: var(--ui-text-body); font-weight: 600; }
+.thread-wrapper .post .forum-author-meta { font-size: var(--ui-text-caption); line-height: var(--ui-line-body); }
 
 .thread-wrapper .post .heading-left {
   flex: 1 1 auto;
@@ -1491,3 +1495,5 @@
     max-height: 100px;
   }
 }
+
+.search-result-card { margin-bottom: var(--ui-space-lg); }

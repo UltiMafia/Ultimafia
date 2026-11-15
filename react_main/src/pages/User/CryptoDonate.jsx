@@ -1,17 +1,10 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  MenuItem,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { QRCodeSVG } from "qrcode.react";
 import { SiteInfoContext, UserContext } from "../../Contexts";
 import { useErrorAlert } from "../../components/Alerts";
-import { confirmAction } from "components/ui";
+import { confirmAction, UiMenuItem as MenuItem, UiField as TextField, UiText as Typography, UiAction } from "components/ui";
 
 const NETWORKS = [
   {
@@ -108,9 +101,9 @@ function CopyRow({ label, value }) {
         >
           {value}
         </Typography>
-        <Button size="small" onClick={copy}>
+        <UiAction  variant="ghost" size="small"  onClick={copy}>
           Copy
-        </Button>
+        </UiAction>
       </Stack>
     </Stack>
   );
@@ -245,21 +238,21 @@ function InvoiceCard({ invoice, onUpdated, onRemoved }) {
           </Box>
         ) : null}
         <Stack direction="row" spacing={1}>
-          <Button
-            size="small"
+          <UiAction
+             variant="ghost" size="small" 
             onClick={checkNow}
             disabled={checkCooldownMs > 0 || busy}
           >
             {checkCooldownLabel}
-          </Button>
-          <Button
-            size="small"
-            color="error"
+          </UiAction>
+          <UiAction
+             variant="danger" size="small" 
+            
             onClick={cancelInvoice}
             disabled={busy}
           >
             Cancel invoice
-          </Button>
+          </UiAction>
         </Stack>
       </Stack>
     </Box>
@@ -471,13 +464,13 @@ export default function CryptoDonate() {
       <Typography variant="body2" color="textSecondary">
         Coins to receive: {coinsPreview}
       </Typography>
-      <Button
-        variant="contained"
+      <UiAction
+         variant="primary" 
         onClick={createInvoice}
         disabled={creating || !parsedUsd || !selectedToken}
       >
         {creating ? "Creating invoice..." : "Create crypto invoice"}
-      </Button>
+      </UiAction>
 
       {pendingInvoices.length > 0 && (
         <Typography variant="subtitle2" sx={{ pt: 1 }}>

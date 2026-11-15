@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { UiPageHeader, UiTabs, UiTab, UiTable } from "components/ui";
+import { UiPageHeader, UiTabs, UiTab, UiTable, UiText as Typography, UiField as TextField } from "components/ui";
 import "css/play.css";
-import { Box, Typography, TextField } from "@mui/material";
+import { Box } from "@mui/material";
 
 import { slangList } from "../../constants/slangList";
 import { commandList } from "../../constants/commandList";

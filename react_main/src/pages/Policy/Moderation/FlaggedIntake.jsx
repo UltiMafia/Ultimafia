@@ -1,18 +1,14 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
-import {
-  Box,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Stack } from "@mui/material";
 
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import { Time } from "components/Basic";
 import { PageNav } from "components/Nav";
-import { UiAction, UiDialog, UiPending } from "components/ui";
+import { UiAction, UiDialog, UiPending, UiText as Typography } from "components/ui";
 import { LatestRequest } from "../../../lib/latestRequest";
 
 export default function FlaggedIntake() {

@@ -1,10 +1,11 @@
 
 import { useTheme } from '@emotion/react';
-import { Box, Paper, Stack, Typography } from '@mui/material';
+import { Box, Paper, Stack } from "@mui/material";
 import Color from 'color';
 import { UserContext } from 'Contexts';
 import { useIsPhoneDevice } from 'hooks/useIsPhoneDevice';
 import { useContext } from 'react';
+import { UiText as Typography } from "components/ui";
 
 const DEFAULT_MINIMUM_CONTRAST = 3.5; // WCAG 2.1
 const CHROMA_BANDS = 10;

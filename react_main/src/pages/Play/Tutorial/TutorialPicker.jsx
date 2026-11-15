@@ -1,16 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Chip,
-  Grid2,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Chip, Grid2, Stack } from "@mui/material";
 
 import { UserContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
-import { UiAction, UiCard, UiPending, UiPageHeader } from "components/ui";
+import { UiAction, UiCard, UiPending, UiPageHeader, UiText as Typography } from "components/ui";
 import { LatestRequest } from "../../../lib/latestRequest";
 import { useNavigate } from "react-router-dom";
 import { RoleCount } from "../../../components/Roles";

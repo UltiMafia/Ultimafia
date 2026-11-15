@@ -7,9 +7,10 @@ import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import EmotePicker from "components/EmotePicker";
 import { Emote, CustomEmote, Emotes } from "components/Emotes";
-import { Box, Popover, Stack, Typography } from "@mui/material";
+import { Box, Popover, Stack } from "@mui/material";
 
 import "css/emote-reactions.css";
+import { UiText as Typography } from "components/ui";
 
 function ReactionEmoteDisplay({ reaction }) {
   const emoteKey = reaction.emote?.toLowerCase();

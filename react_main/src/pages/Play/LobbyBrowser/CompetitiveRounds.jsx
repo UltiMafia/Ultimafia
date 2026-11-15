@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Divider, Stack, Typography } from "@mui/material";
+import { Box, Divider, Stack } from "@mui/material";
 
 import LobbySidebarPanel from "./LobbySidebarPanel";
+import { UiText as Typography } from "components/ui";
 
 function todayUTCDateString() {
   const now = new Date();

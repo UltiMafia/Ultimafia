@@ -1,20 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  Checkbox,
-  Stack,
-  Link,
-  Divider,
-} from "@mui/material";
+import { Box, FormControlLabel, Stack, Link } from "@mui/material";
 import { useCookieConsent } from "../hooks/useCookieConsent";
 import { Link as RouterLink } from "react-router-dom";
+import { UiText as Typography, UiCheckbox as Checkbox, UiAction, UiDialog } from "components/ui";
 
 export default function CookieBanner() {
   const [open, setOpen] = useState(false);
@@ -52,16 +40,35 @@ export default function CookieBanner() {
     saveCustomPreferences(newPreferences);
   };
 
+  const dialogActions = (<Stack direction="row" spacing={1} sx={{ width: "100%", justifyContent: "flex-end" }}>
+          {showDetails ? (
+            <>
+              <UiAction  variant="ghost" onClick={handleRejectAll} >
+                Reject All
+              </UiAction>
+              <UiAction  variant="primary" onClick={handleCustomSave}  >
+                Save Preferences
+              </UiAction>
+            </>
+          ) : (
+            <>
+              <UiAction  variant="ghost" onClick={handleRejectAll} >
+                Reject
+              </UiAction>
+              <UiAction  variant="primary" onClick={handleAcceptAll}  >
+                Accept All
+              </UiAction>
+            </>
+          )}
+        </Stack>);
+
   return (
-    <Dialog 
-      open={open} 
-      maxWidth="sm" 
-      fullWidth
-      onClose={() => {}} // Prevent closing by clicking outside
-      disableEscapeKeyDown
+    <UiDialog
+      open={open}
+      title="We use cookies"
+      dismissible={false}
+      actions={dialogActions}
     >
-      <DialogTitle>We use cookies</DialogTitle>
-      <DialogContent>
         <Typography variant="body2" paragraph>
           UltiMafia uses cookies to enhance your experience, analyze site usage, 
           and assist in our marketing efforts. By clicking "Accept All," you agree 
@@ -148,38 +155,16 @@ export default function CookieBanner() {
         )}
         
         {!showDetails && (
-          <Button
-            onClick={() => setShowDetails(true)}
+          <UiAction
+            variant="ghost"
             size="small"
-            sx={{ mt: 1 }}
+            className="cookie-customize"
+            onClick={() => setShowDetails(true)}
           >
             Customize Preferences
-          </Button>
+          </UiAction>
         )}
-      </DialogContent>
-      <DialogActions>
-        <Stack direction="row" spacing={1} sx={{ width: "100%", justifyContent: "flex-end" }}>
-          {showDetails ? (
-            <>
-              <Button onClick={handleRejectAll} color="secondary">
-                Reject All
-              </Button>
-              <Button onClick={handleCustomSave} color="primary" variant="contained">
-                Save Preferences
-              </Button>
-            </>
-          ) : (
-            <>
-              <Button onClick={handleRejectAll} color="secondary">
-                Reject
-              </Button>
-              <Button onClick={handleAcceptAll} color="primary" variant="contained">
-                Accept All
-              </Button>
-            </>
-          )}
-        </Stack>
-      </DialogActions>
-    </Dialog>
+
+    </UiDialog>
   );
 }

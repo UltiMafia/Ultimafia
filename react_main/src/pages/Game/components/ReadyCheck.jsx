@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
 import { readyCheckLocalEnd } from "utils/timerSync";
+import { UiText as Typography } from "components/ui";
 
 export default function ReadyCheckDialog({
   open,

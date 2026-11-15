@@ -11,9 +11,9 @@ import { EmoteReactions } from "components/EmoteReactions";
 import "css/emote-reactions.css";
 import { NameWithAvatar } from "../User/UserWidgets";
 
-import { Box, IconButton } from "@mui/material";
+import { Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { confirmAction } from "components/ui";
+import { confirmAction, UiAction } from "components/ui";
 
 export const Comment = (props) => {
   const theme = useTheme();
@@ -68,10 +68,10 @@ export const Comment = (props) => {
           {!comment.deleted && (user.perms.deleteAnyPost ||
             (user.perms.deleteOwnPost && comment.author.id === user.id) ||
             location === user.id || props.canModerateLocation) && (
-            <IconButton aria-label="Delete comment" onClick={onDeleteClick}><i className="fas fa-trash" /></IconButton>
+            <UiAction  variant="ghost" iconOnly aria-label="Delete comment" onClick={onDeleteClick}><i className="fas fa-trash" /></UiAction>
           )}
           {comment.deleted && user.perms.restoreDeleted && (
-            <IconButton aria-label="Restore comment" onClick={onRestoreClick}><i className="fas fa-trash-restore" /></IconButton>
+            <UiAction  variant="ghost" iconOnly aria-label="Restore comment" onClick={onRestoreClick}><i className="fas fa-trash-restore" /></UiAction>
           )}
         </div>
       </header>

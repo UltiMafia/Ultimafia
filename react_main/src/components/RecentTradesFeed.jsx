@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
-import {
-  Box,
-  Typography,
-  Stack,
-} from "@mui/material";
+import { Box, Stack } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import { StampItem } from "components/Scrapbook";
@@ -13,6 +9,7 @@ import { useViewActive } from "../hooks/useViewActivity";
 import { UiAction, UiDialog, UiIcon, UiPending } from "./ui";
 import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
 import { LatestRequest } from "../lib/latestRequest";
+import { UiText as Typography } from "components/ui";
 
 function StickerPlaceholder({ size = 32, onClick }) {
   return (

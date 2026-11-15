@@ -6,7 +6,8 @@ import { NavLink, useLocation } from "react-router-dom";
 import Dropdown from "./Dropdown";
 
 import "css/nav.css";
-import { Box, TextField } from "@mui/material";
+import { Box } from "@mui/material";
+import { UiField as TextField } from "components/ui";
 
 export function Nav(props) {
   return <div className="nav">{props.children}</div>;

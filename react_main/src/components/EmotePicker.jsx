@@ -7,16 +7,7 @@ import React, {
   lazy,
 } from "react";
 
-import {
-  Box,
-  Button,
-  Popover,
-  Stack,
-  Tooltip,
-  Typography,
-  ToggleButton,
-  ToggleButtonGroup,
-} from "@mui/material";
+import { Box, Button, Popover, Stack, Tooltip, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { useTheme } from "@emotion/react";
 
 import { Emotes } from "./Emotes";
@@ -26,6 +17,7 @@ import "css/emotes.css";
 
 import UiAction from "./ui/UiAction";
 import UiIcon from "./ui/UiIcon";
+import { UiText as Typography } from "components/ui";
 
 // emoji-picker-react is large and only ever renders inside the popover below,
 // so keep it out of the chunk every page with a comment box has to download.

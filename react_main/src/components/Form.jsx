@@ -21,29 +21,11 @@ import "css/form.css";
 import "css/markdown.css";
 import "css/emotes.css";
 import { dateToHTMLString, formatBirthdayForInput } from "../utils";
-import {
-  Autocomplete,
-  TextField,
-  MenuItem,
-  Button,
-  IconButton,
-  Stack,
-  FormControlLabel,
-  Typography,
-  Checkbox,
-  Box,
-  FormControl,
-  InputLabel,
-  FormHelperText,
-  Paper,
-  Tooltip,
-  Slider,
-  Popover,
-} from "@mui/material";
+import { Button, IconButton, Stack, FormControlLabel, Box, FormControl, InputLabel, FormHelperText, Paper, Tooltip, Popover } from "@mui/material";
 import { MuiColorInput } from 'mui-color-input'
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { LatestRequest } from "../lib/latestRequest";
-import { confirmAction } from "components/ui";
+import { confirmAction, UiAutocomplete as Autocomplete, UiField as TextField, UiMenuItem as MenuItem, UiText as Typography, UiCheckbox as Checkbox, UiSlider as Slider } from "components/ui";
 
 const UNGROUPED_NAME = "__UNGROUPED__";
 let nextFieldId = 0;

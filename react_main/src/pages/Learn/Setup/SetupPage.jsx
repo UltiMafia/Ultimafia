@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { UiSection, UiAction, UiField, UiStatRow, UiStat, UiPageHeader, UiTabs, UiTab, UiTable, UiSegmentedControl, UiVoteControl, confirmAction } from "components/ui";
+import { UiSection, UiAction, UiField, UiStatRow, UiStat, UiPageHeader, UiTabs, UiTab, UiTable, UiSegmentedControl, UiVoteControl, UiCard, confirmAction, UiMenuItem as MenuItem, UiSelect as Select, UiText as Typography } from "components/ui";
 import {
   Link as RouterLink,
   Route,
@@ -9,18 +9,7 @@ import {
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 
-import {
-  Box,
-  Button,
-  Grid,
-  Link,
-  MenuItem,
-  Select,
-  Stack,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Button, Grid, Link, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 import ModerationSideDrawer from "components/ModerationSideDrawer";
@@ -839,13 +828,13 @@ export function SetupPage() {
             <>
               {shouldDisplayChangelog ? (
                 versionHistory == null ? (
-                  <div className="box-panel">
+                  <UiCard>
                     <div className="content">
                       <Typography variant="body2" color="text.secondary">
                         Loading version history…
                       </Typography>
                     </div>
-                  </div>
+                  </UiCard>
                 ) : (
                   <Stack spacing={1.5}>
                     {versionHistory.map((entry) => (
@@ -875,13 +864,13 @@ export function SetupPage() {
                   </Stack>
                 )
               ) : (
-                <div className="box-panel">
+                <UiCard>
                   <div className="content">
                     <Typography color="text.secondary">
                       Version history is only available for Mafia setups.
                     </Typography>
                   </div>
-                </div>
+                </UiCard>
               )}
             </>
           }

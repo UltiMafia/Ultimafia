@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { IconButton, Tooltip } from "@mui/material";
+import { Tooltip } from "@mui/material";
 import { useRankedTutorialGate } from "components/TutorialPrompt";
 import { UserContext, SiteInfoContext } from "Contexts";
 import { filterProfanity } from "components/Basic";
@@ -92,8 +92,8 @@ export function GameRow({ game, showLobbyName, showGameState, small }) {
         {showLobbyName && <div className="game-row-host">{filterProfanity(game.lobbyName, user.settings)}</div>}
       </div>
       <GameStatus game={game} tools={(canBreak || canRehost) && <div className="game-row-tools">
-        {canRehost && <Tooltip title="Host this setup"><IconButton size="small" aria-label="Rehost game" onClick={() => setHostDialogOpen(true)}><UiIcon name="refresh" size={16} /></IconButton></Tooltip>}
-        {canBreak && <Tooltip title="Break game"><IconButton size="small" aria-label="Break game" onClick={breakGame}><UiIcon name="warning" size={16} /></IconButton></Tooltip>}
+        {canRehost && <Tooltip title="Host this setup"><UiAction  variant="ghost" size="small"  aria-label="Rehost game" onClick={() => setHostDialogOpen(true)}><UiIcon name="refresh" size={16} /></UiAction></Tooltip>}
+        {canBreak && <Tooltip title="Break game"><UiAction  variant="ghost" size="small"  aria-label="Break game" onClick={breakGame}><UiIcon name="warning" size={16} /></UiAction></Tooltip>}
       </div>} />
       <HostGameDialogue open={hostDialogOpen} setOpen={setHostDialogOpen} setup={game.setup} defaultLobby={game.lobby} />
     </article>

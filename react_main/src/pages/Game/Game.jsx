@@ -83,37 +83,7 @@ import { WindowedTranscript } from "./components/WindowedTranscript";
 import { warmNameFonts } from "../../utils/fontWarmup";
 import { dedupeMessages } from "../../shared/dedupeMessages";
 import { bindMessageTouch } from "../../utils/messageTouch";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Badge,
-  Box,
-  Button,
-  ButtonGroup,
-  Chip,
-  Divider,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  MenuItem,
-  Select,
-  Stack,
-  Tab,
-  Tabs,
-  Tooltip,
-  TextField,
-  Typography,
-  useTheme,
-  BottomNavigation,
-  BottomNavigationAction,
-  Paper,
-  Popover,
-  useMediaQuery,
-  Alert,
-} from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, Badge, Box, Button, ButtonGroup, Chip, Divider, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Stack, Tab, Tabs, Tooltip, useTheme, BottomNavigation, BottomNavigationAction, Paper, Popover, useMediaQuery, Alert } from "@mui/material";
 import { PlayerCount } from "../Play/LobbyBrowser/PlayerCount";
 import {
   resolveDisplayNameColor,
@@ -159,6 +129,7 @@ import {
   KudosIcon,
   kudosAwardedIds,
 } from "./components/Kudos";
+import { UiMenuItem as MenuItem, UiSelect as Select, UiField as TextField, UiText as Typography } from "components/ui";
 
 const emoteMap = {
   dice1: dice1,

@@ -9,17 +9,7 @@ import { SearchBar } from "components/Nav";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { hyphenDelimit } from "utils";
 
-import {
-  Box,
-  Divider,
-  Grid,
-  IconButton,
-  Stack,
-  Typography,
-  useMediaQuery,
-  Popover,
-  Tooltip,
-} from "@mui/material";
+import { Box, Divider, Grid, IconButton, Stack, useMediaQuery, Popover, Tooltip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
 import "css/setup.css";
@@ -28,6 +18,7 @@ import { usePopover, InfoPopover } from "components/Popover";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { PopoverContent } from "./Popover";
 import { useNavigate } from "react-router-dom";
+import { UiText as Typography } from "components/ui";
 
 export default function Setup(props) {
   const user = useContext(UserContext);

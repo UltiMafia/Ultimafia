@@ -20,7 +20,6 @@
 .profile-header-panel .options { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; }
 .profile-section { min-width: 0; scroll-margin-top: 56px; }
 .profile-section > h2 { margin: 0 0 10px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
-.profile-section .box-panel { margin-bottom: 0; }
 .profile-statistics-overview { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; padding: 4px 0 16px; }
 .profile-statistics-overview .pie-chart { flex: 0 0 auto; }
 .profile-statistics-overview .profile-results-summary { flex: 0 1 420px; min-width: 0; max-width: 420px; }
@@ -28,7 +27,6 @@
 .profile-collection-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 16px; align-items: start; }
 .profile-collection-grid > * { min-width: 0; }
 .profile-collection-grid > .scrapbook-panel { grid-column: 1 / -1; }
-.profile-collection-grid .box-panel { margin-bottom: 0; }
 .profile-rebuilt .profile-bio .bio, .profile-rebuilt .profile-comments { max-width: none; }
 .rating-unavailable { display: flex; justify-content: center; align-items: center; text-align: center; }
 .profile-ratings-pie { display: flex; justify-content: center; padding: 4px 0; }
@@ -613,7 +611,7 @@ iframe {
   background-color: var(--theme-color-sec);
 }
 
-.profile .box-panel .content.trophies-content {
+.profile .ui-card .content.trophies-content {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
@@ -719,15 +717,9 @@ iframe {
   word-break: break-all;
 }
 
-.profile .box-panel {
-  border-radius: var(--ui-radius-card);
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
-  padding: var(--ui-panel-padding);
-  margin-bottom: 0;
-}
 .profile[data-custom-background="true"] .ui-card.profile-tinted { background-color: var(--profile-card-tint) !important; }
-.profile .box-panel.profile-header-panel {
+.profile .profile-header-panel {
+  width: 100%;
   padding: 0;
   overflow: hidden;
 }
@@ -749,31 +741,27 @@ iframe {
   .profile-game-row { grid-template-columns: 46px minmax(0, 1fr); gap: 10px; }
   .profile-game-actions { grid-column: 2; justify-content: flex-start; }
 }
-.profile .box-panel:last-child {
-  margin-bottom: 0px;
-}
 
 /* Custom profile colors retain a legible inset for authored text. Ordinary
    profiles use the continuous site canvas, without alternating panel colors. */
-.profile[data-custom-background="true"] .box-panel { padding: var(--ui-panel-padding); }
-.profile[data-custom-background="true"] .box-panel .content,
+.profile[data-custom-background="true"] .ui-card .content,
 .profile[data-custom-background="true"] .bio { background: transparent; color: inherit; padding: 0; }
 .notification-row { border-radius: 0; }
 .notification-unread { color: var(--um-accent); font-size: var(--ui-text-caption); font-weight: var(--ui-weight-strong); }
 .settings-page .form > .form-group + .form-group { margin-top: var(--ui-section-gap); }
 .settings-page .form-group { padding-bottom: 8px; }
 
-.profile .box-panel .content {
+.profile .ui-card .content {
   padding: 0;
   background-color: transparent;
   color: inherit;
 }
 
-.profile .box-panel .row {
+.profile .ui-card .row {
   padding: 0px 0px 5px 0px;
 }
 
-.profile .box-panel .row:last-child {
+.profile .ui-card .row:last-child {
   padding-bottom: 0px;
 }
 
@@ -1394,3 +1382,5 @@ iframe {
 .media-embed-wrap.media-collapsible.media-collapsed .media-embed-toggle {
   margin-top: 0;
 }
+
+.profile-trade-action { margin-top: var(--ui-space-sm); }

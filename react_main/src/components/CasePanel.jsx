@@ -1,5 +1,7 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
+import UiCard from "./ui/UiCard";
+import { UiText as Typography } from "components/ui";
 
 export const casePanelItemBoxSx = {
   padding: 1,
@@ -15,10 +17,9 @@ export const casePanelItemBoxSx = {
 
 export default function CasePanel({
   title,
-  panelStyle = {},
   headingStyle = {},
   showHeading = true,
-  className = "box-panel",
+  className = "",
   wrapInPanel = true,
   emptyMessage = null,
   children,
@@ -56,11 +57,14 @@ export default function CasePanel({
   );
 
   if (wrapInPanel) {
-    return (
-      <div className={`ui-card ${className}`.trim()} style={panelStyle}>
-        {content}
-      </div>
-    );
+    // This component is the card; callers may name a layout variant, but cannot
+    // reintroduce the legacy box-panel/ui-card class pair.
+    const variantClass = String(className)
+      .split(/\s+/)
+      .filter((token) => token && token !== "box-panel" && token !== "ui-card")
+      .concat("profile-tinted")
+      .join(" ");
+    return <UiCard className={variantClass}>{content}</UiCard>;
   }
 
   return content;

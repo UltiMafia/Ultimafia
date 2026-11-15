@@ -1,17 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
-import {
-  Stack,
-  Typography,
-  Box,
-  Paper,
-  Button,
-  IconButton,
-  Tooltip,
-  Chip,
-  LinearProgress,
-} from "@mui/material";
+import { Stack, Box, Tooltip, Chip, LinearProgress } from "@mui/material";
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import { FamilyAvatarImage } from "utils/avatarUrl";
@@ -25,7 +15,7 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import CustomMarkdown from "components/CustomMarkdown";
 import TrophyCase from "components/TrophyCase";
 import { capitalize } from "utils";
-import { UiAction, UiCard, UiDialog, UiIcon, UiMenu, UiMenuItem, UiPage, UiPageHeader } from "components/ui";
+import { UiAction, UiCard, UiDialog, UiIcon, UiMenu, UiMenuItem, UiPage, UiPageHeader, UiText as Typography } from "components/ui";
 import { LatestRequest } from "../../lib/latestRequest";
 import "css/family.css";
 import { 
@@ -350,7 +340,7 @@ export default function Family() {
       <UiDialog open={!!confirmation} title={confirmation?.title} onClose={actionBusy ? undefined : () => setConfirmation(null)} actions={<><UiAction disabled={actionBusy} onClick={() => setConfirmation(null)}>Cancel</UiAction><UiAction variant={confirmation?.type === "role" ? "primary" : "danger"} busy={actionBusy} onClick={confirmAction}>{confirmation?.label}</UiAction></>}><p>{confirmation?.description}</p>{actionError && <p role="alert">{actionError}</p>}</UiDialog>
       <div className="family-page-layout">
         <div className="family-main">
-            <Paper className="ui-card family-profile-panel">
+            <UiCard className="family-profile-panel">
               {family.banner && (
                 <div className="family-banner">
                   <img
@@ -445,23 +435,15 @@ export default function Family() {
                 )}
               </div>
               {family.isLeader && !editingBio && <UiAction onClick={onBioClick}>Edit family bio</UiAction>}
-            </Paper>
+            </UiCard>
             {family.trophies && family.trophies.length > 0 && (
-              <Paper
-                className="ui-card"
-                sx={{
-                  ...(hasTrophySpotlight && {
-                    boxShadow: "0 0 25px 2px rgba(255, 215, 0, 0.4)",
-                    border: "1px solid rgba(255, 215, 0, 0.6)",
-                  })
-                }}
-              >
+              <UiCard className={hasTrophySpotlight ? "family-trophy-spotlight" : undefined}>
                 <TrophyCase
                   trophies={family.trophies}
                   headingStyle={headingStyle}
                   wrapInPanel={false}
                 />
-              </Paper>
+              </UiCard>
             )}
             <UiCard className="family-comments">
               <h2>Comments</h2>
@@ -470,20 +452,19 @@ export default function Family() {
         </div>
         <aside className="family-rail">
             {pendingInvite && (
-              <Paper className="ui-card">
+              <UiCard className="">
                 <Typography variant="h3" sx={headingStyle}>
                   Pending Invite
                 </Typography>
                 <Stack direction="column" spacing={2}>
                   <Stack direction="row" spacing={1}>
-                    <Button
-                      variant="contained"
-                      color="success"
+                    <UiAction
+                      variant="primary"
+                      className="family-invite-action"
                       onClick={onAcceptJoin}
                       disabled={
                         family && family.members && family.members.length >= (family.memberLimit || 20)
                       }
-                      sx={{ flex: 1 }}
                       title={
                         family && family.members && family.members.length >= (family.memberLimit || 20)
                           ? `This family has reached the maximum of ${family.memberLimit || 20} members.`
@@ -491,22 +472,21 @@ export default function Family() {
                       }
                     >
                       Accept
-                    </Button>
-                    <Button
-                      variant="outlined"
-                      color="error"
+                    </UiAction>
+                    <UiAction
+                      variant="danger"
+                      className="family-invite-action"
                       onClick={onRejectJoin}
-                      sx={{ flex: 1 }}
                     >
                       Reject
-                    </Button>
+                    </UiAction>
                   </Stack>
                 </Stack>
-              </Paper>
+              </UiCard>
             )}
             
             {family.hasMusicPlayer && family.mediaUrl && (
-              <Paper className="ui-card">
+              <UiCard className="">
                 <MediaEmbed
                   key={`${familyId}:${family.mediaUrl}`}
                   mediaUrl={family.mediaUrl}
@@ -514,17 +494,17 @@ export default function Family() {
                   collapsible
                   collapsed={!!family.mediaCollapse}
                 />
-              </Paper>
+              </UiCard>
             )}
 
-            <Paper className="ui-card">
+            <UiCard className="">
               <Typography variant="h3" sx={headingStyle}>
                 Members
               </Typography>
               <Stack direction="column" spacing={1}>
                 {membersList}
               </Stack>
-            </Paper>
+            </UiCard>
             
             <FamilyStockCard
               stockInfo={family.stockInfo}

@@ -1,15 +1,7 @@
 import React, { useEffect } from "react";
-import { UiPageHeader, UiTable } from "components/ui";
+import { UiPageHeader, UiTable, UiText as Typography } from "components/ui";
 import { useTheme } from "@mui/material/styles";
-import {
-  Box,
-  Typography,
-  Link,
-  List,
-  ListItem,
-  ListItemText,
-  Stack,
-} from "@mui/material";
+import { Box, Link, List, ListItem, ListItemText, Stack } from "@mui/material";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 const prestigeRows = [

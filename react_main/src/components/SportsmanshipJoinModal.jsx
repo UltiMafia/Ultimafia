@@ -1,17 +1,6 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { FormControlLabel, List, ListItem, ListItemText } from "@mui/material";
+import { UiCheckbox as Checkbox, UiDialog, UiText as Typography, UiAction } from "components/ui";
 
 /**
  * Text from docs/SPORTSMANSHIP.txt — First time join messages.
@@ -54,15 +43,24 @@ export function SportsmanshipJoinModal({
       : "Ranked Sportsmanship";
 
   return (
-    <Dialog
+    <UiDialog
       open={open}
       onClose={onCancel}
-      scroll="body"
-      maxWidth="sm"
-      fullWidth
+      title={title}
+      size="sm"
+      actions={<>
+        <UiAction  variant="ghost" onClick={onCancel} >
+          Cancel
+        </UiAction>
+        <UiAction
+           variant="primary" onClick={() => onAccept(doNotShowAgain)}
+          
+          
+        >
+          Accept
+        </UiAction>
+      </>}
     >
-      <DialogTitle>{title}</DialogTitle>
-      <DialogContent>
         <Typography variant="body1" paragraph>
           {content.intro}
         </Typography>
@@ -97,19 +95,6 @@ export function SportsmanshipJoinModal({
           }
           label="Do not show this again"
         />
-      </DialogContent>
-      <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onCancel} color="secondary">
-          Cancel
-        </Button>
-        <Button
-          onClick={() => onAccept(doNotShowAgain)}
-          variant="contained"
-          color="primary"
-        >
-          Accept
-        </Button>
-      </DialogActions>
-    </Dialog>
+    </UiDialog>
   );
 }

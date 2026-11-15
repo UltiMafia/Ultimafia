@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Typography, Divider } from "@mui/material";
-import { UiPageHeader } from "components/ui";
+import { Box, Divider } from "@mui/material";
+import { UiPageHeader, UiText as Typography } from "components/ui";
 
 export default function StaffHandbook() {
   return (

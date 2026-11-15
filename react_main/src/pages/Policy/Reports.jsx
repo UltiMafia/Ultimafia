@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
-import { Autocomplete } from "@mui/material";
+
 import { PageNav } from "components/Nav";
 import { Time } from "components/Basic";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import ReportDetail from "components/ReportDetail";
-import { UiAction, UiField, UiPending } from "components/ui";
+import { UiAction, UiField, UiPending, UiAutocomplete as Autocomplete } from "components/ui";
 import { LatestRequest } from "../../lib/latestRequest";
 
 const statusLabels = { "in-progress": "In progress", complete: "Complete", open: "Open", appealed: "Appealed" };

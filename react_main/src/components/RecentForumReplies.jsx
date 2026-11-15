@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
-import { Paper, Stack, Typography, Box } from "@mui/material";
+import { Paper, Stack, Box } from "@mui/material";
 import { Avatar } from "pages/User/UserWidgets";
 import { Time } from "components/Basic";
 import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
 import { useViewActive } from "../hooks/useViewActivity";
+import { UiText as Typography } from "components/ui";
 
 export function RecentForumReplies() {
   const active = useViewActive();

@@ -171,7 +171,7 @@ async function main() {
         assert.ok(await dialog.getByRole("button", { name: "Older", exact: true }).isDisabled());
         await dialog.getByRole("button", { name: "Newer", exact: true }).click();
         await dialog.getByText(/Maintenance notice \(test data\)/).waitFor();
-        await dialog.getByRole("button", { name: "Close", exact: true }).click();
+        await dialog.locator(".ui-dialog-actions").getByRole("button", { name: "Close", exact: true }).click();
         await notice.getByRole("button", { name: "Read announcement", exact: true }).waitFor({ state: "hidden" });
         assert.equal(await notice.evaluate(() => localStorage.getItem("lastSeenAnnouncementDate")), "1794000000000");
         await notice.getByRole("button", { name: "User menu", exact: true }).click();
@@ -238,13 +238,13 @@ async function main() {
       await pagedNotice.evaluate(() => { window.__deferAnnouncementResponse = true; });
       await historyDialog.getByRole("button", { name: "Older", exact: true }).click();
       await pagedNotice.waitForFunction(() => typeof window.__releaseAnnouncementResponse === "function");
-      await historyDialog.getByRole("button", { name: "Close", exact: true }).click();
+      await historyDialog.locator(".ui-dialog-actions").getByRole("button", { name: "Close", exact: true }).click();
       await pagedNotice.getByRole("button", { name: "User menu", exact: true }).click();
       await pagedNotice.getByRole("menuitem", { name: /Announcements/ }).click();
       await historyDialog.getByText(/Maintenance notice \(test data\)/).waitFor();
       await pagedNotice.evaluate(() => window.__releaseAnnouncementResponse());
       await historyDialog.getByRole("button", { name: "Older", exact: true }).waitFor();
-      await pagedNotice.waitForFunction(() => document.querySelector('[aria-labelledby="announcement-title"] [aria-busy]')?.getAttribute("aria-busy") === "false");
+      await pagedNotice.waitForFunction(() => document.querySelector(".ui-dialog-content [aria-busy]")?.getAttribute("aria-busy") === "false");
       await historyDialog.getByText(/Maintenance notice \(test data\)/).waitFor();
       for (let index = 0; index < 6; index++) await historyDialog.getByRole("button", { name: "Older", exact: true }).click();
       await historyDialog.getByText("Earlier announcement 6 (test data).", { exact: true }).waitFor();

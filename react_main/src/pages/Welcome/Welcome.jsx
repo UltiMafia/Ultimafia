@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { UiPageHeader } from "components/ui";
-import { Container, Stack, Paper } from "@mui/material";
+import { UiPageHeader, UiCard } from "components/ui";
+import { Container, Stack } from "@mui/material";
 import { Link } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import "css/main.css";
@@ -71,9 +71,9 @@ export const Welcome = () => {
   return <Container maxWidth="xs" disableGutters sx={{ py: { xs: 1, sm: 3 } }}>
     <Stack spacing={2}>
       <UiPageHeader title="Account" />
-      <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
+      <UiCard className="welcome-auth-card">
         <Auth defaultTab={0} />
-      </Paper>
+      </UiCard>
       <Link className="ui-action ui-action--secondary" to="/play">Browse games</Link>
       <Stack direction="row" spacing={2} justifyContent="center">
         <Link className="ui-action ui-action--ghost" to="/play/tutorial">Tutorial</Link>

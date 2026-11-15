@@ -1,38 +1,11 @@
 import React, { useState, useEffect, useContext, useCallback, useMemo } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
-import {
-  Typography,
-  Box,
-  Stack,
-  Button,
-  TextField,
-  InputAdornment,
-  Tabs,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Chip,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Grid,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Stack, Button, InputAdornment, Dialog, DialogTitle, DialogContent, DialogActions, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl, InputLabel, Grid, useMediaQuery, useTheme } from "@mui/material";
 import { PageNav } from "components/Nav";
 import "css/fame.css";
 import CoinIcon from "components/CoinIcon";
-import { UiAction, UiCard, UiIcon, UiPageHeader, UiSegmentedControl, UiStat, UiStatRow, UiTabs, UiTab } from "components/ui";
+import { UiAction, UiCard, UiIcon, UiPageHeader, UiSegmentedControl, UiStat, UiStatRow, UiTabs, UiTab, UiText as Typography, UiField as TextField, UiTabs as Tabs, UiSelect as Select, UiMenuItem as MenuItem } from "components/ui";
 import { useErrorAlert } from "../../components/Alerts";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { UserContext, SiteInfoContext } from "../../Contexts";
@@ -646,7 +619,7 @@ export default function StockMarket() {
                       </Grid>
                       <Stack direction="row" spacing={1}>
                         <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "buy", marketMode)}>Buy</Button>
-                        <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "sell", marketMode)}>Sell</Button>
+                        <UiAction  variant="danger" size="small" block     disabled={!user.loggedIn} onClick={() => openTradeModal(stock, "sell", marketMode)}>Sell</UiAction>
                       </Stack>
                   </UiCard>
                 );
@@ -768,15 +741,15 @@ export default function StockMarket() {
                             >
                               Buy
                             </Button>
-                            <Button
-                              variant="contained"
-                              color="error"
-                              size="small"
+                            <UiAction
+                               variant="danger" size="small" 
+                              
+                              
                               disabled={!user.loggedIn}
                               onClick={() => openTradeModal(stock, "sell", marketMode)}
                             >
                               Sell
-                            </Button>
+                            </UiAction>
                           </Stack>
                         </TableCell>
                       </TableRow>
@@ -861,7 +834,7 @@ export default function StockMarket() {
                           </Grid>
                           <Stack direction="row" spacing={1}>
                             <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "player")}>Buy More</Button>
-                            <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "player")}>Sell</Button>
+                            <UiAction  variant="danger" size="small" block     disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "player")}>Sell</UiAction>
                           </Stack>
                       </UiCard>
                     );
@@ -921,7 +894,7 @@ export default function StockMarket() {
                           </Grid>
                           <Stack direction="row" spacing={1}>
                             <Button fullWidth variant="contained" color="success" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "buy", "family")}>Buy More</Button>
-                            <Button fullWidth variant="contained" color="error" size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "family")}>Sell</Button>
+                            <UiAction  variant="danger" size="small" block     disabled={!user.loggedIn} onClick={() => openTradeModal(matchingStock, "sell", "family")}>Sell</UiAction>
                           </Stack>
                       </UiCard>
                     );
@@ -1023,14 +996,14 @@ export default function StockMarket() {
                             >
                               Buy More
                             </Button>
-                            <Button
-                              variant="contained"
-                              color="error"
-                              size="small"
+                            <UiAction
+                               variant="danger" size="small" 
+                              
+                              
                               onClick={() => openTradeModal(matchingStock, "sell", "player")}
                             >
                               Sell
-                            </Button>
+                            </UiAction>
                           </Stack>
                         </TableCell>
                       </TableRow>
@@ -1103,14 +1076,14 @@ export default function StockMarket() {
                             >
                               Buy More
                             </Button>
-                            <Button
-                              variant="contained"
-                              color="error"
-                              size="small"
+                            <UiAction
+                               variant="danger" size="small" 
+                              
+                              
                               onClick={() => openTradeModal(matchingStock, "sell", "family")}
                             >
                               Sell
-                            </Button>
+                            </UiAction>
                           </Stack>
                         </TableCell>
                       </TableRow>
@@ -1145,7 +1118,7 @@ export default function StockMarket() {
                   </Box>
 
                   <Stack spacing={2} alignItems="center">
-                    <Paper variant="outlined" sx={{ p: 2, display: "flex", gap: 3, backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(255, 255, 255, 0.02)" }}>
+                    <UiCard className="stock-fee-summary">
                       <Box>
                         <Typography variant="caption" display="block">IPO Fee</Typography>
                         <Typography variant="h6" sx={{ fontWeight: "bold", color: "error.main" }}>-100 Coins</Typography>
@@ -1156,7 +1129,7 @@ export default function StockMarket() {
                           {(user.coins - 100).toFixed(2)} Coins
                         </Typography>
                       </Box>
-                    </Paper>
+                    </UiCard>
 
                     <Button
                       variant="contained"
@@ -1213,7 +1186,7 @@ export default function StockMarket() {
                       </Select>
                     </FormControl>
 
-                    <Paper variant="outlined" sx={{ p: 2, display: "flex", gap: 3, backgroundColor: theme.palette.mode === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(255, 255, 255, 0.02)" }}>
+                    <UiCard className="stock-fee-summary">
                       <Box>
                         <Typography variant="caption" display="block">IPO Fee</Typography>
                         <Typography variant="h6" sx={{ fontWeight: "bold", color: "error.main" }}>-200 Coins</Typography>
@@ -1224,7 +1197,7 @@ export default function StockMarket() {
                           {(user.coins - 200).toFixed(2)} Coins
                         </Typography>
                       </Box>
-                    </Paper>
+                    </UiCard>
 
                     <Button
                       variant="contained"

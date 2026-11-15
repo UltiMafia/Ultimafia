@@ -1,22 +1,13 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
-import {
-  Box,
-  Typography,
-  Button,
-  Stack,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  IconButton,
-  Tooltip,
-} from "@mui/material";
+import { Box, Stack, IconButton, Tooltip } from "@mui/material";
 
 import { SiteInfoContext } from "Contexts";
 import { StampItem } from "components/Scrapbook";
 import { NameWithAvatar } from "pages/User/UserWidgets";
+import { UiCard, UiDialog } from "./ui";
 import { useErrorAlert } from "components/Alerts";
+import { UiText as Typography, UiAction } from "components/ui";
 
 function StickerPlaceholder({ size = 48 }) {
   return (
@@ -72,65 +63,47 @@ function RespondDialog({ open, onClose, trade, stamps, lockedCountsByRoleKey, on
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>Offer a duplicate sticker</DialogTitle>
-      <DialogContent dividers>
-        {options.length === 0 ? (
-          <Typography variant="body2" color="textSecondary">
-            You have no duplicate stickers to offer.
-          </Typography>
-        ) : (
-          <Box
-            sx={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 1,
-            }}
-          >
-            {options.map((s) => {
-              const key = `${s.gameType}:${s.role}`;
-              const isPicked =
-                picked &&
-                picked.gameType === s.gameType &&
-                picked.role === s.role;
-              return (
-                <Box
-                  key={key}
-                  onClick={() => setPicked(s)}
-                  sx={{
-                    p: 0.5,
-                    borderRadius: 1,
-                    border: isPicked
-                      ? "2px solid var(--scheme-color)"
-                      : "2px solid transparent",
-                    cursor: "pointer",
-                  }}
-                >
-                  <StampItem
-                    role={s.role}
-                    gameType={s.gameType}
-                    count={s.count}
-                  />
-                </Box>
-              );
-            })}
-          </Box>
-        )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={submitting}>
+    <UiDialog
+      open={open}
+      onClose={onClose}
+      size="xs"
+      title="Offer a duplicate sticker"
+      actions={<>
+        <UiAction variant="ghost" onClick={onClose} disabled={submitting}>
           Cancel
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          disabled={!picked || submitting}
-        >
+        </UiAction>
+        <UiAction variant="primary" onClick={handleSubmit} disabled={!picked || submitting}>
           OK
-        </Button>
-      </DialogActions>
-    </Dialog>
+        </UiAction>
+      </>}
+    >
+      {options.length === 0 ? (
+        <Typography variant="body2" color="textSecondary">
+          You have no duplicate stickers to offer.
+        </Typography>
+      ) : (
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+          {options.map((s) => {
+            const key = `${s.gameType}:${s.role}`;
+            const isPicked = picked && picked.gameType === s.gameType && picked.role === s.role;
+            return (
+              <Box
+                key={key}
+                onClick={() => setPicked(s)}
+                sx={{
+                  p: 0.5,
+                  borderRadius: 1,
+                  border: isPicked ? "2px solid var(--scheme-color)" : "2px solid transparent",
+                  cursor: "pointer",
+                }}
+              >
+                <StampItem role={s.role} gameType={s.gameType} count={s.count} />
+              </Box>
+            );
+          })}
+        </Box>
+      )}
+    </UiDialog>
   );
 }
 
@@ -139,7 +112,6 @@ export default function PendingTradeConfirmations({
   stamps = [],
   lockedCountsByRoleKey = {},
   onAction,
-  panelStyle = {},
   headingStyle = {},
 }) {
   const siteInfo = useContext(SiteInfoContext);
@@ -197,14 +169,14 @@ export default function PendingTradeConfirmations({
         <>
           {reject}
           <Tooltip title="Respond" arrow>
-            <IconButton
-              size="small"
+            <UiAction
+               variant="ghost" size="small" 
               disabled={busyId === t.id}
               onClick={() => setRespondTrade(t)}
-              color="primary"
+              
             >
               <i className="fas fa-sync-alt" />
-            </IconButton>
+            </UiAction>
           </Tooltip>
         </>
       );
@@ -217,14 +189,14 @@ export default function PendingTradeConfirmations({
         <>
           {reject}
           <Tooltip title="Confirm" arrow>
-            <IconButton
-              size="small"
+            <UiAction
+               variant="ghost" size="small" 
               disabled={busyId === t.id}
               onClick={() => handleConfirm(t.id)}
-              color="primary"
+              
             >
               <i className="fas fa-check" />
-            </IconButton>
+            </UiAction>
           </Tooltip>
         </>
       );
@@ -233,7 +205,7 @@ export default function PendingTradeConfirmations({
   }
 
   return (
-    <div className="box-panel" style={panelStyle}>
+    <UiCard className="profile-tinted">
       <Typography variant="h3" style={headingStyle}>
         Pending Trades
       </Typography>
@@ -315,6 +287,6 @@ export default function PendingTradeConfirmations({
           if (onAction) onAction();
         }}
       />
-    </div>
+    </UiCard>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, IconButton, Paper, Stack, Typography } from "@mui/material";
+import { Box, Paper, Stack } from "@mui/material";
 
 import { StrategiesSection } from "../Strategies";
 import UiIcon from "../ui/UiIcon";
@@ -14,6 +14,7 @@ import {
 } from "../../utils/strategyWindow";
 import { useStrategyWindows } from "./StrategyWindowsContext";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { UiText as Typography, UiAction } from "components/ui";
 
 // Above the game's panels and the DM window (1250), below MUI dialogs/menus
 // (1300) so a dialog still opens over a guide.
@@ -172,24 +173,24 @@ function FloatingStrategyWindow({ win, zIndex }) {
         >
           {windowTitle(win)}
         </Typography>
-        <IconButton
-          size="small"
+        <UiAction
+           variant="ghost" size="small" 
           data-testid="strategy-window-collapse"
           aria-label={collapsed ? "Expand guides" : "Collapse guides"}
           title={collapsed ? "Expand" : "Collapse"}
           onClick={() => sw.toggleCollapsed(win.id)}
         >
           <UiIcon name={collapsed ? "up" : "down"} size={18} />
-        </IconButton>
-        <IconButton
-          size="small"
+        </UiAction>
+        <UiAction
+           variant="ghost" size="small" 
           data-testid="strategy-window-close"
           aria-label="Close guides"
           title="Close"
           onClick={() => sw.closeWindow(win.id)}
         >
           <UiIcon name="close" size={20} />
-        </IconButton>
+        </UiAction>
       </Stack>
 
       <Box

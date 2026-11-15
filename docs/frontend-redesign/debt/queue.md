@@ -1,10 +1,10 @@
 # UI scale debt queue
 
-Generated 2026-11-14T16:03:10.270Z. **306** sites across **79** files.
+Generated 2026-11-15T03:32:39.471Z. **136** sites across **51** files.
 
-- `mui-inline-scale`: 210
 - `native-form`: 47
-- `native-widget`: 35
+- `mui-inline-scale`: 41
+- `native-widget`: 34
 - `native-file`: 10
 - `native-hidden`: 2
 - `native-confirm`: 2
@@ -13,122 +13,66 @@ Generated 2026-11-14T16:03:10.270Z. **306** sites across **79** files.
 
 | File | Sites |
 |---|---|
-| `pages/Fame/StockMarket.jsx` | 23 |
-| `pages/Game/Game.jsx` | 21 |
-| `pages/User/Profile.jsx` | 21 |
-| `components/dms/DmPanel.jsx` | 11 |
-| `pages/Fame/Competitive.jsx` | 11 |
+| `pages/Game/Game.jsx` | 15 |
 | `pages/Community/Forums/Board.jsx` | 9 |
-| `pages/Chat/Chat.jsx` | 8 |
-| `pages/Community/Forums/Thread.jsx` | 8 |
-| `pages/User/FamilyExtras.jsx` | 8 |
-| `pages/User/Settings.jsx` | 8 |
-| `pages/Game/JottoGame.jsx` | 7 |
+| `pages/Community/Forums/Thread.jsx` | 7 |
 | `pages/Game/SnakeGameDisplay.jsx` | 7 |
+| `pages/Play/Decks/CreateDeck.jsx` | 6 |
+| `pages/User/Profile.jsx` | 6 |
+| `pages/Game/DrawItGame.jsx` | 5 |
+| `pages/Play/WordDecks/CreateWordDeck.jsx` | 5 |
+| `components/FanartPanel.jsx` | 4 |
+| `components/Setup.jsx` | 4 |
+| `components/gameComponents/StateSwitcher.jsx` | 4 |
+| `pages/User/Shop.jsx` | 4 |
 
 ## Sites
 
-- `components/alerts/Announcement.jsx:112` — native-widget `button` — `<button className="announcement-summary" type="button" onClick={openDialog} aria-haspopup="dialog" aria-label="Read anno`
-- `components/alerts/Announcement.jsx:117` — native-widget `button` — `<button className="utility-button" type="button" onClick={closeDialog} aria-label="Dismiss announcement">`
-- `components/alerts/Announcement.jsx:120` — mui-inline-scale `DialogTitle` — `<DialogTitle id="announcement-title" sx={{ fontSize: 18, fontWeight: 600 }}>`
-- `components/Auth.jsx:597` — native-hidden `input` — `<input hidden />`
-- `components/Auth.jsx:632` — mui-inline-scale `Typography` — `<Typography color="text.secondary" sx={{ fontSize: "11px", opacity: `
-- `components/Auth.jsx:681` — native-hidden `input` — `<input hidden />`
-- `components/Auth.jsx:755` — mui-inline-scale `Typography` — `<Typography color="text.secondary" sx={{ fontSize: "11px", opacity: "0.5", `
-- `components/Auth.jsx:824` — mui-inline-scale `DialogContent` — `<DialogContent sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>`
-- `components/AvatarUpload.jsx:244` — native-file `input` — `<input ref={fileInputRef} type="file" accept="image/*" onChange=`
-- `components/BannerUpload.jsx:292` — mui-inline-scale `DialogTitle` — `<DialogTitle sx={{ p: 0, flex: 1, fontSize: "1.25rem", `
-- `components/BannerUpload.jsx:322` — native-file `input` — `<input ref={fileInputRef} type="file" accept="image/*" onChange=`
-- `components/BannerUpload.jsx:358` — mui-inline-scale `DialogTitle` — `<DialogTitle sx={{ p: 0, flex: 1, fontSize: "1.25rem", `
-- `components/BannerUpload.jsx:448` — mui-inline-scale `DialogActions` — `<DialogActions sx={{ flexWrap: "wrap", gap: 1 }}>`
-- `components/Basic.jsx:239` — native-confirm `window.confirm` — `window.confirm("Visit external link?")`
-- `components/DeathSoundUpload.jsx:713` — native-file `input` — `<input ref={fileInputRef} type="file" accept="audio/mpeg,audio/mp3,audio/ogg,audio/wav,aud`
-- `components/DeckPicker.jsx:109` — mui-inline-scale `Tabs` — `<Tabs value={tab} onChange={(_, v) => setTab(v)} variant="fullWidth" sx=`
+- `components/alerts/Announcement.jsx:111` — native-widget `button` — `<button className="announcement-summary" type="button" onClick={openDialog} aria-haspopup="dialog" aria-label="Read anno`
+- `components/alerts/Announcement.jsx:116` — native-widget `button` — `<button className="utility-button" type="button" onClick={closeDialog} aria-label="Dismiss announcement">`
+- `components/Auth.jsx:589` — native-hidden `input` — `<input hidden />`
+- `components/Auth.jsx:673` — native-hidden `input` — `<input hidden />`
+- `components/Auth.jsx:816` — mui-inline-scale `DialogContent` — `<DialogContent sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>`
+- `components/AvatarUpload.jsx:242` — native-file `input` — `<input ref={fileInputRef} type="file" accept="image/*" onChange=`
+- `components/BannerUpload.jsx:284` — native-file `input` — `<input ref={fileInputRef} type="file" accept="image/*" onChange={handleF`
+- `components/Basic.jsx:228` — native-confirm `window.confirm` — `window.confirm("Visit external link?")`
+- `components/DeathSoundUpload.jsx:700` — native-file `input` — `<input ref={fileInputRef} type="file" accept="audio/mpeg,audio/mp3,audio/ogg,audio/wav,aud`
 - `components/dms/DmButton.jsx:19` — mui-inline-scale `IconButton` — `<IconButton size="small" aria-label="Direct messages" data-testid="dm-button" di`
-- `components/dms/DmPanel.jsx:80` — mui-inline-scale `Typography` — `<Typography data-testid="dm-conversation-title" noWrap sx={{ fontWeight: 700, fontSi`
-- `components/dms/DmPanel.jsx:88` — mui-inline-scale `Typography` — `<Typography noWrap variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>`
-- `components/dms/DmPanel.jsx:100` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: 700, fontSize: 16, flex: 1 }} noWrap>`
-- `components/dms/DmPanel.jsx:108` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: 700, fontSize: 17, flex: 1 }} noWrap>`
-- `components/dms/DmPanel.jsx:263` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: 700, fontSize: 18, mb: 0.5 }}>`
-- `components/dms/DmPanel.jsx:269` — mui-inline-scale `Button` — `<Button variant="contained" size="small" onClick={onNew} sx={{ borderRadius: 99 }}>`
-- `components/dms/DmPanel.jsx:312` — mui-inline-scale `Typography` — `<Typography noWrap sx={{ fontWeight: 700, fontSize: 15, minWidth: 0, flexShrink: 1 }`
-- `components/dms/DmPanel.jsx:326` — mui-inline-scale `Typography` — `<Typography variant="body2" noWrap data-testid="dm-preview" `
-- `components/dms/DmPanel.jsx:637` — mui-inline-scale `Typography` — `<Typography color="text.secondary" sx={{ fontSize: 14, mr: 0.5 }}>`
-- `components/dms/DmPanel.jsx:711` — mui-inline-scale `Typography` — `<Typography sx={{ flex: 1, fontWeight: 600, fontSize: 14 }} noWrap>`
-- `components/dms/DmPanel.jsx:737` — mui-inline-scale `Button` — `<Button fullWidth variant="contained" data-testid="dm-start" disabled={!selected`
-- `components/dms/FloatingDmWindow.jsx:162` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={10} data-testid="dm-window" data-collapsed={dm.collapsed ? "true"`
-- `components/EmotePicker.jsx:57` — mui-inline-scale `Button` — `<Button key={sticker.id || sticker.shortcode} onClick={() => onSelect(sticker.shortcode)} `
-- `components/EmotePicker.jsx:84` — mui-inline-scale `Typography` — `<Typography variant="body2" noWrap sx={{ textAlign: "left", minWidth: 0 }} `
-- `components/FanartPanel.jsx:193` — mui-inline-scale `IconButton` — `<IconButton size="small" onClick={goPrev} aria-label="Previous fan`
-- `components/FanartPanel.jsx:258` — mui-inline-scale `IconButton` — `<IconButton size="small" onClick={(e) => { e.stopPro`
-- `components/FanartPanel.jsx:288` — mui-inline-scale `IconButton` — `<IconButton size="small" onClick={goNext} aria-label="Next fanart"`
-- `components/FanartPanel.jsx:321` — mui-inline-scale `Typography` — `<Typography variant="subtitle1" sx={{ fontWeight: 600, `
-- `components/FanartPanel.jsx:376` — native-file `input` — `<input type="file" accept="image/*" onChange={onFileChange} `
-- `components/Form.jsx:135` — mui-inline-scale `Typography` — `<Typography component="label" htmlFor={controlId} sx={{ fontWeight: "bold", `
-- `components/Form.jsx:910` — native-file `input` — `<input className="hidden-upload" ref={inputRef} type="file" onChange={(e) => props.onFil`
-- `components/Form.jsx:1049` — native-file `input` — `<input id={this.state.id} style={{ visibility: "hidden", height: "0" }} type="`
-- `components/Form.jsx:1195` — native-file `input` — `<input id={this.state.id} style={{ visibility: "hidden", height: "0" }} type="`
-- `components/gameComponents/ChangeSetupDialog.jsx:152` — mui-inline-scale `DialogTitle` — `<DialogTitle sx={{ p: 0, flex: 1, fontSize: "1.25rem", lineHei`
-- `components/gameComponents/RoleRevealModal.jsx:79` — mui-inline-scale `Typography` — `<Typography variant="h4" fontStyle="italic" sx={{ position: "absolute"`
-- `components/gameComponents/RoleRevealModal.jsx:94` — mui-inline-scale `DialogTitle` — `<DialogTitle sx={{ p: 0, width: "100%", fontSize: "1.25rem", `
+- `components/dms/DmPanel.jsx:257` — mui-inline-scale `Button` — `<Button variant="contained" size="small" onClick={onNew} sx={{ borderRadius: 99 }}>`
+- `components/dms/DmPanel.jsx:725` — mui-inline-scale `Button` — `<Button fullWidth variant="contained" data-testid="dm-start" disabled={!selected`
+- `components/dms/FloatingDmWindow.jsx:163` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={10} data-testid="dm-window" data-collapsed={dm.collapsed ? "true"`
+- `components/EmotePicker.jsx:49` — mui-inline-scale `Button` — `<Button key={sticker.id || sticker.shortcode} onClick={() => onSelect(sticker.shortcode)} `
+- `components/FanartPanel.jsx:181` — mui-inline-scale `IconButton` — `<IconButton size="small" onClick={goPrev} aria-label="Previous fan`
+- `components/FanartPanel.jsx:246` — mui-inline-scale `IconButton` — `<IconButton size="small" onClick={(e) => { e.stopPro`
+- `components/FanartPanel.jsx:276` — mui-inline-scale `IconButton` — `<IconButton size="small" onClick={goNext} aria-label="Next fanart"`
+- `components/FanartPanel.jsx:379` — native-file `input` — `<input type="file" accept="image/*" onChange={onFileChange} styl`
+- `components/Form.jsx:892` — native-file `input` — `<input className="hidden-upload" ref={inputRef} type="file" onChange={(e) => props.onFil`
+- `components/Form.jsx:1031` — native-file `input` — `<input id={this.state.id} style={{ visibility: "hidden", height: "0" }} type="`
+- `components/Form.jsx:1177` — native-file `input` — `<input id={this.state.id} style={{ visibility: "hidden", height: "0" }} type="`
+- `components/gameComponents/ChangeSetupDialog.jsx:134` — mui-inline-scale `DialogTitle` — `<DialogTitle sx={{ p: 0, flex: 1, fontSize: "1.25rem", lineHei`
+- `components/gameComponents/RoleRevealModal.jsx:87` — mui-inline-scale `DialogTitle` — `<DialogTitle sx={{ p: 0, width: "100%", fontSize: "1.25rem", `
 - `components/gameComponents/StateSwitcher.jsx:27` — native-form `select` — `<select aria-label="View phase" value={stateViewing} onChange={event => goTo(Number(event.target.value))}>`
 - `components/gameComponents/StateSwitcher.jsx:29` — native-widget `button` — `<button type="button" className="return-to-live" aria-label={review ? "Go to final phase" : "Return to current"} onClick`
 - `components/gameComponents/StateSwitcher.jsx:35` — native-form `select` — `<select aria-label="View phase" value={stateViewing} onChange={event => goTo(Number(event.target.value))}>`
 - `components/gameComponents/StateSwitcher.jsx:37` — native-widget `button` — `<button type="button" className="return-to-live-compact" aria-label="Return to current" onClick={() => updateStateViewin`
-- `components/GuestAuthButtons.jsx:26` — mui-inline-scale `Button` — `<Button variant="outlined" size="small" onClick={openLoginDialog} sx={{ `
-- `components/GuestAuthButtons.jsx:37` — mui-inline-scale `Button` — `<Button variant="contained" size="small" onClick={openRegisterDialog} sx={{ `
-- `components/LeaveGameDialog.jsx:58` — mui-inline-scale `DialogTitle` — `<DialogTitle id="leave-game-title" sx={{ fontSize: "1.125rem", fontWeight: 600 }}>`
-- `components/LeaveGameDialog.jsx:66` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ color: "error.main", fontWeight: 600, mt: 2 }} `
-- `components/LeaveGameDialog.jsx:77` — mui-inline-scale `DialogActions` — `<DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>`
-- `components/Miniprofile.jsx:190` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold" }}>`
 - `components/MobileNav.jsx:59` — mui-inline-scale `Paper` — `<Paper component="nav" aria-label="Primary navigation" className="mobile-nav" elevation={8} `
-- `components/Modal.jsx:20` — mui-inline-scale `DialogTitle` — `<DialogTitle component="div" id={titleId} sx={{ display: "flex", alignItems: "center", gap: 2 }}>`
-- `components/ModerationSideDrawer.jsx:44` — mui-inline-scale `IconButton` — `<IconButton edge="start" color={COMMAND_COLOR} aria-label="Moderation tools" onClick={()`
-- `components/Poll.jsx:88` — mui-inline-scale `Typography` — `<Typography variant="caption" color="primary" sx={{ fontWeight: 700, mb:`
+- `components/ModerationSideDrawer.jsx:33` — mui-inline-scale `IconButton` — `<IconButton edge="start" color={COMMAND_COLOR} aria-label="Moderation tools" onClick={()`
 - `components/ProviderButton.jsx:48` — mui-inline-scale `Button` — `<Button fullWidth onClick={onClick} disabled={disabled} data-provider={provider} data-ui-v`
-- `components/RecentForumReplies.jsx:94` — mui-inline-scale `Typography` — `<Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>`
-- `components/RecentForumReplies.jsx:147` — mui-inline-scale `Typography` — `<Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>`
-- `components/Scrapbook.jsx:171` — native-widget `button` — `<button className="scrapbook-flip-arrow scrapbook-flip-arrow--left" onClick={() => handleFlip("prev")} `
-- `components/Scrapbook.jsx:217` — native-widget `button` — `<button className="scrapbook-flip-arrow scrapbook-flip-arrow--right" onClick={() => handleFlip("next")} `
-- `components/Setup.jsx:261` — mui-inline-scale `IconButton` — `<IconButton key="multi" aria-label="Cycle role sets" onClick={cycleSetups} size="small" `
-- `components/Setup.jsx:280` — mui-inline-scale `IconButton` — `<IconButton key="ellipses" aria-label="Show all roles" onClick={handleClick} size="small`
-- `components/Setup.jsx:299` — native-widget `button` — `<button type="button" className="setup-name-trigger" onClick={handleClick} aria-haspopup="true" aria-expanded=`
-- `components/Setup.jsx:305` — native-widget `button` — `<button className="setup-more-roles" type="button" onClick={() => setSummaryExpanded(value => !value)} aria-expanded={su`
+- `components/Scrapbook.jsx:162` — native-widget `button` — `<button className="scrapbook-flip-arrow scrapbook-flip-arrow--left" onClick={() => handleFlip("prev")} `
+- `components/Scrapbook.jsx:208` — native-widget `button` — `<button className="scrapbook-flip-arrow scrapbook-flip-arrow--right" onClick={() => handleFlip("next")} `
+- `components/Setup.jsx:252` — mui-inline-scale `IconButton` — `<IconButton key="multi" aria-label="Cycle role sets" onClick={cycleSetups} size="small" `
+- `components/Setup.jsx:271` — mui-inline-scale `IconButton` — `<IconButton key="ellipses" aria-label="Show all roles" onClick={handleClick} size="small`
+- `components/Setup.jsx:290` — native-widget `button` — `<button type="button" className="setup-name-trigger" onClick={handleClick} aria-haspopup="true" aria-expanded=`
+- `components/Setup.jsx:296` — native-widget `button` — `<button className="setup-more-roles" type="button" onClick={() => setSummaryExpanded(value => !value)} aria-expanded={su`
 - `components/SignInWithAppleButton.jsx:39` — mui-inline-scale `Button` — `<Button fullWidth onClick={onClick} disabled={disabled} aria-label={label} data-ui-variant`
-- `components/Strategies.jsx:388` — mui-inline-scale `Typography` — `<Typography variant="subtitle1" sx={{ fontWeight: 600, wordBreak: "break-word" }} `
-- `components/Strategies.jsx:577` — mui-inline-scale `Typography` — `<Typography variant="subtitle1" id="strategy-reader-title" data-testid="strategy-rea`
-- `components/strategyWindows/FloatingStrategyWindows.jsx:115` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={12} data-testid="strategy-window" data-setup-id={win.setupId} `
-- `components/strategyWindows/FloatingStrategyWindows.jsx:167` — mui-inline-scale `Typography` — `<Typography variant="subtitle2" noWrap data-testid="strategy-window-title" sx={{`
-- `components/TradeDialog.jsx:143` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: "bold", fontSize: "0.875rem", lineHeight: 1.2 }}>`
-- `components/TradeDialog.jsx:195` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}>`
-- `components/TradeDialog.jsx:219` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: "bold" }}>`
-- `components/TradeDialog.jsx:222` — mui-inline-scale `Typography` — `<Typography variant="h6" sx={{ fontWeight: "bold", color: goldColor, whiteSpace: "nowrap" }}>`
-- `components/TradeDialog.jsx:234` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ fontWeight: "bold", `
-- `components/TutorialOverlay.jsx:197` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={8} data-testid="tutorial-overlay" sx={{ position: "fixed"`
-- `components/TutorialOverlay.jsx:228` — mui-inline-scale `Typography` — `<Typography sx={{ fontSize: 20, lineHeight: 1.2 }}>`
-- `components/TutorialOverlay.jsx:242` — mui-inline-scale `IconButton` — `<IconButton size="small" sx={{ minWidth: 40, minHeight: 40, mt: -0.75, mr: -0.75, flexShrink: 0 }} `
-- `components/ui/UiSegmentedControl.jsx:23` — native-widget `button` — `<button key={option.value} type="button" className="ui-segmented-option" aria-pr`
-- `components/VoteWidget.jsx:117` — mui-inline-scale `IconButton` — `<IconButton aria-label="Upvote" disabled={!user.perms?.vote} sx={{ fontSize: "1em", `
-- `components/VoteWidget.jsx:126` — mui-inline-scale `IconButton` — `<IconButton aria-label="View votes" disabled={!user.perms?.viewVotes} onClick={(e) => getVotes(e, item.i`
-- `components/VoteWidget.jsx:138` — mui-inline-scale `Typography` — `<Typography sx={{ position: "absolute", lineHeight: "1", color: "inherit",`
-- `components/VoteWidget.jsx:148` — mui-inline-scale `IconButton` — `<IconButton aria-label="Downvote" disabled={!user.perms?.vote} sx={{ fontSize: "1em", `
-- `components/WordDeckPicker.jsx:107` — mui-inline-scale `Tabs` — `<Tabs value={tab} onChange={(_, v) => setTab(v)} variant="fullWidth" sx=`
-- `components/WordDeckPicker.jsx:196` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ opacity: 0`
-- `components/WordDeckPicker.jsx:212` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ opacity: 0.65, lineHeight: 1.2 }} `
-- `Main.jsx:96` — mui-inline-scale `Paper` — `<Paper sx={{ mx: "auto", my: "10%", p: 1, width: "320px", }} >`
-- `pages/Activity/Metrics.jsx:139` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ flex: 1, m`
-- `pages/Activity/Metrics.jsx:153` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ opacity: 0.6, `
-- `pages/Banned/Banned.jsx:150` — mui-inline-scale `Typography` — `<Typography data-testid="ban-reason" sx={{ whiteSpace: "pre-wrap", fontWeight: 600, fontSize: "1.1re`
-- `pages/Banned/Banned.jsx:205` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: 700, fontSize: "1.15rem" }}>`
-- `pages/Banned/Banned.jsx:286` — mui-inline-scale `Paper` — `<Paper elevation={4} sx={{ width: "100%", maxWidth: 640, p: { xs: 2, sm: 4 } }} >`
-- `pages/Chat/Chat.jsx:570` — mui-inline-scale `MenuItem` — `<MenuItem key={'${type}-${channel.id}'} selected={isSelected} onClick={() => onChannelSelect(cha`
-- `pages/Chat/Chat.jsx:690` — mui-inline-scale `Paper` — `<Paper className="site-chat" elevation={embedded ? 0 : 4} data-testid={directsOnly ? "dm-chat" : undef`
-- `pages/Chat/Chat.jsx:727` — mui-inline-scale `Typography` — `<Typography variant="subtitle2" sx={{ fontWeight: 600 }}>`
-- `pages/Chat/Chat.jsx:733` — mui-inline-scale `Select` — `<Select size="small" value={currentChannelId || (navEntries[0]?.channel.id ?? "")} onChang`
-- `pages/Chat/Chat.jsx:1036` — mui-inline-scale `Typography` — `<Typography variant="body2" component="span" className="content" sx={{ `
-- `pages/Chat/Chat.jsx:1088` — mui-inline-scale `Typography` — `<Typography variant={short ? "body2" : "subtitle1"} noWrap={short} sx={{ fontWeight: short`
-- `pages/Chat/Chat.jsx:1100` — mui-inline-scale `Typography` — `<Typography variant={short ? "body2" : "subtitle1"} noWrap={short} sx={{ fontWeight:`
-- `pages/Chat/Chat.jsx:1118` — mui-inline-scale `Typography` — `<Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>`
+- `components/strategyWindows/FloatingStrategyWindows.jsx:116` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={12} data-testid="strategy-window" data-setup-id={win.setupId} `
+- `components/TutorialOverlay.jsx:198` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={8} data-testid="tutorial-overlay" sx={{ position: "fixed"`
+- `components/TutorialOverlay.jsx:243` — mui-inline-scale `IconButton` — `<IconButton size="small" sx={{ minWidth: 40, minHeight: 40, mt: -0.75, mr: -0.75, flexShrink: 0 }} `
+- `components/VoteWidget.jsx:112` — mui-inline-scale `IconButton` — `<IconButton aria-label="Upvote" disabled={!user.perms?.vote} sx={{ fontSize: "1em", `
+- `components/VoteWidget.jsx:121` — mui-inline-scale `IconButton` — `<IconButton aria-label="View votes" disabled={!user.perms?.viewVotes} onClick={(e) => getVotes(e, item.i`
+- `components/VoteWidget.jsx:143` — mui-inline-scale `IconButton` — `<IconButton aria-label="Downvote" disabled={!user.perms?.vote} sx={{ fontSize: "1em", `
+- `Main.jsx:89` — mui-inline-scale `Paper` — `<Paper sx={{ mx: "auto", my: "10%", p: 1, width: "320px", }} >`
+- `pages/Chat/Chat.jsx:671` — mui-inline-scale `Paper` — `<Paper className="site-chat" elevation={embedded ? 0 : 4} data-testid={directsOnly ? "dm-chat" : undef`
 - `pages/Community/Forums/Board.jsx:227` — native-form `input` — `<input type="text" aria-label="Thread title" value={props.threadTitle} onChange={onTitleChange} disabled={submitting} />`
 - `pages/Community/Forums/Board.jsx:247` — native-form `input` — `<input type="text" aria-label="Poll question" value={pollQuestion} `
 - `pages/Community/Forums/Board.jsx:257` — native-form `input` — `<input type="text" aria-label="Poll options, comma-separated" value={pollOptio`
@@ -138,9 +82,6 @@ Generated 2026-11-14T16:03:10.270Z. **306** sites across **79** files.
 - `pages/Community/Forums/Board.jsx:299` — native-form `input` — `<input type="text" aria-label="Petition title" value={petitionTitle} `
 - `pages/Community/Forums/Board.jsx:310` — native-form `textarea` — `<textarea aria-label="Petition body" value={petitionBody} onChange={(e) => set`
 - `pages/Community/Forums/Board.jsx:418` — native-widget `button` — `<button type="button" role="switch" aria-label={props.label} aria-checked={!!props.value} disabled={props.disabled} `
-- `pages/Community/Forums/ForumSearch.jsx:118` — mui-inline-scale `DialogTitle` — `<DialogTitle sx={{ p: 0, flex: 1, fontSize: "1.25rem", lineHei`
-- `pages/Community/Forums/SearchResults.jsx:221` — mui-inline-scale `Typography` — `<Typography variant="h6" component="h2" `
-- `pages/Community/Forums/SearchResults.jsx:239` — mui-inline-scale `Typography` — `<Typography variant="h6" component="h2" `
 - `pages/Community/Forums/Thread.jsx:93` — native-widget `button` — `<button className="mention-ping-btn" type="button" onClick={() => { setPickerOpen((o) => !`
 - `pages/Community/Forums/Thread.jsx:102` — native-form `input` — `<input className="mention-search" autoFocus placeholder="Search..." `
 - `pages/Community/Forums/Thread.jsx:950` — native-form `input` — `<input type="text" value={newTagText} onCh`
@@ -148,57 +89,15 @@ Generated 2026-11-14T16:03:10.270Z. **306** sites across **79** files.
 - `pages/Community/Forums/Thread.jsx:987` — native-form `input` — `<input type="text" value={newRosterUsername} onChange={(e) => setN`
 - `pages/Community/Forums/Thread.jsx:1026` — native-form `input` — `<input type="text" value={petitionEditTitle} onChange={(e) => setP`
 - `pages/Community/Forums/Thread.jsx:1033` — native-form `textarea` — `<textarea value={petitionEditBody} onChange={(e) => setPetitionEditBody(e.target.val`
-- `pages/Community/Forums/Thread.jsx:1374` — mui-inline-scale `Typography` — `<Typography variant="subtitle2" sx={{ fontWeight: "bold", mb: 1 }} `
-- `pages/Fame/Competitive.jsx:108` — mui-inline-scale `Paper` — `<Paper elevation={2} sx={{ p: 2, height: "100%", }}>`
-- `pages/Fame/Competitive.jsx:150` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ lineHeight: "1", `
-- `pages/Fame/Competitive.jsx:166` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ lineHeight: "1", `
-- `pages/Fame/Competitive.jsx:189` — mui-inline-scale `Paper` — `<Paper elevation={2} sx={{ p: 2, height: "100%", }}>`
-- `pages/Fame/Competitive.jsx:234` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ lineHeight: "1", `
-- `pages/Fame/Competitive.jsx:250` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ lineHeight: "1", `
-- `pages/Fame/Competitive.jsx:306` — mui-inline-scale `Typography` — `<Typography variant="body2" color="text.secondary" `
-- `pages/Fame/Competitive.jsx:394` — mui-inline-scale `Paper` — `<Paper elevation={2} sx={{ p: 2, height: "100%", `
-- `pages/Fame/Competitive.jsx:713` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ lineHeight: "1", `
-- `pages/Fame/Competitive.jsx:738` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ lineHeight: `
-- `pages/Fame/Competitive.jsx:915` — mui-inline-scale `TextField` — `<TextField size="small" type="number" label="Points" inputProps={{ min: 1 }} `
-- `pages/Fame/HallOfFame.jsx:98` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: 600 }}>`
-- `pages/Fame/HallOfFame.jsx:100` — mui-inline-scale `Typography` — `<Typography variant="body2" className="score" sx={{ fontWeight: 700 }}>`
-- `pages/Fame/HallOfFame.jsx:143` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ fontWeight: 700 }}>`
-- `pages/Fame/StockMarket.jsx:566` — mui-inline-scale `Typography` — `<Typography component="a" href={marketMode === "player" ? (s`
-- `pages/Fame/StockMarket.jsx:706` — mui-inline-scale `Typography` — `<Typography component="a" href={stock.vanityUrl ? '/user`
-- `pages/Fame/StockMarket.jsx:725` — mui-inline-scale `Typography` — `<Typography component="a" href={'/user/family/${stock.fa`
-- `pages/Fame/StockMarket.jsx:816` — mui-inline-scale `Typography` — `<Typography component="a" href={holding.vanityUrl ? '/user/$`
-- `pages/Fame/StockMarket.jsx:880` — mui-inline-scale `Typography` — `<Typography component="a" href={'/user/family/${holding.fami`
-- `pages/Fame/StockMarket.jsx:978` — mui-inline-scale `Typography` — `<Typography component="a" href={holding.vanityUrl ? '/user/$`
-- `pages/Fame/StockMarket.jsx:1064` — mui-inline-scale `Typography` — `<Typography component="a" href={'/user/family/${holding.fami`
-- `pages/Fame/StockMarket.jsx:1138` — mui-inline-scale `Typography` — `<Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>`
-- `pages/Fame/StockMarket.jsx:1148` — mui-inline-scale `Paper` — `<Paper variant="outlined" sx={{ p: 2, display: "flex", gap: 3, backgroundColor: theme.palette.mode === "light" ? "rgba(0`
-- `pages/Fame/StockMarket.jsx:1151` — mui-inline-scale `Typography` — `<Typography variant="h6" sx={{ fontWeight: "bold", color: "error.main" }}>`
-- `pages/Fame/StockMarket.jsx:1155` — mui-inline-scale `Typography` — `<Typography variant="h6" sx={{ fontWeight: "bold", color: user.coins >= 100 ? "success.main" : "error.main" }}>`
-- `pages/Fame/StockMarket.jsx:1161` — mui-inline-scale `Button` — `<Button variant="contained" color="warning" size="larg`
-- `pages/Fame/StockMarket.jsx:1190` — mui-inline-scale `Typography` — `<Typography variant="h5" sx={{ fontWeight: "bold", mb: 1 }}>`
-- `pages/Fame/StockMarket.jsx:1216` — mui-inline-scale `Paper` — `<Paper variant="outlined" sx={{ p: 2, display: "flex", gap: 3, backgroundColor: theme.palette.mode === "light" ? "rgba(0`
-- `pages/Fame/StockMarket.jsx:1219` — mui-inline-scale `Typography` — `<Typography variant="h6" sx={{ fontWeight: "bold", color: "error.main" }}>`
-- `pages/Fame/StockMarket.jsx:1223` — mui-inline-scale `Typography` — `<Typography variant="h6" sx={{ fontWeight: "bold", color: user.coins >= 200 ? "success.main" : "error.main" }}>`
-- `pages/Fame/StockMarket.jsx:1229` — mui-inline-scale `Button` — `<Button variant="contained" color="info" size="large" `
-- `pages/Fame/StockMarket.jsx:1316` — mui-inline-scale `Typography` — `<Typography component="a" href={tx.subjectVanityUrl `
-- `pages/Fame/StockMarket.jsx:1333` — mui-inline-scale `Typography` — `<Typography component="a" href={'/user/family/${tx.f`
-- `pages/Fame/StockMarket.jsx:1359` — mui-inline-scale `Typography` — `<Typography component="a" href={tx.buyerVanityUrl ? '/user/$`
-- `pages/Fame/StockMarket.jsx:1456` — mui-inline-scale `Typography` — `<Typography component="a" href={tx.buyerVanityUrl ? '/us`
-- `pages/Fame/StockMarket.jsx:1494` — mui-inline-scale `Typography` — `<Typography component="a" href={tx.subjectVanityUrl `
-- `pages/Fame/StockMarket.jsx:1512` — mui-inline-scale `Typography` — `<Typography component="a" href={'/user/family/${tx.f`
-- `pages/Game/BattleshipGame.jsx:379` — native-widget `button` — `<button key={type} type="button" className={'battleship-ship-chip${ `
+- `pages/Fame/StockMarket.jsx:1134` — mui-inline-scale `Button` — `<Button variant="contained" color="warning" size="larg`
+- `pages/Fame/StockMarket.jsx:1202` — mui-inline-scale `Button` — `<Button variant="contained" color="info" size="large" `
+- `pages/Game/BattleshipGame.jsx:380` — native-widget `button` — `<button key={type} type="button" className={'battleship-ship-chip${ `
 - `pages/Game/CheatGame.jsx:531` — native-widget `button` — `<button key={card} type="button" className={'ch-hand-card${isSelected ? " ch-h`
 - `pages/Game/components/DrawGuessedList.jsx:39` — native-widget `button` — `<button type="button" className="draw-guessed-list-toggle" onClick={() => setCollapsed(!collapse`
 - `pages/Game/components/DrawTools.jsx:48` — native-widget `button` — `<button key={c} type="button" disabled={!available} className={ `
 - `pages/Game/components/DrawTools.jsx:69` — native-widget `button` — `<button key={s.key} type="button" disabled={!available} classNam`
 - `pages/Game/components/DrawTools.jsx:94` — native-widget `button` — `<button type="button" disabled={!available} className={ "draw-tools-er`
-- `pages/Game/components/Kudos.jsx:127` — mui-inline-scale `Typography` — `<Typography data-testid="kudos-awarded-title" sx={{ fontWeight: 700, fontSize: 14, mb: 0.5 }} >`
-- `pages/Game/components/Kudos.jsx:419` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: 700, fontSize: 11, letterSpacing: "0.1em", `
-- `pages/Game/components/Kudos.jsx:431` — mui-inline-scale `Typography` — `<Typography variant="caption" data-testid="kudos-row-awarded" sx={{ co`
-- `pages/Game/components/Kudos.jsx:451` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ ml: "auto !important", color: locked ? "`
-- `pages/Game/components/Kudos.jsx:500` — mui-inline-scale `Button` — `<Button data-testid="kudos-noone" variant="text" fullWidth size="small" disabled`
-- `pages/Game/components/Kudos.jsx:698` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: 700, fontSize: 15 }}>`
-- `pages/Game/components/Kudos.jsx:736` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ fontWeight: 600, lineHeight: 1.4 }} >`
+- `pages/Game/components/Kudos.jsx:490` — mui-inline-scale `Button` — `<Button data-testid="kudos-noone" variant="text" fullWidth size="small" disabled`
 - `pages/Game/DiceWarsGame.jsx:711` — native-form `button` — `<button onClick={() => setShowIntro(false)} style={{ padding: "1`
 - `pages/Game/DiceWarsGame.jsx:736` — native-form `button` — `<button onClick={() => gameSocket.send("endTurn", {})} style={{ displa`
 - `pages/Game/DrawItGame.jsx:354` — native-widget `button` — `<button key={t.index} type="button" className={ `
@@ -206,34 +105,24 @@ Generated 2026-11-14T16:03:10.270Z. **306** sites across **79** files.
 - `pages/Game/DrawItGame.jsx:385` — native-form `button` — `<button type="button" onClick={() => setReplayDrawerPage((p) => `
 - `pages/Game/DrawItGame.jsx:406` — native-form `button` — `<button type="button" onClick={() => startReplayAnimation(totalPoints)} >`
 - `pages/Game/DrawItGame.jsx:412` — native-form `input` — `<input type="range" min={0} max={totalPoints} value={eff`
-- `pages/Game/Game.jsx:1709` — mui-inline-scale `Button` — `<Button variant="contained" color="primary" size="large" fullWidth dat`
-- `pages/Game/Game.jsx:1722` — mui-inline-scale `Button` — `<Button variant="contained" color="primary" size="large" fullWidth dat`
-- `pages/Game/Game.jsx:2477` — mui-inline-scale `Tabs` — `<Tabs value={selTab || false} onChange={onTabChange} sx={{ flexGrow: 1, `
-- `pages/Game/Game.jsx:2490` — mui-inline-scale `Tab` — `<Tab key={meeting.id} value={meeting.id} label={meeting.name} sx`
-- `pages/Game/Game.jsx:2527` — native-widget `button` — `<button type="button" className="new-messages-pill" onClick={jumpToLatest} `
-- `pages/Game/Game.jsx:3528` — native-widget `button` — `<button type="button" className="message-pin-action" aria-label={props.pinned ? "Unpin message" : "Pin mes`
-- `pages/Game/Game.jsx:4281` — native-form `input` — `<input type="checkbox" checked={isPlayerIsolated(player.id)} onChange={() => togglePlayerIsolati`
-- `pages/Game/Game.jsx:4970` — native-widget `button` — `<button type="button" className="inventory-cell-button" onClick={handleClick} disabled={`
-- `pages/Game/Game.jsx:5431` — mui-inline-scale `Typography` — `<Typography component="button" type="button" className="voter voter-btn"`
-- `pages/Game/Game.jsx:5527` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: 600, fontSize: "0.9rem" }}>`
-- `pages/Game/Game.jsx:5554` — mui-inline-scale `Select` — `<Select value={picked} displayEmpty disabled={notClickable} `
-- `pages/Game/Game.jsx:5568` — mui-inline-scale `MenuItem` — `<MenuItem key={name} value={name} sx={{ fontSize: "0.85rem" }}>`
-- `pages/Game/Game.jsx:5615` — mui-inline-scale `Typography` — `<Typography variant="subtitle1" sx={{ mb: 1, fontWeight: "bold" }}>`
-- `pages/Game/Game.jsx:5657` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: isSelected ? "bold" : "normal", color:`
-- `pages/Game/Game.jsx:6141` — native-form `textarea` — `<textarea readOnly={cannotModifyLastWill} className="last-will-entry" value={lastWil`
-- `pages/Game/Game.jsx:6288` — native-confirm `window.confirm` — `window.confirm( "Disable alert sounds? You won't be pinged when a game starts or when you're about to be kicke`
-- `pages/Game/Game.jsx:6495` — native-widget `button` — `<button type="button" className="btn btn-theme" onClick={cancel}>`
-- `pages/Game/Game.jsx:6547` — native-form `input` — `<input id="isolateMessagesCheckbox" type="checkbox" value={isolationEnabled} `
-- `pages/Game/Game.jsx:6555` — native-form `input` — `<input type="text" placeholder="From user" value={filters.from} onChange`
-- `pages/Game/Game.jsx:6562` — native-form `input` — `<input type="text" placeholder="Contains" value={filters.contains} onCha`
-- `pages/Game/Game.jsx:6666` — native-form `textarea` — `<textarea className="notes-entry" value={notes} onChange={(e) => onNotesUpdate(e.tar`
-- `pages/Game/JottoGame.jsx:308` — mui-inline-scale `Button` — `<Button key={letter} onClick={() => updateCheatSheet(letter)} variant="text" `
-- `pages/Game/JottoGame.jsx:333` — mui-inline-scale `Typography` — `<Typography sx={{ fontSize: "2em", fontWeight: "bold", col`
-- `pages/Game/JottoGame.jsx:345` — mui-inline-scale `Button` — `<Button onClick={() => confirm("Are you sure you want to reset all letters?") && updateCheat`
-- `pages/Game/JottoGame.jsx:417` — mui-inline-scale `Typography` — `<Typography variant="h4" sx={{ fontWeight: "bold", fontFamily: "inherit" }} >`
-- `pages/Game/JottoGame.jsx:537` — mui-inline-scale `TextField` — `<TextField value={textData} onChange={handleOnChange} onKeyDown={handleKeyDown} size="sm`
-- `pages/Game/JottoGame.jsx:547` — mui-inline-scale `Button` — `<Button variant="contained" onClick={handleOnSubmit} disabled={disabled || textData.length < min`
-- `pages/Game/JottoGame.jsx:558` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ color: "error.main", fontFamily: "inherit"`
+- `pages/Game/Game.jsx:1680` — mui-inline-scale `Button` — `<Button variant="contained" color="primary" size="large" fullWidth dat`
+- `pages/Game/Game.jsx:1693` — mui-inline-scale `Button` — `<Button variant="contained" color="primary" size="large" fullWidth dat`
+- `pages/Game/Game.jsx:2448` — mui-inline-scale `Tabs` — `<Tabs value={selTab || false} onChange={onTabChange} sx={{ flexGrow: 1, `
+- `pages/Game/Game.jsx:2461` — mui-inline-scale `Tab` — `<Tab key={meeting.id} value={meeting.id} label={meeting.name} sx`
+- `pages/Game/Game.jsx:2498` — native-widget `button` — `<button type="button" className="new-messages-pill" onClick={jumpToLatest} `
+- `pages/Game/Game.jsx:3499` — native-widget `button` — `<button type="button" className="message-pin-action" aria-label={props.pinned ? "Unpin message" : "Pin mes`
+- `pages/Game/Game.jsx:4296` — native-form `input` — `<input type="checkbox" checked={isPlayerIsolated(player.id)} onChange={() => togglePlayerIsolati`
+- `pages/Game/Game.jsx:4985` — native-widget `button` — `<button type="button" className="inventory-cell-button" onClick={handleClick} disabled={`
+- `pages/Game/Game.jsx:6156` — native-form `textarea` — `<textarea readOnly={cannotModifyLastWill} className="last-will-entry" value={lastWil`
+- `pages/Game/Game.jsx:6303` — native-confirm `window.confirm` — `window.confirm( "Disable alert sounds? You won't be pinged when a game starts or when you're about to be kicke`
+- `pages/Game/Game.jsx:6510` — native-widget `button` — `<button type="button" className="btn btn-theme" onClick={cancel}>`
+- `pages/Game/Game.jsx:6562` — native-form `input` — `<input id="isolateMessagesCheckbox" type="checkbox" value={isolationEnabled} `
+- `pages/Game/Game.jsx:6570` — native-form `input` — `<input type="text" placeholder="From user" value={filters.from} onChange`
+- `pages/Game/Game.jsx:6577` — native-form `input` — `<input type="text" placeholder="Contains" value={filters.contains} onCha`
+- `pages/Game/Game.jsx:6681` — native-form `textarea` — `<textarea className="notes-entry" value={notes} onChange={(e) => onNotesUpdate(e.tar`
+- `pages/Game/JottoGame.jsx:309` — mui-inline-scale `Button` — `<Button key={letter} onClick={() => updateCheatSheet(letter)} variant="text" `
+- `pages/Game/JottoGame.jsx:346` — mui-inline-scale `Button` — `<Button onClick={() => confirm("Are you sure you want to reset all letters?") && updateCheat`
+- `pages/Game/JottoGame.jsx:548` — mui-inline-scale `Button` — `<Button variant="contained" onClick={handleOnSubmit} disabled={disabled || textData.length < min`
 - `pages/Game/LiarsDiceGame.jsx:585` — native-widget `button` — `<button type="button" className="ld-face-trigger" aria-label={face ? 'Choose`
 - `pages/Game/LiarsDiceGame.jsx:605` — native-widget `button` — `<button key={f} type="button" className="ld-face-option" `
 - `pages/Game/PokerHandHistory.jsx:113` — native-widget `button` — `<button type="button" className="poker-history-toggle" onClick={() => setOpen((v) => !v)} `
@@ -253,84 +142,25 @@ Generated 2026-11-14T16:03:10.270Z. **306** sites across **79** files.
 - `pages/Game/SpotItGame.jsx:191` — native-form `button` — `<button onClick={onDismiss} style={{ padding: "10px 32px", fontSize: "16px",`
 - `pages/Game/WackyWordsGame.jsx:251` — native-form `button` — `<button onClick={canPrev ? onPrev : undefined} disabled={!canPrev} style={arrowStyle`
 - `pages/Game/WackyWordsGame.jsx:265` — native-form `button` — `<button onClick={canNext ? onNext : undefined} disabled={!canNext} style={arrowStyle`
-- `pages/Learn/Setup/SetupPage.jsx:696` — mui-inline-scale `Typography` — `<Typography variant="overline" sx={{ fontSize: "0.7rem", `
-- `pages/Learn/Setup/SetupPage.jsx:739` — mui-inline-scale `Typography` — `<Typography component="span" sx={{ fontWeight: 700, fontSize: "1.25rem" `
-- `pages/Learn/Setup/SetupPage.jsx:745` — mui-inline-scale `Typography` — `<Typography component="span" variant="body2" sx=`
-- `pages/Learn/Setup/SetupPage.jsx:862` — mui-inline-scale `Typography` — `<Typography component="span" variant="body2" `
-- `pages/Learn/Setup/SetupWinRateBars.jsx:38` — mui-inline-scale `Typography` — `<Typography variant="body2" component="span" sx={{ fontWeight: 600 }} `
-- `pages/Learn/Setup/SetupWinRateBars.jsx:63` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ colo`
-- `pages/Learn/Setup/SetupWinRateBars.jsx:74` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ color:`
-- `pages/Learn/Setup/SetupWinRateBars.jsx:84` — mui-inline-scale `Typography` — `<Typography component="span" variant="caption" `
 - `pages/Play/Decks/CreateDeck.jsx:248` — native-widget `button` — `<button type="button" aria-label="Upload cover photo" className={'deck-cover-upload ${ `
 - `pages/Play/Decks/CreateDeck.jsx:272` — native-file `input` — `<input ref={coverInputRef} className="hidden-upload" type="file" `
 - `pages/Play/Decks/CreateDeck.jsx:295` — native-form `input` — `<input id="deck-name-input" className="deck-input deck-name-input" `
 - `pages/Play/Decks/CreateDeck.jsx:345` — native-form `input` — `<input className="deck-input" aria-label={'Card ${index + 1} name'} `
 - `pages/Play/Decks/CreateDeck.jsx:353` — native-form `input` — `<input className="color-input" aria-label={'Card ${index + 1} color'} `
 - `pages/Play/Decks/CreateDeck.jsx:456` — native-file `input` — `<input id={'preview-${props.indx}'} {...props.reg('cards.${props.indx}.image')} clas`
-- `pages/Play/LobbyBrowser/CompetitiveRounds.jsx:67` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: "0.12em"`
-- `pages/Play/LobbyBrowser/CompetitiveRounds.jsx:82` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: "0.12em", `
-- `pages/Play/LobbyBrowser/CompetitiveRounds.jsx:97` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: "0.12em", `
-- `pages/Play/LobbyBrowser/CompetitiveRounds.jsx:111` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ fontWeight: 700, letterSpacing: "0.12em", lineHe`
-- `pages/Play/LobbyBrowser/CompetitiveRounds.jsx:191` — mui-inline-scale `Typography` — `<Typography variant="h4" sx={{ fontVariantNumeric: "tabular-nums", letterSpa`
-- `pages/Play/LobbyBrowser/CompetitiveRounds.jsx:219` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ color: "text.secondary", lineHeight: 1 }} >`
-- `pages/Play/LobbyBrowser/CompetitiveRounds.jsx:283` — mui-inline-scale `Typography` — `<Typography sx={{ fontFamily: "RobotoSlab", fontWeight: 700, `
-- `pages/Play/Tutorial/TutorialPicker.jsx:70` — mui-inline-scale `Typography` — `<Typography variant="body1" sx={{ mt: 1, lineHeight: 1.55 }}>`
-- `pages/Play/Tutorial/TutorialPicker.jsx:108` — mui-inline-scale `Typography` — `<Typography variant="h6" sx={{ minWidth: 0, flex: 1, lineHeight: 1.25, overflowW`
-- `pages/Play/Tutorial/TutorialPicker.jsx:116` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ mt: 1, opacity: 0.85, lineHeight: 1.5, overflowWra`
 - `pages/Play/WordDecks/CreateWordDeck.jsx:256` — native-widget `button` — `<button type="button" aria-label="Upload cover photo" disabled={inputsDisabled} className={'deck-cover-u`
 - `pages/Play/WordDecks/CreateWordDeck.jsx:281` — native-file `input` — `<input ref={coverInputRef} className="hidden-upload" type="file" `
 - `pages/Play/WordDecks/CreateWordDeck.jsx:306` — native-form `input` — `<input id="deck-name-input" className="deck-input deck-name-input" `
 - `pages/Play/WordDecks/CreateWordDeck.jsx:323` — native-form `input` — `<input id="deck-description-input" className="deck-input deck-name-input" `
 - `pages/Play/WordDecks/CreateWordDeck.jsx:365` — native-form `textarea` — `<textarea id="deck-words-input" className="deck-input" rows={20} `
-- `pages/Policy/Moderation/BanAppeals.jsx:393` — mui-inline-scale `Typography` — `<Typography key={action.id} variant="body2" sx={{ fontWeight: action.iss`
-- `pages/Policy/Moderation/BanAppeals.jsx:424` — mui-inline-scale `Typography` — `<Typography sx={{ fontWeight: 600 }}>`
-- `pages/Policy/Moderation/ModActions.jsx:247` — mui-inline-scale `Typography` — `<Typography component="span" sx={{ display: "inline", fontFamily: "var(--ui-font-mon`
-- `pages/Policy/Moderation/ModCommands.jsx:154` — mui-inline-scale `Typography` — `<Typography sx={{ my: 1, fontSize: "18px", fontWeight: "500", `
-- `pages/Policy/Moderation/ModCommands.jsx:187` — mui-inline-scale `TextField` — `<TextField defaultValue={argValue} disabled key={arg.name} s`
-- `pages/Policy/Moderation/ModCommands.jsx:225` — mui-inline-scale `TextField` — `<TextField {...params} placeholder={placeholder} sx={{ `
-- `pages/Policy/Moderation/ModCommands.jsx:263` — mui-inline-scale `TextField` — `<TextField value={argValue || ""} placeholder={placeholder} disabled={isPrefilled} `
-- `pages/User/AdminVisuals.jsx:422` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: 500, `
-- `pages/User/FamilyExtras.jsx:200` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ color: isNegative ? "error.mai`
-- `pages/User/FamilyExtras.jsx:364` — mui-inline-scale `Typography` — `<Typography variant="caption" color="text.secondary" component="sp`
-- `pages/User/FamilyExtras.jsx:379` — mui-inline-scale `Typography` — `<Typography variant="caption" component="span" `
-- `pages/User/FamilyExtras.jsx:670` — mui-inline-scale `Typography` — `<Typography variant="h4" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignI`
-- `pages/User/FamilyExtras.jsx:688` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold" }}>`
-- `pages/User/FamilyExtras.jsx:696` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", ali`
-- `pages/User/FamilyExtras.jsx:708` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold", color: stockInfo.sharesOwned > 0 ? "su`
-- `pages/User/FamilyExtras.jsx:719` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", ali`
-- `pages/User/Inbox.jsx:202` — mui-inline-scale `Typography` — `<Typography variant="body1" sx={{ fontWe`
-- `pages/User/Profile.jsx:1387` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ flexShrink: "1", `
-- `pages/User/Profile.jsx:1401` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ filter: "opacity(.75)", `
-- `pages/User/Profile.jsx:1554` — native-widget `button` — `<button type="button" className="banner-edit-action banner-remove" title="Remo`
-- `pages/User/Profile.jsx:1825` — mui-inline-scale `Typography` — `<Typography variant="h4" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>`
-- `pages/User/Profile.jsx:1839` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold" }}>`
-- `pages/User/Profile.jsx:1847` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 `
-- `pages/User/Profile.jsx:1855` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold", color: stockInfo.sharesOwned > 0 ? "success.main" : "text.secondar`
-- `pages/User/Profile.jsx:1863` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 `
-- `pages/User/Profile.jsx:1870` — mui-inline-scale `Button` — `<Button variant="contained" color="primary" fullWidth `
-- `pages/User/Profile.jsx:1917` — mui-inline-scale `Paper` — `<Paper variant="outlined" sx={{ p:`
-- `pages/User/Profile.jsx:1940` — mui-inline-scale `Typography` — `<Typography variant="h5" sx={{ fontWeight: 800, color: "text.primary" }}>`
-- `pages/User/Profile.jsx:1944` — mui-inline-scale `Paper` — `<Paper sx={{ px: 1, `
-- `pages/User/Profile.jsx:1960` — mui-inline-scale `Typography` — `<Typography variant="body2" color="text.primary" sx={{ fontWeight: 600 }}>`
-- `pages/User/Profile.jsx:1973` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold" }}>`
-- `pages/User/Profile.jsx:1981` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold" }}>`
-- `pages/User/Profile.jsx:1989` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: "bold" }}>`
-- `pages/User/Profile.jsx:2010` — mui-inline-scale `Button` — `<Button variant="text" size="small" onClic`
-- `pages/User/Profile.jsx:2266` — mui-inline-scale `Typography` — `<Typography variant="body2" sx={{ fontWeight: entry.isCurr`
-- `pages/User/Profile.jsx:2440` — native-form `select` — `<select value={statsFilter} onChange={(e) => setStatsFilter(e.target.value)} >`
-- `pages/User/Profile.jsx:2446` — native-form `input` — `<input type="text" placeholder="Query" onChange={(e) => setStatsFilterQuery(e.target.value`
-- `pages/User/Profile.jsx:2564` — native-form `select` — `<select className="query-select" value={selectedKey} onChange={(e) => setSelectedKey`
-- `pages/User/Settings.jsx:115` — mui-inline-scale `TextField` — `<TextField sx={{ width: "100%", maxWidth: "480px" }} label="GitHub Username" value={userna`
-- `pages/User/Settings.jsx:1300` — mui-inline-scale `TextField` — `<TextField label="Family Name" value={familyName} onChange={(e) =>`
-- `pages/User/Settings.jsx:1330` — mui-inline-scale `Button` — `<Button variant="contained" onClick={onCreateFamily} disabled={!fa`
-- `pages/User/Settings.jsx:1363` — mui-inline-scale `Typography` — `<Typography component="span" sx={{ fontWeight: "bold`
-- `pages/User/Settings.jsx:1605` — mui-inline-scale `Button` — `<Button variant="outlined" onClick={onTransferLeadership} `
-- `pages/User/Settings.jsx:1619` — mui-inline-scale `Button` — `<Button variant="outlined" color="error" onClick={onDeleteFa`
-- `pages/User/Settings.jsx:1659` — mui-inline-scale `Typography` — `<Typography component="span" sx={{ fontWeight: "bold`
-- `pages/User/Settings.jsx:1676` — mui-inline-scale `Button` — `<Button variant="outlined" color="error" onClick={onLeaveFam`
-- `pages/User/Shop.jsx:437` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
-- `pages/User/Shop.jsx:494` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
-- `pages/User/Shop.jsx:508` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
-- `pages/User/Shop.jsx:575` — mui-inline-scale `Paper` — `<Paper sx={{ position: "absolute", zIndex: 1301, l`
-- `pages/User/UserWidgets.jsx:561` — native-widget `button` — `<button type="button" className="avatar-edit-action avatar-remove" title="Remo`
-- `pages/User/UserWidgets.jsx:941` — mui-inline-scale `Typography` — `<Typography variant="caption" sx={{ position: "absolute", left: 'calc(${onli`
+- `pages/User/Profile.jsx:1525` — native-widget `button` — `<button type="button" className="banner-edit-action banner-remove" title="Remo`
+- `pages/User/Profile.jsx:1883` — mui-inline-scale `Paper` — `<Paper variant="outlined" sx={{ p:`
+- `pages/User/Profile.jsx:1910` — mui-inline-scale `Paper` — `<Paper sx={{ px: 1, `
+- `pages/User/Profile.jsx:2404` — native-form `select` — `<select value={statsFilter} onChange={(e) => setStatsFilter(e.target.value)} >`
+- `pages/User/Profile.jsx:2410` — native-form `input` — `<input type="text" placeholder="Query" onChange={(e) => setStatsFilterQuery(e.target.value`
+- `pages/User/Profile.jsx:2528` — native-form `select` — `<select className="query-select" value={selectedKey} onChange={(e) => setSelectedKey`
+- `pages/User/Shop.jsx:421` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
+- `pages/User/Shop.jsx:478` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
+- `pages/User/Shop.jsx:492` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
+- `pages/User/Shop.jsx:616` — mui-inline-scale `Paper` — `<Paper sx={{ position: "absolute", zIndex: 1301, left: 0, `
+- `pages/User/UserWidgets.jsx:562` — native-widget `button` — `<button type="button" className="avatar-edit-action avatar-remove" title="Remo`

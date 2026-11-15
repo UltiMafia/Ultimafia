@@ -181,7 +181,7 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
 
   return (
     <>
-      <UiDialog open={open} onClose={() => setOpen(false)} title="Host a game" maxWidth="sm"
+      <UiDialog open={open} onClose={() => setOpen(false)} title="Host a game" size="sm"
         actions={<><UiAction onClick={() => setOpen(false)}>Cancel</UiAction><UiAction variant="primary" busy={hosting} onClick={onHostGameWrapper}>Host</UiAction></>}>
           <div className="host-dialog-content">
             <div className="host-dialog-setup"><Setup setup={setup} summary /></div>

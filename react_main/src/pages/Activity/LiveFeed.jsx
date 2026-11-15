@@ -7,18 +7,13 @@ import React, {
   useState,
 } from "react";
 import axios from "axios";
-import {
-  Box,
-  ButtonBase,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, ButtonBase, Stack } from "@mui/material";
 import { PageNav } from "components/Nav";
 
 import { useErrorAlert } from "components/Alerts";
 import { UserContext } from "Contexts";
 import ActivityRow from "./ActivityRow";
-import { UiIcon, UiPending, UiTabs, UiTab } from "components/ui";
+import { UiIcon, UiPending, UiTabs, UiTab, UiText as Typography } from "components/ui";
 
 // Three mutually-exclusive category tabs. Each owns a set of per-type sub
 // filters (shown as chips under the tab). `serverCategory` tells the backend

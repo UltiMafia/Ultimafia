@@ -1,19 +1,12 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
-import {
-  Paper,
-  Typography,
-  Box,
-  Stack,
-  Button,
-  LinearProgress,
-  Tooltip,
-} from "@mui/material";
+import { Box, Stack, Button, LinearProgress, Tooltip } from "@mui/material";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
+import { UiCard, UiText as Typography } from "components/ui";
 
 function VoterAvatars({ optionIndex, poll }) {
   if (!poll.voterInfo || !poll.voterInfo[optionIndex]) {
@@ -369,12 +362,12 @@ export function Poll({ lobby, threadId, locked }) {
 
   if (loading) {
     return (
-      <Paper sx={{ p: 2 }}>
+      <UiCard>
         <Typography color="primary" gutterBottom>
           Poll
         </Typography>
         <LinearProgress />
-      </Paper>
+      </UiCard>
     );
   }
 

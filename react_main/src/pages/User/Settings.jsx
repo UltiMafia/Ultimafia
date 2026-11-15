@@ -1,30 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import { UiPage, UiAction, UiSection, UiIcon, UiSectionNav, UiSectionNavItem, confirmAction } from "components/ui";
+import { UiPage, UiAction, UiSection, UiIcon, UiSectionNav, UiSectionNavItem, confirmAction, UiText as Typography, UiMenuItem as MenuItem, UiSelect as Select, UiField as TextField, UiCheckbox as Checkbox, UiSwitch as Switch } from "components/ui";
 import { Link, Route, Routes } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 import { ContrastComparison } from "utilsFolder/autoContrast";
 
-import {
-  Box,
-  Button,
-  Typography,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  LinearProgress,
-  ButtonGroup,
-  Stack,
-  Divider,
-  Checkbox,
-  FormControlLabel,
-  Switch,
-  Chip,
-  Link as MuiLink,
-} from "@mui/material";
+import { Box, FormControl, InputLabel, LinearProgress, Stack, Divider, FormControlLabel, Chip, Link as MuiLink } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -119,9 +101,9 @@ function GithubSettings() {
           onChange={(e) => setUsername(e.target.value)}
           disabled={saving}
         />
-        <Button onClick={onSave} disabled={saving || unchanged}>
+        <UiAction  variant="ghost" onClick={onSave} disabled={saving || unchanged}>
           {username.trim() ? "Save" : "Remove"}
-        </Button>
+        </UiAction>
       </Stack>
     </Stack>
   );
@@ -669,21 +651,21 @@ export default function Settings() {
               onClick={deps.onProfileBackgroundEdit}
               onFileUpload={deps.onProfileBackgroundUpload}
             >
-              <Button variant="outlined">Upload Background Image</Button>
+              <UiAction  variant="secondary" >Upload Background Image</UiAction>
             </HiddenUpload>
             {deps.user.profileBackground && (
               <>
                 <Typography variant="caption" sx={{ color: "success.main" }}>
                   Background uploaded
                 </Typography>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  size="small"
+                <UiAction
+                   variant="danger" size="small" 
+                  
+                  
                   onClick={deps.onProfileBackgroundRemove}
                 >
                   Remove
-                </Button>
+                </UiAction>
               </>
             )}
           </Stack>
@@ -705,21 +687,21 @@ export default function Settings() {
               onClick={deps.onForumBannerEdit}
               onFileUpload={deps.onForumBannerUpload}
             >
-              <Button variant="outlined">Upload Forum Banner</Button>
+              <UiAction  variant="secondary" >Upload Forum Banner</UiAction>
             </HiddenUpload>
             {deps.user.forumBanner && (
               <>
                 <Typography variant="caption" sx={{ color: "success.main" }}>
                   Forum banner uploaded
                 </Typography>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  size="small"
+                <UiAction
+                   variant="danger" size="small" 
+                  
+                  
                   onClick={deps.onForumBannerRemove}
                 >
                   Remove
-                </Button>
+                </UiAction>
               </>
             )}
           </Stack>
@@ -1314,9 +1296,9 @@ export default function Settings() {
                     name="familyAvatar"
                     keepAnimation={Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar")}
                   >
-                    <Button variant="outlined" disabled={!!userFamily}>
+                    <UiAction  variant="secondary"  disabled={!!userFamily}>
                       Upload Avatar
-                    </Button>
+                    </UiAction>
                   </AvatarUpload>
                   {familyAvatarUploaded && (
                     <Typography
@@ -1327,14 +1309,13 @@ export default function Settings() {
                     </Typography>
                   )}
                 </Stack>
-                <Button
-                  variant="contained"
+                <UiAction
+                  variant="primary"
                   onClick={onCreateFamily}
                   disabled={!familyName.trim() || !!userFamily}
-                  sx={{ minWidth: "240px" }}
                 >
                   Create Family
-                </Button>
+                </UiAction>
               </Stack>
             </Box>
           )}
@@ -1386,7 +1367,7 @@ export default function Settings() {
                       name="familyAvatarExisting"
                       keepAnimation={Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar")}
                     >
-                      <Button variant="outlined">Upload New Avatar</Button>
+                      <UiAction  variant="secondary" >Upload New Avatar</UiAction>
                     </AvatarUpload>
                     {userFamily.avatar && (
                       <Typography
@@ -1429,11 +1410,11 @@ export default function Settings() {
                       onFileUpload={onFamilyBannerUpload}
                       keepAnimation={!!(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))}
                     >
-                      <Button variant="outlined">
+                      <UiAction  variant="secondary" >
                         {(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))
                           ? "Upload / Crop Banner"
                           : "Upload Banner"}
-                      </Button>
+                      </UiAction>
                     </BannerUpload>
                     {userFamily.banner && (
                       <>
@@ -1443,14 +1424,14 @@ export default function Settings() {
                         >
                           Banner uploaded
                         </Typography>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
+                        <UiAction
+                           variant="danger" size="small" 
+                          
+                          
                           onClick={onFamilyBannerRemove}
                         >
                           Remove
-                        </Button>
+                        </UiAction>
                       </>
                     )}
                   </Stack>
@@ -1508,13 +1489,13 @@ export default function Settings() {
                           }
                           label="Collapse player"
                         />
-                        <Button
-                          variant="contained"
-                          size="small"
+                        <UiAction
+                           variant="primary" size="small" 
+                          
                           onClick={onFamilyMediaSave}
                         >
                           Save media
-                        </Button>
+                        </UiAction>
                       </Stack>
                     </Stack>
                   )}
@@ -1538,9 +1519,9 @@ export default function Settings() {
                       onClick={onFamilyBackgroundEdit}
                       onFileUpload={onFamilyBackgroundUpload}
                     >
-                      <Button variant="outlined">
+                      <UiAction  variant="secondary" >
                         Upload Background Image
-                      </Button>
+                      </UiAction>
                     </HiddenUpload>
                     {userFamily.background && (
                       <>
@@ -1550,14 +1531,14 @@ export default function Settings() {
                         >
                           Background uploaded
                         </Typography>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
+                        <UiAction
+                           variant="danger" size="small" 
+                          
+                          
                           onClick={onFamilyBackgroundRemove}
                         >
                           Remove
-                        </Button>
+                        </UiAction>
                       </>
                     )}
                   </Stack>
@@ -1602,34 +1583,23 @@ export default function Settings() {
                       placeholder="Search for a family member..."
                       onChange={(userId) => setTransferLeaderUserId(userId)}
                     />
-                    <Button
-                      variant="outlined"
+                    <UiAction
+                      variant="secondary"
                       onClick={onTransferLeadership}
                       disabled={!transferLeaderUserId}
-                      sx={{ minWidth: "240px" }}
                     >
                       Transfer Leadership
-                    </Button>
+                    </UiAction>
                   </Stack>
                 </Box>
 
                 {/* Delete Family */}
                 <Box>
                   <Divider sx={{ my: 2 }} />
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={onDeleteFamily}
-                    sx={{ minWidth: "240px" }}
-                    startIcon={
-                      <i
-                        className="fas fa-exclamation-triangle"
-                        aria-hidden="true"
-                      />
-                    }
-                  >
+                  <UiAction variant="danger" onClick={onDeleteFamily}>
+                    <i className="fas fa-exclamation-triangle" aria-hidden="true" />
                     Delete Family
-                  </Button>
+                  </UiAction>
                 </Box>
               </Stack>
             </Box>
@@ -1673,14 +1643,9 @@ export default function Settings() {
 
                 {/* Leave Family */}
                 <Box>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={onLeaveFamily}
-                    sx={{ minWidth: "240px" }}
-                  >
+                  <UiAction variant="danger" onClick={onLeaveFamily}>
                     Leave Family
-                  </Button>
+                  </UiAction>
                 </Box>
               </Stack>
             </Box>

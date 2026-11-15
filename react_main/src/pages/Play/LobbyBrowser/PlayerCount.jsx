@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import UiIcon from "components/ui/UiIcon";
 import { usePopover, InfoPopover } from "components/Popover";
 
@@ -10,6 +10,7 @@ import {
   displayedLobbyCount,
   lobbyBarValue,
 } from "shared/lobbyCount";
+import { UiText as Typography } from "components/ui";
 
 export const PlayerCount = (props) => {
   const game = props.game;

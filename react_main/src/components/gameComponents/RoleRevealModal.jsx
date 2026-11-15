@@ -1,17 +1,10 @@
 import React, { useContext } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box } from "@mui/material";
 import { hyphenDelimit } from "../../utils";
 import { RoleDetails } from "../Roles";
 import { UserContext, GameContext } from "../../Contexts";
 import { useDismissOnBack } from "../../hooks/useDismissOnBack";
+import { UiText as Typography } from "components/ui";
 
 const RoleRevealModal = ({
   open,

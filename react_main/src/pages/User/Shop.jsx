@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
-import { UiPage, UiSection, UiProductCard, UiTabs, UiTab, confirmAction } from "components/ui";
+import { UiPage, UiSection, UiProductCard, UiTabs, UiTab, confirmAction, UiText as Typography, UiField as TextField, UiTabs as Tabs, UiAction, UiDialog } from "components/ui";
 import { useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
@@ -8,23 +8,7 @@ import update from "immutability-helper";
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 
-import {
-  Box,
-  Button,
-  Typography,
-  TextField,
-  Stack,
-  Paper,
-  Grid2,
-  Divider,
-  Tabs,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
+import { Box, Stack, Paper, Grid2, Divider, InputAdornment } from "@mui/material";
 
 import { PageSkeleton } from "../../components/Skeletons";
 
@@ -519,170 +503,171 @@ export default function Shop(props) {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
-                <Button onClick={handleTransferCoins}>Transfer</Button>
+                <UiAction  variant="ghost" onClick={handleTransferCoins}>Transfer</UiAction>
               </Stack>
             </Paper>
           </Grid2>
         </Grid2>
       )}
 
-      <Dialog
+      <UiDialog
         open={stampDialogOpen}
+        overflowVisible
         onClose={() => {
           setStampDialogOpen(false);
           setStampGameUrl("");
           setSelectedSuggestion(null);
           setStampSuggestions([]);
         }}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Buy Scrapbook Stamp</DialogTitle>
-        <DialogContent sx={{ overflow: "visible" }}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            Enter the URL or ID of a Mafia game you won. You will receive a
-            stamp of the role you played.
-          </Typography>
-          <Box sx={{ position: "relative" }}>
-            <TextField
-              autoFocus
-              fullWidth
-              label="Game URL or ID"
-              value={stampGameUrl}
-              onChange={(e) => {
-                setStampGameUrl(e.target.value);
+        title="Buy Scrapbook Stamp"
+        size="sm"
+        actions={
+          <>
+            <UiAction
+              variant="ghost"
+              onClick={() => {
+                setStampDialogOpen(false);
+                setStampGameUrl("");
                 setSelectedSuggestion(null);
-                setShowSuggestions(false);
+                setStampSuggestions([]);
               }}
-              placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
-              InputProps={stampSuggestions.length > 0 ? {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      size="small"
-                      onClick={() => setShowSuggestions((v) => !v)}
-                    >
-                      <i
-                        className={`fas fa-chevron-${showSuggestions ? "up" : "down"}`}
-                        style={{ fontSize: "12px" }}
-                      />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              } : undefined}
-            />
-            {showSuggestions && stampSuggestions.length > 0 && (
-              <Paper
-                sx={{
-                  position: "absolute",
-                  zIndex: 1301,
-                  left: 0,
-                  right: 0,
-                  maxHeight: 200,
-                  overflowY: "auto",
-                }}
-              >
-                {stampSuggestions.map((s) => (
-                  <Box
-                    key={s.gameId}
-                    sx={{
-                      px: 2,
-                      py: 1,
-                      cursor: "pointer",
-                      "&:hover": { bgcolor: "action.hover" },
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      setStampGameUrl(s.gameId);
-                      setSelectedSuggestion(s);
-                      setShowSuggestions(false);
-                    }}
-                  >
-                    <Typography variant="body2">
-                      {s.gameId} — {s.role}
-                    </Typography>
-                  </Box>
-                ))}
-              </Paper>
-            )}
-          </Box>
-          {selectedSuggestion && (
-            <Typography
-              variant="caption"
-              sx={{ mt: 1, display: "block" }}
-              color="success.main"
             >
-              Stamp role: {selectedSuggestion.role}
-            </Typography>
-          )}
-          {!selectedSuggestion && stampGameUrl.trim() && (
-            <Typography
-              variant="caption"
-              sx={{ mt: 1, display: "block" }}
-              color={parseGameId(stampGameUrl) ? "textSecondary" : "error"}
+              Cancel
+            </UiAction>
+            <UiAction
+              variant="primary"
+              disabled={!parseGameId(stampGameUrl)}
+              onClick={() => {
+                const gameId = parseGameId(stampGameUrl);
+                if (!gameId) {
+                  siteInfo.showAlert("Could not parse a game ID.", "error");
+                  return;
+                }
+                const stampIndex = shopInfo.shopItems.findIndex((si) => si.key === "stamp");
+                const stampItem = shopInfo.shopItems[stampIndex];
+                axios
+                  .post("/api/shop/checkStampEligibility", { gameId })
+                  .then(async (eligibility) => {
+                    const shouldBuy = await confirmAction(
+                      `You will receive a stamp for ${eligibility.data.role}. Purchase for ${stampItem.price.toFixed(2)} coins?`
+                    );
+                    if (!shouldBuy) return;
+                    return axios.post("/api/shop/spendCoins", {
+                      item: stampIndex,
+                      gameId: eligibility.data.gameId,
+                    });
+                  })
+                  .then((res) => {
+                    if (!res) return;
+                    siteInfo.showAlert(
+                      `Stamp purchased: ${res.data.role}!`,
+                      "success"
+                    );
+                    setStampGameUrl("");
+                    setSelectedSuggestion(null);
+                    setStampSuggestions([]);
+                    setStampDialogOpen(false);
+                    setShopInfo((prev) => ({
+                      ...prev,
+                      balance: prev.balance - stampItem.price,
+                    }));
+                  })
+                  .catch(errorAlert);
+              }}
             >
-              {parseGameId(stampGameUrl)
-                ? `Game ID: ${parseGameId(stampGameUrl)}`
-                : "Could not parse a game ID from this input."}
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              setStampDialogOpen(false);
-              setStampGameUrl("");
+              Check Eligibility
+            </UiAction>
+          </>
+        }
+      >
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          Enter the URL or ID of a Mafia game you won. You will receive a
+          stamp of the role you played.
+        </Typography>
+        <Box sx={{ position: "relative" }}>
+          <TextField
+            autoFocus
+            fullWidth
+            label="Game URL or ID"
+            value={stampGameUrl}
+            onChange={(e) => {
+              setStampGameUrl(e.target.value);
               setSelectedSuggestion(null);
-              setStampSuggestions([]);
+              setShowSuggestions(false);
             }}
+            placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
+            InputProps={stampSuggestions.length > 0 ? {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <UiAction
+                    variant="ghost" size="small"
+                    onClick={() => setShowSuggestions((v) => !v)}
+                  >
+                    <i
+                      className={`fas fa-chevron-${showSuggestions ? "up" : "down"}`}
+                      style={{ fontSize: "12px" }}
+                    />
+                  </UiAction>
+                </InputAdornment>
+              ),
+            } : undefined}
+          />
+          {showSuggestions && stampSuggestions.length > 0 && (
+            <Paper
+              sx={{
+                position: "absolute",
+                zIndex: 1301,
+                left: 0,
+                right: 0,
+                maxHeight: 200,
+                overflowY: "auto",
+              }}
+            >
+              {stampSuggestions.map((s) => (
+                <Box
+                  key={s.gameId}
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    cursor: "pointer",
+                    "&:hover": { bgcolor: "action.hover" },
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setStampGameUrl(s.gameId);
+                    setSelectedSuggestion(s);
+                    setShowSuggestions(false);
+                  }}
+                >
+                  <Typography variant="body2">
+                    {s.gameId} — {s.role}
+                  </Typography>
+                </Box>
+              ))}
+            </Paper>
+          )}
+        </Box>
+        {selectedSuggestion && (
+          <Typography
+            variant="caption"
+            sx={{ mt: 1, display: "block" }}
+            color="success.main"
           >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            disabled={!parseGameId(stampGameUrl)}
-            onClick={() => {
-              const gameId = parseGameId(stampGameUrl);
-              if (!gameId) {
-                siteInfo.showAlert("Could not parse a game ID.", "error");
-                return;
-              }
-              const stampIndex = shopInfo.shopItems.findIndex((si) => si.key === "stamp");
-              const stampItem = shopInfo.shopItems[stampIndex];
-              axios
-                .post("/api/shop/checkStampEligibility", { gameId })
-                .then(async (eligibility) => {
-                  const shouldBuy = await confirmAction(
-                    `You will receive a stamp for ${eligibility.data.role}. Purchase for ${stampItem.price.toFixed(2)} coins?`
-                  );
-                  if (!shouldBuy) return;
-                  return axios.post("/api/shop/spendCoins", {
-                    item: stampIndex,
-                    gameId: eligibility.data.gameId,
-                  });
-                })
-                .then((res) => {
-                  if (!res) return;
-                  siteInfo.showAlert(
-                    `Stamp purchased: ${res.data.role}!`,
-                    "success"
-                  );
-                  setStampGameUrl("");
-                  setSelectedSuggestion(null);
-                  setStampSuggestions([]);
-                  setStampDialogOpen(false);
-                  setShopInfo((prev) => ({
-                    ...prev,
-                    balance: prev.balance - stampItem.price,
-                  }));
-                })
-                .catch(errorAlert);
-            }}
+            Stamp role: {selectedSuggestion.role}
+          </Typography>
+        )}
+        {!selectedSuggestion && stampGameUrl.trim() && (
+          <Typography
+            variant="caption"
+            sx={{ mt: 1, display: "block" }}
+            color={parseGameId(stampGameUrl) ? "textSecondary" : "error"}
           >
-            Check Eligibility
-          </Button>
-        </DialogActions>
-      </Dialog>
+            {parseGameId(stampGameUrl)
+              ? `Game ID: ${parseGameId(stampGameUrl)}`
+              : "Could not parse a game ID from this input."}
+          </Typography>
+        )}
+      </UiDialog>
     </UiPage>
   );
 }

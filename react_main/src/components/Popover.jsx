@@ -14,7 +14,7 @@ import {
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 
-import { Box, Divider, Link, Popover, Stack, Typography } from "@mui/material";
+import { Box, Divider, Link, Popover, Stack } from "@mui/material";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { GameSettingCount } from "./Roles";
@@ -22,6 +22,7 @@ import { KUDOS_ICON } from "pages/User/profileIcons";
 import { useSheet } from "./Sheet";
 import { useAppLocation, useViewActive } from "../hooks/useViewActivity";
 import { LatestRequest } from "../lib/latestRequest.js";
+import { UiText as Typography } from "components/ui";
 
 export function PopoverContent({ title, content, page = null, icon = <></>, subTitle = <></> }) {
   let wrappedTitle = (

@@ -17,3 +17,8 @@
 }
 .family-profile-panel .md-content .media-embed-wrap,
 .family-profile-panel .md-content .video-responsive-generic { max-width: min(100%, 800px); margin-inline: auto; }
+/* Pending-invite Accept/Reject share the rail row evenly, as MUI's sx flex: 1
+   did before the UiAction migration. */
+.family-invite-action.ui-action { flex: 1; }
+
+.family-trophy-spotlight { box-shadow: 0 0 25px 2px rgba(255, 215, 0, 0.4); border: 1px solid rgba(255, 215, 0, 0.6); }

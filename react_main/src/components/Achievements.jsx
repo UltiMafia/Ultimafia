@@ -103,7 +103,7 @@ export function AchievementPanel({
   achievements = [],
   panelStyle = {},
   headingStyle = {},
-  className = "box-panel achievements",
+  className = "achievements",
 }) {
   const siteInfo = useContext(SiteInfoContext);
   const achievementData = siteInfo.achievementsRaw?.Mafia || {};

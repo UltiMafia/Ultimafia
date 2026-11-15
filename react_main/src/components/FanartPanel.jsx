@@ -1,23 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton, Stack, Tooltip } from "@mui/material";
 
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "./Alerts";
 import ImageViewer from "./ImageViewer";
-import { confirmAction, UiSection } from "components/ui";
+import { confirmAction, UiSection, UiField as TextField, UiText as Typography, UiAction } from "components/ui";
 
 export default function FanartPanel({ roleId }) {
   const user = useContext(UserContext);
@@ -156,8 +144,8 @@ export default function FanartPanel({ roleId }) {
         title="Fanart"
         className="role-fanart-section"
         actions={canCreate && (
-          <IconButton
-            size="small"
+          <UiAction
+             variant="ghost" size="small" 
             aria-label="Add fanart"
             onClick={() => {
               setTitle("");
@@ -166,7 +154,7 @@ export default function FanartPanel({ roleId }) {
             }}
           >
             <i className="fas fa-plus" />
-          </IconButton>
+          </UiAction>
         )}
       >
         <Stack direction="column" spacing={1}>
@@ -354,52 +342,48 @@ export default function FanartPanel({ roleId }) {
         <ImageViewer imageUrl={viewerUrl} onClose={() => setViewerUrl(null)} />
       )}
       {canCreate && (
-        <Dialog
+        <UiDialog
           open={dialogOpen}
           onClose={() => {
             if (!submitting) setDialogOpen(false);
           }}
-          fullWidth
-          maxWidth="sm"
-        >
-          <DialogTitle>Post Fanart</DialogTitle>
-          <DialogContent dividers>
-            <Stack direction="column" spacing={2}>
-              <TextField
-                label="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                inputProps={{ maxLength: 80 }}
-                fullWidth
-                autoFocus
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={onFileChange}
-                style={{ width: "100%" }}
-              />
-            </Stack>
-          </DialogContent>
-          <DialogActions>
-            <Button
+          title="Post Fanart"
+          actions={<>
+            <UiAction
+              variant="ghost"
               onClick={() => {
                 if (!submitting) setDialogOpen(false);
               }}
               disabled={submitting}
             >
               Cancel
-            </Button>
-            <Button
+            </UiAction>
+            <UiAction
+              variant="primary"
               onClick={onSubmit}
-              disabled={
-                submitting || !title.trim() || !file || !canCreate
-              }
+              disabled={submitting || !title.trim() || !file || !canCreate}
             >
               Post Fanart
-            </Button>
-          </DialogActions>
-        </Dialog>
+            </UiAction>
+          </>}
+        >
+          <Stack direction="column" spacing={2}>
+            <TextField
+              label="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              inputProps={{ maxLength: 80 }}
+              fullWidth
+              autoFocus
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={onFileChange}
+              style={{ width: "100%" }}
+            />
+          </Stack>
+        </UiDialog>
       )}
     </>
   );

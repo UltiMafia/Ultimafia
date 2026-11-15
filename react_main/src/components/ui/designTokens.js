@@ -39,6 +39,7 @@ export function uiCssVariables(fontFamily = uiTokens.fontFamily) {
     "--ui-line-body": uiTokens.lineHeight.body,
     "--ui-line-heading": uiTokens.lineHeight.heading,
     "--ui-weight-strong": uiTokens.weight.strong,
+    "--ui-weight-heading": uiTokens.weight.heading,
     "--ui-action-height": `${uiTokens.control.height}px`,
     "--ui-touch-height": `${uiTokens.control.touchHeight}px`,
     "--ui-radius": `${uiTokens.control.radius}px`,

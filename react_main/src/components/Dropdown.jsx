@@ -2,14 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import UiAction from "./ui/UiAction";
 import UiIcon from "./ui/UiIcon";
 import { useOnOutsideClick } from "./Basic";
-import {
-  Menu,
-  MenuItem,
-  Divider,
-  Checkbox,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
+import { Menu, Divider, ListItemIcon, ListItemText } from "@mui/material";
+import { UiMenuItem as MenuItem, UiCheckbox as Checkbox } from "components/ui";
 
 export default function Dropdown({
   options,

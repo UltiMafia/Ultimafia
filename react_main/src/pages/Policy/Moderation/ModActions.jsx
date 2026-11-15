@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Autocomplete,
-  Box,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
@@ -13,6 +8,7 @@ import { Time } from "components/Basic";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 
 import { useModCommands } from "./commands";
+import { UiAutocomplete as Autocomplete, UiField as TextField, UiText as Typography } from "components/ui";
 
 export function ModActions(props) {
   const [page, setPage] = useState(1);

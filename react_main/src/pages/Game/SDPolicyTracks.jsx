@@ -1,5 +1,6 @@
 import React from "react";
-import { Tooltip, Typography } from "@mui/material";
+import { Tooltip } from "@mui/material";
+import { UiText as Typography } from "components/ui";
 
 const POWER_LABELS = {
   PolicyPeek: "Policy Peek",

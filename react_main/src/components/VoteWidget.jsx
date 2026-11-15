@@ -8,14 +8,9 @@ import { NameWithAvatar } from "pages/User/UserWidgets";
 import UiIcon from "./ui/UiIcon";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
-import {
-  Divider,
-  IconButton,
-  Popover,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Divider, IconButton, Popover, Stack } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { UiText as Typography } from "components/ui";
 
 export function VoteWidget(props) {
   const theme = useTheme();

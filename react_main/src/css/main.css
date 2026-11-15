@@ -215,37 +215,6 @@ a {
   background-color: var(--scheme-color-background);
 }
 
-.box-panel {
-  display: flex;
-  flex-flow: column;
-
-  padding: var(--mui-spacing);
-
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
-}
-
-.box-panel .heading {
-  margin-bottom: var(--mui-spacing);
-}
-
-.box-panel .MuiTypography-h3 {
-  margin-bottom: var(--mui-spacing);
-}
-
-.box-panel .MuiTypography-h4 {
-  margin-bottom: var(--mui-spacing);
-}
-
-.box-panel .content {
-  display: flex;
-  flex-flow: column;
-}
-
-.box-panel .heading {
-  font-weight: 700;
-}
-
 .loading-page {
   display: flex;
   flex-flow: row;
@@ -419,10 +388,6 @@ input:focus:not(:focus-visible) {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-}
-
-.panel-grid .box-panel {
-  margin: 0px;
 }
 
 .super {
@@ -805,3 +770,11 @@ input:focus:not(:focus-visible) {
 .MuiDialogContent-root .MuiTypography-root {
   font-family: inherit;
 }
+
+.cookie-customize { margin-top: var(--ui-space-sm); align-self: flex-start; }
+
+.welcome-auth-card { padding: var(--ui-space-lg); }
+@media (min-width: 600px) { .welcome-auth-card { padding: var(--ui-space-xl); } }
+
+.banned-page-card { width: 100%; max-width: var(--ui-prose-width); padding: var(--ui-space-lg); }
+@media (min-width: 600px) { .banned-page-card { padding: var(--ui-space-xl); } }

@@ -1,7 +1,8 @@
 import React from "react";
-import { Popover, Typography } from "@mui/material";
+import { Popover } from "@mui/material";
 import { badMathRandomWithSeed, hashStrToInt } from "../utilsFolder";
 import { useTheme } from "@mui/material/styles";
+import { UiText as Typography } from "components/ui";
 
 export const Slang = ({ slang, original, slangifySeed, displayEmoji }) => {
   const theme = useTheme();

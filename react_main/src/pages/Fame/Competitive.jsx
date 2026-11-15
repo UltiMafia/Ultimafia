@@ -1,23 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import {
-  Typography,
-  CircularProgress,
-  Stack,
-  Grid2,
-  Divider,
-  Tabs,
-  Box,
-  Tooltip,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Paper,
-  IconButton,
-  Button,
-  TextField,
-} from "@mui/material";
+import { CircularProgress, Stack, Grid2, Divider, Box, Tooltip, FormControl, InputLabel, IconButton, Button } from "@mui/material";
 import { NameWithAvatar, Avatar } from "../User/UserWidgets";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import Setup from "components/Setup";
@@ -28,7 +11,8 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
 import { formatUTCDateOnly, formatUTCDateTime } from "utils";
-import { UiPageHeader, UiField, UiTabs, UiTab } from "components/ui";
+import { UiPageHeader, UiCard, UiField, UiTabs, UiTab, UiText as Typography, UiTabs as Tabs, UiSelect as Select, UiMenuItem as MenuItem, UiField as TextField } from "components/ui";
+import "css/fame.css";
 
 export const QUERY_PARAM_SEASON = "season";
 export const QUERY_PARAM_ROUND = "round";
@@ -105,10 +89,7 @@ function Overview({ roundInfo, seasonInfo }) {
       </Stack>
       <Grid2 container columns={isPhoneDevice ? 1 : 2} spacing={2}>
         <Grid2 size={1}>
-          <Paper elevation={2} sx={{
-            p: 2,
-            height: "100%",
-          }}>
+          <UiCard className="competitive-standings-card">
             <Stack direction="column" spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
               <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1} sx={{
                 alignItems: "center",
@@ -183,13 +164,10 @@ function Overview({ roundInfo, seasonInfo }) {
                 );
               })}
             </Stack>
-          </Paper>
+          </UiCard>
         </Grid2>
         <Grid2 size={1}>
-          <Paper elevation={2} sx={{
-            p: 2,
-            height: "100%",
-          }}>
+          <UiCard className="competitive-standings-card">
             <Stack direction="column" spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
               <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1} sx={{
                 alignItems: "center",
@@ -268,12 +246,10 @@ function Overview({ roundInfo, seasonInfo }) {
                 );
               })}
             </Stack>
-          </Paper>
+          </UiCard>
         </Grid2>
       </Grid2>
-      <Paper elevation={2} sx={{
-        p: 2,
-      }}>
+      <UiCard>
         <Grid2 container columns={isPhoneDevice ? 1 : 3} spacing={1}>
           {seasonInfo.setupOrder.map((roundSetups, i) => (
             <Grid2 size={1}>
@@ -323,7 +299,7 @@ function Overview({ roundInfo, seasonInfo }) {
             </Grid2>
           ))}
         </Grid2>
-      </Paper>
+      </UiCard>
     </Stack>
   );
 }
@@ -391,13 +367,7 @@ function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
         <Stack direction="column" spacing={1} key={day}>
           <Typography variant="h3">Day {day}</Typography>
           {currentRoundGamesByDay[day].map((gameCompletion) => (
-            <Paper
-              elevation={2}
-              sx={{
-                p: 2,
-                height: "100%",
-              }}
-            >
+            <UiCard className="competitive-history-card">
               <Grid2
                 container
                 columns={isPhoneDevice ? 1 : 2}
@@ -450,7 +420,7 @@ function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
                   )}
                 </Grid2>
               </Grid2>
-            </Paper>
+            </UiCard>
           ))}
         </Stack>
       ))}

@@ -3,7 +3,7 @@ import "./ui.css";
 
 const UiAction = forwardRef(function UiAction({
   component: Component = "button",
-  variant = "secondary", iconOnly = false, busy = false, disabled = false,
+  variant = "secondary", size = "default", block = false, iconOnly = false, busy = false, disabled = false,
   className = "", children, onClick, type = "button", ...props
 }, ref) {
   const isButton = Component === "button";
@@ -12,7 +12,7 @@ const UiAction = forwardRef(function UiAction({
     disabled={isButton ? (disabled || busy) : undefined}
     aria-disabled={(!isButton && (disabled || busy)) || undefined}
     aria-busy={busy || undefined}
-    className={`ui-action ui-action--${variant}${iconOnly ? " ui-action--icon" : ""}${disabled || busy ? " is-disabled" : ""} ${className}`}
+    className={`ui-action ui-action--${variant}${size === "small" ? " ui-action--small" : ""}${block ? " ui-action--block" : ""}${iconOnly ? " ui-action--icon" : ""}${disabled || busy ? " is-disabled" : ""} ${className}`}
     onClick={event => {
       if (disabled || busy) { event.preventDefault(); return; }
       onClick?.(event);

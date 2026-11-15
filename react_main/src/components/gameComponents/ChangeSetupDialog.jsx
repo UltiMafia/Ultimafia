@@ -1,30 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Stack,
-  TextField,
-  Typography,
-  Divider,
-  Paper,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemButton,
-  IconButton,
-  CircularProgress,
-  Alert,
-} from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Box, Stack, Divider, Paper, List, ListItem, ListItemText, ListItemButton, IconButton, CircularProgress, Alert } from "@mui/material";
 import axios from "axios";
 import { GameContext, UserContext } from "../../Contexts";
 import Setup from "../Setup";
 import { getSetupBackgroundColor } from "../../pages/Play/LobbyBrowser/gameRowColors.js";
 import changeling from "images/roles/cult/changeling-vivid.png";
 import { useDismissOnBack } from "../../hooks/useDismissOnBack";
+import { UiField as TextField, UiText as Typography } from "components/ui";
 
 export default function ChangeSetupDialog({
   open,

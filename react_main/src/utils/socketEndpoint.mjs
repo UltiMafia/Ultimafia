@@ -7,8 +7,16 @@ export function socketEndpoint({ location, configuration, kind, port }) {
     if (!/^\d+$/.test(String(port))) throw new Error("Invalid game socket port");
     return `${protocol}//${location.host}/ws/game/${port}`;
   }
-  const host = !configuration.host || configuration.host === "localhost" ? location.hostname : configuration.host;
+  const usePageHost = !configuration.host || configuration.host === "localhost";
+  const host = usePageHost ? location.hostname : configuration.host;
+  // A port-routed socket keeps the explicit protocol/host configuration.
   if (configuration.usePort === "true") return `${configuration.protocol}://${host}:${port}`;
-  if (kind === "chat") return `${configuration.protocol}://${host}/chatSocket`;
-  return `${configuration.protocol}://${configuration.portHost || host}/${port}`;
+  // A path-routed socket shares the page's port: the dev server runs on 3001,
+  // and a dev server proxying a live backend needs its own port here too.
+  const pathHost = usePageHost ? location.host : configuration.host;
+  const protocol = usePageHost
+    ? (location.protocol === "https:" ? "wss" : "ws")
+    : configuration.protocol;
+  if (kind === "chat") return `${protocol}://${pathHost}/chatSocket`;
+  return `${protocol}://${configuration.portHost || pathHost}/${port}`;
 }

@@ -6,29 +6,18 @@ import { MediaEmbed } from "../pages/User/UserWidgets";
 import { slangList } from "../constants/slangList";
 import { getSlangKey } from "../lib/slangMatch";
 import { Slang } from "./Slang";
-import { Typography } from "@mui/material";
+
 import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
 import { splitIntoLetters } from "./TextEffects";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
+import { UiText as Typography } from "components/ui";
 
 export function ItemList(props) {
   const itemRows = props.items.map(props.map);
   return <div className={`item-list ${props.className || ""}`}>{itemRows}</div>;
 }
 
-export function PanelGrid(props) {
-  const panels = props.panels.map((panel, i) => (
-    <div className="box-panel" key={i}>
-      <div className="heading">
-        {panel.icon}
-        <div className="heading-text">{panel.name}</div>
-      </div>
-      <div className="content">{panel.text}</div>
-    </div>
-  ));
-  return <div className="panel-grid">{panels}</div>;
-}
 
 export function Time(props) {
   let unit = "millisecond";

@@ -1,24 +1,14 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Stack,
-  Tab,
-  Tabs,
-  Typography,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-} from "@mui/material";
+import { Box, Stack, Divider } from "@mui/material";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import { UserContext, SiteInfoContext } from "../Contexts";
 import { useErrorAlert } from "./Alerts";
 import AppealDialog from "./AppealDialog";
 import CasePanel from "./CasePanel";
+import { UiCard } from "./ui";
+import { UiTab as Tab, UiTabs as Tabs, UiText as Typography, UiAction, UiDialog } from "components/ui";
 
 // Verdict icons mapping
 export const VERDICT_ICONS = {
@@ -165,15 +155,19 @@ function VerdictDialog({
   const degreeDigits = offenseNumber ? String(offenseNumber).split("") : [];
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        {isWarning
+    <UiDialog
+      open={open}
+      onClose={onClose}
+      size="sm"
+      title={
+        isWarning
           ? "Warning"
           : isDismissed
           ? "No Violation"
-          : report.finalRuling?.violationName || "Violation"}
-      </DialogTitle>
-      <DialogContent>
+          : report.finalRuling?.violationName || "Violation"
+      }
+      actions={<UiAction  variant="ghost" onClick={onClose}>Close</UiAction>}
+    >
         <Stack spacing={1.5}>
           {showRestrictedInfo && (
             <Box>
@@ -369,18 +363,14 @@ function VerdictDialog({
             report.finalRuling &&
             report.linkedViolationTicketId && (
               <Box sx={{ mt: 2 }}>
-                <Button variant="outlined" color="primary" onClick={onAppealClick}>
+                <UiAction  variant="secondary"   onClick={onAppealClick}>
                   Appeal Violation
-                </Button>
+                </UiAction>
               </Box>
             )}
 
         </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
-    </Dialog>
+    </UiDialog>
   );
 }
 
@@ -432,7 +422,6 @@ export default function RapSheet({ userId }) {
     return null;
   }
 
-  const panelStyle = { marginBottom: "16px" };
   const headingStyle = { marginBottom: "8px" };
 
   const activeReports = reports.filter(isActiveViolation);
@@ -452,7 +441,7 @@ export default function RapSheet({ userId }) {
 
   return (
     <>
-      <div className="box-panel" style={panelStyle}>
+      <UiCard className="rap-sheet-panel profile-tinted">
         <Typography variant="h3" style={headingStyle}>
           Rap Sheet
         </Typography>
@@ -483,7 +472,7 @@ export default function RapSheet({ userId }) {
             />
           ))}
         </CasePanel>
-      </div>
+      </UiCard>
       {showVerdictDialog && selectedVerdictReport && (
         <VerdictDialog
           open={showVerdictDialog}

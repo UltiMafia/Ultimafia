@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { TextField, Popover, Tabs, Tab, Box, Typography } from "@mui/material";
+import { Popover, Box } from "@mui/material";
 import { UserContext } from "../Contexts";
 import { filterProfanity } from "./Basic";
+import { UiField as TextField, UiTabs as Tabs, UiTab as Tab, UiText as Typography } from "components/ui";
 
 // Simple deck picker: text input with a popover dropdown showing
 // tabs for "Yours" and "Popular" decks, and search-as-you-type.

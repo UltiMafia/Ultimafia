@@ -28,7 +28,8 @@ import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 import "css/game.css";
 import "css/gameJotto.css";
-import { Button, Stack, TextField, Typography } from "@mui/material";
+import { Button, Stack } from "@mui/material";
+import { UiField as TextField, UiText as Typography } from "components/ui";
 
 const ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 const CHEATSHEET_STATES = [

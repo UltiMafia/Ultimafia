@@ -1,18 +1,5 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  IconButton,
-  InputBase,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Chip, CircularProgress, IconButton, InputBase, ListItemIcon, ListItemText, Menu, Stack } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { alpha, useTheme } from "@mui/material/styles";
 
@@ -37,6 +24,7 @@ import {
   sortDirects,
 } from "../../utils/dmWindow";
 import { UserContext } from "../../Contexts";
+import { UiMenuItem as MenuItem, UiText as Typography, UiAction } from "components/ui";
 
 // X Chat style body of the floating DM window: a conversation list, one
 // conversation (back arrow top-left), and a new-message view where you type
@@ -110,8 +98,8 @@ export default function DmPanel(props) {
       </Typography>
     );
     actions = (
-      <IconButton
-        size="small"
+      <UiAction
+         variant="ghost" size="small" 
         data-testid="dm-new"
         aria-label="New message"
         title="New message"
@@ -119,7 +107,7 @@ export default function DmPanel(props) {
         disabled={loading}
       >
         <UiIcon name="add" size={20} />
-      </IconButton>
+      </UiAction>
     );
     body = (
       <ConversationList

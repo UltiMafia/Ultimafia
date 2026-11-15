@@ -1,27 +1,7 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  Card,
-  Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormHelperText,
-  Grid,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-  Divider,
-  Paper,
-} from "@mui/material";
+import { Box, Button, Chip, FormControl, FormHelperText, Grid, InputLabel, Stack, Divider, Paper } from "@mui/material";
 import { useErrorAlert } from "./Alerts";
 import { UserSearchSelect } from "./Form";
 import { Time } from "./Basic";
@@ -30,6 +10,8 @@ import { UserContext, SiteInfoContext } from "../Contexts";
 import ReportTypology from "./ReportTypology";
 import { useViolations } from "../hooks/useViolations";
 import RapSheet, { getViolationBaseName } from "./RapSheet";
+import { UiCard, UiDialog, UiMenuItem as MenuItem, UiSelect as Select, UiField as TextField, UiText as Typography, UiAction } from "components/ui";
+import "css/fame.css";
 
 const MAX_OFFENSE_NUMBER = 10;
 
@@ -266,9 +248,9 @@ export default function ReportDetail({
   return (
     <Box>
       <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <Button onClick={onBack} variant="outlined">
+        <UiAction  variant="secondary" onClick={onBack} >
           ← Back to Reports
-        </Button>
+        </UiAction>
         <Typography variant="h4">Report #{report.id}</Typography>
         <Chip
           label={report.status}
@@ -279,7 +261,7 @@ export default function ReportDetail({
 
       <Grid container spacing={2}>
         <Grid item xs={12} md={8}>
-          <Card sx={{ p: 2, mb: 2 }}>
+          <UiCard className="report-detail-section">
             <Typography variant="h6" sx={{ mb: 2 }}>
               Report Information
             </Typography>
@@ -482,18 +464,18 @@ export default function ReportDetail({
                 </Box>
               )}
             </Stack>
-          </Card>
+          </UiCard>
 
           {report.finalRuling && (
-            <Card sx={{ p: 2, mb: 2 }}>
+            <UiCard className="report-detail-section">
               <Typography variant="h6" sx={{ mb: 2 }}>
                 Final Ruling
               </Typography>
               <ReportTypology finalRuling={report.finalRuling} />
-            </Card>
+            </UiCard>
           )}
 
-          <Card sx={{ p: 2 }}>
+          <UiCard>
             <Typography variant="h6" sx={{ mb: 2 }}>
               History
             </Typography>
@@ -533,11 +515,11 @@ export default function ReportDetail({
                     </Paper>
                   ))}
             </Stack>
-          </Card>
+          </UiCard>
         </Grid>
 
         <Grid item xs={12} md={4}>
-          <Card sx={{ p: 2, mb: 2 }}>
+          <UiCard className="report-detail-section">
             <Typography variant="h6" sx={{ mb: 2 }}>
               Actions
             </Typography>
@@ -599,9 +581,9 @@ export default function ReportDetail({
                     >
                       {handlingAppeal ? "Approving..." : "Approve Appeal"}
                     </Button>
-                    <Button
-                      variant="contained"
-                      color="error"
+                    <UiAction
+                       variant="danger" 
+                      
                       onClick={async () => {
                         try {
                           setHandlingAppeal(true);
@@ -629,17 +611,17 @@ export default function ReportDetail({
                       disabled={handlingAppeal}
                     >
                       {handlingAppeal ? "Rejecting..." : "Reject Appeal"}
-                    </Button>
+                    </UiAction>
                     <Divider />
                   </>
                 )}
 
-              <Button
-                variant="outlined"
+              <UiAction
+                 variant="secondary" 
                 onClick={() => setShowAssignDialog(true)}
               >
                 Manage Assignees
-              </Button>
+              </UiAction>
               {/* Hide status change and complete buttons for appeals */}
               {!report.linkedAppealId && status !== "complete" && (
                 <>
@@ -654,20 +636,20 @@ export default function ReportDetail({
                       <MenuItem value="in-progress">In Progress</MenuItem>
                     </Select>
                   </FormControl>
-                  <Button
-                    variant="contained"
-                    color="error"
+                  <UiAction
+                     variant="danger" 
+                    
                     onClick={() => setShowCompleteDialog(true)}
                   >
                     Complete Report
-                  </Button>
+                  </UiAction>
                 </>
               )}
               {/* Hide reopen button for appeals that have been approved/rejected */}
               {!report.linkedAppealId && status === "complete" && (
-                <Button variant="outlined" onClick={handleReopen}>
+                <UiAction  variant="secondary"  onClick={handleReopen}>
                   Reopen Report
-                </Button>
+                </UiAction>
               )}
               {/* Also hide reopen button if appeal is approved or rejected */}
               {report.linkedAppealId &&
@@ -680,9 +662,9 @@ export default function ReportDetail({
                   </Typography>
                 )}
             </Stack>
-          </Card>
+          </UiCard>
 
-          <Card sx={{ p: 2 }}>
+          <UiCard>
             <Typography variant="h6" sx={{ mb: 2 }}>
               Assignees
             </Typography>
@@ -710,19 +692,23 @@ export default function ReportDetail({
             ) : (
               <Typography color="textSecondary">Unassigned</Typography>
             )}
-          </Card>
+          </UiCard>
         </Grid>
       </Grid>
 
       {/* Assign Dialog */}
-      <Dialog
+      <UiDialog
         open={showAssignDialog}
         onClose={() => setShowAssignDialog(false)}
-        maxWidth="sm"
-        fullWidth
+        title="Manage Assignees"
+        size="sm"
+        actions={<>
+          <UiAction  variant="ghost" onClick={() => setShowAssignDialog(false)}>Cancel</UiAction>
+          <UiAction  variant="primary" onClick={handleAssign} >
+            Save
+          </UiAction>
+        </>}
       >
-        <DialogTitle>Manage Assignees</DialogTitle>
-        <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <Typography variant="body2" color="textSecondary">
               Select users to assign to this report. You can assign multiple
@@ -753,8 +739,8 @@ export default function ReportDetail({
                       }}
                     >
                       <NameWithAvatar id={assigneeId} name={assigneeId} />
-                      <Button
-                        size="small"
+                      <UiAction
+                         variant="ghost" size="small" 
                         onClick={() =>
                           setAssignees(
                             assignees.filter((id) => id !== assigneeId)
@@ -762,35 +748,46 @@ export default function ReportDetail({
                         }
                       >
                         Remove
-                      </Button>
+                      </UiAction>
                     </Stack>
                   ))}
                 </Stack>
               )}
             </Stack>
           </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowAssignDialog(false)}>Cancel</Button>
-          <Button onClick={handleAssign} variant="contained">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+      </UiDialog>
 
       {/* Complete Dialog */}
-      <Dialog
+      <UiDialog
         open={showCompleteDialog}
         onClose={() => {
           setShowCompleteDialog(false);
           // Reset form when dialog closes
           setFinalRuling({ banType: "", rule: "", offenseNumber: 1, notes: "" });
         }}
-        maxWidth="md"
-        fullWidth
+        title="Complete Report"
+        size="md"
+        actions={<>
+          <UiAction
+             variant="ghost" onClick={() => {
+              setShowCompleteDialog(false);
+              // Reset form when dialog closes
+              setFinalRuling({ banType: "", rule: "", offenseNumber: 1, notes: "" });
+            }}
+            disabled={completing}
+          >
+            Cancel
+          </UiAction>
+          <UiAction
+             variant="danger" onClick={handleComplete}
+            
+            
+            disabled={completing}
+          >
+            {completing ? "Completing..." : "Complete Report"}
+          </UiAction>
+        </>}
       >
-        <DialogTitle>Complete Report</DialogTitle>
-        <DialogContent>
           <Stack spacing={2} sx={{ mt: 1 }}>
             <Typography variant="h6">Violation Details</Typography>
             <FormControl fullWidth>
@@ -914,28 +911,7 @@ export default function ReportDetail({
               }
             />
           </Stack>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              setShowCompleteDialog(false);
-              // Reset form when dialog closes
-              setFinalRuling({ banType: "", rule: "", offenseNumber: 1, notes: "" });
-            }}
-            disabled={completing}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleComplete}
-            variant="contained"
-            color="error"
-            disabled={completing}
-          >
-            {completing ? "Completing..." : "Complete Report"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      </UiDialog>
     </Box>
   );
 }

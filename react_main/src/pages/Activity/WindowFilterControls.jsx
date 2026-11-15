@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Stack, Typography } from "@mui/material";
-import { UiSegmentedControl } from "components/ui";
+import { Box, Stack } from "@mui/material";
+import { UiSegmentedControl, UiText as Typography } from "components/ui";
 
 export const WINDOWS = [
   { label: "24H", fullLabel: "Last 24 hours", value: "24h" },

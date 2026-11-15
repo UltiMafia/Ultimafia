@@ -1,14 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
-import { UiAction, UiField, UiIcon, UiTabs, UiTab } from "components/ui";
-import {
-  LinearProgress,
-  Tabs,
-  Box,
-  Stack,
-  Typography,
-  Dialog,
-  DialogContent,
-} from "@mui/material";
+import { UiAction, UiField, UiIcon, UiTabs, UiTab, UiTabs as Tabs, UiText as Typography } from "components/ui";
+import { LinearProgress, Box, Stack, Dialog, DialogContent } from "@mui/material";
 import ProviderButton from "./ProviderButton";
 import {
   getAuth,
