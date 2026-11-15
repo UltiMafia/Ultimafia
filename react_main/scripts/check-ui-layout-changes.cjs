@@ -10,6 +10,9 @@ const migrationReference = 'd2999dd6436ae412b6cbbd898d0266b0b786ace7';
 const migrationDescription = 'verified setup/tab repair before fill/navigation detectors';
 const widths = new Set(['width', 'minWidth', 'maxWidth', 'inlineSize', 'minInlineSize', 'maxInlineSize', 'flexBasis', 'gridTemplateColumns']);
 const safeWidth = value => /^(?:0|100%|auto|none|inherit|initial|unset|revert(?:-layer)?|var\(--ui-[\w-]+\))$/.test(String(value).trim());
+// react-mde's Write/Preview tabs are editor chrome from a third-party control,
+// not application navigation. Only its own generated classes are exempt.
+const editorChrome = /\.mde-(?:tabs|header|text|preview|suggestions)\b/;
 function layoutSignatures(source, filename) {
   const result = [];
   if (filename.endsWith('.css')) {
@@ -18,7 +21,7 @@ function layoutSignatures(source, filename) {
       rule.walkDecls(decl => {
         const property = decl.prop.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
         if (widths.has(property) && !safeWidth(decl.value)) result.push(`width:${context.join('|')}:${rule.selector}:${decl.prop}:${decl.value.replace(/\s+/g, ' ')}`);
-        if (/(?:^|[.\s#-])(?:nav(?:igation)?|tabs)(?:$|[\s._:#>-])/.test(rule.selector)) result.push(`navigation-css:${context.join('|')}:${rule.selector}:${decl.prop}:${decl.value.replace(/\s+/g, ' ')}`);
+        if (!editorChrome.test(rule.selector) && /(?:^|[.\s#-])(?:nav(?:igation)?|tabs)(?:$|[\s._:#>-])/.test(rule.selector)) result.push(`navigation-css:${context.join('|')}:${rule.selector}:${decl.prop}:${decl.value.replace(/\s+/g, ' ')}`);
       });
     });
   } else if (/\.[jt]sx?$/.test(filename)) {

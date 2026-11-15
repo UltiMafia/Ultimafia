@@ -232,7 +232,6 @@ export default function Profile() {
   /** All finished games in DB (any mode); from GET /api/user/:id/profile `totalGames`. */
   const [profileTotalGames, setProfileTotalGames] = useState(0);
   const [groups, setGroups] = useState([]);
-  const [showStatsModal, setShowStatsModal] = useState(false);
   const [ratingsTab, setRatingsTab] = useState("wins");
   const [statsBucket, setStatsBucket] = useState("ranked");
   const [mediaUrl, setMediaUrl] = useState("");
@@ -1552,14 +1551,6 @@ export default function Profile() {
         } : null}
         onSuccess={refetchProfile}
       />
-      {stats && (
-        <StatsModal
-          stats={stats}
-          statsBucket={statsBucket}
-          show={showStatsModal}
-          setShow={setShowStatsModal}
-        />
-      )}
       {moderationDrawerOpen && (
         <Suspense fallback={null}>
           <ModerationSideDrawer
@@ -1630,15 +1621,12 @@ export default function Profile() {
                   <>
                     <TextEditor value={bio} onChange={setBio} />
                     <div className="buttons">
-                      <div className="btn btn-theme" onClick={onEditBio}>
+                      <UiAction variant="primary" onClick={onEditBio}>
                         Submit
-                      </div>
-                      <div
-                        className="btn btn-theme-sec"
-                        onClick={onCancelEditBio}
-                      >
+                      </UiAction>
+                      <UiAction onClick={onCancelEditBio}>
                         Cancel
-                      </div>
+                      </UiAction>
                     </div>
                   </>
                 )}
@@ -2298,146 +2286,6 @@ export function KarmaVoteWidget(props) {
       <UiAction iconOnly variant="ghost" aria-label="Upvote profile" aria-pressed={item.vote === 1} onClick={() => onVote(1)}><UiIcon name="up" /></UiAction>
       <UiAction iconOnly variant="ghost" aria-label="Downvote profile" aria-pressed={item.vote === -1} onClick={() => onVote(-1)}><UiIcon name="down" /></UiAction>
     </div>
-  );
-}
-
-function StatsModal(props) {
-  const [statsFilter, setStatsFilter] = useState("all");
-  const [statsFilterQuery, setStatsFilterQuery] = useState("");
-
-  const statsFilters = ["all", "bySetup", "byRole", "byAlignment"];
-  const statsFilterNames = {
-    all: "All",
-    bySetup: "Setup",
-    byRole: "Role",
-    byAlignment: "Alignment",
-  };
-  const statsKeyNames = {
-    totalGames: "Total Games",
-    wins: "Wins",
-    abandons: "Abandons",
-  };
-
-  var statsRowNames;
-  const mafia = props.stats["Mafia"] || {};
-  const bucket =
-    props.statsBucket === "ranked"
-      ? mafia.all || {}
-      : props.statsBucket === "unranked"
-        ? mafia.unranked || {}
-        : mergeStatsBuckets(mafia.all || {}, mafia.unranked || {});
-  var stats =
-    statsFilter === "all"
-      ? bucket
-      : bucket?.[statsFilter];
-
-  if (stats == null) {
-    stats = [];
-    statsRowNames = [];
-  }
-  if (statsFilter === "all") {
-    stats = [stats];
-    statsRowNames = ["All"];
-  } else {
-    statsRowNames = Object.keys(stats).filter((key) =>
-      key.toLowerCase().includes(statsFilterQuery)
-    );
-    stats = statsRowNames.map((key) => stats[key]);
-    statsRowNames = statsRowNames.map(
-      (key) => `${statsFilterNames[statsFilter]}: ${key}`
-    );
-  }
-
-  const filterDropdownOptions = statsFilters.map((filter) => (
-    <option key={filter} value={filter}>
-      {statsFilterNames[filter]}
-    </option>
-  ));
-
-  const statsRows = stats.map((statsObj, i) => {
-    let totalGames = getTotalGames(statsObj);
-    let statsList = Object.keys(statsObj).map((statKey) => {
-      let statData = statsObj[statKey];
-
-      switch (statKey) {
-        case "totalGames":
-          // statsObj.totalGames is not accurate for legacy data — it was
-          // added after "wins" was already being tracked, so older games
-          // have wins.total > statsObj.totalGames. Derive from helpers.
-          statData = <div className="stat-data">{totalGames}</div>;
-          break;
-        case "wins":
-        case "abandons":
-          statData = (
-            <div className="stat-data">
-              {statData.count}/{totalGames}
-            </div>
-          );
-          break;
-        case "reads":
-        case "survival":
-          statData = <div></div>;
-          break;
-      }
-
-      return (
-        <div className="stat" key={statKey}>
-          <div className="stat-name">{statsKeyNames[statKey]}</div>
-          {statData}
-        </div>
-      );
-    });
-
-    return (
-      <div className="stats-row" key={statsRowNames[i]}>
-        <div className="stats-row-name">{statsRowNames[i]}</div>
-        <div className="stats-list">{statsList}</div>
-      </div>
-    );
-  });
-
-  const header = "Ranked Stats";
-
-  const content = (
-    <div className="stats-wrapper">
-      <div className="filter">
-        <select
-          value={statsFilter}
-          onChange={(e) => setStatsFilter(e.target.value)}
-        >
-          {filterDropdownOptions}
-        </select>
-        <input
-          type="text"
-          placeholder="Query"
-          onChange={(e) => setStatsFilterQuery(e.target.value.toLowerCase())}
-        />
-      </div>
-      <div className="stats">{statsRows}</div>
-    </div>
-  );
-
-  const footer = (
-    <div className="control">
-      <div className="post btn btn-theme" onClick={() => props.setShow(false)}>
-        Close
-      </div>
-    </div>
-  );
-
-  function onCancel() {
-    props.setShow(false);
-  }
-
-  return (
-    <Modal
-      className="stats-modal"
-      show={props.show}
-      onBgClick={onCancel}
-      header={header}
-      content={content}
-      footer={footer}
-    />
   );
 }
 

@@ -1,10 +1,10 @@
 # UI scale debt queue
 
-Generated 2026-11-15T03:55:03.163Z. **134** sites across **51** files.
+Generated 2026-11-15T04:30:15.737Z. **111** sites across **50** files.
 
-- `native-form`: 47
 - `mui-inline-scale`: 39
-- `native-widget`: 34
+- `native-widget`: 31
+- `native-form`: 27
 - `native-file`: 10
 - `native-hidden`: 2
 - `native-confirm`: 2
@@ -14,22 +14,21 @@ Generated 2026-11-15T03:55:03.163Z. **134** sites across **51** files.
 | File | Sites |
 |---|---|
 | `pages/Game/Game.jsx` | 15 |
-| `pages/Community/Forums/Board.jsx` | 9 |
-| `pages/Community/Forums/Thread.jsx` | 7 |
 | `pages/Game/SnakeGameDisplay.jsx` | 7 |
-| `pages/Play/Decks/CreateDeck.jsx` | 6 |
-| `pages/User/Profile.jsx` | 6 |
 | `pages/Game/DrawItGame.jsx` | 5 |
-| `pages/Play/WordDecks/CreateWordDeck.jsx` | 5 |
 | `components/FanartPanel.jsx` | 4 |
 | `components/gameComponents/StateSwitcher.jsx` | 4 |
+| `pages/Play/Decks/CreateDeck.jsx` | 4 |
+| `pages/User/Profile.jsx` | 4 |
 | `pages/User/Shop.jsx` | 4 |
 | `components/Auth.jsx` | 3 |
+| `components/Form.jsx` | 3 |
+| `components/VoteWidget.jsx` | 3 |
+| `pages/Game/JottoGame.jsx` | 3 |
 
 ## Sites
 
 - `components/alerts/Announcement.jsx:111` — native-widget `button` — `<button className="announcement-summary" type="button" onClick={openDialog} aria-haspopup="dialog" aria-label="Read anno`
-- `components/alerts/Announcement.jsx:116` — native-widget `button` — `<button className="utility-button" type="button" onClick={closeDialog} aria-label="Dismiss announcement">`
 - `components/Auth.jsx:589` — native-hidden `input` — `<input hidden />`
 - `components/Auth.jsx:673` — native-hidden `input` — `<input hidden />`
 - `components/Auth.jsx:816` — mui-inline-scale `DialogContent` — `<DialogContent sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>`
@@ -71,22 +70,7 @@ Generated 2026-11-15T03:55:03.163Z. **134** sites across **51** files.
 - `components/VoteWidget.jsx:143` — mui-inline-scale `IconButton` — `<IconButton aria-label="Downvote" disabled={!user.perms?.vote} sx={{ fontSize: "1em", `
 - `Main.jsx:89` — mui-inline-scale `Paper` — `<Paper sx={{ mx: "auto", my: "10%", p: 1, width: "320px", }} >`
 - `pages/Chat/Chat.jsx:671` — mui-inline-scale `Paper` — `<Paper className="site-chat" elevation={embedded ? 0 : 4} data-testid={directsOnly ? "dm-chat" : undef`
-- `pages/Community/Forums/Board.jsx:227` — native-form `input` — `<input type="text" aria-label="Thread title" value={props.threadTitle} onChange={onTitleChange} disabled={submitting} />`
-- `pages/Community/Forums/Board.jsx:247` — native-form `input` — `<input type="text" aria-label="Poll question" value={pollQuestion} `
-- `pages/Community/Forums/Board.jsx:257` — native-form `input` — `<input type="text" aria-label="Poll options, comma-separated" value={pollOptio`
-- `pages/Community/Forums/Board.jsx:267` — native-form `input` — `<input type="text" aria-label="Poll expiration" value={pollExpiration} `
-- `pages/Community/Forums/Board.jsx:278` — native-form `input` — `<input type="checkbox" aria-label="People list" checked={restricted} onChange={(`
-- `pages/Community/Forums/Board.jsx:287` — native-form `input` — `<input type="checkbox" aria-label="Include petition" checked={includePetition} o`
-- `pages/Community/Forums/Board.jsx:299` — native-form `input` — `<input type="text" aria-label="Petition title" value={petitionTitle} `
-- `pages/Community/Forums/Board.jsx:310` — native-form `textarea` — `<textarea aria-label="Petition body" value={petitionBody} onChange={(e) => set`
-- `pages/Community/Forums/Board.jsx:418` — native-widget `button` — `<button type="button" role="switch" aria-label={props.label} aria-checked={!!props.value} disabled={props.disabled} `
-- `pages/Community/Forums/Thread.jsx:93` — native-widget `button` — `<button className="mention-ping-btn" type="button" onClick={() => { setPickerOpen((o) => !`
-- `pages/Community/Forums/Thread.jsx:102` — native-form `input` — `<input className="mention-search" autoFocus placeholder="Search..." `
-- `pages/Community/Forums/Thread.jsx:950` — native-form `input` — `<input type="text" value={newTagText} onCh`
-- `pages/Community/Forums/Thread.jsx:959` — native-form `input` — `<input className="roster-color-input" type="color" `
-- `pages/Community/Forums/Thread.jsx:987` — native-form `input` — `<input type="text" value={newRosterUsername} onChange={(e) => setN`
-- `pages/Community/Forums/Thread.jsx:1026` — native-form `input` — `<input type="text" value={petitionEditTitle} onChange={(e) => setP`
-- `pages/Community/Forums/Thread.jsx:1033` — native-form `textarea` — `<textarea value={petitionEditBody} onChange={(e) => setPetitionEditBody(e.target.val`
+- `pages/Community/Forums/Thread.jsx:961` — native-form `input` — `<input className="roster-color-input" type="color" `
 - `pages/Fame/StockMarket.jsx:1134` — mui-inline-scale `Button` — `<Button variant="contained" color="warning" size="larg`
 - `pages/Fame/StockMarket.jsx:1202` — mui-inline-scale `Button` — `<Button variant="contained" color="info" size="large" `
 - `pages/Game/BattleshipGame.jsx:380` — native-widget `button` — `<button key={type} type="button" className={'battleship-ship-chip${ `
@@ -142,21 +126,14 @@ Generated 2026-11-15T03:55:03.163Z. **134** sites across **51** files.
 - `pages/Game/WackyWordsGame.jsx:265` — native-form `button` — `<button onClick={canNext ? onNext : undefined} disabled={!canNext} style={arrowStyle`
 - `pages/Play/Decks/CreateDeck.jsx:248` — native-widget `button` — `<button type="button" aria-label="Upload cover photo" className={'deck-cover-upload ${ `
 - `pages/Play/Decks/CreateDeck.jsx:272` — native-file `input` — `<input ref={coverInputRef} className="hidden-upload" type="file" `
-- `pages/Play/Decks/CreateDeck.jsx:295` — native-form `input` — `<input id="deck-name-input" className="deck-input deck-name-input" `
-- `pages/Play/Decks/CreateDeck.jsx:345` — native-form `input` — `<input className="deck-input" aria-label={'Card ${index + 1} name'} `
 - `pages/Play/Decks/CreateDeck.jsx:353` — native-form `input` — `<input className="color-input" aria-label={'Card ${index + 1} color'} `
 - `pages/Play/Decks/CreateDeck.jsx:456` — native-file `input` — `<input id={'preview-${props.indx}'} {...props.reg('cards.${props.indx}.image')} clas`
 - `pages/Play/WordDecks/CreateWordDeck.jsx:256` — native-widget `button` — `<button type="button" aria-label="Upload cover photo" disabled={inputsDisabled} className={'deck-cover-u`
 - `pages/Play/WordDecks/CreateWordDeck.jsx:281` — native-file `input` — `<input ref={coverInputRef} className="hidden-upload" type="file" `
-- `pages/Play/WordDecks/CreateWordDeck.jsx:306` — native-form `input` — `<input id="deck-name-input" className="deck-input deck-name-input" `
-- `pages/Play/WordDecks/CreateWordDeck.jsx:323` — native-form `input` — `<input id="deck-description-input" className="deck-input deck-name-input" `
-- `pages/Play/WordDecks/CreateWordDeck.jsx:365` — native-form `textarea` — `<textarea id="deck-words-input" className="deck-input" rows={20} `
-- `pages/User/Profile.jsx:1525` — native-widget `button` — `<button type="button" className="banner-edit-action banner-remove" title="Remo`
-- `pages/User/Profile.jsx:1883` — mui-inline-scale `Paper` — `<Paper variant="outlined" sx={{ p:`
-- `pages/User/Profile.jsx:1910` — mui-inline-scale `Paper` — `<Paper sx={{ px: 1, `
-- `pages/User/Profile.jsx:2404` — native-form `select` — `<select value={statsFilter} onChange={(e) => setStatsFilter(e.target.value)} >`
-- `pages/User/Profile.jsx:2410` — native-form `input` — `<input type="text" placeholder="Query" onChange={(e) => setStatsFilterQuery(e.target.value`
-- `pages/User/Profile.jsx:2528` — native-form `select` — `<select className="query-select" value={selectedKey} onChange={(e) => setSelectedKey`
+- `pages/User/Profile.jsx:1524` — native-widget `button` — `<button type="button" className="banner-edit-action banner-remove" title="Remo`
+- `pages/User/Profile.jsx:1871` — mui-inline-scale `Paper` — `<Paper variant="outlined" sx={{ p:`
+- `pages/User/Profile.jsx:1898` — mui-inline-scale `Paper` — `<Paper sx={{ px: 1, `
+- `pages/User/Profile.jsx:2376` — native-form `select` — `<select className="query-select" value={selectedKey} onChange={(e) => setSelectedKey`
 - `pages/User/Shop.jsx:421` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
 - `pages/User/Shop.jsx:478` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`
 - `pages/User/Shop.jsx:492` — mui-inline-scale `Paper` — `<Paper sx={{ p: 2, height: "100%" }}>`

@@ -3,7 +3,7 @@ import { useLocation, Link } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import UiAction from "../../../components/ui/UiAction";
-import { UiPageHeader } from "components/ui";
+import { UiField, UiPageHeader } from "components/ui";
 import { SiteInfoContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
 import "css/deck.css";
@@ -300,34 +300,24 @@ export default function CreateWordDeck() {
 
             <div className="deck-top-bar">
               <div className="deck-name-section">
-                <label className="deck-field-label" htmlFor="deck-name-input">
-                  Deck Name
-                </label>
-                <input
+                <UiField
                   id="deck-name-input"
-                  className="deck-input deck-name-input"
-                  type="text"
+                  fullWidth
+                  label="Deck Name"
                   value={deckName}
                   onChange={(e) => setDeckName(e.target.value)}
                   placeholder="Enter deck name"
-                  maxLength={MAX_NAME_LENGTH}
+                  inputProps={{ maxLength: MAX_NAME_LENGTH }}
                   disabled={inputsDisabled}
                 />
-                <label
-                  className="deck-field-label"
-                  htmlFor="deck-description-input"
-                  style={{ marginTop: 12, display: "block" }}
-                >
-                  Description (optional)
-                </label>
-                <input
+                <UiField
                   id="deck-description-input"
-                  className="deck-input deck-name-input"
-                  type="text"
+                  fullWidth
+                  label="Description (optional)"
                   value={deckDescription}
                   onChange={(e) => setDeckDescription(e.target.value)}
                   placeholder="What's in this deck?"
-                  maxLength={MAX_DESCRIPTION_LENGTH}
+                  inputProps={{ maxLength: MAX_DESCRIPTION_LENGTH }}
                   disabled={inputsDisabled}
                 />
               </div>
@@ -340,12 +330,9 @@ export default function CreateWordDeck() {
                     </span>
                   </div>
                   {atLimit && (
-                    <Link
-                      className="btn deck-buy-btn"
-                      to="/user/shop?buy=wordDeck"
-                    >
+                    <UiAction component={Link} to="/user/shop?buy=wordDeck">
                       Buy More Slots
-                    </Link>
+                    </UiAction>
                   )}
                 </div>
               )}
@@ -355,23 +342,13 @@ export default function CreateWordDeck() {
               className="deck-words-section"
               style={{ marginTop: 16, marginBottom: 16 }}
             >
-              <label
-                className="deck-field-label"
-                htmlFor="deck-words-input"
-                style={{ display: "block", marginBottom: 4 }}
-              >
-                Words (one per line)
-              </label>
-              <textarea
+              <UiField
                 id="deck-words-input"
-                className="deck-input"
-                rows={20}
-                style={{
-                  width: "100%",
-                  fontFamily: "monospace",
-                  resize: "vertical",
-                  minHeight: 320,
-                }}
+                className="deck-words-field"
+                fullWidth
+                multiline
+                minRows={12}
+                label="Words (one per line)"
                 value={wordsText}
                 onChange={(e) => setWordsText(e.target.value)}
                 placeholder={
@@ -390,19 +367,19 @@ export default function CreateWordDeck() {
               >
                 <span
                   style={{
-                    color: tooFew || tooMany ? "#d04040" : undefined,
+                    color: tooFew || tooMany ? "var(--ui-danger-text)" : undefined,
                     fontWeight: 600,
                   }}
                 >
                   {wordCount} / {MAX_WORD_DECK_SIZE} words
                 </span>
                 {tooFew && (
-                  <span style={{ color: "#d04040", fontSize: "0.85rem" }}>
+                  <span style={{ color: "var(--ui-danger-text)", fontSize: "var(--ui-text-small)" }}>
                     Need at least {MIN_WORD_DECK_SIZE} words
                   </span>
                 )}
                 {tooMany && (
-                  <span style={{ color: "#d04040", fontSize: "0.85rem" }}>
+                  <span style={{ color: "var(--ui-danger-text)", fontSize: "var(--ui-text-small)" }}>
                     Too many words (max {MAX_WORD_DECK_SIZE})
                   </span>
                 )}
@@ -413,8 +390,8 @@ export default function CreateWordDeck() {
                   className="deck-word-errors"
                   style={{
                     marginTop: 8,
-                    color: "#d04040",
-                    fontSize: "0.85rem",
+                    color: "var(--ui-danger-text)",
+                    fontSize: "var(--ui-text-small)",
                     paddingLeft: 18,
                     maxHeight: 160,
                     overflowY: "auto",

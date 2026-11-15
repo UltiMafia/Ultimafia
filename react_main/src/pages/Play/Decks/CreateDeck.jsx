@@ -2,11 +2,11 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import { SiteInfoContext } from "../../../Contexts";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
 import UiAction from "../../../components/ui/UiAction";
 import UiIcon from "../../../components/ui/UiIcon";
-import { UiPageHeader } from "components/ui";
+import { UiField, UiPageHeader } from "components/ui";
 import { useErrorAlert } from "../../../components/Alerts";
 import "css/deck.css";
 import "css/form.css";
@@ -289,17 +289,14 @@ export default function CreateDecks() {
             </div>
             <div className="deck-top-bar">
               <div className="deck-name-section">
-                <label className="deck-field-label" htmlFor="deck-name-input">
-                  Deck Name
-                </label>
-                <input
+                <UiField
                   id="deck-name-input"
-                  className="deck-input deck-name-input"
-                  type="text"
+                  fullWidth
+                  label="Deck Name"
                   value={deckName}
                   onChange={(e) => setDeckName(e.target.value)}
                   placeholder="Enter deck name"
-                  maxLength={25}
+                  inputProps={{ maxLength: 25 }}
                 />
               </div>
               {!params.get("edit") && (
@@ -311,12 +308,9 @@ export default function CreateDecks() {
                     </span>
                   </div>
                   {atLimit && (
-                    <Link
-                      className="btn deck-buy-btn"
-                      to="/user/shop?buy=anonymousDeck"
-                    >
+                    <UiAction component={Link} to="/user/shop?buy=anonymousDeck">
                       Buy More Decks
-                    </Link>
+                    </UiAction>
                   )}
                 </div>
               )}
@@ -342,13 +336,19 @@ export default function CreateDecks() {
                         getValues={getValues}
                         selectedFile={selectedFiles[index]}
                       />
-                      <input
-                        className="deck-input"
-                        aria-label={`Card ${index + 1} name`}
-                        placeholder="Name"
-                        maxLength={20}
-                        {...register(`cards.${index}.name`)}
-                        defaultValue={profile.name}
+                      <Controller
+                        name={`cards.${index}.name`}
+                        control={control}
+                        render={({ field }) => (
+                          <UiField
+                            className="deck-card-name"
+                            fullWidth
+                            aria-label={`Card ${index + 1} name`}
+                            placeholder="Name"
+                            inputProps={{ maxLength: 20 }}
+                            {...field}
+                          />
+                        )}
                       />
                       <input
                         className="color-input"

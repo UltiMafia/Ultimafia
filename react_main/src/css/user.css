@@ -872,15 +872,10 @@ iframe {
 
 .profile .bio .buttons {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
+  gap: 8px;
 
   margin-top: 10px;
-}
-
-.profile .bio .btn {
-  align-self: flex-start;
-
-  margin-right: 10px;
 }
 
 .MuiPopover-root .miniprofile {
@@ -1123,80 +1118,6 @@ iframe {
 }
 
 .profile .ratings .expand-icon-wrapper i:hover {
-  opacity: 0.6;
-}
-
-.profile .stats-modal {
-  width: 700px;
-}
-
-.profile .stats-modal .modal-header {
-  font-weight: 700;
-}
-
-.profile .stats-modal .modal-content {
-  max-height: 600px;
-  overflow-y: scroll;
-}
-
-.profile .stats-modal .control {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: stretch;
-  justify-content: flex-start;
-}
-
-.profile .stats-modal .stats-wrapper {
-  display: flex;
-  flex-flow: column;
-  align-items: stretch;
-  justify-content: flex-start;
-}
-
-.profile .stats-modal .filter {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: stretch;
-  justify-content: flex-start;
-}
-
-.profile .stats-modal .stats {
-  display: flex;
-  flex-flow: column;
-  align-items: stretch;
-  justify-content: flex-start;
-}
-
-.profile .stats-modal .stats .stats-row {
-  display: flex;
-  flex-flow: column;
-  align-items: stretch;
-  justify-content: flex-start;
-
-  margin-top: 15px;
-}
-
-.profile .stats-modal .stats .stats-row-name {
-  font-weight: 700;
-}
-
-.profile .stats-modal .stats .stats-row .stats-list {
-  display: flex;
-  flex-flow: row wrap;
-  align-items: stretch;
-  justify-content: flex-start;
-}
-
-.profile .stats-modal .stats .stats-row .stats-list .stat {
-  display: flex;
-  flex-flow: column;
-  align-items: stretch;
-  justify-content: flex-start;
-
-  margin-right: 20px;
-}
-
-.profile .stats-modal .stats .stats-row .stats-list .stat-data {
   opacity: 0.6;
 }
 

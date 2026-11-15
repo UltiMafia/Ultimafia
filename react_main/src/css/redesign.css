@@ -45,12 +45,12 @@ button, select { font: inherit; }
 .skip-link { position: absolute; left: 12px; top: -100px; z-index: 1500; padding: 12px; border-radius: 4px; background: var(--mui-palette-primary-main); color: var(--mui-palette-primary-contrastText); }
 .skip-link:focus { top: 8px; }
 .announcement-notice { display: flex; align-items: center; gap: 4px; min-height: 40px; margin-bottom: 12px; border: 1px solid var(--scheme-color-border); border-radius: 4px; background: var(--scheme-color); }
-.announcement-summary { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; min-height: 40px; padding: 8px 10px; border: 0; background: transparent; color: var(--scheme-color-text); text-align: left; cursor: pointer; font-size: 13px; }
+.announcement-summary { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; min-height: 40px; padding: 8px 10px; border: 0; background: transparent; color: var(--scheme-color-text); text-align: left; cursor: pointer; font-size: var(--ui-text-small); }
 .announcement-summary > i { color: var(--um-accent); }
 .announcement-preview { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .announcement-read { color: var(--um-accent); font-size: 12px; }
-.announcement-notice > .utility-button { min-width: 40px; min-height: 40px; border: 0; }
-.announcement-content { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.65; }
+.announcement-notice > .ui-action { flex: 0 0 auto; }
+.announcement-content { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--ui-text-body); line-height: 1.65; }
 .announcement-content a { color: var(--um-accent); }
 
 /* Game discovery */

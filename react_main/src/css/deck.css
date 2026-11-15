@@ -222,7 +222,7 @@
 .deck .deck-name-section {
   display: flex;
   flex-flow: column nowrap;
-  gap: 6px;
+  gap: 12px;
   flex: 1 1 auto;
   max-width: 360px;
 }
@@ -243,29 +243,6 @@
 .deck .deck-slots-count {
   font-weight: 700;
   opacity: 1;
-}
-
-.deck .deck-buy-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 12px;
-  border-radius: 6px;
-  background-color: transparent;
-  color: var(--mui-palette-primary-main);
-  border: 2px solid var(--mui-palette-primary-main);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 120ms ease, color 120ms ease;
-}
-
-.deck .deck-buy-btn:hover {
-  background-color: var(--mui-palette-primary-main);
-  color: var(--scheme-color-background);
 }
 
 .deck .deck-field-label {
@@ -327,34 +304,12 @@
   opacity: 0.85;
 }
 
-.deck input, .deck textarea {
-  display: block;
-  box-sizing: border-box;
-  padding: 8px 10px;
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
-  border: 1px solid var(--scheme-color-border);
-  border-radius: 6px;
-  font-size: 14px;
-  transition:
-    border-color 120ms ease,
-    box-shadow 120ms ease;
-}
-
-.deck input:focus {
-  outline: none;
-  border-color: var(--theme-color-light);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.06);
-}
-
-.deck .deck-input {
-  width: 100%;
-}
-
 .deck .color-input {
   width: 56px;
-  height: 36px;
+  height: var(--ui-action-height);
   padding: 2px;
+  border: 1px solid var(--scheme-color-border);
+  border-radius: var(--ui-radius-control);
   background-color: transparent;
   cursor: pointer;
 }
@@ -484,7 +439,7 @@
     gap: 8px;
     padding: 8px 10px;
   }
-  .deck .deck-grid-row > .deck-input { grid-column: 3 / -1; }
+  .deck .deck-grid-row > .deck-card-name { grid-column: 3 / -1; }
   .deck .deck-grid-row > .color-input { grid-column: 2; }
   .deck .deck-grid-row > .ui-action { grid-column: 4; }
   .deck .color-input {
@@ -518,6 +473,7 @@
 .deck .deck-editor form .deck-field-label { opacity: 1; text-transform: none; letter-spacing: 0; font-size: 14px; }
 .deck .deck-editor form .deck-grid-row { background: transparent; border-width: 0 0 1px; border-radius: 0; border-color: var(--scheme-color-border); }
 .deck .deck-editor form .deck-name-section { max-width: 600px; }
+.deck .deck-words-field textarea { font-family: "Courier New", Courier, monospace; }
 @media (min-width: 1000px) {
   .deck .deck-editor form { display: grid; grid-template-columns: minmax(0, 1fr) 280px; align-items: start; gap: 24px; }
   .deck .deck-editor form > .deck-top-bar { grid-column: 1; grid-row: 1; }

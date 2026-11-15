@@ -6,7 +6,7 @@ import { Loading } from "../Loading";
 import { LatestRequest } from "../../lib/latestRequest";
 import { useViewActive } from "../../hooks/useViewActivity";
 import { urlifyText } from "../../utilsFolder";
-import { UiAction, UiDialog } from "components/ui";
+import { UiAction, UiIcon, UiDialog } from "components/ui";
 
 // The existing announcements endpoint returns descending batches of five.
 const PAGE_SIZE = 5;
@@ -113,7 +113,7 @@ export function Announcement({ showAnnouncementTemporarily, setShowAnnouncementT
         <span className="announcement-preview">{announcements[0].content}</span>
         <span className="announcement-read">Read</span>
       </button>
-      <button className="utility-button" type="button" onClick={closeDialog} aria-label="Dismiss announcement"><i className="fas fa-times" aria-hidden="true" /></button>
+      <UiAction iconOnly size="small" variant="ghost" onClick={closeDialog} aria-label="Dismiss announcement"><UiIcon name="close" size={18} /></UiAction>
     </div>}
     <UiDialog
       open={open}

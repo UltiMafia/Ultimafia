@@ -101,7 +101,7 @@
     "mui:IconButton": 1
   },
   "components/alerts/Announcement.jsx": {
-    "native:button": 2
+    "native:button": 1
   },
   "components/dms/DmButton.jsx": {
     "mui:IconButton": 1
@@ -149,15 +149,8 @@
     "alternate:@mui/icons-material/DeleteOutline": 1,
     "mui:Paper": 1
   },
-  "pages/Community/Forums/Board.jsx": {
-    "native:input": 7,
-    "native:textarea": 1,
-    "native:button": 1
-  },
   "pages/Community/Forums/Thread.jsx": {
-    "native:button": 1,
-    "native:input": 5,
-    "native:textarea": 1
+    "native:input": 1
   },
   "pages/Fame/Competitive.jsx": {
     "mui:CircularProgress": 1,
@@ -260,12 +253,11 @@
   },
   "pages/Play/Decks/CreateDeck.jsx": {
     "native:button": 1,
-    "native:input": 5
+    "native:input": 3
   },
   "pages/Play/WordDecks/CreateWordDeck.jsx": {
     "native:button": 1,
-    "native:input": 3,
-    "native:textarea": 1
+    "native:input": 1
   },
   "pages/Policy/Moderation/BanAppeals.jsx": {
     "mui:CircularProgress": 1,
@@ -284,8 +276,7 @@
   },
   "pages/User/Profile.jsx": {
     "native:button": 1,
-    "native:select": 2,
-    "native:input": 1,
+    "native:select": 1,
     "mui:Paper": 1
   },
   "pages/User/Settings.jsx": {

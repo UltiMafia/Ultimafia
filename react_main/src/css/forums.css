@@ -866,7 +866,7 @@
   gap: 6px;
   margin-bottom: 8px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: var(--ui-text-body);
 }
 
 .thread-wrapper .petition-panel-header i {
@@ -875,7 +875,7 @@
 
 .thread-wrapper .petition-sign-count-badge {
   margin-left: auto;
-  font-size: 11px;
+  font-size: var(--ui-text-caption);
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 10px;
@@ -892,18 +892,18 @@
 
 .thread-wrapper .petition-action-btn:hover {
   opacity: 1;
-  color: var(--theme-color);
+  color: var(--um-accent);
 }
 
 .thread-wrapper .petition-title {
   font-weight: 700;
-  font-size: 14px;
+  font-size: var(--ui-text-body);
   margin-bottom: 6px;
   word-break: break-word;
 }
 
 .thread-wrapper .petition-body {
-  font-size: 13px;
+  font-size: var(--ui-text-body);
   opacity: 0.85;
   margin-bottom: 10px;
   word-break: break-word;
@@ -936,41 +936,21 @@
   font-style: italic;
 }
 
-.thread-wrapper .petition-sign-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  cursor: pointer;
-  padding: 6px 12px;
-  font-size: 13px;
+.thread-wrapper .petition-sign-btn.ui-action {
   align-self: flex-start;
 }
 
 .thread-wrapper .petition-edit-form {
   display: flex;
   flex-flow: column;
-  gap: 8px;
+  gap: 12px;
   margin-bottom: 8px;
-}
-
-.thread-wrapper .petition-edit-form input,
-.thread-wrapper .petition-edit-form textarea {
-  width: 100%;
-  box-sizing: border-box;
-  font-family: inherit;
-  font-size: 13px;
-}
-
-.thread-wrapper .petition-edit-form textarea {
-  resize: vertical;
-  min-height: 80px;
 }
 
 .thread-wrapper .petition-edit-buttons {
   display: flex;
-  flex-flow: row;
-  gap: 6px;
+  flex-flow: row wrap;
+  gap: 8px;
 }
 
 .thread-wrapper .restricted-panel-header {
@@ -980,7 +960,7 @@
   gap: 6px;
   margin-bottom: 6px;
   font-weight: 700;
-  font-size: 14px;
+  font-size: var(--ui-text-body);
 }
 
 .thread-wrapper .restricted-panel-header i {
@@ -988,7 +968,7 @@
 }
 
 .thread-wrapper .restricted-panel-header i.active {
-  color: var(--theme-color);
+  color: var(--um-accent);
   opacity: 1;
 }
 
@@ -1018,7 +998,7 @@
 }
 
 .thread-wrapper .roster-muted-badge {
-  font-size: 10px;
+  font-size: var(--ui-text-caption);
   font-weight: 600;
   padding: 2px 6px;
   border-radius: 10px;
@@ -1034,7 +1014,7 @@
 }
 
 .thread-wrapper .roles-section-label {
-  font-size: 11px;
+  font-size: var(--ui-text-caption);
   font-weight: 700;
   opacity: 0.5;
   text-transform: uppercase;
@@ -1071,12 +1051,12 @@
 
 .thread-wrapper .role-mute-btn:hover {
   opacity: 1;
-  color: #e05252;
+  color: var(--ui-danger-text);
 }
 
 .thread-wrapper .role-mute-btn.active {
   opacity: 0.9;
-  color: #e05252;
+  color: var(--ui-danger-text);
 }
 
 .thread-wrapper .preset-mute {
@@ -1087,41 +1067,24 @@
 
 .thread-wrapper .preset-mute:hover {
   opacity: 1;
-  color: #e05252;
+  color: var(--ui-danger-text);
 }
 
 .thread-wrapper .preset-mute.active {
   opacity: 0.9;
-  color: #e05252;
+  color: var(--ui-danger-text);
 }
 
 .thread-wrapper .muted-notice {
-  border-left: 3px solid #e05252;
+  border-left: 3px solid var(--ui-danger-text);
 }
 
 .mention-autocomplete-wrapper {
   position: relative;
 }
 
-.mention-ping-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+.mention-ping-btn.ui-action {
   margin-top: 6px;
-  padding: 4px 10px;
-  background: var(--scheme-color-sec);
-  border: 1px solid var(--scheme-color-border);
-  border-radius: 4px;
-  color: var(--scheme-color-text);
-  cursor: pointer;
-  font-size: 12px;
-  opacity: 0.65;
-}
-
-.mention-ping-btn:hover {
-  opacity: 1;
-  color: var(--theme-color);
-  border-color: var(--theme-color);
 }
 
 .mention-dropdown {
@@ -1151,7 +1114,7 @@
 }
 
 .mention-item-tag {
-  font-size: 12px;
+  font-size: var(--ui-text-caption);
   font-weight: 700;
   color: #fff;
   border-radius: 10px;
@@ -1160,7 +1123,7 @@
 }
 
 .mention-item-user {
-  font-size: 13px;
+  font-size: var(--ui-text-small);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1177,21 +1140,13 @@
   display: inline-block;
 }
 
-.mention-search {
-  width: 100%;
-  padding: 7px 10px;
-  border: none;
+.mention-search-field {
+  padding: 8px;
   border-bottom: 1px solid var(--scheme-color-border);
-  background: var(--scheme-color-sec);
-  color: var(--scheme-color-text);
-  font-size: 13px;
-  box-sizing: border-box;
-  border-radius: 6px 6px 0 0;
-  outline: none;
 }
 
 .mention-item-type {
-  font-size: 10px;
+  font-size: var(--ui-text-caption);
   font-weight: 400;
   opacity: 0.7;
   margin-left: 5px;
@@ -1237,7 +1192,7 @@
 }
 
 .thread-wrapper .poster-list-item .chip-label {
-  font-size: 11px;
+  font-size: var(--ui-text-caption);
   opacity: 0.55;
   font-style: italic;
   margin-left: auto;
@@ -1252,7 +1207,7 @@
 
 .thread-wrapper .chip-remove:hover {
   opacity: 1;
-  color: #e05252;
+  color: var(--ui-danger-text);
 }
 
 .thread-wrapper .no-extra-posters {
@@ -1265,18 +1220,12 @@
   display: flex;
   flex-flow: row nowrap;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
-.thread-wrapper .add-poster-row input {
-  flex: 1;
+.thread-wrapper .forum-inline-field {
+  flex: 1 1 160px;
   min-width: 0;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--scheme-color-border);
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
-  font-size: 13px;
 }
 
 .thread-wrapper .restricted-notice {
@@ -1289,12 +1238,12 @@
 }
 
 .thread-wrapper .btns-wrapper i.active {
-  color: var(--theme-color);
+  color: var(--um-accent);
 }
 
 .thread-wrapper .roster-restricted-badge {
   margin-left: auto;
-  font-size: 10px;
+  font-size: var(--ui-text-caption);
   font-weight: 600;
   letter-spacing: 0.05em;
   padding: 2px 6px;
@@ -1311,7 +1260,7 @@
 }
 
 .thread-wrapper .roster-tag {
-  font-size: 11px;
+  font-size: var(--ui-text-caption);
   font-weight: 600;
   padding: 2px 7px;
   border-radius: 10px;
@@ -1362,29 +1311,18 @@
 
 .thread-wrapper .tag-add-row {
   display: flex;
-  flex-flow: row nowrap;
+  flex-flow: row wrap;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
   margin-top: 2px;
 }
 
-.thread-wrapper .tag-add-row input[type="text"] {
-  flex: 1;
-  min-width: 0;
-  padding: 3px 7px;
-  border-radius: 4px;
-  border: 1px solid var(--scheme-color-border);
-  background-color: var(--scheme-color-sec);
-  color: var(--scheme-color-text);
-  font-size: 12px;
-}
-
 .thread-wrapper .roster-color-input {
-  width: 26px;
-  height: 22px;
+  width: var(--ui-icon-height);
+  height: var(--ui-icon-height);
   padding: 0;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid var(--scheme-color-border);
+  border-radius: var(--ui-radius-control);
   cursor: pointer;
   background: none;
 }
@@ -1421,25 +1359,10 @@
   margin-left: 0;
 }
 
-.thread-wrapper .preset-save-btn {
-  display: flex;
-  flex-flow: row nowrap;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 4px;
-  border: 1px solid var(--theme-color);
-  color: var(--theme-color);
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
-  opacity: 0.35;
-}
-
-.thread-wrapper .preset-save-btn:hover {
-  opacity: 0.85;
-  background-color: var(--theme-color);
-  color: #fff;
+.thread-wrapper .preset-save-btn.ui-action {
+  flex: 0 0 auto;
+  padding-inline: 8px;
+  color: var(--um-accent);
 }
 
 @media (max-width: 768px) {
@@ -1497,3 +1420,7 @@
 }
 
 .search-result-card { margin-bottom: var(--ui-space-lg); }
+
+/* Create Thread uses the shared fields; keep its boolean rows on the control grid. */
+.thread-composer .thread-composer-toggle { margin: 0; min-height: var(--ui-action-height); }
+.thread-composer .thread-composer-toggle .MuiFormControlLabel-label { font-size: var(--ui-text-body); }

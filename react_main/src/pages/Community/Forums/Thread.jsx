@@ -17,7 +17,7 @@ import { appendForumQuote, canComposeForumReply } from "./forumReplyComposer.mjs
 import { pastedForumReplyImage } from "./forumReplyImagePaste.mjs";
 
 import { VoteWidget } from "components/VoteWidget";
-import { UiAction, UiIcon, confirmAction, UiText as Typography } from "components/ui";
+import { UiAction, UiField, UiIcon, confirmAction, UiText as Typography } from "components/ui";
 import { EmoteReactions } from "components/EmoteReactions";
 import "css/emote-reactions.css";
 import "css/comments.css";
@@ -90,21 +90,22 @@ function MentionEditor({ value, onChange, onPaste, readOnly, rosterUsers, mentio
     <div className="mention-autocomplete-wrapper" ref={editorRef}>
       <TextEditor value={value} onChange={onChange} onPaste={onPaste} readOnly={readOnly} />
       <div className="mention-picker-row">
-        <button
+        <UiAction
+          size="small"
           className="mention-ping-btn"
-          type="button"
           onClick={() => { setPickerOpen((o) => !o); setPickerQuery(""); }}
         >
           <i className="fas fa-at" /> Ping
-        </button>
+        </UiAction>
         {pickerOpen && (
           <div className="mention-dropdown">
-            <input
-              className="mention-search"
-              autoFocus
+            <UiField
+              className="mention-search-field"
               placeholder="Search..."
+              autoFocus
               value={pickerQuery}
               onChange={(e) => setPickerQuery(e.target.value)}
+              inputProps={{ "aria-label": "Search players and role tags" }}
             />
             {filtered.length === 0 && (
               <div className="mention-no-results">No matches</div>
@@ -947,35 +948,39 @@ function onAddTag(targetUserId) {
                         </div>
                       )}
                       <div className="tag-add-row">
-                        <input
-                          type="text"
+                        <UiField
+                          className="forum-inline-field"
+                          placeholder="Tag name..."
                           value={newTagText}
                           onChange={(e) => setNewTagText(e.target.value)}
                           onKeyDown={(e) =>
                             e.key === "Enter" && onAddTag(entry.user.id)
                           }
-                          placeholder="Tag name..."
+                          inputProps={{ "aria-label": "Tag name" }}
                         />
                         <input
                           className="roster-color-input"
                           type="color"
+                          aria-label="Tag color"
                           value={newTagColor}
                           onChange={(e) => setNewTagColor(e.target.value)}
                         />
-                        <div
-                          className="btn btn-theme-sec"
+                        <UiAction
+                          size="small"
                           onClick={() => onAddTag(entry.user.id)}
                         >
                           Add
-                        </div>
-                        <div
+                        </UiAction>
+                        <UiAction
+                          size="small"
+                          variant="ghost"
                           className="preset-save-btn"
                           onClick={onSavePreset}
                           title="Save as preset"
                         >
                           <i className="fas fa-bookmark" />
                           Save
-                        </div>
+                        </UiAction>
                       </div>
                     </div>
                   )}
@@ -984,16 +989,17 @@ function onAddTag(targetUserId) {
             </div>
             {isAuthor && (
               <div className="add-poster-row">
-                <input
-                  type="text"
+                <UiField
+                  className="forum-inline-field"
+                  placeholder="Add username..."
                   value={newRosterUsername}
                   onChange={(e) => setNewRosterUsername(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && onAddRosterEntry()}
-                  placeholder="Add username..."
+                  inputProps={{ "aria-label": "Username to add" }}
                 />
-                <div className="btn btn-theme-sec" onClick={onAddRosterEntry}>
+                <UiAction size="small" onClick={onAddRosterEntry}>
                   Add
-                </div>
+                </UiAction>
               </div>
             )}
           </div>
@@ -1023,27 +1029,31 @@ function onAddTag(targetUserId) {
             </div>
             {petitionEditing ? (
               <div className="petition-edit-form">
-                <input
-                  type="text"
+                <UiField
+                  fullWidth
+                  label="Petition title"
                   value={petitionEditTitle}
                   onChange={(e) => setPetitionEditTitle(e.target.value)}
                   placeholder="Petition title..."
-                  maxLength={200}
+                  inputProps={{ maxLength: 200 }}
                 />
-                <textarea
+                <UiField
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  label="Petition body"
                   value={petitionEditBody}
                   onChange={(e) => setPetitionEditBody(e.target.value)}
                   placeholder="Describe what you are petitioning for..."
-                  maxLength={5000}
-                  rows={4}
+                  inputProps={{ maxLength: 5000 }}
                 />
                 <div className="petition-edit-buttons">
-                  <div className="btn btn-theme" onClick={onSavePetition}>
+                  <UiAction variant="primary" onClick={onSavePetition}>
                     Save
-                  </div>
-                  <div className="btn btn-theme-sec" onClick={onCancelEditPetition}>
+                  </UiAction>
+                  <UiAction onClick={onCancelEditPetition}>
                     Cancel
-                  </div>
+                  </UiAction>
                 </div>
               </div>
             ) : (
@@ -1075,10 +1085,9 @@ function onAddTag(targetUserId) {
                   ))}
                 </div>
                 {user.loggedIn && (
-                  <div
-                    className={`petition-sign-btn btn ${
-                      threadInfo.petition.hasSigned ? "btn-theme-sec" : "btn-theme"
-                    }`}
+                  <UiAction
+                    className="petition-sign-btn"
+                    variant={threadInfo.petition.hasSigned ? "secondary" : "primary"}
                     onClick={onSignPetition}
                   >
                     <i
@@ -1087,7 +1096,7 @@ function onAddTag(targetUserId) {
                       }`}
                     />
                     {threadInfo.petition.hasSigned ? "Signed" : "Sign"}
-                  </div>
+                  </UiAction>
                 )}
               </>
             )}

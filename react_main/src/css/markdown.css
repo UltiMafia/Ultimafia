@@ -1,31 +1,90 @@
 .react-mde {
-  border-radius: 0px;
+  overflow: hidden;
+  border: 1px solid var(--scheme-color-border);
+  border-radius: var(--ui-radius-control);
+  background-color: var(--scheme-color);
 }
 
 .react-mde .mde-header {
-  border-radius: 0px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-bottom: 1px solid var(--scheme-color-border);
   background-color: var(--scheme-color-sec);
 }
 
-.react-mde button {
-  outline: none;
-  color: var(--scheme-color-text);
+.react-mde .mde-tabs {
+  display: flex;
+  gap: 4px;
+  margin-right: 4px;
 }
 
-.mde-header .svg-icon {
+.react-mde .mde-tabs button {
+  min-height: 32px;
+  margin: 0;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius-control);
+  background: transparent;
+  color: var(--um-muted);
+  font: inherit;
+  font-size: var(--ui-text-small);
+  cursor: pointer;
+}
+
+.react-mde .mde-tabs button:hover {
+  color: var(--scheme-color-text);
+  background-color: color-mix(in srgb, var(--scheme-color-text) 8%, transparent);
+}
+
+.react-mde .mde-tabs button.selected {
+  border-color: var(--um-accent) !important;
+  background-color: color-mix(in srgb, var(--um-accent) 12%, transparent);
+  color: var(--um-accent);
+}
+
+.react-mde .mde-header ul.mde-header-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0;
+  padding: 0 4px;
+  list-style: none;
+}
+
+.react-mde .mde-header ul.mde-header-group li.mde-header-item {
+  display: inline-flex;
+  margin: 0;
+}
+
+.react-mde .mde-header ul.mde-header-group li.mde-header-item button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ui-icon-height);
+  height: var(--ui-icon-height);
+  padding: 0;
+  border: 0;
+  border-radius: var(--ui-radius-control);
+  background: transparent;
+  color: var(--um-muted);
+  cursor: pointer;
+}
+
+.react-mde .mde-header ul.mde-header-group li.mde-header-item button:hover {
+  background-color: color-mix(in srgb, var(--scheme-color-text) 8%, transparent);
   color: var(--scheme-color-text);
 }
 
 .mde-text {
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
+  padding: 12px;
   font-family: inherit;
   font-size: 1rem;
   line-height: 1.5;
-}
-
-.react-mde button.selected {
-  border: 1px solid #c7c7c7 !important;
 }
 
 .react-mde textarea {
@@ -34,7 +93,6 @@
 
 .react-mde .grip {
   border-top: 1px solid var(--scheme-color-border);
-
   background-color: var(--scheme-color-sec);
 }
 

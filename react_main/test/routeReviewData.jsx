@@ -112,6 +112,21 @@ const threads = ["How do you organize your investigation notes?", "Weekly setup 
   vote: 0, voteCount: 8, pinned: false, locked: false, restricted: false, reactions: [],
   rosterUsers: [], tagPresets: [], mutedTags: [],
 }));
+// The first thread is the authoring fixture: it carries a petition, roster and
+// role tags so the author-only controls are reachable in a review pass.
+threads[0].author = people[0];
+threads[0].petition = {
+  title: "Add a second weekly discussion prompt",
+  body: "A second prompt would let players compare notes across time zones.",
+  signCount: 2,
+  signers: [people[1], people[2]],
+  hasSigned: false,
+};
+threads[0].rosterUsers = [
+  { user: people[2], tags: [{ _id: "fixture-tag-1", text: "Cop", color: "#4a7fd4" }] },
+  { user: people[3], tags: [{ _id: "fixture-tag-2", text: "Doctor", color: "#2f9d6e" }] },
+];
+threads[0].tagPresets = [{ _id: "fixture-preset-1", text: "Roleblocker", color: "#8a5cd6" }];
 const comments = replies.map((reply, i) => ({ ...reply, id: `fixture-comment-${i}`, date: reply.postDate, location: "fixture-person-1" }));
 const rankingUsers = people.map((person, i) => ({ ...person, userId: person.id, username: person.name,
   rank: i + 1, skillTier: "Silver", skillRating: 34 - i, skillMu: 42 - i, skillSigma: 3,

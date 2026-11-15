@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import UiAction from "../../../components/ui/UiAction";
 import UiIcon from "../../../components/ui/UiIcon";
-import { UiSection, UiList, UiListItem, UiPageHeader } from "components/ui";
+import { UiSection, UiList, UiListItem, UiPageHeader, UiField, UiSwitch, UiCheckbox } from "components/ui";
+import { FormControlLabel } from "@mui/material";
 import { newestRepliesFirst } from "./recentActivity.mjs";
 import { useParams, Link } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
@@ -221,102 +222,94 @@ function CreateThreadModal(props) {
   const header = "Create Thread";
 
   const content = (
-    <div className="form">
-      <div className="field-wrapper thread-title">
-        <div className="label">Title</div>
-        <input type="text" aria-label="Thread title" value={props.threadTitle} onChange={onTitleChange} disabled={submitting} />
-      </div>
+    <div className="ui-form-stack thread-composer">
+      <UiField
+        fullWidth
+        label="Title"
+        value={props.threadTitle}
+        onChange={onTitleChange}
+        disabled={submitting}
+      />
       <TextEditor
         value={props.threadContent}
         onChange={props.setThreadContent}
       />
-      <div className="field-wrapper">
-        <div className="label">Create Poll</div>
-        <div className="switch-wrapper">
-          <Switch
-            label="Create poll" disabled={submitting}
-            value={includePoll}
-            onChange={(e) => setIncludePoll(e.target.value)}
+      <FormControlLabel
+        className="thread-composer-toggle"
+        label="Create Poll"
+        control={
+          <UiSwitch
+            checked={includePoll}
+            disabled={submitting}
+            onChange={(e) => setIncludePoll(e.target.checked)}
           />
-        </div>
-      </div>
+        }
+      />
       {includePoll && (
         <>
-          <div className="field-wrapper">
-            <div className="label">Question</div>
-            <input
-              type="text"
-              aria-label="Poll question"
-              value={pollQuestion}
-              onChange={(e) => setPollQuestion(e.target.value)}
-              placeholder="What is your question?"
-            />
-          </div>
-          <div className="field-wrapper">
-            <div className="label">Options (comma-separated)</div>
-            <input
-              type="text"
-              aria-label="Poll options, comma-separated"
-              value={pollOptions}
-              onChange={(e) => setPollOptions(e.target.value)}
-              placeholder="Option 1, Option 2, Option 3"
-            />
-          </div>
-          <div className="field-wrapper">
-            <div className="label">Expires in</div>
-            <input
-              type="text"
-              aria-label="Poll expiration"
-              value={pollExpiration}
-              onChange={(e) => setPollExpiration(e.target.value)}
-              placeholder="Leave blank for no expiration"
-            />
-          </div>
+          <UiField
+            fullWidth
+            label="Question"
+            value={pollQuestion}
+            onChange={(e) => setPollQuestion(e.target.value)}
+            placeholder="What is your question?"
+          />
+          <UiField
+            fullWidth
+            label="Options (comma-separated)"
+            value={pollOptions}
+            onChange={(e) => setPollOptions(e.target.value)}
+            placeholder="Option 1, Option 2, Option 3"
+          />
+          <UiField
+            fullWidth
+            label="Expires in"
+            value={pollExpiration}
+            onChange={(e) => setPollExpiration(e.target.value)}
+            placeholder="Leave blank for no expiration"
+          />
         </>
       )}
-      <div className="field-wrapper" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <input
-          type="checkbox"
-          aria-label="People list"
-          checked={restricted}
-          onChange={(e) => setRestricted(e.target.checked)}
-        />
-        <div className="label" style={{ margin: 0 }}>People List</div>
-      </div>
-      <div className="field-wrapper" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <input
-          type="checkbox"
-          aria-label="Include petition"
-          checked={includePetition}
-          onChange={(e) => setIncludePetition(e.target.checked)}
-        />
-        <div className="label" style={{ margin: 0 }}>Petition</div>
-      </div>
+      <FormControlLabel
+        className="thread-composer-toggle"
+        label="People List"
+        control={
+          <UiCheckbox
+            checked={restricted}
+            onChange={(e) => setRestricted(e.target.checked)}
+          />
+        }
+      />
+      <FormControlLabel
+        className="thread-composer-toggle"
+        label="Petition"
+        control={
+          <UiCheckbox
+            checked={includePetition}
+            onChange={(e) => setIncludePetition(e.target.checked)}
+          />
+        }
+      />
       {includePetition && (
         <>
-          <div className="field-wrapper">
-            <div className="label">Petition Title</div>
-            <input
-              type="text"
-              aria-label="Petition title"
-              value={petitionTitle}
-              onChange={(e) => setPetitionTitle(e.target.value)}
-              placeholder="What is your petition?"
-              maxLength={200}
-            />
-          </div>
-          <div className="field-wrapper">
-            <div className="label">Petition Body</div>
-            <textarea
-              aria-label="Petition body"
-              value={petitionBody}
-              onChange={(e) => setPetitionBody(e.target.value)}
-              placeholder="Describe what you are petitioning for..."
-              maxLength={5000}
-              rows={4}
-              style={{ width: "100%", resize: "vertical" }}
-            />
-          </div>
+          <UiField
+            fullWidth
+            label="Petition Title"
+            value={petitionTitle}
+            onChange={(e) => setPetitionTitle(e.target.value)}
+            placeholder="What is your petition?"
+            inputProps={{ maxLength: 200 }}
+          />
+          <UiField
+            fullWidth
+            multiline
+            minRows={4}
+            label="Petition Body"
+            value={petitionBody}
+            onChange={(e) => setPetitionBody(e.target.value)}
+            placeholder="Describe what you are petitioning for..."
+            inputProps={{ maxLength: 5000 }}
+          />
         </>
       )}
     </div>
@@ -410,19 +403,5 @@ function CreateThreadModal(props) {
       content={content}
       footer={footer}
     />
-  );
-}
-
-function Switch(props) {
-  return (
-    <button type="button" role="switch" aria-label={props.label} aria-checked={!!props.value} disabled={props.disabled}
-      className={`switch ${props.value ? "on" : ""}`}
-      onClick={() =>
-        !props.disabled && props.onChange({ target: { value: !props.value } })
-      }
-    >
-      <div className="track" />
-      <div className="thumb" />
-    </button>
   );
 }

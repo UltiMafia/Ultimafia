@@ -43,7 +43,10 @@ function dialogSignature() {
 
   const content = root.querySelector(".ui-dialog-content, .MuiDialogContent-root, .MuiDialogContent-root, [role='document']");
   const actions = root.querySelector(".ui-dialog-actions, .MuiDialogActions-root");
-  const paragraphs = [...root.querySelectorAll("p, li, .ui-dialog-description")].filter(visible);
+  // Helper text is auxiliary field copy, not the dialog's body paragraph.
+  const paragraphs = [...root.querySelectorAll("p, li, .ui-dialog-description")]
+    .filter(visible)
+    .filter((element) => !element.closest(".MuiFormHelperText-root"));
   const bodyStyle = paragraphs[0] ? getComputedStyle(paragraphs[0]) : null;
 
   const buttons = [...root.querySelectorAll("button, a.ui-action, .MuiButton-root")].filter(visible).map((button) => {
@@ -58,6 +61,17 @@ function dialogSignature() {
       iconOnly: textOf(button).length === 0,
     };
   });
+
+  // Only the action region is the comparable action row. Editor toolbars,
+  // switches and other content controls have their own control heights.
+  const actionHeights = actions
+    ? [...new Set(
+        [...actions.querySelectorAll("button, a.ui-action, .MuiButton-root")]
+          .filter(visible)
+          .map((button) => round(button.getBoundingClientRect().height))
+          .filter((height) => height > 0),
+      )]
+    : [];
 
   const overflow = [];
   for (const element of root.querySelectorAll("*")) {
@@ -95,7 +109,7 @@ function dialogSignature() {
     menuRows: root.querySelectorAll("[role='menuitem'], .MuiMenuItem-root").length,
     bodyFontSize: bodyStyle ? round(number(bodyStyle.fontSize)) : null,
     buttons,
-    actionHeights: [...new Set(buttons.filter((button) => !button.iconOnly).map((button) => button.height))],
+    actionHeights,
     overflow,
     text: textOf(root).slice(0, 120),
   };
