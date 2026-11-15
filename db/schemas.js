@@ -143,6 +143,8 @@ var schemas = {
       // Collapse profile media player to a compact bar while still playing
       collapseMedia: { type: Boolean, default: false },
       hideStatistics: { type: Boolean, default: false },
+      // Skip the confirmation before opening a posted external link
+      hideExternalLinkWarning: { type: Boolean, default: false },
       hideKarma: { type: Boolean, default: false },
       hidePointsNegative: { type: Boolean, default: true },
       hideJoinDate: { type: Boolean, default: false },
