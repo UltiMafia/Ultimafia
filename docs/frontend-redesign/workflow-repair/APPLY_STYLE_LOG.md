@@ -111,28 +111,70 @@ primitive, delete the old CSS/component, then prove the render.
   Search Results summary/results. Search Results had a missing `UiIcon` import
   after the action migration; fixed and the route no longer throws.
 
-## In flight
+## Completed: shared controls, overlays and touch targets
 
-- None. Next slice: remaining direct surfaces/buttons and popover title scale,
-  then the audit clusters.
+- Dialogs: helper text is no longer read as dialog body copy, action-height
+  comparison is limited to the action region, and the focused audit is at
+  **0 findings**. The overflow-visible content variant now actually beats
+  MUI's scrolling content rule.
+- Forms and editors: Create Thread, petition, roster, mention search, deck
+  names/cards/word lists and the shared markdown editor use `UiField`,
+  `UiAction`, `UiSwitch`/`UiCheckbox` and the shared editor surface. The
+  editor toolbar has 32px targets and themed tabs; the old raw `.form`,
+  `.field-wrapper` and `.switch` paths are gone, and react-mde now uses the
+  shared themed chrome.
+- Votes and actions: `VoteWidget` uses one 32px desktop / 44px touch target
+  for up/count/down. Friend, report, DM, strategy, tutorial, poll, competitive
+  and stock actions use `UiAction`; a semantic `success` variant covers stock
+  buys and moderation approvals.
+- Surfaces: shop cards, report rows, profile tier/rank and other page
+  surfaces use the shared card/row treatments. The phone navigation keeps its
+  dedicated nav shell; it is navigation, not a card. The dead Ranked
+  Stats modal and its CSS were removed.
+- Shop: the Scrapbook Stamp suggestion list is inline and keyboard-accessible
+  (40/44px rows), so it no longer sits behind the dialog actions.
+- Profile: banner editing no longer depends on hover. Touch devices get a
+  compact 44px edit/remove control at the banner's top-right; crop zoom
+  controls are square 32/44px actions.
+- Icon-only actions now resolve to 32x32 on desktop and 44x44 on touch; the
+  dialog close control was previously 32x40.
+
+## Verification
+
+- `lint:ui` passes; unit tests pass (29).
+- Focused dialog audit: **0 findings** (forums, profile, family, setup, shop).
+- Control/heading audit: **0 findings** across 10 routes and 18 renders. Two
+  role-detail captures failed only because the fixture copy no longer matches.
+- Browser suites: mobile header **25/25** at 320/360/375/390; DM panel **9/9**;
+  Banned **19/19**; Mod commands **8/8**.
+- Dark and light screenshots were inspected for profile, family, shop, stock
+  market, competitive, lobby, forum thread, setup editor, auth and activity.
+- Scale debt is **96**; the architecture baseline has been reduced after each
+  slice.
+
+## Not verified / open
+
+- Authenticated WebSocket behavior end-to-end is still unverified; only raw
+  prod handshakes were checked.
+- The strategy-windows browser suite passes desktop. Its mobile half fails on
+  a pre-existing fixture layout/crash (the fixture's game object lacks the
+  current setup/player shape); this is not a control regression.
+- The ban-appeals browser suite times out waiting for its fixture row.
+- The full final comparative matrix has not been rerun; do not call the site
+  visually accepted until it is.
 
 ## Next queue
 
-1. Remaining `Paper`/`Card` with complex `sx` (StockMarket summary, Family
-   trophy spotlight handled, ReportDetail, etc.).
-2. Remaining `Button`/`IconButton` with icons/sx.
-3. Remaining `Dialog*` outside the shared `UiDialog` (BannerUpload,
-   DeathSoundUpload, StampTradeModal, etc.).
-4. Comments: one component for `.post` and `.comment-row`.
-2. Comments: one component for `.post` and `.comment-row`, with the forum's extra
-   metadata as a named variant.
-3. Setup/role detail: verify the shared section/vote skeleton is complete and
-   delete the remaining page-specific section classes.
-4. Re-measure the open audit clusters on the current branch: secondaryAction,
-   sectionContainer, sectionHeading, textInput/select.
-5. Lower the architecture baseline after each migration; never raise it.
+1. Repair or explicitly retire the stale strategy-mobile and ban-appeals
+   browser fixtures.
+2. Run the single full audit matrix at the actual completion state.
+3. Review the remaining intentional exceptions: branded auth buttons, MUI
+   progress/menus, game workspace controls, media/upload overlays, the Auth
+   dialog, the full-screen strategy reader, the stock table surface and the
+   draggable DM/strategy windows.
+4. Keep reducing the baseline only when a migration removes the old path.
 
-## Local login proxy (do not commit)
+## Local login proxy
 
 - The client `.env` uses the `beyondmaf` Firebase project; the local backend
   expects `ultimafia-dd36b`. The branch's `rsbuild.config.ts` had lost the
@@ -140,8 +182,8 @@ primitive, delete the old CSS/component, then prove the render.
 - Restored the remote-backend proxy in `react_main/rsbuild.config.ts` while
   keeping the branch's same-origin socket changes. The dev server now logs that
   API/uploads/sockets are proxied to the configured remote backend.
-- This file is a local environment change, not part of the redesign PR. Exclude
-  it from commits.
+- The proxy is committed with the shared-surfaces batch because the redesign
+  branch must be testable against production. Keep it in the branch.
 
 ## Branch hygiene
 
