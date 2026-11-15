@@ -337,10 +337,10 @@ export function filterProfanity(text, settings, char, seed) {
     char = char || "*";
 
     if (!settings.disablePg13Censor)
-      segment = filterProfanitySegment("swears", segment, char, seed);
+      segment = filterProfanitySegment("decodedSwears", segment, char, seed);
 
     if (!settings.disableAllCensors)
-      segment = filterProfanitySegment("slurs", segment, char);
+      segment = filterProfanitySegment("decodedSlurs", segment, char);
 
     text[i] = segment;
   }
