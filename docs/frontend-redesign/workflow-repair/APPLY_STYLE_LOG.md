@@ -139,6 +139,25 @@ primitive, delete the old CSS/component, then prove the render.
 - Icon-only actions now resolve to 32x32 on desktop and 44x44 on touch; the
   dialog close control was previously 32x40.
 
+## Final redesign-only matrix (2026-11-15)
+
+- Full matrix on `43a604003`: **924/924 redesign cells captured**,
+  **0 open findings**, 2,040 intentional rows. Widths 1440/390/320, dark and
+  light, controlled production fixtures.
+- Late defects found and fixed by the audit:
+  - Role pages crashed with `ReferenceError: UiDialog is not defined`;
+    `FanartPanel` now imports the shared dialog.
+  - Profile karma controls sat 29px from the score; they are adjacent again.
+  - The role fanart section reserved a reading-width column and left a 360px
+    gap; it now fills the role content edge.
+  - Nested role/competitive headings mixed page and nested scales; they use
+    the body scale, and the phone stock tabs are a named compact variant.
+- Audit tasks were repaired for the current DOM: word editor textarea, role
+  hero, karma score, settings delete confirmation and the shared ban-appeals
+  table. All 924 cells now capture.
+- The matrix records `visualAcceptance: false`; it is structural evidence, not
+  a substitute for reviewing the screenshots.
+
 ## Verification
 
 - `lint:ui` passes; unit tests pass (29).
@@ -169,12 +188,14 @@ primitive, delete the old CSS/component, then prove the render.
 
 ## Next queue
 
-1. Repair or explicitly retire the stale strategy-mobile browser fixture.
-2. Run the single full audit matrix at the actual completion state.
+1. Repair or explicitly retire the stale strategy-mobile and forum-reply
+   browser fixtures.
+2. Build the master fixture contract and run the paired comparative matrix;
+   do not substitute redesign-only results for master evidence.
 3. Review the remaining intentional exceptions: branded auth buttons, MUI
    progress/menus, game workspace controls, media/upload overlays, the Auth
-   dialog, the full-screen strategy reader, the stock table surface and the
-   draggable DM/strategy windows.
+   dialog, the full-screen strategy reader, the stock table rendering path and
+   the draggable DM/strategy windows.
 4. Keep reducing the baseline only when a migration removes the old path.
 
 ## Local login proxy
