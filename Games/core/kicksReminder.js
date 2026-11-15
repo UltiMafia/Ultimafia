@@ -11,6 +11,7 @@
  */
 
 const pushNotifications = require("../../modules/pushNotifications");
+const { accountIdOf } = require("../../modules/heartRefund");
 const logger = require("../../modules/logging")("games");
 
 const KIND = "kicks-reminder";
@@ -58,7 +59,9 @@ function needsAction(player, game) {
   if (!player || !player.alive || player.left) return false;
   if (player.isBot) return false;
   // Guests have no account to notify and no stats to damage.
-  if (!player.user || !player.user.id || player.user.guestId) return false;
+  // Anonymous seats retain the real account only in originalProfile; resolve
+  // that server-side identity without restoring it on the public user object.
+  if (!player.user || player.user.guestId || !accountIdOf(player)) return false;
   // noVeg games never veg anyone, so kicks there are cosmetic.
   if (game.isNoVeg && game.isNoVeg()) return false;
 
@@ -76,7 +79,7 @@ function recipients(game) {
  * id is in it so two games never share a marker.
  */
 function dedupeKey(game, player) {
-  return `${game.id}:${game.currentState}:${player.user.id}:kicks`;
+  return `${game.id}:${game.currentState}:${accountIdOf(player)}:kicks`;
 }
 
 /**
@@ -133,9 +136,10 @@ async function notify(game, alreadySent) {
     const claimed = claim(game, alreadySent);
     if (claimed.length === 0) return null;
 
+    const reminder = payload(game);
     const report = await pushNotifications.notifyUsersWithReport(
-      claimed.map((player) => player.user.id),
-      payload(game)
+      claimed.map(accountIdOf),
+      reminder
     );
 
     logger.info(
@@ -143,7 +147,7 @@ async function notify(game, alreadySent) {
         event: "kicks-push",
         gameId: game.id,
         gameType: game.type,
-        state: game.currentState,
+        state: reminder.state,
         recipients: report.recipients,
         reached: report.reached,
         targets: report.targets,

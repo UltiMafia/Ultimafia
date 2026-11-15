@@ -150,6 +150,13 @@ describe("Games/core/kicksReminder", function () {
         makePlayer("gone", { left: true }),
         makePlayer("bot", { isBot: true }),
         makePlayer("guest", { user: { id: "account-guest", guestId: "g" } }),
+        makePlayer("anonymous-bot", {
+          isBot: true, user: {}, originalProfile: { userId: "account-bot" },
+        }),
+        makePlayer("anonymous-guest", {
+          user: { guestId: "g" }, originalProfile: { userId: "account-guest" },
+        }),
+        makePlayer("noaccount", { user: {} }),
         makePlayer("nouser", { user: null }),
         makePlayer("live"),
       ]);

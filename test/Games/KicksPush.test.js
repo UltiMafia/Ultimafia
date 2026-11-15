@@ -168,6 +168,57 @@ describe("Games/KicksPush", function () {
     expect(game.vegKickMeeting.members[spectator.id]).to.equal(undefined);
   });
 
+  it("reminds anonymous accounts once each across double fire and real reconnect", async function () {
+    const players = [await join("anonymous-one"), await join("anonymous-two")];
+    const accounts = players.map((player) => player.user.id);
+    game.anonymousGame = true;
+    game.anonymousDeck = [{
+      name: "Test deck",
+      profiles: [
+        { id: 0, name: "Anonymous Cat", color: "#aaa" },
+        { id: 1, name: "Anonymous Dog", color: "#bbb" },
+      ],
+    }];
+    game.makeGameAnonymous();
+    game.started = true;
+    actions(players);
+    // Reconnect sends the phase snapshot; populate the state-index ledger that
+    // gotoNextState normally records (the fixture holds that boundary).
+    game.stateIndexRecord[game.currentState] = game.states.length - 1;
+
+    async function reconnect(index) {
+      const socket = new Socket();
+      await game.userJoin(new User({
+        id: accounts[index], name: "Reconnected account", settings: {}, socket,
+      }));
+      expect(game.players.length).to.equal(2);
+      expect(players[index].socket).to.equal(socket);
+      expect(players[index].user).not.to.have.property("id");
+      expect(players[index].originalProfile.userId).to.equal(accounts[index]);
+    }
+
+    await reconnect(0);
+    for (const account of accounts) expect(push.hasSubscription(account)).to.equal(true);
+    game.checkVeg();
+    game.checkVeg();
+    await settle();
+    expect(attempts.map((attempt) => attempt.endpoint).sort()).to.deep.equal(
+      accounts.map((account) => subscription(account).endpoint).sort()
+    );
+    expect([...game.kicksReminderSent].sort()).to.deep.equal(
+      accounts.map((account) => `${game.id}:${game.currentState}:${account}:kicks`).sort()
+    );
+    for (const attempt of attempts) {
+      const encoded = JSON.stringify(attempt.payload);
+      for (const account of accounts) expect(encoded).not.to.include(account);
+    }
+
+    await reconnect(1);
+    game.checkVeg();
+    await settle();
+    expect(attempts).to.have.lengthOf(2);
+  });
+
   it("retains the pregame subscription across start so the later kicks reminder can deliver", async function () {
     const pending = await join("pending");
     // Same core-Game start fixture as SpectateJoin: role assignment belongs to
@@ -256,11 +307,31 @@ describe("Games/KicksPush", function () {
       game.currentState += 1;
       pending.alive = false;
     };
-    game.checkVeg();
-    await settle();
-    expect(attempts).to.have.lengthOf(1);
-    expect(attempts[0].payload.state).to.equal(state);
-    expect(game.kicksReminderSent.has(`${game.id}:${state}:${pending.user.id}:kicks`)).to.equal(true);
+    const logger = require("../../modules/logging")("games");
+    const originalInfo = logger.info;
+    const logs = [];
+    let release;
+    logger.info = (message) => { logs.push(JSON.parse(message)); };
+    webpush.sendNotification = (sub, payload) => {
+      attempts.push({ endpoint: sub.endpoint, payload: JSON.parse(payload) });
+      return new Promise((resolve) => { release = resolve; });
+    };
+    try {
+      game.checkVeg();
+      expect(game.currentState).to.equal(state + 1);
+      expect(logs).to.have.lengthOf(0);
+      expect(attempts).to.have.lengthOf(1);
+      expect(attempts[0].payload.state).to.equal(state);
+      expect(game.kicksReminderSent.has(`${game.id}:${state}:${pending.user.id}:kicks`)).to.equal(true);
+      release();
+      await settle();
+      expect(logs).to.have.lengthOf(1);
+      expect(logs[0]).to.include({ event: "kicks-push", gameId: game.id, state });
+    } finally {
+      if (release) release();
+      await settle();
+      logger.info = originalInfo;
+    }
   });
 
   it("does not notify a player whose last-second action is complete at kicks entry", async function () {
