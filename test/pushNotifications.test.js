@@ -1,12 +1,7 @@
 const chai = require("chai");
 const should = chai.should();
 
-// The module reads VAPID config once at require time, so it has to be set before
-// the require below. Mocha runs each file in its own worker, so this is local.
-process.env.VAPID_PUBLIC_KEY =
-  "BBox3iOPqgDEx62MhFTmrv8YEBVACSVMdKTjIwIQpRoQ387eBHk0gBp2g3dav4kfPn7g1wLiburjIQh_L93629I";
-process.env.VAPID_PRIVATE_KEY = "Nvv9yUKgO324l32336ogfzhJftPLex7XVs-2ZTfiti8";
-process.env.VAPID_SUBJECT = "mailto:test@ultimafia.com";
+require("./helpers/pushConfig");
 
 const webpush = require("web-push");
 const push = require("../modules/pushNotifications");
@@ -137,6 +132,39 @@ describe("modules/pushNotifications", function () {
       count.should.equal(0);
       push.hasSubscription("u1").should.be.false;
     });
+
+    for (const statusCode of [404, 410]) {
+      it(`prunes only the ${statusCode} device and continues the kicks batch`, async function () {
+        push.register("u1", subscription("stale"));
+        push.register("u1", subscription("working"));
+        push.register("u2", subscription("other-user"));
+        const attempts = [];
+        webpush.sendNotification = async (sub, payload) => {
+          attempts.push(sub.endpoint);
+          if (sub.endpoint.endsWith("stale")) {
+            throw Object.assign(new Error("expired"), { statusCode });
+          }
+          sent.push({ endpoint: sub.endpoint, payload: JSON.parse(payload) });
+        };
+
+        const report = await push.notifyUsersWithReport(["u1", "u2"], {
+          kind: "kicks-reminder",
+        });
+        report.should.include({ targets: 3, sent: 2, failed: 0, pruned: 1 });
+        sent.map((s) => s.endpoint).sort().should.deep.equal([
+          "https://push.example.com/other-user",
+          "https://push.example.com/working",
+        ]);
+        // Read back via another send: stale is not retried, healthy targets
+        // still exist, including the other device belonging to the same user.
+        attempts.length = 0;
+        await push.notifyUsers(["u1", "u2"], { kind: "ready-check" });
+        attempts.sort().should.deep.equal([
+          "https://push.example.com/other-user",
+          "https://push.example.com/working",
+        ]);
+      });
+    }
 
     it("keeps endpoints after a transient failure", async function () {
       push.register("u1", subscription("flaky"));

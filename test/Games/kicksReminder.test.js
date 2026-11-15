@@ -1,13 +1,7 @@
 const chai = require("chai");
 const should = chai.should();
 
-// kicksReminder pulls in modules/pushNotifications, which reads VAPID config at
-// require time, so it has to be set first. Mocha runs each file in its own
-// worker, so this is local to the file.
-process.env.VAPID_PUBLIC_KEY =
-  "BBox3iOPqgDEx62MhFTmrv8YEBVACSVMdKTjIwIQpRoQ387eBHk0gBp2g3dav4kfPn7g1wLiburjIQh_L93629I";
-process.env.VAPID_PRIVATE_KEY = "Nvv9yUKgO324l32336ogfzhJftPLex7XVs-2ZTfiti8";
-process.env.VAPID_SUBJECT = "mailto:test@ultimafia.com";
+require("../helpers/pushConfig");
 
 const webpush = require("web-push");
 const push = require("../../modules/pushNotifications");
@@ -270,6 +264,33 @@ describe("Games/core/kicksReminder", function () {
       sent[0].payload.tag.should.equal("game-game1");
       report.recipients.should.equal(1);
       report.sent.should.equal(1);
+    });
+
+    it("does not deliver to an opted-out account or a subscribed spectator", async function () {
+      const optedOut = makePlayer("opted-out", {
+        user: { id: "kicks-user-1" },
+      });
+      const pending = makePlayer("pending", {
+        user: { id: "kicks-user-2" },
+      });
+      // Opt-out uses the existing subscription registry, not a new preference.
+      push.unregisterUser(optedOut.user.id);
+      const spectator = makePlayer("spectator", {
+        user: { id: "kicks-user-spectator" },
+      });
+      push.register(spectator.user.id, subscription("spectator"));
+      const game = makeGame([optedOut, pending], { spectators: [spectator] });
+
+      try {
+        const report = await kicksReminder.notify(game, new Set());
+
+        report.sent.should.equal(1);
+        sent.map((delivery) => delivery.endpoint).should.deep.equal([
+          subscription("two").endpoint,
+        ]);
+      } finally {
+        push.unregisterUser(spectator.user.id);
+      }
     });
 
     it("sends nothing on a second trigger in the same kicks window", async function () {
