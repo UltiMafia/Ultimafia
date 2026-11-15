@@ -1,4 +1,4 @@
-// Page families from docs/frontend-redesign/UI_PAGE_FAMILIES.md.
+// Page families used by the dialog and overlay audit.
 // Members refer to route-case names in test/routeReviewData.jsx, except the
 // generated game-editor cases below. A family is an appearance contract: it does
 // not require the members to share code.

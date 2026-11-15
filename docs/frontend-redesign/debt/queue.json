@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-15T05:22:36.158Z",
+  "generatedAt": "2026-11-15T23:27:16.158Z",
   "count": 96,
   "byKind": {
     "mui-inline-scale": 25,
@@ -112,7 +112,7 @@
     },
     {
       "file": "components/Basic.jsx",
-      "line": 228,
+      "line": 231,
       "kind": "native-confirm",
       "name": "window.confirm",
       "snippet": "window.confirm(\"Visit external link?\")"
@@ -416,35 +416,35 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 1680,
+      "line": 1744,
       "kind": "mui-inline-scale",
       "name": "Button",
       "snippet": "<Button variant=\"contained\" color=\"primary\" size=\"large\" fullWidth dat"
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 1693,
+      "line": 1757,
       "kind": "mui-inline-scale",
       "name": "Button",
       "snippet": "<Button variant=\"contained\" color=\"primary\" size=\"large\" fullWidth dat"
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 2448,
+      "line": 2611,
       "kind": "mui-inline-scale",
       "name": "Tabs",
       "snippet": "<Tabs value={selTab || false} onChange={onTabChange} sx={{ flexGrow: 1, "
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 2461,
+      "line": 2624,
       "kind": "mui-inline-scale",
       "name": "Tab",
       "snippet": "<Tab key={meeting.id} value={meeting.id} label={meeting.name} sx"
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 2498,
+      "line": 2662,
       "kind": "native-widget",
       "scope": "game",
       "name": "button",
@@ -452,7 +452,7 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 3499,
+      "line": 3733,
       "kind": "native-widget",
       "scope": "game",
       "name": "button",
@@ -460,7 +460,7 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 4296,
+      "line": 4538,
       "kind": "native-form",
       "scope": "game",
       "name": "input",
@@ -468,7 +468,7 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 4985,
+      "line": 5229,
       "kind": "native-widget",
       "scope": "game",
       "name": "button",
@@ -476,7 +476,7 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 6156,
+      "line": 6400,
       "kind": "native-form",
       "scope": "game",
       "name": "textarea",
@@ -484,14 +484,14 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 6303,
+      "line": 6547,
       "kind": "native-confirm",
       "name": "window.confirm",
       "snippet": "window.confirm( \"Disable alert sounds? You won't be pinged when a game starts or when you're about to be kicke"
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 6510,
+      "line": 6754,
       "kind": "native-widget",
       "scope": "game",
       "name": "button",
@@ -499,7 +499,7 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 6562,
+      "line": 6806,
       "kind": "native-form",
       "scope": "game",
       "name": "input",
@@ -507,7 +507,7 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 6570,
+      "line": 6814,
       "kind": "native-form",
       "scope": "game",
       "name": "input",
@@ -515,7 +515,7 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 6577,
+      "line": 6821,
       "kind": "native-form",
       "scope": "game",
       "name": "input",
@@ -523,7 +523,7 @@
     },
     {
       "file": "pages/Game/Game.jsx",
-      "line": 6681,
+      "line": 6925,
       "kind": "native-form",
       "scope": "game",
       "name": "textarea",
@@ -624,7 +624,7 @@
     },
     {
       "file": "pages/Game/SnakeGameDisplay.jsx",
-      "line": 422,
+      "line": 439,
       "kind": "native-form",
       "scope": "game",
       "name": "button",
@@ -632,7 +632,7 @@
     },
     {
       "file": "pages/Game/SnakeGameDisplay.jsx",
-      "line": 481,
+      "line": 498,
       "kind": "native-form",
       "scope": "game",
       "name": "button",
@@ -640,7 +640,7 @@
     },
     {
       "file": "pages/Game/SnakeGameDisplay.jsx",
-      "line": 484,
+      "line": 501,
       "kind": "native-form",
       "scope": "game",
       "name": "button",
@@ -648,7 +648,7 @@
     },
     {
       "file": "pages/Game/SnakeGameDisplay.jsx",
-      "line": 491,
+      "line": 508,
       "kind": "native-form",
       "scope": "game",
       "name": "button",
@@ -656,7 +656,7 @@
     },
     {
       "file": "pages/Game/SnakeGameDisplay.jsx",
-      "line": 495,
+      "line": 512,
       "kind": "native-form",
       "scope": "game",
       "name": "button",
@@ -664,7 +664,7 @@
     },
     {
       "file": "pages/Game/SnakeGameDisplay.jsx",
-      "line": 499,
+      "line": 516,
       "kind": "native-form",
       "scope": "game",
       "name": "button",
@@ -672,7 +672,7 @@
     },
     {
       "file": "pages/Game/SnakeGameDisplay.jsx",
-      "line": 509,
+      "line": 526,
       "kind": "native-form",
       "scope": "game",
       "name": "button",

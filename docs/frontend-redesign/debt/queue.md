@@ -1,6 +1,6 @@
 # UI scale debt queue
 
-Generated 2026-11-15T05:22:36.159Z. **96** sites across **45** files.
+Generated 2026-11-15T23:27:16.159Z. **96** sites across **45** files.
 
 - `native-widget`: 31
 - `native-form`: 26
@@ -34,7 +34,7 @@ Generated 2026-11-15T05:22:36.159Z. **96** sites across **45** files.
 - `components/Auth.jsx:816` — mui-inline-scale `DialogContent` — `<DialogContent sx={{ p: 2, height: "100%", display: "flex", flexDirection: "column", overflow: "hidden" }}>`
 - `components/AvatarUpload.jsx:242` — native-file `input` — `<input ref={fileInputRef} type="file" accept="image/*" onChange=`
 - `components/BannerUpload.jsx:284` — native-file `input` — `<input ref={fileInputRef} type="file" accept="image/*" onChange={handleF`
-- `components/Basic.jsx:228` — native-confirm `window.confirm` — `window.confirm("Visit external link?")`
+- `components/Basic.jsx:231` — native-confirm `window.confirm` — `window.confirm("Visit external link?")`
 - `components/DeathSoundUpload.jsx:700` — native-file `input` — `<input ref={fileInputRef} type="file" accept="audio/mpeg,audio/mp3,audio/ogg,audio/wav,aud`
 - `components/dms/FloatingDmWindow.jsx:163` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={10} data-testid="dm-window" data-collapsed={dm.collapsed ? "true"`
 - `components/EmotePicker.jsx:49` — mui-inline-scale `Button` — `<Button key={sticker.id || sticker.shortcode} onClick={() => onSelect(sticker.shortcode)} `
@@ -79,21 +79,21 @@ Generated 2026-11-15T05:22:36.159Z. **96** sites across **45** files.
 - `pages/Game/DrawItGame.jsx:385` — native-form `button` — `<button type="button" onClick={() => setReplayDrawerPage((p) => `
 - `pages/Game/DrawItGame.jsx:406` — native-form `button` — `<button type="button" onClick={() => startReplayAnimation(totalPoints)} >`
 - `pages/Game/DrawItGame.jsx:412` — native-form `input` — `<input type="range" min={0} max={totalPoints} value={eff`
-- `pages/Game/Game.jsx:1680` — mui-inline-scale `Button` — `<Button variant="contained" color="primary" size="large" fullWidth dat`
-- `pages/Game/Game.jsx:1693` — mui-inline-scale `Button` — `<Button variant="contained" color="primary" size="large" fullWidth dat`
-- `pages/Game/Game.jsx:2448` — mui-inline-scale `Tabs` — `<Tabs value={selTab || false} onChange={onTabChange} sx={{ flexGrow: 1, `
-- `pages/Game/Game.jsx:2461` — mui-inline-scale `Tab` — `<Tab key={meeting.id} value={meeting.id} label={meeting.name} sx`
-- `pages/Game/Game.jsx:2498` — native-widget `button` — `<button type="button" className="new-messages-pill" onClick={jumpToLatest} `
-- `pages/Game/Game.jsx:3499` — native-widget `button` — `<button type="button" className="message-pin-action" aria-label={props.pinned ? "Unpin message" : "Pin mes`
-- `pages/Game/Game.jsx:4296` — native-form `input` — `<input type="checkbox" checked={isPlayerIsolated(player.id)} onChange={() => togglePlayerIsolati`
-- `pages/Game/Game.jsx:4985` — native-widget `button` — `<button type="button" className="inventory-cell-button" onClick={handleClick} disabled={`
-- `pages/Game/Game.jsx:6156` — native-form `textarea` — `<textarea readOnly={cannotModifyLastWill} className="last-will-entry" value={lastWil`
-- `pages/Game/Game.jsx:6303` — native-confirm `window.confirm` — `window.confirm( "Disable alert sounds? You won't be pinged when a game starts or when you're about to be kicke`
-- `pages/Game/Game.jsx:6510` — native-widget `button` — `<button type="button" className="btn btn-theme" onClick={cancel}>`
-- `pages/Game/Game.jsx:6562` — native-form `input` — `<input id="isolateMessagesCheckbox" type="checkbox" value={isolationEnabled} `
-- `pages/Game/Game.jsx:6570` — native-form `input` — `<input type="text" placeholder="From user" value={filters.from} onChange`
-- `pages/Game/Game.jsx:6577` — native-form `input` — `<input type="text" placeholder="Contains" value={filters.contains} onCha`
-- `pages/Game/Game.jsx:6681` — native-form `textarea` — `<textarea className="notes-entry" value={notes} onChange={(e) => onNotesUpdate(e.tar`
+- `pages/Game/Game.jsx:1744` — mui-inline-scale `Button` — `<Button variant="contained" color="primary" size="large" fullWidth dat`
+- `pages/Game/Game.jsx:1757` — mui-inline-scale `Button` — `<Button variant="contained" color="primary" size="large" fullWidth dat`
+- `pages/Game/Game.jsx:2611` — mui-inline-scale `Tabs` — `<Tabs value={selTab || false} onChange={onTabChange} sx={{ flexGrow: 1, `
+- `pages/Game/Game.jsx:2624` — mui-inline-scale `Tab` — `<Tab key={meeting.id} value={meeting.id} label={meeting.name} sx`
+- `pages/Game/Game.jsx:2662` — native-widget `button` — `<button type="button" className="new-messages-pill" onClick={jumpToLatest} `
+- `pages/Game/Game.jsx:3733` — native-widget `button` — `<button type="button" className="message-pin-action" aria-label={props.pinned ? "Unpin message" : "Pin mes`
+- `pages/Game/Game.jsx:4538` — native-form `input` — `<input type="checkbox" checked={isPlayerIsolated(player.id)} onChange={() => togglePlayerIsolati`
+- `pages/Game/Game.jsx:5229` — native-widget `button` — `<button type="button" className="inventory-cell-button" onClick={handleClick} disabled={`
+- `pages/Game/Game.jsx:6400` — native-form `textarea` — `<textarea readOnly={cannotModifyLastWill} className="last-will-entry" value={lastWil`
+- `pages/Game/Game.jsx:6547` — native-confirm `window.confirm` — `window.confirm( "Disable alert sounds? You won't be pinged when a game starts or when you're about to be kicke`
+- `pages/Game/Game.jsx:6754` — native-widget `button` — `<button type="button" className="btn btn-theme" onClick={cancel}>`
+- `pages/Game/Game.jsx:6806` — native-form `input` — `<input id="isolateMessagesCheckbox" type="checkbox" value={isolationEnabled} `
+- `pages/Game/Game.jsx:6814` — native-form `input` — `<input type="text" placeholder="From user" value={filters.from} onChange`
+- `pages/Game/Game.jsx:6821` — native-form `input` — `<input type="text" placeholder="Contains" value={filters.contains} onCha`
+- `pages/Game/Game.jsx:6925` — native-form `textarea` — `<textarea className="notes-entry" value={notes} onChange={(e) => onNotesUpdate(e.tar`
 - `pages/Game/JottoGame.jsx:309` — mui-inline-scale `Button` — `<Button key={letter} onClick={() => updateCheatSheet(letter)} variant="text" `
 - `pages/Game/JottoGame.jsx:346` — mui-inline-scale `Button` — `<Button onClick={() => confirm("Are you sure you want to reset all letters?") && updateCheat`
 - `pages/Game/JottoGame.jsx:548` — mui-inline-scale `Button` — `<Button variant="contained" onClick={handleOnSubmit} disabled={disabled || textData.length < min`
@@ -106,13 +106,13 @@ Generated 2026-11-15T05:22:36.159Z. **96** sites across **45** files.
 - `pages/Game/SDPlayerCircle.jsx:169` — native-widget `button` — `<button className={'sd-vote-btn sd-vote-btn--nein${myVote === "Nein!" ? " sd-vote-btn--selected" : "`
 - `pages/Game/SDPolicyAction.jsx:9` — native-widget `button` — `<button className={'sd-policy-card sd-policy-card--${modifier}${selected ? " sd-policy-card--selected" : ""}'} `
 - `pages/Game/SecretDictatorGame.jsx:332` — native-widget `button` — `<button type="button" className="sd-game-info-title" onClick={() => setExpanded((v) => !v)} `
-- `pages/Game/SnakeGameDisplay.jsx:422` — native-form `button` — `<button onClick={() => setWrapView((v) => !v)} title={wrapView ? "Exit wrap view" : "Wrap view (came`
-- `pages/Game/SnakeGameDisplay.jsx:481` — native-form `button` — `<button style={dpadBtnStyle} onClick={() => onMove("up")} aria-label="Up">`
-- `pages/Game/SnakeGameDisplay.jsx:484` — native-form `button` — `<button style={{ ...dpadBtnStyle, opacity: 0.7 }} onClick={onCollapse} aria-label="Hide controls`
-- `pages/Game/SnakeGameDisplay.jsx:491` — native-form `button` — `<button style={dpadBtnStyle} onClick={() => onMove("left")} aria-label="Left">`
-- `pages/Game/SnakeGameDisplay.jsx:495` — native-form `button` — `<button style={dpadBtnStyle} onClick={() => onMove("right")} aria-label="Right">`
-- `pages/Game/SnakeGameDisplay.jsx:499` — native-form `button` — `<button style={dpadBtnStyle} onClick={() => onMove("down")} aria-label="Down">`
-- `pages/Game/SnakeGameDisplay.jsx:509` — native-form `button` — `<button style={{ ...dpadBtnStyle, opacity: 0.6 }} onClick={onClick} aria-label="Show controls" >`
+- `pages/Game/SnakeGameDisplay.jsx:439` — native-form `button` — `<button onClick={() => setWrapView((v) => !v)} title={wrapView ? "Exit wrap view" : "Wrap view (came`
+- `pages/Game/SnakeGameDisplay.jsx:498` — native-form `button` — `<button style={dpadBtnStyle} onClick={() => onMove("up")} aria-label="Up">`
+- `pages/Game/SnakeGameDisplay.jsx:501` — native-form `button` — `<button style={{ ...dpadBtnStyle, opacity: 0.7 }} onClick={onCollapse} aria-label="Hide controls`
+- `pages/Game/SnakeGameDisplay.jsx:508` — native-form `button` — `<button style={dpadBtnStyle} onClick={() => onMove("left")} aria-label="Left">`
+- `pages/Game/SnakeGameDisplay.jsx:512` — native-form `button` — `<button style={dpadBtnStyle} onClick={() => onMove("right")} aria-label="Right">`
+- `pages/Game/SnakeGameDisplay.jsx:516` — native-form `button` — `<button style={dpadBtnStyle} onClick={() => onMove("down")} aria-label="Down">`
+- `pages/Game/SnakeGameDisplay.jsx:526` — native-form `button` — `<button style={{ ...dpadBtnStyle, opacity: 0.6 }} onClick={onClick} aria-label="Show controls" >`
 - `pages/Game/SpotItGame.jsx:191` — native-form `button` — `<button onClick={onDismiss} style={{ padding: "10px 32px", fontSize: "16px",`
 - `pages/Game/WackyWordsGame.jsx:251` — native-form `button` — `<button onClick={canPrev ? onPrev : undefined} disabled={!canPrev} style={arrowStyle`
 - `pages/Game/WackyWordsGame.jsx:265` — native-form `button` — `<button onClick={canNext ? onNext : undefined} disabled={!canNext} style={arrowStyle`

@@ -19,7 +19,7 @@ const publicDir = path.join(sourceRoot, "react_main/public");
 const phase = process.env.DESIGN_PHASE || "before";
 const palette = process.env.ROUTE_THEME || "dark";
 const viewports = (process.env.ROUTE_WIDTHS || "1440,390").split(",").map(Number).map(width => ({ width, height: width >= 900 ? 1000 : 844 }));
-const artifacts = process.env.ROUTE_OUTPUT_DIR || path.join(root, `docs/frontend-redesign/revision-6/routes-${phase}-${palette}`);
+const artifacts = process.env.ROUTE_OUTPUT_DIR || path.join('/tmp/opencode', `ultimafia-route-review-${phase}-${palette}`);
 const runName = `run-${new Date().toISOString().replace(/[:.]/g, "-")}`;
 const output = path.join(artifacts, runName);
 const mime = { ".html": "text/html", ".js": "application/javascript", ".css": "text/css", ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff": "font/woff", ".woff2": "font/woff2", ".ttf": "font/ttf", ".ico": "image/x-icon", ".json": "application/json" };

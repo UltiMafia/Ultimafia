@@ -128,14 +128,14 @@ function writeQueue(entries, summary) {
     lines.push(`- \`${entry.file}:${entry.line}\` — ${entry.kind} \`${entry.name}\` — \`${entry.snippet.replace(/`/g, "'")}\``);
   }
   lines.push("");
-  fs.writeFileSync(path.join(queueDir, "queue.md"), lines.join("\n"));
+  fs.writeFileSync(path.join(queueDir, "queue.json"), lines.join("\n"));
 }
 
 function main() {
   const entries = sourceFiles(sourceRoot).flatMap(scan).filter((entry) => !sanctioned.has(entry.file));
   const summary = summarise(entries);
   // Lint is read-only; refresh the queue only when explicitly asked.
-  if (process.argv.includes("--queue") || process.argv.includes("--update") || !fs.existsSync(path.join(queueDir, "queue.md"))) {
+  if (process.argv.includes("--queue") || process.argv.includes("--update") || !fs.existsSync(path.join(queueDir, "queue.json"))) {
     writeQueue(entries, summary);
   }
 
@@ -144,7 +144,7 @@ function main() {
   console.log(`UI scale debt: ${entries.length} sites, ${summary.actionable} actionable on site routes`);
   console.log(`  ${Object.entries(summary.byKind).map(([kind, count]) => `${kind} ${count}`).join(", ")}`);
   console.log(`  sanctioned native file/hidden inputs: ${summary.sanctioned}; game-workspace sites: ${summary.game}`);
-  console.log(`Queue: ${path.relative(root, path.join(queueDir, "queue.md"))}`);
+  console.log(`Queue: ${path.relative(root, path.join(queueDir, "queue.json"))}`);
 
   if (update) {
     if (baseline && entries.length > baseline.count) {
