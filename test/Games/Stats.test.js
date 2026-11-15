@@ -120,7 +120,15 @@ function autoVillageWin() {
     // We can't resolve the Mafioso player.id until roles are assigned, so
     // we close over `game` and look it up lazily inside the handler.
     for (const user of users) {
+      // Vote at most once per meeting. Delivery is synchronous, so a re-sent
+      // meeting re-enters this listener; without the guard each echo voted
+      // again and the vote <-> sendMeeting pair recursed until the stack
+      // overflowed (that RangeError used to surface as an "Uncaught error
+      // outside test suite", hiding every other failure in the run).
+      const votedMeetingIds = new Set();
       user.socket.onClientEvent("meeting", function (meeting) {
+        if (votedMeetingIds.has(meeting.id)) return;
+        votedMeetingIds.add(meeting.id);
         if (meeting.name === "Village") {
           let mafioso = null;
           for (const p of game.players) {

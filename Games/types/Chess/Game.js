@@ -34,7 +34,12 @@ module.exports = class ChessGame extends Game {
     this.winnerColor = null; // 'w', 'b', or 'draw'
   }
 
-  start() {
+  // Game.start() is async (abortStart/refund hearts await redis and mongo), and
+  // a rejected promise nobody holds is reported by mocha as an "Uncaught error
+  // outside test suite" with no test attached -- which in --parallel mode
+  // crashes the reporter and hides every other failure. Return the promise so
+  // callers (and fixtures) can await or catch it.
+  async start() {
     this.randomizedPlayers = Random.randomizeArray(this.players.array());
 
     // Assign colors (first randomized player is White, second is Black)
@@ -52,7 +57,7 @@ module.exports = class ChessGame extends Game {
     this.gameOverReason = null;
     this.winnerColor = null;
 
-    super.start();
+    await super.start();
   }
 
   incrementCurrentIndex() {

@@ -6,6 +6,29 @@ const ChessGame = require("../../Games/types/Chess/Game");
 const { Chess } = require("chess.js");
 
 describe("Games/Chess", function () {
+  // A player double valid enough for the game lifecycle: start() on a table
+  // that is not full calls abortStart(), which sends "readyCheck cancel"/alerts
+  // to every player, so each double needs a real send() and the ids the engine
+  // looks up (id, user.id, name).
+  function makePlayer(name, id) {
+    const sent = [];
+    return {
+      name,
+      id,
+      alive: true,
+      role: { name: "Grandmaster" },
+      user: { id, name, isTest: true },
+      sent,
+      send: (event, payload) => {
+        sent.push({ event, payload });
+      },
+      hear: (message) => {
+        sent.push({ event: "message", payload: message.content });
+      },
+      sendMeetings: () => {},
+    };
+  }
+
   describe("Player limit", function () {
     it("is fixed at 2 players", function () {
       constants.fixedPlayerTotals.Chess.should.equal(2);
@@ -35,7 +58,7 @@ describe("Games/Chess", function () {
   });
 
   describe("Move playing", function () {
-    it("assigns colors, initializes board and processes valid and invalid moves", function () {
+    it("assigns colors, initializes board and processes valid and invalid moves", async function () {
       const game = new ChessGame({
         id: "testChess",
         hostId: "testHost",
@@ -49,8 +72,8 @@ describe("Games/Chess", function () {
       });
 
       // Mock players
-      const player1 = { name: "Alice", id: "1", alive: true, role: { name: "Grandmaster" } };
-      const player2 = { name: "Bob", id: "2", alive: true, role: { name: "Grandmaster" } };
+      const player1 = makePlayer("Alice", "1");
+      const player2 = makePlayer("Bob", "2");
 
       game.players = {
         array: () => [player1, player2],
@@ -60,7 +83,7 @@ describe("Games/Chess", function () {
         }
       };
 
-      game.start();
+      await game.start();
 
       // Check player colors assigned
       game.playerColors.Alice.should.be.oneOf(["w", "b"]);

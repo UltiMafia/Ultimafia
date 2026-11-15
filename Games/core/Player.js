@@ -575,10 +575,22 @@ module.exports = class Player {
         }
 
         const gameStateBeforeVote = this.game.currentState;
-        meeting.vote(this, vote.selection);
+        const voteAccepted = meeting.vote(this, vote.selection);
 
-        // This if statement prevents meetings from being sent if the player's vote caused the state to change
-        if (gameStateBeforeVote === this.game.currentState) {
+        // Re-send the meeting (clients use it to redraw vote counters) only when
+        // the vote was actually counted and did not move the game to a new
+        // state. Echoing the meeting back after a *rejected* vote (already
+        // voted, meeting finished, target outside targets) is worse than
+        // useless: delivery is synchronous (lib/sockets.js sendToServer), so an
+        // auto-voting client listener votes again on the echo and the two
+        // functions recurse until the stack overflows. That is the RangeError
+        // Stats.test.js autoVillageWin used to produce, which mocha reported as
+        // an "Uncaught error outside test suite" and which crashed the parallel
+        // reporter.
+        if (
+          voteAccepted !== false &&
+          gameStateBeforeVote === this.game.currentState
+        ) {
           this.sendMeeting(meeting);
         }
       } catch (e) {
@@ -605,8 +617,9 @@ module.exports = class Player {
           return;
         }
 
-        meeting.unvote(this, target);
-        this.sendMeeting(meeting);
+        // Same rule as "vote": only echo the meeting back when something
+        // actually changed, otherwise an auto-unvoting listener recurses.
+        if (meeting.unvote(this, target) !== false) this.sendMeeting(meeting);
       } catch (e) {
         logger.error(e);
         // this.handleError(e);
