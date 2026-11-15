@@ -15,7 +15,17 @@ var client = redis.createClient({
 client.on("error", (e) => {
   throw e;
 });
-client.select(process.env.REDIS_DB || 0);
+
+// Same isolation for Redis. mocha's parallel workers recycle processes, so one
+// shared DB index means a file that runs flushdbAsync()/flushallAsync() deletes
+// keys another worker is mid-test on. Each worker gets its own index; index 0
+// stays for serial runs and the server. Redis exposes 16 databases by default,
+// so the offset wraps to stay inside them.
+const workerId = Number.parseInt(process.env.MOCHA_WORKER_ID, 10);
+const workerDbOffset = Number.isInteger(workerId) ? (workerId % 15) + 1 : 0;
+const redisDb = Number(process.env.REDIS_DB || 0) + workerDbOffset;
+
+client.select(redisDb);
 
 async function getUserDbId(userId) {
   const key = `user:${userId}:dbId`;

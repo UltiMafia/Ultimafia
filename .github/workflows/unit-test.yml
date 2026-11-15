@@ -5,11 +5,16 @@ on:
   push:
     branches:
       - master
+  # Serial diagnostic run. Same suite, without --parallel: failures are real
+  # Test objects there, so the reporter prints the actual assertion messages and
+  # no worker process is reused between files. Dispatch this when the parallel
+  # job crashes, or when its pass/fail counts look wrong.
+  workflow_dispatch:
 
 jobs:
   static:
     runs-on: ubuntu-latest
-    services:
+    services: &test-services
       redis:
         image: redis
         # Set health checks to wait until redis has started
@@ -62,7 +67,7 @@ jobs:
         run: npm install
       - name: Unit Test
         run: npm run test
-        env:
+        env: &test-env
           NODE_ENV: development
           PORT: 3000
           UPLOAD_PATH: uploads
@@ -99,3 +104,48 @@ jobs:
           #optional - dev use only
           DEV_USERNAME: x
           DISCORD_ERROR_HOOK: '{"hook": "a"}'
+
+  # Diagnostic only: workflow_dispatch, never on a PR. Serial mode is much slower
+  # than the parallel job, but it is the only mode where a failure that happens
+  # outside a test (an unhandled rejection in a hook or fixture, a file that
+  # cannot be loaded) still prints a message instead of crashing mocha's
+  # reporter and taking every other failure message with it.
+  serial-diagnostic:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    services: *test-services
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22.17.0"
+      - name: Cache node modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Install Packages
+        run: npm install
+      - name: Unit Test (serial)
+        # pipefail keeps mocha's exit code through tee, so the job still fails
+        # when there are failures; the full log is kept for the artifact.
+        run: |
+          set -o pipefail
+          npm run test:serial 2>&1 | tee serial-test.log
+        env: *test-env
+      - name: Upload serial test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: serial-test-log
+          path: serial-test.log
+          if-no-files-found: warn

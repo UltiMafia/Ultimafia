@@ -25,20 +25,42 @@ const SWEEP_INTERVAL = 30 * 60 * 1000;
 // userId -> Map<targetKey, target>
 const subscriptions = new Map();
 
-let vapidConfigured = false;
+let vapidState = null;
 
-const vapidPublicKey = process.env.VAPID_PUBLIC_KEY || "";
-const vapidPrivateKey = process.env.VAPID_PRIVATE_KEY || "";
-const vapidSubject =
-  process.env.VAPID_SUBJECT || process.env.BASE_URL || "https://ultimafia.com";
+// VAPID config is resolved on use, not at require time. This module is required
+// transitively (Games/core/Player -> Games/games.js) long before any test file
+// sets VAPID_*, and mocha --parallel recycles worker processes between files, so
+// reading the env once at load time made every later file in that worker run
+// with push disabled no matter what its own env said (that is what turned
+// test/pushNotifications.test.js into 10 phantom failures in CI). Resolving on
+// use keeps the module's behaviour independent of load order.
+function vapidConfig() {
+  const publicKey = process.env.VAPID_PUBLIC_KEY || "";
+  const privateKey = process.env.VAPID_PRIVATE_KEY || "";
+  const subject =
+    process.env.VAPID_SUBJECT || process.env.BASE_URL || "https://ultimafia.com";
 
-if (vapidPublicKey && vapidPrivateKey) {
-  try {
-    webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
-    vapidConfigured = true;
-  } catch (e) {
-    logger.error(`Invalid VAPID configuration, web push disabled: ${e.message}`);
+  if (
+    vapidState &&
+    vapidState.publicKey === publicKey &&
+    vapidState.privateKey === privateKey &&
+    vapidState.subject === subject
+  )
+    return vapidState;
+
+  const next = { publicKey, privateKey, subject, configured: false };
+
+  if (publicKey && privateKey) {
+    try {
+      webpush.setVapidDetails(subject, publicKey, privateKey);
+      next.configured = true;
+    } catch (e) {
+      logger.error(`Invalid VAPID configuration, web push disabled: ${e.message}`);
+    }
   }
+
+  vapidState = next;
+  return vapidState;
 }
 
 /**
@@ -48,7 +70,7 @@ if (vapidPublicKey && vapidPrivateKey) {
  */
 const TRANSPORTS = {
   webpush: {
-    isConfigured: () => vapidConfigured,
+    isConfigured: () => vapidConfig().configured,
 
     normalize(raw) {
       const endpoint = String(raw.endpoint || "");
@@ -111,7 +133,8 @@ if (isEnabled()) {
 }
 
 function getPublicKey() {
-  return vapidConfigured ? vapidPublicKey : "";
+  const config = vapidConfig();
+  return config.configured ? config.publicKey : "";
 }
 
 /**

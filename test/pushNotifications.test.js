@@ -1,8 +1,10 @@
 const chai = require("chai");
 const should = chai.should();
 
-// The module reads VAPID config once at require time, so it has to be set before
-// the require below. Mocha runs each file in its own worker, so this is local.
+// VAPID config is resolved when the module is used, not when it is required, so
+// this test does not depend on being the first file to set it -- which matters
+// because mocha --parallel recycles worker processes and a previous file in the
+// same worker may already have loaded the module.
 process.env.VAPID_PUBLIC_KEY =
   "BBox3iOPqgDEx62MhFTmrv8YEBVACSVMdKTjIwIQpRoQ387eBHk0gBp2g3dav4kfPn7g1wLiburjIQh_L93629I";
 process.env.VAPID_PRIVATE_KEY = "Nvv9yUKgO324l32336ogfzhJftPLex7XVs-2ZTfiti8";
