@@ -448,6 +448,21 @@ async function main() {
       );
       check(jumped, "clicking a reference highlights the original line");
     }
+    // Regression: the reply body's ordinary text must not gain doubled
+    // spaces when emotify preserves whitespace tokens for inline content.
+    {
+      await page.goto(url + "?layout=default&st=1&decor=1");
+      await page.waitForFunction(() => window.__ready, null, { timeout: 15000 });
+      const bodyText = await page.$eval(
+        '.message[data-message-id="r1aaaaaa"] .content',
+        (el) => el.textContent,
+      );
+      check(
+        !/(^|[^ ]) {2,}/.test(bodyText),
+        `decorated reply body has no doubled spaces (${JSON.stringify(bodyText)})`,
+      );
+    }
+
     // Click to reply.
     {
       const open = async (query) => {

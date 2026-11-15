@@ -123,7 +123,11 @@ const msgs0 = [
     id: "r1aaaaaa",
     senderId: S("pC"),
     meetingId: "v1",
-    content: "yo im replying to this @Vinman",
+    // Exercise UserText's normal message processing through emotify,
+    // iconUsername, and roleify under one real reply row.
+    content: decorOn
+      ? "hello box %AlageRheba10 Cop yeah no I'm Mafioso with an inno on Raya"
+      : "yo im replying to this @Vinman",
     replyTo: "q1aaaaaa",
     time: t0 + 2001,
     quotable: true,
