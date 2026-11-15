@@ -1478,3 +1478,18 @@ html[data-keyboard="open"] .game .meeting-tabs {
     background-color: transparent;
   }
 }
+
+/* Postgame report affordance remains keyboard/touch accessible without
+   replacing the browser context menu on links or quoted reply previews. */
+.message-report-button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  align-self: flex-start;
+}
+.message-report-button:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
