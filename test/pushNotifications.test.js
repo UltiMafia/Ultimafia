@@ -34,6 +34,11 @@ describe("modules/pushNotifications", function () {
     webpush.sendNotification = originalSend;
     push.unregisterUser("u1");
     push.unregisterUser("u2");
+    push.unregisterUser("u3");
+    push.unregisterUser("u4");
+    for (let i = 0; i < push.NOTIFY_BATCH_SIZE + 2; i++) {
+      push.unregisterUser(`batch-${i}`);
+    }
   });
 
   describe("register", function () {
@@ -204,6 +209,94 @@ describe("modules/pushNotifications", function () {
 
       push.sweepExpired(Date.now() + push.SUBSCRIPTION_TTL + 1000);
       push.hasSubscription("u1").should.be.false;
+    });
+
+    it("measures the TTL from the last delivery, not from registration", async function () {
+      // A game can outlast the TTL, so a delivered push has to count as proof
+      // the subscription is still wanted.
+      const realNow = Date.now;
+      let now = realNow();
+      Date.now = () => now;
+
+      try {
+        push.register("u1", subscription("a"));
+
+        now += push.SUBSCRIPTION_TTL - 1000;
+        push.sweepExpired();
+        push.hasSubscription("u1").should.be.true;
+
+        await push.notifyUser("u1", { kind: "kicks-reminder" });
+
+        // Past the TTL since registration, inside it since that send.
+        now += 5000;
+        push.sweepExpired();
+        push.hasSubscription("u1").should.be.true;
+
+        // Idle past the TTL since the send: dropped.
+        now += push.SUBSCRIPTION_TTL;
+        push.sweepExpired();
+        push.hasSubscription("u1").should.be.false;
+      } finally {
+        Date.now = realNow;
+      }
+    });
+  });
+
+  describe("notifyUsersWithReport", function () {
+    it("reports deliveries, failures and prunes for the whole batch", async function () {
+      push.register("u1", subscription("ok"));
+      push.register("u2", subscription("gone"));
+      push.register("u3", subscription("flaky"));
+      // u4 never subscribed: counted as a recipient, not reached.
+
+      webpush.sendNotification = async (sub, payload) => {
+        if (sub.endpoint.endsWith("gone")) {
+          const err = new Error("gone");
+          err.statusCode = 410;
+          throw err;
+        }
+        if (sub.endpoint.endsWith("flaky")) {
+          const err = new Error("rate limited");
+          err.statusCode = 429;
+          throw err;
+        }
+        sent.push({ endpoint: sub.endpoint, payload: JSON.parse(payload) });
+      };
+
+      const report = await push.notifyUsersWithReport(
+        ["u1", "u2", "u3", "u4"],
+        { kind: "kicks-reminder" }
+      );
+
+      report.recipients.should.equal(4);
+      report.reached.should.equal(3);
+      report.targets.should.equal(3);
+      report.sent.should.equal(1);
+      report.failed.should.equal(1);
+      report.pruned.should.equal(1);
+
+      // The expired endpoint is gone, the transient one is kept for next time.
+      push.hasSubscription("u2").should.be.false;
+      push.hasSubscription("u3").should.be.true;
+      sent[0].payload.kind.should.equal("kicks-reminder");
+    });
+
+    it("delivers to every recipient across batch boundaries", async function () {
+      const total = push.NOTIFY_BATCH_SIZE + 2;
+      const userIds = [];
+
+      for (let i = 0; i < total; i++) {
+        const userId = `batch-${i}`;
+        push.register(userId, subscription(userId));
+        userIds.push(userId);
+      }
+
+      const report = await push.notifyUsersWithReport(userIds, { title: "hi" });
+
+      report.recipients.should.equal(total);
+      report.reached.should.equal(total);
+      report.sent.should.equal(total);
+      sent.should.have.lengthOf(total);
     });
   });
 });
