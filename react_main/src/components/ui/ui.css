@@ -248,6 +248,8 @@
   /* A field beside an action must be the same height as it. */
   .MuiInputBase-root.MuiInputBase-root:not(.MuiInputBase-multiline) { height: var(--ui-touch-height); }
   .ui-action.ui-action--icon, .ui-action.ui-action--icon.ui-action--small { flex-basis: var(--ui-touch-height); width: var(--ui-touch-height); height: var(--ui-touch-height); min-width: var(--ui-touch-height); }
+  .ui-vote.ui-vote .ui-action { flex-basis: var(--ui-touch-height); width: var(--ui-touch-height); height: var(--ui-touch-height); min-width: var(--ui-touch-height); min-height: var(--ui-touch-height); }
+  .ui-vote .ui-vote-count.ui-action { flex-basis: auto; width: auto; min-width: var(--ui-touch-height); }
   .composer-editor { font-size: 1rem; line-height: 1.5em; padding: 10px; }
   .composer-context .ui-action, .composer-preview .ui-action { flex-basis: var(--ui-touch-height); width: var(--ui-touch-height); height: var(--ui-touch-height); min-width: var(--ui-touch-height); min-height: var(--ui-touch-height); }
 }
@@ -367,19 +369,25 @@
 .ui-vote-control {
   display: inline-flex;
   align-items: center;
-  height: var(--ui-action-height);
+  min-height: var(--ui-action-height);
   padding: 0 4px;
   border: 1px solid var(--scheme-color-border);
   border-radius: var(--ui-radius-pill);
   background: var(--scheme-color-sec);
 }
-.ui-vote-control .ui-vote .MuiIconButton-root,
-.ui-vote--row .MuiIconButton-root {
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  min-height: 32px;
+.ui-vote .ui-action {
+  flex: 0 0 var(--ui-icon-height);
+  width: var(--ui-icon-height);
+  height: var(--ui-icon-height);
+  min-width: var(--ui-icon-height);
+  min-height: var(--ui-icon-height);
   padding: 0;
+}
+.ui-vote-count.ui-action {
+  flex-basis: auto;
+  width: auto;
+  min-width: var(--ui-icon-height);
+  padding: 0 6px;
 }
 .ui-vote--row { flex-wrap: nowrap; }
 

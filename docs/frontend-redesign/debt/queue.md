@@ -1,10 +1,10 @@
 # UI scale debt queue
 
-Generated 2026-11-15T04:53:54.026Z. **102** sites across **46** files.
+Generated 2026-11-15T05:01:24.050Z. **96** sites across **45** files.
 
 - `native-widget`: 31
-- `mui-inline-scale`: 30
-- `native-form`: 27
+- `native-form`: 26
+- `mui-inline-scale`: 25
 - `native-file`: 10
 - `native-hidden`: 2
 - `native-confirm`: 2
@@ -19,12 +19,12 @@ Generated 2026-11-15T04:53:54.026Z. **102** sites across **46** files.
 | `components/FanartPanel.jsx` | 4 |
 | `components/gameComponents/StateSwitcher.jsx` | 4 |
 | `pages/Play/Decks/CreateDeck.jsx` | 4 |
-| `pages/User/Profile.jsx` | 4 |
 | `components/Auth.jsx` | 3 |
 | `components/Form.jsx` | 3 |
-| `components/VoteWidget.jsx` | 3 |
 | `pages/Game/JottoGame.jsx` | 3 |
 | `pages/Game/PokerHandHistory.jsx` | 3 |
+| `pages/Game/components/DrawTools.jsx` | 3 |
+| `components/Scrapbook.jsx` | 2 |
 
 ## Sites
 
@@ -62,9 +62,6 @@ Generated 2026-11-15T04:53:54.026Z. **102** sites across **46** files.
 - `components/strategyWindows/FloatingStrategyWindows.jsx:116` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={12} data-testid="strategy-window" data-setup-id={win.setupId} `
 - `components/TutorialOverlay.jsx:198` — mui-inline-scale `Paper` — `<Paper ref={boxRef} elevation={8} data-testid="tutorial-overlay" sx={{ position: "fixed"`
 - `components/TutorialOverlay.jsx:243` — mui-inline-scale `IconButton` — `<IconButton size="small" sx={{ minWidth: 40, minHeight: 40, mt: -0.75, mr: -0.75, flexShrink: 0 }} `
-- `components/VoteWidget.jsx:112` — mui-inline-scale `IconButton` — `<IconButton aria-label="Upvote" disabled={!user.perms?.vote} sx={{ fontSize: "1em", `
-- `components/VoteWidget.jsx:121` — mui-inline-scale `IconButton` — `<IconButton aria-label="View votes" disabled={!user.perms?.viewVotes} onClick={(e) => getVotes(e, item.i`
-- `components/VoteWidget.jsx:143` — mui-inline-scale `IconButton` — `<IconButton aria-label="Downvote" disabled={!user.perms?.vote} sx={{ fontSize: "1em", `
 - `Main.jsx:89` — mui-inline-scale `Paper` — `<Paper sx={{ mx: "auto", my: "10%", p: 1, width: "320px", }} >`
 - `pages/Chat/Chat.jsx:671` — mui-inline-scale `Paper` — `<Paper className="site-chat" elevation={embedded ? 0 : 4} data-testid={directsOnly ? "dm-chat" : undef`
 - `pages/Community/Forums/Thread.jsx:961` — native-form `input` — `<input className="roster-color-input" type="color" `
@@ -126,7 +123,4 @@ Generated 2026-11-15T04:53:54.026Z. **102** sites across **46** files.
 - `pages/Play/WordDecks/CreateWordDeck.jsx:256` — native-widget `button` — `<button type="button" aria-label="Upload cover photo" disabled={inputsDisabled} className={'deck-cover-u`
 - `pages/Play/WordDecks/CreateWordDeck.jsx:281` — native-file `input` — `<input ref={coverInputRef} className="hidden-upload" type="file" `
 - `pages/User/Profile.jsx:1524` — native-widget `button` — `<button type="button" className="banner-edit-action banner-remove" title="Remo`
-- `pages/User/Profile.jsx:1871` — mui-inline-scale `Paper` — `<Paper variant="outlined" sx={{ p:`
-- `pages/User/Profile.jsx:1898` — mui-inline-scale `Paper` — `<Paper sx={{ px: 1, `
-- `pages/User/Profile.jsx:2376` — native-form `select` — `<select className="query-select" value={selectedKey} onChange={(e) => setSelectedKey`
 - `pages/User/UserWidgets.jsx:562` — native-widget `button` — `<button type="button" className="avatar-edit-action avatar-remove" title="Remo`

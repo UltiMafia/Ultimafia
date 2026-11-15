@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
-import { Box, Stack, IconButton, Tooltip } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 
 import { SiteInfoContext } from "Contexts";
 import { StampItem } from "components/Scrapbook";
@@ -150,14 +150,16 @@ export default function PendingTradeConfirmations({
   function renderActions(t) {
     const reject = (
       <Tooltip title="Cancel" arrow>
-        <IconButton
+        <UiAction
+          iconOnly
           size="small"
+          variant="ghost"
+          aria-label="Cancel trade"
           disabled={busyId === t.id}
           onClick={() => handleReject(t.id)}
-          sx={{ opacity: 0.6 }}
         >
           <i className="fas fa-times" />
-        </IconButton>
+        </UiAction>
       </Tooltip>
     );
     // PENDING_RESPONSE

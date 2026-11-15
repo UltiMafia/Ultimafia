@@ -44,9 +44,6 @@
   "components/NavDropdown.jsx": {
     "mui:Menu": 1
   },
-  "components/PendingTradeConfirmations.jsx": {
-    "mui:IconButton": 1
-  },
   "components/Poll.jsx": {
     "mui:LinearProgress": 1
   },
@@ -74,9 +71,6 @@
   "components/TutorialOverlay.jsx": {
     "mui:IconButton": 1,
     "mui:Paper": 1
-  },
-  "components/VoteWidget.jsx": {
-    "mui:IconButton": 1
   },
   "components/alerts/Announcement.jsx": {
     "native:button": 1
@@ -231,9 +225,7 @@
     "mui:LinearProgress": 1
   },
   "pages/User/Profile.jsx": {
-    "native:button": 1,
-    "native:select": 1,
-    "mui:Paper": 1
+    "native:button": 1
   },
   "pages/User/Settings.jsx": {
     "mui:LinearProgress": 1

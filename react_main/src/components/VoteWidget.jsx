@@ -8,12 +8,10 @@ import { NameWithAvatar } from "pages/User/UserWidgets";
 import UiIcon from "./ui/UiIcon";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
-import { Divider, IconButton, Popover, Stack } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
-import { UiText as Typography } from "components/ui";
+import { Divider, Popover, Stack } from "@mui/material";
+import { UiAction, UiText as Typography } from "components/ui";
 
 export function VoteWidget(props) {
-  const theme = useTheme();
   const item = props.item;
   const itemType = props.itemType;
   const itemHolder = props.itemHolder;
@@ -109,46 +107,31 @@ export function VoteWidget(props) {
       data-ui-control="vote"
       data-ui-variant={variant}
     >
-      <IconButton
-        aria-label="Upvote" disabled={!user.perms?.vote}
-        sx={{
-          fontSize: "1em",
-          color: "inherit",
-          ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
-        }}
+      <UiAction
+        iconOnly
+        variant="ghost"
+        aria-label="Upvote"
+        aria-pressed={item.vote === 1}
+        disabled={!user.perms?.vote}
         onClick={() => onVote(item.id, 1)}
-      ><UiIcon name="up" size={18} /></IconButton>
-      <IconButton
-        aria-label="View votes" disabled={!user.perms?.viewVotes}
+      ><UiIcon name="up" size={18} /></UiAction>
+      <UiAction
+        className="ui-vote-count"
+        variant="ghost"
+        aria-label="View votes"
+        disabled={!user.perms?.viewVotes}
         onClick={(e) => getVotes(e, item.id)}
-        sx={{
-          position: "relative",
-          fontSize: "1em",
-          color: "text.primary",
-          "&.Mui-disabled": { color: "text.primary", opacity: 1 },
-          minWidth: "2em",
-          minHeight: "2em",
-        }}
       >
-        <Typography
-          sx={{
-            position: "absolute",
-            lineHeight: "1",
-            color: "inherit",
-          }}
-        >
-          {item.voteCount ?? 0}
-        </Typography>
-      </IconButton>
-      <IconButton
-        aria-label="Downvote" disabled={!user.perms?.vote}
-        sx={{
-          fontSize: "1em",
-          color: "inherit",
-          ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
-        }}
+        {item.voteCount ?? 0}
+      </UiAction>
+      <UiAction
+        iconOnly
+        variant="ghost"
+        aria-label="Downvote"
+        aria-pressed={item.vote === -1}
+        disabled={!user.perms?.vote}
         onClick={() => onVote(item.id, -1)}
-      ><UiIcon name="down" size={18} /></IconButton>
+      ><UiIcon name="down" size={18} /></UiAction>
       <Popover
         open={popoverOpen}
         sx={{ pointerEvents: openByClick ? "auto" : "none" }}

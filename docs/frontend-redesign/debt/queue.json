@@ -1,18 +1,18 @@
 {
-  "generatedAt": "2026-11-15T04:53:54.025Z",
-  "count": 102,
+  "generatedAt": "2026-11-15T05:01:24.050Z",
+  "count": 96,
   "byKind": {
-    "mui-inline-scale": 30,
+    "mui-inline-scale": 25,
     "native-hidden": 2,
     "native-file": 10,
     "native-confirm": 2,
     "native-widget": 31,
-    "native-form": 27
+    "native-form": 26
   },
-  "actionable": 44,
+  "actionable": 38,
   "sanctioned": 12,
   "game": 46,
-  "files": 46,
+  "files": 45,
   "topFiles": [
     [
       "pages/Game/Game.jsx",
@@ -39,19 +39,11 @@
       4
     ],
     [
-      "pages/User/Profile.jsx",
-      4
-    ],
-    [
       "components/Auth.jsx",
       3
     ],
     [
       "components/Form.jsx",
-      3
-    ],
-    [
-      "components/VoteWidget.jsx",
       3
     ],
     [
@@ -61,6 +53,14 @@
     [
       "pages/Game/PokerHandHistory.jsx",
       3
+    ],
+    [
+      "pages/Game/components/DrawTools.jsx",
+      3
+    ],
+    [
+      "components/Scrapbook.jsx",
+      2
     ]
   ],
   "entries": [
@@ -258,27 +258,6 @@
       "kind": "mui-inline-scale",
       "name": "IconButton",
       "snippet": "<IconButton size=\"small\" sx={{ minWidth: 40, minHeight: 40, mt: -0.75, mr: -0.75, flexShrink: 0 }} "
-    },
-    {
-      "file": "components/VoteWidget.jsx",
-      "line": 112,
-      "kind": "mui-inline-scale",
-      "name": "IconButton",
-      "snippet": "<IconButton aria-label=\"Upvote\" disabled={!user.perms?.vote} sx={{ fontSize: \"1em\", "
-    },
-    {
-      "file": "components/VoteWidget.jsx",
-      "line": 121,
-      "kind": "mui-inline-scale",
-      "name": "IconButton",
-      "snippet": "<IconButton aria-label=\"View votes\" disabled={!user.perms?.viewVotes} onClick={(e) => getVotes(e, item.i"
-    },
-    {
-      "file": "components/VoteWidget.jsx",
-      "line": 143,
-      "kind": "mui-inline-scale",
-      "name": "IconButton",
-      "snippet": "<IconButton aria-label=\"Downvote\" disabled={!user.perms?.vote} sx={{ fontSize: \"1em\", "
     },
     {
       "file": "components/alerts/Announcement.jsx",
@@ -817,28 +796,6 @@
       "scope": "site",
       "name": "button",
       "snippet": "<button type=\"button\" className=\"banner-edit-action banner-remove\" title=\"Remo"
-    },
-    {
-      "file": "pages/User/Profile.jsx",
-      "line": 1871,
-      "kind": "mui-inline-scale",
-      "name": "Paper",
-      "snippet": "<Paper variant=\"outlined\" sx={{ p:"
-    },
-    {
-      "file": "pages/User/Profile.jsx",
-      "line": 1898,
-      "kind": "mui-inline-scale",
-      "name": "Paper",
-      "snippet": "<Paper sx={{ px: 1, "
-    },
-    {
-      "file": "pages/User/Profile.jsx",
-      "line": 2376,
-      "kind": "native-form",
-      "scope": "site",
-      "name": "select",
-      "snippet": "<select className=\"query-select\" value={selectedKey} onChange={(e) => setSelectedKey"
     },
     {
       "file": "pages/User/UserWidgets.jsx",

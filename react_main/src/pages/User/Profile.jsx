@@ -5,7 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
-import { UiCard, UiPage, UiPageHeader, UiSegmentedControl, confirmAction, UiField as TextField, UiText as Typography } from "components/ui";
+import { UiCard, UiPage, UiPageHeader, UiSegmentedControl, confirmAction, UiField as TextField, UiMenuItem, UiText as Typography } from "components/ui";
 import ProfileStatsSummary from "./ProfileStatsSummary";
 const PieChart = lazy(() => import("./PieChart").then((module) => ({ default: module.PieChart })));
 
@@ -56,7 +56,7 @@ import AdminVisuals from "./AdminVisuals";
 import { ProfileSkeleton } from "components/Skeletons";
 import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
-import { Box, Divider, Grid, Paper, Popover, Stack, Tooltip, useMediaQuery } from "@mui/material";
+import { Box, Divider, Grid, Popover, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
@@ -1868,18 +1868,7 @@ export default function Profile() {
                         </div>
 
                         {statsBucket === "ranked" && skillRating?.tier ? (
-                          <Paper
-                            variant="outlined"
-                            sx={{
-                              p: 1.5,
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                              backgroundColor: "transparent",
-                              borderColor: "divider",
-                              borderRadius: 2
-                            }}
-                          >
+                          <UiCard className="profile-tier-summary">
                             {TIER_ICONS[skillRating.tier] && (
                               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                 <img
@@ -1895,19 +1884,9 @@ export default function Profile() {
                                   {skillRating.tier}
                                 </Typography>
                                 {skillRating.rank && (
-                                  <Paper
-                                    sx={{
-                                      px: 1,
-                                      py: 0.25,
-                                      fontSize: "0.75rem",
-                                      fontWeight: "bold",
-                                      backgroundColor: "primary.main",
-                                      color: "primary.contrastText",
-                                      borderRadius: 1
-                                    }}
-                                  >
+                                  <span className="profile-rank-chip">
                                     Rank #{skillRating.rank}
-                                  </Paper>
+                                  </span>
                                 )}
                               </Stack>
                               
@@ -1946,7 +1925,7 @@ export default function Profile() {
                                 </Grid>
                               </Grid>
                             </Stack>
-                          </Paper>
+                          </UiCard>
                         ) : statsBucket === "ranked" ? (
                           <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic", textAlign: "center", py: 1 }}>
                             {/* Counts rated games from the rating system itself, not the
@@ -2358,32 +2337,29 @@ function StatsQueryView({ stats, statsBucket }) {
 
   return (
     <div className="stats-query">
-      <div className="query-type-tabs">
-        {Object.keys(typeNames).map((t) => (
-          <div
-            key={t}
-            className={"query-type-tab" + (queryType === t ? " active" : "")}
-            onClick={() => setQueryType(t)}
-          >
-            {typeNames[t]}
-          </div>
-        ))}
-      </div>
+      <UiSegmentedControl
+        ariaLabel="Detailed stats breakdown"
+        value={queryType}
+        onChange={setQueryType}
+        options={Object.entries(typeNames).map(([value, label]) => ({ value, label }))}
+      />
       {keys.length === 0 ? (
         <div className="query-empty">No {typeNames[queryType]} data yet.</div>
       ) : (
         <>
-          <select
-            className="query-select"
+          <TextField
+            select
+            fullWidth
+            label={typeNames[queryType]}
             value={selectedKey}
             onChange={(e) => setSelectedKey(e.target.value)}
           >
             {keys.map((k) => (
-              <option key={k} value={k}>
+              <UiMenuItem key={k} value={k}>
                 {displayKey(k)}
-              </option>
+              </UiMenuItem>
             ))}
-          </select>
+          </TextField>
           {selectedStats && (
             <div className="query-stats">
               <div className="query-stat">

@@ -90,6 +90,7 @@ export function profile(id) {
       { id: "fixture-finished", status: "Finished", type: "Mafia", players: 7, setup: setups[0], lobby: "Main", endTime: fixtureTime - 3600000, winners: ["Village"] },
     ], archivedGames: [], setups: minimal ? [] : setups.slice(0, 2), friends: [], friendRequests: [],
     maxGamesPage: 1, maxSetupsPage: 1, stats: minimal ? undefined : { Mafia: { all: statsBucket, ranked: statsBucket, unranked: statsBucket, competitive: statsBucket } },
+    skillRating: id === "fixture-person-1" ? { tier: "Gold", rank: 12, mu: 30, sigma: 4, gamesPlayed: 32, required: 10 } : undefined,
     totalGames: minimal ? 0 : 63, kudos: minimal ? 0 : 42, points: minimal ? 0 : 135,
     pointsNegative: 0, championshipPoints: 0, karmaInfo: { vote: 0, voteCount: minimal ? 0 : 128 },
     karma: minimal ? 0 : 128, groups: [], love: {}, currentLove: {}, achievements: [],
