@@ -170,15 +170,37 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
   const isRanked = getFormFieldValue("ranked");
   const isCompetitive = getFormFieldValue("competitive");
 
+  // Ranked and Competitive both stay visible, but only one can be on:
+  // turning one on turns the other off.
+  const previousModes = useRef({ ranked: isRanked, competitive: isCompetitive });
   useEffect(() => {
+    const previous = previousModes.current;
+    previousModes.current = { ranked: isRanked, competitive: isCompetitive };
+
+    if (isRanked && isCompetitive) {
+      updateFormFields({
+        ref: previous.ranked ? "ranked" : "competitive",
+        prop: "value",
+        value: false,
+      });
+      return;
+    }
+
     if (isCompetitive) {
       updateFormFields({
         ref: "lobby",
         prop: "value",
         value: "Competitive",
       });
+    } else if (previous.competitive && lobby === "Competitive") {
+      // Only competitive games can be hosted in the Competitive lobby.
+      updateFormFields({
+        ref: "lobby",
+        prop: "value",
+        value: defaultLobby && defaultLobby !== "Competitive" ? defaultLobby : "Main",
+      });
     }
-  }, [isCompetitive]);
+  }, [isRanked, isCompetitive]);
 
   var alertText = "";
 
