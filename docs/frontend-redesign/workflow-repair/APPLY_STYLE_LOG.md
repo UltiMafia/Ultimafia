@@ -145,6 +145,10 @@ primitive, delete the old CSS/component, then prove the render.
 - Focused dialog audit: **0 findings** (forums, profile, family, setup, shop).
 - Control/heading audit: **0 findings** across 10 routes and 18 renders. Two
   role-detail captures failed only because the fixture copy no longer matches.
+- Scoped comparative geometry audit (shop, stocks, profile-rich, forum-thread):
+  **0 open findings**; 36 intentional intrinsic-width findings. The trade
+  dialog's Buy/Sell choice is now the shared segmented control, and dialog
+  actions are compared within their own 40px frame.
 - Browser suites: mobile header **25/25** at 320/360/375/390; DM panel **9/9**;
   Banned **19/19**; Mod commands **8/8**; Ban appeals **36/36** after pointing
   the suite at the shared table rows.

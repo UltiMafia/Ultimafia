@@ -4,7 +4,7 @@ import { Stack, Box, Paper, useTheme } from "@mui/material";
 import { UserContext, SiteInfoContext } from "Contexts";
 import { Avatar } from "pages/User/UserWidgets"; // Reuse existing custom Avatar component
 import { FamilyAvatarImage } from "utils/avatarUrl";
-import { UiDialog, UiAction, UiIcon, UiField } from "./ui";
+import { UiDialog, UiAction, UiIcon, UiField, UiSegmentedControl } from "./ui";
 import { boundedShareCount, MAX_SHARES_PER_TRADE } from "../utils/stockTradeInput.mjs";
 import { UiText as Typography } from "components/ui";
 
@@ -145,9 +145,18 @@ export default function TradeDialog({ open, onClose, stock, initialType = "buy",
         </Stack>
         <Stack spacing={3} sx={{ pt: 1.5 }}>
           {tradeError && <p role="alert">{tradeError}</p>}
-          <div role="group" aria-label="Transaction type" style={{ display: "flex", gap: 8 }}>
-            {["buy", "sell"].map(type => <UiAction key={type} disabled={submitting} aria-pressed={tradeType === type} onClick={() => { setTradeType(type); setShareCount(1); }}>{type === "buy" ? "Buy shares" : "Sell shares"}</UiAction>)}
-          </div>
+          <UiSegmentedControl
+            ariaLabel="Transaction type"
+            value={tradeType}
+            onChange={(value) => {
+              setTradeType(value);
+              setShareCount(1);
+            }}
+            options={[
+              { value: "buy", label: "Buy shares", disabled: submitting },
+              { value: "sell", label: "Sell shares", disabled: submitting },
+            ]}
+          />
 
           <Box>
             <Typography component="label" htmlFor="stock-trade-shares" variant="subtitle2" sx={{ display: "block", mb: 1 }}>

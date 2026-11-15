@@ -161,6 +161,10 @@ function measureUi() {
     // icon actions, not with labelled buttons.
     const actionKind = element && ['primaryAction', 'secondaryAction'].includes(sample.role)
       ? (element.textContent.trim() ? 'text' : 'icon') : '';
+    // Dialog action rows use the canonical 40px frame; page-level actions are
+    // compared with their own inline/row context rather than the dialog frame.
+    const actionContext = element && ['primaryAction', 'secondaryAction'].includes(sample.role)
+      ? (element.closest('[role="dialog"]') ? 'dialog' : 'page') : '';
     // An icon tab is laid out differently by MUI (smaller vertical padding);
     // compare it only with other icon tabs.
     const tabKind = element && (sample.role === 'tab' || element.matches('[role="tab"]')) ? (element.querySelector('svg, img, .ui-icon') ? 'icon' : 'text') : '';
@@ -205,7 +209,7 @@ function measureUi() {
       // A level-3 heading is a sub-heading; compare it with other h3s, not with h2.
       sample.role === 'sectionHeading' ? `level:${element ? element.tagName.toLowerCase() : 'none'}` : '',
       sample.role === 'sectionHeading' && element?.closest('[role="dialog"]') ? 'dialog' : '',
-      inputKind, tabKind, surfaceKind, actionKind, navKind, statusKind, currencySize, headerKind].filter(Boolean).join(':');
+      inputKind, tabKind, surfaceKind, actionKind, actionContext, navKind, statusKind, currencySize, headerKind].filter(Boolean).join(':');
   }
   // A menu's icons are one optical family: same size, same colour, same element
   // kind. A gold 16px currency sprite among 24px monochrome glyphs is the kind of
