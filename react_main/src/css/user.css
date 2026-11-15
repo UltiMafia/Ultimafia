@@ -626,7 +626,7 @@ iframe {
   align-self: stretch;
 }
 
-.profile .trophy-karma { display: flex; align-items: center; justify-content: space-between; gap: 4px; width: 100%; min-width: 0; }
+.profile .trophy-karma { display: flex; align-items: center; gap: 4px; width: 100%; min-width: 0; }
 .profile .trophy-karma .trophy-tile { gap: 6px; min-width: 0; }
 .profile .karma-vote-wrap .ui-inline-actions { display: flex; flex-direction: row; gap: 2px; }
 .profile .karma-vote-wrap .ui-action { flex-basis: var(--ui-icon-height); width: var(--ui-icon-height); height: var(--ui-icon-height); min-width: var(--ui-icon-height); min-height: var(--ui-icon-height); }

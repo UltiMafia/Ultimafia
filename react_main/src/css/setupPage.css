@@ -174,7 +174,6 @@
 .role-meta-row { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
 .role-hero-actions { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .role-hero-actions > .MuiStack-root:first-child { flex-direction: row; align-items: center; gap: 2px; padding-right: 10px; border-right: 1px solid var(--scheme-color-border); }
-.role-fanart-section { max-width: var(--ui-reading-width); }
 .role-info { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .role-info > h2 { margin: 0; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); }
 .role-description { max-width: var(--ui-reading-width); }

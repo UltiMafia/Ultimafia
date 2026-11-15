@@ -637,10 +637,11 @@ async function reviewDiscoveryTasks(page, item, captureTask) {
     checks.push("competitive-round-setup-list-add-cancel-and-no-unsaved-write");
   }
   if (item.name === "moderation-ban-appeals") {
-    await page.getByTestId("ban-appeal-row").first().click();
+    const appealRows = page.locator('[data-testid="ban-appeals-list"] tbody tr');
+    await appealRows.first().click();
     await page.getByTestId("ban-appeal-case").waitFor();
     await page.getByRole("link", { name: "Back to Ban Appeals", exact: true }).click();
-    await page.getByTestId("ban-appeal-row").first().waitFor();
+    await appealRows.first().waitFor();
     checks.push("ban-appeal-queue-opens-case-and-returns");
   }
   if (item.name === "feedback") {
@@ -805,7 +806,7 @@ async function reviewDiscoveryTasks(page, item, captureTask) {
   }
   if (item.name === "word-deck-editor") {
     await page.locator('#deck-name-input').fill("Local word draft");
-    const words = page.locator('textarea');
+    const words = page.locator('.deck-words-field textarea').first();
     await words.fill("invalid word with spaces");
     assert.ok(await page.getByRole("button", { name: /Save|Create/ }).last().isDisabled());
     checks.push("word-editor-invalid-input-keeps-save-disabled");
@@ -1027,8 +1028,11 @@ async function reviewTasks(page, item, viewport, entry) {
       checks.push("explicit-save-draft-retained-between-sections-without-submitting");
     }
     if (item.name === "settings-account") {
-      await page.getByRole("button", { name: "Delete account", exact: true }).click();
+      const deleteAccount = page.getByRole("button", { name: "Delete account", exact: true });
+      await deleteAccount.scrollIntoViewIfNeeded();
+      await deleteAccount.click();
       assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === "/api/user/delete").length), 0);
+      await page.getByRole("dialog").getByRole("button", { name: "Cancel", exact: true }).click();
       checks.push("account-deletion-cancel-does-not-submit");
     }
     for (const name of ["Site", "Profile", "Game", "Account", "GitHub", "Cookies", "Family"]) {
@@ -1050,8 +1054,10 @@ async function reviewTasks(page, item, viewport, entry) {
       assert.equal(await karma.getByRole('button', { name: 'Upvote profile', exact: true }).count(), 1);
       assert.equal(await karma.getByRole('button', { name: 'Downvote profile', exact: true }).count(), 1);
       const bounds = await karma.evaluate(element => {
-        const score = element.querySelector('.trophy-meta').getBoundingClientRect();
-        const controls = element.querySelector('.karma-vote-wrap').getBoundingClientRect();
+        const wrapper = element.closest('.karma-vote-wrap') || element.parentElement;
+        const meta = [...wrapper.parentElement.querySelectorAll('.trophy-meta')].find(item => /Karma/i.test(item.textContent)) || wrapper.parentElement.querySelector('.trophy-meta');
+        const score = meta.getBoundingClientRect();
+        const controls = wrapper.getBoundingClientRect();
         return { horizontalGap: Math.max(0, controls.left - score.right), verticalGap: Math.max(0, controls.top - score.bottom), overlap: Math.min(score.right, controls.right) - Math.max(score.left, controls.left) > 1 && Math.min(score.bottom, controls.bottom) - Math.max(score.top, controls.top) > 1 };
       });
       assert.ok(bounds.horizontalGap <= 12 && bounds.verticalGap <= 12, 'Karma controls stay beside their own score, including when wrapped');

@@ -5,7 +5,7 @@ import { Box, IconButton, Stack, Tooltip } from "@mui/material";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "./Alerts";
 import ImageViewer from "./ImageViewer";
-import { confirmAction, UiSection, UiField as TextField, UiText as Typography, UiAction } from "components/ui";
+import { confirmAction, UiSection, UiField as TextField, UiText as Typography, UiAction, UiDialog } from "components/ui";
 
 export default function FanartPanel({ roleId }) {
   const user = useContext(UserContext);
