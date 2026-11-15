@@ -641,7 +641,7 @@ export default function StockMarket() {
               backgroundColor: "background.paper",
             }}
           >
-            <Table size="small" sx={{ "& .MuiTableCell-root": { px: 1.5 } }}>
+            <Table size="small" sx={{ "& .MuiTableCell-root": { px: 1, py: 1.5, fontSize: "var(--ui-text-body)" }, "& .MuiTableCell-head": { fontWeight: "var(--ui-weight-strong)", background: "transparent" } }}>
               <TableHead>
                 <TableRow>
                   {renderSortableHeader(marketMode === "player" ? "Player" : "Family Name", "name")}
@@ -1382,7 +1382,7 @@ export default function StockMarket() {
                 backgroundColor: "background.paper",
               }}
             >
-              <Table size="small" sx={{ "& .MuiTableCell-root": { px: 1.5 } }}>
+              <Table size="small" sx={{ "& .MuiTableCell-root": { px: 1, py: 1.5, fontSize: "var(--ui-text-body)" }, "& .MuiTableCell-head": { fontWeight: "var(--ui-weight-strong)", background: "transparent" } }}>
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ fontWeight: "bold" }}>Date/Time</TableCell>

@@ -165,6 +165,14 @@ function measureUi() {
     // compared with their own inline/row context rather than the dialog frame.
     const actionContext = element && ['primaryAction', 'secondaryAction'].includes(sample.role)
       ? (element.closest('[role="dialog"]') ? 'dialog' : 'page') : '';
+    // A named small action is a different control from the default 40px action.
+    const actionSize = element && ['primaryAction', 'secondaryAction'].includes(sample.role)
+      ? (element.matches('.ui-action--small, .MuiButton-sizeSmall') ? 'small' : 'default') : '';
+    // The first and last comment rows intentionally trim their outer padding;
+    // compare them with the same list position, not with the middle rows.
+    const commentPosition = element && sample.role === 'comment'
+      ? (element.matches(':first-of-type') ? 'first'
+        : element.matches(':last-of-type') ? 'last' : 'middle') : '';
     // An icon tab is laid out differently by MUI (smaller vertical padding);
     // compare it only with other icon tabs.
     const tabKind = element && (sample.role === 'tab' || element.matches('[role="tab"]')) ? (element.querySelector('svg, img, .ui-icon') ? 'icon' : 'text') : '';
@@ -173,8 +181,8 @@ function measureUi() {
       ? (element.closest('.react-mde') ? 'editor'
         : element.tagName === 'TEXTAREA' ? 'multiline'
         : isAutocomplete ? 'autocomplete'
-        : element.closest('.MuiInputBase-root')?.querySelector('.MuiInputAdornment-root, .ui-icon') || element.previousElementSibling ? 'adorned'
         : sample.role === 'select' && (element.closest('.ui-field--wrap-select') || element.scrollHeight > 45) ? 'wrap'
+        : element.closest('.MuiInputBase-root')?.querySelector('.MuiInputAdornment-root, .ui-icon') || element.previousElementSibling ? 'adorned'
         : 'plain')
       : '';
     const statusKind = element && sample.role === 'emptyState'
@@ -209,7 +217,7 @@ function measureUi() {
       // A level-3 heading is a sub-heading; compare it with other h3s, not with h2.
       sample.role === 'sectionHeading' ? `level:${element ? element.tagName.toLowerCase() : 'none'}` : '',
       sample.role === 'sectionHeading' && element?.closest('[role="dialog"]') ? 'dialog' : '',
-      inputKind, tabKind, surfaceKind, actionKind, actionContext, navKind, statusKind, currencySize, headerKind].filter(Boolean).join(':');
+      inputKind, tabKind, surfaceKind, actionKind, actionContext, actionSize, navKind, statusKind, currencySize, headerKind, commentPosition].filter(Boolean).join(':');
   }
   // A menu's icons are one optical family: same size, same colour, same element
   // kind. A gold 16px currency sprite among 24px monochrome glyphs is the kind of

@@ -1568,7 +1568,7 @@ export default function Profile() {
               justifyContent: "center",
             }}
           >
-            <UiCard className="profile-header-panel profile-tinted">
+            <UiCard variant="flush" className="profile-header-panel profile-tinted">
               <div className="content" style={{ gap: "8px" }}>
                 {showBanner && (
                   <div className="banner" style={bannerStyle}>

@@ -789,3 +789,5 @@ input:focus:not(:focus-visible) {
 .strategy-reader-action { align-self: flex-start; }
 
 @media (max-width: 900px), (pointer: coarse) { .stamp-suggestion.ui-action { min-height: var(--ui-touch-height); } }
+
+.learn-game-field-icon .game-icon { display: block; width: var(--ui-text-heading); height: var(--ui-text-heading); }

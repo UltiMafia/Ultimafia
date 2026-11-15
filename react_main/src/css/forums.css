@@ -46,7 +46,6 @@
 .forums .forum-nav .path a { min-width: 0; overflow-wrap: anywhere; }
 .forums .forum-category + .forum-category { margin-top: var(--ui-section-gap); }
 .forum-category .ui-section-heading { margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--scheme-color-border); }
-.forum-category .ui-section-heading h2 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.02em; }
 .forum-board-row {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
