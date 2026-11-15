@@ -430,6 +430,8 @@ export default function StockMarket() {
       key: "treasury", label: "Treasury Coins", align: "right", sortable: true, hideOnPhone: true, nowrap: true,
       render: (stock) => <>{stock.treasuryCoins.toFixed(2)} <CoinIcon size={12} /></>,
     }] : []),
+    { key: "trend", label: "Trend", align: "center", hideBelow: "lg", nowrap: true,
+      render: (stock) => <Sparkline history={stock.priceHistory} size="compact" /> },
     { key: "marketCap", label: "Market Cap", align: "right", sortable: true, hideOnPhone: true, nowrap: true,
       render: (stock) => <>{stock.marketCap.toFixed(2)} <CoinIcon size={12} /></> },
     { key: "buyPrice", label: "Buy Price", align: "right", sortable: true, nowrap: true,
@@ -590,7 +592,7 @@ export default function StockMarket() {
                           </Box>
                         </Stack>
                         <Box sx={{ width: 60, height: 20 }}>
-                          <Sparkline history={stock.priceHistory} width={60} height={20} />
+                          <Sparkline history={stock.priceHistory} size="inline" />
                         </Box>
                       </Stack>
                        <Grid container spacing={1} mb={2}>

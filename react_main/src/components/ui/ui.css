@@ -206,6 +206,12 @@
   .ui-table td.ui-table-cell--actions .ui-table-value { display: flex; flex-wrap: wrap; gap: 8px; }
   .ui-table td.ui-table-cell--actions .ui-table-value > .ui-action { min-height: var(--ui-touch-height); padding: 0 14px; font-size: var(--ui-text-body); }
 }
+
+/* Dense tables drop wide-only columns before phones, matching MUI's `lg`. */
+@media (max-width: 1199.95px) {
+  .ui-table [data-below="lg"] { display: none; }
+  .ui-table [data-below="md"] { display: none; }
+}
 .ui-section-label { margin: 16px 0 8px; font-size: var(--ui-text-body); font-weight: var(--ui-weight-strong); }
 .ui-page { width: 100%; max-width: var(--ui-page-width); min-width: 0; margin: 0 auto; background: transparent; }
 .ui-page--reading { max-width: var(--ui-reading-width); }

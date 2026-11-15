@@ -17,7 +17,7 @@ export default function UiTable({
         const active = sortable && sort?.key === column.key;
         const className = [column.nowrap ? "is-nowrap" : "", column.actions ? "ui-table-cell--actions" : ""].filter(Boolean).join(" ") || undefined;
         return <th key={column.key} scope="col" role="columnheader" className={className}
-          data-align={column.align} data-phone={column.hideOnPhone ? "hide" : undefined}
+          data-align={column.align} data-phone={column.hideOnPhone ? "hide" : undefined} data-below={column.hideBelow}
           aria-sort={active ? (sort.direction === "asc" ? "ascending" : "descending") : undefined}>
           {column.sortable && sortable
             ? <button type="button" className="ui-table-sort" onClick={() => onSort(column.key)} title={column.tooltip}>
@@ -36,7 +36,7 @@ export default function UiTable({
         {columns.map(column => {
           const className = [column.nowrap ? "is-nowrap" : "", column.actions ? "ui-table-cell--actions" : ""].filter(Boolean).join(" ") || undefined;
           return <td key={column.key} role="cell" className={className}
-            data-align={column.align} data-phone={column.hideOnPhone ? "hide" : undefined}>
+            data-align={column.align} data-phone={column.hideOnPhone ? "hide" : undefined} data-below={column.hideBelow}>
             <span className="ui-table-mobile-label" aria-hidden="true">{column.label}</span>
             <div className={`ui-table-value${column.code ? " ui-table-value--code" : ""}`}>
               {column.render ? column.render(row) : row[column.key]}
