@@ -59,8 +59,9 @@ export default function LearnGlossary(props) {
     <section className="glossary-page">
       <UiPageHeader title="Glossary" description="Search definitions and chat commands." />
       <TextField
-        className="reference-search"
+        className="ui-reference-search"
         type="search"
+        fullWidth
         placeholder="Search terms and commands..."
         value={query}
         onChange={event => setQuery(event.target.value)}
