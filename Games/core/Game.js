@@ -393,6 +393,10 @@ module.exports = class Game {
   async cancel() {
     for (let timeout of this.timeouts) clearTimeout(timeout);
 
+    for (let spectator of Array.from(this.spectators)) {
+      spectator.leaveGame();
+    }
+
     gameEventLog.close(this);
     delete games[this.id];
     await redis.deleteGame(this.id);
@@ -408,7 +412,15 @@ module.exports = class Game {
         );
 
         this.createTimer("pregameWait", 30 * 1000, async () => {
+          if (this.started || this.starting || games[this.id] !== this) return;
+
+          if (this.players.length == 0) {
+            await this.cancel();
+            return;
+          }
+
           for (let p of Array.from(this.players)) {
+            if (this.started || this.starting || games[this.id] !== this) return;
             await this.kickPlayer(p);
           }
         });
@@ -1375,9 +1387,7 @@ module.exports = class Game {
       await redis.leaveGame(userId);
 
       if (this.players.length == 0) {
-        gameEventLog.close(this);
-        delete games[this.id];
-        await redis.deleteGame(this.id);
+        await this.cancel();
       }
 
       return;
