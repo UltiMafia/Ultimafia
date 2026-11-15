@@ -73,10 +73,10 @@ the complete screenshot refresh remains outstanding.
   missing/ambiguous targets. A narrow Learn tab-window rule retains intentional
   findings and reasons instead of suppressing them; selected labels, usable hit
   areas, scroll affordances and keyboard checks remain required.
-- Actual master uses its untouched complete Main/providers/routes, not redesign
-  components with old colors. New dialogs are paired with documented actual
-  ancestors when master lacks them; native prompts are recorded and dismissed,
-  not fabricated in screenshots. Fixtures cannot forward service mutations.
+- Actual master was rendered from its untouched complete Main/providers/routes,
+  not redesign components with old colors, and new dialogs were paired with
+  documented ancestors when master lacked them. **That comparison was retired on
+  2026-11-15**; it is recorded here as history, not as a current requirement.
 - Public **same-existing-database** comparisons remain separate from controlled
   fixtures. No authentication, identity forwarding or database replacement is
   implied by a fixture result.
@@ -96,12 +96,11 @@ the complete screenshot refresh remains outstanding.
 - [UI architecture](docs/frontend-redesign/UI_ARCHITECTURE.md)
 - [Read-only public comparison procedure](docs/frontend-redesign/audit/live-public/README.md)
 
-The registered denominator is **918 cells**. The setup/tab slice passes all six
-setup cases per branch and six Learn/six composition cases, with the scoped setup
-report pairing 18 cells / 900 gaps and retaining 60 open candidates. The shared tab
-repair resolves the newer settled keyboard clipping; the old single-case recovery
-was not its fix. Further captures are scoped/capped; one final full matrix is
-reserved for completion. Global/game states, menus and further
+The registered denominator is **924 cells** (154 route/state IDs × 1440/390/320 ×
+dark/light). The 2026-11-15 redesign-only matrix captured **924/924 cells with 0
+open findings** and 2,040 intentional context rows, on the run before the last
+documentation commit. It is structural and cross-route consistency evidence, not
+visual acceptance. Global/game states, menus and further
 loading/empty/failure/permission branches still need registration. A complete
 registered run would therefore still not establish exhaustive inventory coverage.
 
@@ -152,20 +151,23 @@ selector failure were discarded; the fork's subsequent Back-dismissal fix is ret
 
 ## Still required
 
-- Complete stable-ID registration and both-baseline coverage for every surface,
+- Complete stable-ID registration and single-baseline coverage for every surface,
   state and interaction; retain before/after evidence for each repair.
 - Finish remaining header/shell/control/surface/icon migrations and remove their
   legacy CSS/implementations. No baseline regeneration to hide violations.
 - Inspect every image; fix/classify all high/medium findings, including genuine
   clipping versus reachable scroll-managed tabs. Resolve remaining role/shell
-  inconsistencies against both peers and actual master.
+  inconsistencies against the cross-route reference.
 - Finish the broken-layout and workflow sweep, including known birthday, reply
   editor and profile-game-row examples without treating them as the scope.
 - Complete final-HEAD full-matrix and interaction verification, then
   refresh every PR image and replace interim results with the final report.
-- Authenticated hosting, trading/purchases, family/staff administration and
-  destructive moderation were not performed. Physical-phone keyboard/chrome/
-  safe-area behavior for this redesign remains unverified.
+- Purchases/trades, family administration and destructive moderation are not
+  itemised as tested. Signed-in play and ordinary site use are daily use, not
+  outstanding: Chrome and Firefox on Linux and Android (2026-11-15).
+- Master parity is **not** required: this branch replaces master's design, so
+  matching it is not a goal. The paired comparison was retired on 2026-11-15
+  because it graded "not master" as a defect.
 
 ```sh
 cd react_main

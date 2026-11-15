@@ -1,13 +1,11 @@
 // Report presentation and recovery; no report is delivered to a service.
 const assert = require('node:assert/strict');
 
-async function reviewReportTasks(page, item, capture, { master = false, after = false } = {}) {
+async function reviewReportTasks(page, item, capture, { after = false } = {}) {
   if (item.name !== 'profile-default') return [];
   const open = async () => {
-    // The redesign uses a shared icon action with an accessible name; only the
-    // actual master capture still renders the Font Awesome flag.
-    const button = master ? page.locator('button').filter({ has: page.locator('.fa-flag') })
-      : page.getByRole('button', { name: 'Report user', exact: true });
+    // The redesign uses a shared icon action with an accessible name.
+    const button = page.getByRole('button', { name: 'Report user', exact: true });
     await button.click(); await page.getByRole('dialog').waitFor();
   };
   const dialog = () => page.getByRole('dialog');
@@ -18,7 +16,7 @@ async function reviewReportTasks(page, item, capture, { master = false, after = 
   };
   const snapshot = async state => {
     await page.mouse.move(0, 0);
-    if (after && !master) {
+    if (after) {
       assert.equal(await page.getByRole('dialog', { name: 'Report user', exact: true }).count(), 1);
       const geometry = await dialog().evaluate(element => {
         const box = element.getBoundingClientRect();
@@ -45,61 +43,54 @@ async function reviewReportTasks(page, item, capture, { master = false, after = 
   await dialog().getByRole('textbox', { name: 'Game', exact: true }).fill('fixture-report-game');
   await dialog().getByRole('textbox', { name: /^Description/ }).fill('Local report draft, never delivered');
   await snapshot('report-form');
-  // Upstream has no guarded pending surface. Its same populated form is the
-  // explicitly documented ancestor; do not submit to fabricate master evidence.
-  if (master) {
-    await snapshot('report-pending'); await snapshot('report-error');
-  }
   // The pending and error surfaces only exist once the repaired dialog is present;
   // HEAD always has it, so capture them in either phase (the failure is in-memory).
-  if (!master) {
-    const selection = dialog().getByRole('combobox', { name: /^Rule Broken/ });
-    const selectedText = await selection.evaluate(element => ({ overflow: element.scrollWidth > element.clientWidth + 1,
-      whiteSpace: getComputedStyle(element).whiteSpace, textOverflow: getComputedStyle(element).textOverflow,
-      fieldClass: element.closest('.MuiFormControl-root').className }));
-    assert.equal(selectedText.overflow, false, `Complete selected rule remains readable: ${JSON.stringify(selectedText)}`);
-    await page.evaluate(() => { window.__routeReview.allowReportFailure = true; });
-    await dialog().getByRole('button', { name: 'Submit Report', exact: true }).click();
-    await page.waitForFunction(() => typeof window.__routeReview.releaseReportFailure === 'function');
-    assert.ok(await dialog().getByRole('button', { name: 'Cancel', exact: true }).isDisabled());
-    assert.ok(await dialog().getByRole('button', { name: 'Submit Report', exact: true }).isDisabled());
-    assert.ok(await dialog().getByRole('textbox', { name: 'Game', exact: true }).isDisabled());
-    assert.ok(await dialog().getByRole('textbox', { name: /^Description/ }).isDisabled());
-    assert.ok(await selection.isDisabled());
-    assert.equal(await dialog().getByRole('button', { name: 'Close', exact: true }).count(), 0);
-    await page.keyboard.press('Escape'); assert.ok(await dialog().isVisible());
-    // Deliberate duplicate form events bypass native disabled buttons; the
-    // synchronous request guard must still prevent additional submissions.
-    await dialog().locator('form').evaluate(form => {
-      for (let index = 0; index < 2; index++) form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    });
-    await snapshot('report-pending');
-    await page.evaluate(() => window.__routeReview.releaseReportFailure()); await settle();
-    await dialog().getByRole('alert').getByText('Simulated report failure. No report was delivered.', { exact: true }).waitFor();
-    assert.equal(await dialog().getByRole('textbox', { name: /^Description/ }).inputValue(), 'Local report draft, never delivered');
-    assert.equal(await dialog().getByRole('textbox', { name: 'Game', exact: true }).inputValue(), 'fixture-report-game');
-    await snapshot('report-error');
-    const writes = await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send'));
-    assert.equal(writes.length, 1, 'Only one deliberately failed in-memory report attempt');
-    assert.deepEqual(JSON.parse(writes[0].data), { game: 'fixture-report-game', user: 'fixture-default', rule: 'Personal Attacks & Harassment (PA)', description: 'Local report draft, never delivered' });
-  }
+  const selection = dialog().getByRole('combobox', { name: /^Rule Broken/ });
+  const selectedText = await selection.evaluate(element => ({ overflow: element.scrollWidth > element.clientWidth + 1,
+    whiteSpace: getComputedStyle(element).whiteSpace, textOverflow: getComputedStyle(element).textOverflow,
+    fieldClass: element.closest('.MuiFormControl-root').className }));
+  assert.equal(selectedText.overflow, false, `Complete selected rule remains readable: ${JSON.stringify(selectedText)}`);
+  await page.evaluate(() => { window.__routeReview.allowReportFailure = true; });
+  await dialog().getByRole('button', { name: 'Submit Report', exact: true }).click();
+  await page.waitForFunction(() => typeof window.__routeReview.releaseReportFailure === 'function');
+  assert.ok(await dialog().getByRole('button', { name: 'Cancel', exact: true }).isDisabled());
+  assert.ok(await dialog().getByRole('button', { name: 'Submit Report', exact: true }).isDisabled());
+  assert.ok(await dialog().getByRole('textbox', { name: 'Game', exact: true }).isDisabled());
+  assert.ok(await dialog().getByRole('textbox', { name: /^Description/ }).isDisabled());
+  assert.ok(await selection.isDisabled());
+  assert.equal(await dialog().getByRole('button', { name: 'Close', exact: true }).count(), 0);
+  await page.keyboard.press('Escape'); assert.ok(await dialog().isVisible());
+  // Deliberate duplicate form events bypass native disabled buttons; the
+  // synchronous request guard must still prevent additional submissions.
+  await dialog().locator('form').evaluate(form => {
+    for (let index = 0; index < 2; index++) form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  });
+  await snapshot('report-pending');
+  await page.evaluate(() => window.__routeReview.releaseReportFailure()); await settle();
+  await dialog().getByRole('alert').getByText('Simulated report failure. No report was delivered.', { exact: true }).waitFor();
+  assert.equal(await dialog().getByRole('textbox', { name: /^Description/ }).inputValue(), 'Local report draft, never delivered');
+  assert.equal(await dialog().getByRole('textbox', { name: 'Game', exact: true }).inputValue(), 'fixture-report-game');
+  await snapshot('report-error');
+  const writes = await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send'));
+  assert.equal(writes.length, 1, 'Only one deliberately failed in-memory report attempt');
+  assert.deepEqual(JSON.parse(writes[0].data), { game: 'fixture-report-game', user: 'fixture-default', rule: 'Personal Attacks & Harassment (PA)', description: 'Local report draft, never delivered' });
   await close();
-  assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send').length), master ? 0 : 1);
+  assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send').length), 1);
 
   await page.evaluate(() => { window.__routeReview.deferRead = '/api/site/violations'; });
   await open();
   await page.waitForFunction(() => typeof window.__routeReview.releaseRead === 'function');
   assert.ok(await dialog().getByRole('combobox', { name: /^Rule Broken/ }).isDisabled());
-  if (after && !master) await dialog().getByRole('status').getByText('Loading rules', { exact: true }).waitFor();
+  if (after) await dialog().getByRole('status').getByText('Loading rules', { exact: true }).waitFor();
   await snapshot('report-loading');
   await close();
   await page.evaluate(() => window.__routeReview.releaseRead()); await settle();
 
   await page.evaluate(() => { window.__routeReview.failNextRead = '/api/site/violations'; });
   await open(); await settle();
-  if (after && !master) await dialog().getByRole('alert').filter({ hasText: 'Could not load rules' }).waitFor();
+  if (after) await dialog().getByRole('alert').filter({ hasText: 'Could not load rules' }).waitFor();
   await snapshot('report-read-error');
-  if (after && !master) {
+  if (after) {
     await dialog().getByRole('button', { name: 'Retry', exact: true }).click(); await settle();
     await chooseRule();
   }
@@ -108,16 +99,14 @@ async function reviewReportTasks(page, item, capture, { master = false, after = 
   const base = new URL(page.url());
   base.searchParams.set('fixtureEmptyRead', '/api/site/violations');
   await page.goto(String(base)); await page.waitForFunction(() => window.__routeReview?.ready); await settle();
-  // The actual master DOM is untouched; reload only loses the audit root marker.
-  if (master) await page.locator('.inner-container').evaluate(element => { element.id = 'main-content'; });
   await open(); await settle();
-  if (after && !master) {
+  if (after) {
     await dialog().getByRole('status').getByText('No report rules are available.', { exact: true }).waitFor();
     assert.ok(await dialog().getByRole('button', { name: 'Submit Report', exact: true }).isDisabled());
   }
   await snapshot('report-empty'); await close();
   assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send').length), 0);
-  if (after && !master && process.env.ROUTE_REPORT_SESSION_REVIEW === '1') {
+  if (after && process.env.ROUTE_REPORT_SESSION_REVIEW === '1') {
     base.searchParams.delete('fixtureEmptyRead');
     await page.goto(String(base)); await page.waitForFunction(() => window.__routeReview?.ready);
     await open(); await chooseRule();
@@ -143,7 +132,7 @@ async function reviewReportTasks(page, item, capture, { master = false, after = 
     assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.url === '/api/report/send').length), 1);
   }
   return ['report-form-loading-failure-empty-and-cancel-without-delivery',
-    ...(after && !master && process.env.ROUTE_REPORT_SESSION_REVIEW === '1'
+    ...(after && process.env.ROUTE_REPORT_SESSION_REVIEW === '1'
       ? ['pending-report-owner-unmount-late-failure-does-not-change-new-draft'] : [])];
 }
 

@@ -15,25 +15,6 @@ function fillProblems(target) {
     observed: gap, severity: 'medium', leftGap, tolerance, evidence,
     observedBox: target.box, container: target.allocation, target: target.identity }];
 }
-function matchFillTarget(target, candidates) {
-  if (!target.identity?.name) return { target: null, status: 'unverified-target', reason: 'Unnamed structural target requires an explicit master pairing' };
-  const key = JSON.stringify(target.identity);
-  const matches = candidates.filter(candidate => JSON.stringify(candidate.identity) === key);
-  return { target: matches.length === 1 ? matches[0] : null,
-    status: matches.length === 1 ? 'matched' : matches.length ? 'ambiguous-target' : 'unverified-target' };
-}
-function widthRegression(target, master) {
-  if (target.status !== 'measured' || master?.status !== 'measured' || target.intrinsic || !target.allocation?.width || !master.allocation?.width) return null;
-  const ratio = target.box.width / target.allocation.width;
-  const masterRatio = master.box.width / master.allocation.width;
-  const loss = masterRatio - ratio;
-  return loss > 0.03 && masterRatio >= 0.95 ? {
-    property: 'pairedFillWidthRegression', observed: ratio, masterValue: masterRatio,
-    masterDelta: ratio - masterRatio, severity: 'medium', tolerance: 0.03,
-    observedBox: target.box, container: target.allocation, masterBox: master.box,
-    masterContainer: master.allocation, target: target.identity,
-  } : null;
-}
 function navigationProblems(item, viewport) {
   const problems = [];
   if (viewport.width > 700 || item.status !== 'measured') return problems;
@@ -44,14 +25,6 @@ function navigationProblems(item, viewport) {
   if (item.lineCount > (item.kind === 'tab' ? 1 : 2) || item.singleCharacterLine) problems.push({ property: 'navigationLabelWrapping', observed: { lines: item.lineCount, singleCharacterLine: item.singleCharacterLine }, maximumLines: item.kind === 'tab' ? 1 : 2, severity: 'medium' });
   if (item.occludingBars?.length) problems.push({ property: 'navigationCoveredByFixedBar', observed: item.occludingBars, observedBox: item.box, severity: 'high' });
   return problems;
-}
-function navigationMetric(item, property) {
-  if (!item || item.status !== 'measured') return null;
-  if (property === 'navigationTouchTarget') return { width: item.box.width, height: item.box.height };
-  if (property === 'activeNavigationItemClipped') return item.labelWithinWindow;
-  if (property === 'navigationLabelWrapping') return { lines: item.lineCount, singleCharacterLine: item.singleCharacterLine };
-  if (property === 'navigationCoveredByFixedBar') return item.occludingBars;
-  return null;
 }
 const roleReviewRules = {
   numeric: { fontSize: 1, fontWeight: 1, lineHeight: 1, height: 2, width: 8, fillRatio: 0.03 },
@@ -104,6 +77,6 @@ function gradeRoleComparison(comparison) {
   };
   return { status: 'open', severity: comparison.property === 'height' && ['card', 'comment', 'emptyState'].includes(comparison.role) ? 'low' : 'medium',
     reviewRule: 'cross-page-shared-role-divergence',
-    reviewReason: 'Same-role, same-state presentation differs from the cross-route reference. Requires a named variant or an evidenced review rule; master values remain explicit.' };
+    reviewReason: 'Same-role, same-state presentation differs from the cross-route reference. Requires a named variant or an evidenced review rule.' };
 }
-module.exports = { fillProblems, matchFillTarget, widthRegression, navigationProblems, navigationMetric, gradeRoleComparison, roleReviewRules };
+module.exports = { fillProblems, navigationProblems, gradeRoleComparison, roleReviewRules };

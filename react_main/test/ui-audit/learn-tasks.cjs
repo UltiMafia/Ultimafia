@@ -43,19 +43,18 @@ async function settleSelectedTabs(page, rootSelector) {
     'Complete selected tab labels and usable targets remain visible after scroll settlement');
 }
 
-async function reviewLearnTasks(page, item, capture, { master = false, after = false } = {}) {
+async function reviewLearnTasks(page, item, capture, { after = false } = {}) {
   if (item.name !== 'learn-games') return [];
-  const root = page.locator(master ? '.inner-container' : '#main-content');
+  const root = page.locator('#main-content');
   const sectionTabs = root.getByRole('tablist').first();
   const scroll = async bottom => {
     const scroller = page.locator('.site-wrapper');
     if (await scroller.count()) await scroller.evaluate((element, bottom) => { element.scrollTop = bottom ? element.scrollHeight : 0; }, bottom);
-    if (master) await page.evaluate(bottom => scrollTo(0, bottom ? document.documentElement.scrollHeight : 0), bottom);
   };
   const captureState = async state => {
     await page.mouse.move(0, 0);
     await scroll(false);
-    if (after && !master) {
+    if (after) {
       await settleSelectedTabs(page, '#main-content');
     }
     await capture(state, 'top');
@@ -70,13 +69,13 @@ async function reviewLearnTasks(page, item, capture, { master = false, after = f
     const first = sectionTabs.getByRole('tab').first();
     await first.focus(); await first.press('End'); await page.keyboard.press('Enter');
     assert.equal(await sectionTabs.getByRole('tab', { name: 'Achievements', exact: true }).getAttribute('aria-selected'), 'true');
-    if (after && !master) await settleSelectedTabs(page, '#main-content');
+    if (after) await settleSelectedTabs(page, '#main-content');
     await captureState('keyboard-last');
     await scroll(false);
     await sectionTabs.getByRole('tab', { name: 'Achievements', exact: true }).focus();
     await page.keyboard.press('Home'); await page.keyboard.press('Enter');
     assert.equal(await sectionTabs.getByRole('tab', { name: 'Roles', exact: true }).getAttribute('aria-selected'), 'true');
-    if (after && !master) await settleSelectedTabs(page, '#main-content');
+    if (after) await settleSelectedTabs(page, '#main-content');
     const categories = root.getByRole('tablist').nth(1);
     await categories.getByRole('tab').first().focus(); await page.keyboard.press('End'); await page.keyboard.press('Enter');
     assert.equal(await categories.getByRole('tab', { name: 'Event', exact: true }).getAttribute('aria-selected'), 'true');
@@ -84,12 +83,12 @@ async function reviewLearnTasks(page, item, capture, { master = false, after = f
   await root.getByPlaceholder('🔎 Role Name', { exact: true }).fill('cop');
   await captureState('roles-search');
   await root.getByPlaceholder('🔎 Role Name', { exact: true }).fill('no-such-reference-result');
-  if (after && !master) await root.getByRole('status').getByText('No matching entries.', { exact: true }).waitFor();
+  if (after) await root.getByRole('status').getByText('No matching entries.', { exact: true }).waitFor();
   await captureState('roles-empty');
   for (const [label, state] of [['Modifiers', 'modifiers'], ['Items', 'items'], ['Mechanics', 'mechanics'], ['Achievements', 'achievements']]) {
     await sectionTabs.getByRole('tab', { name: label, exact: true }).click();
-    if (state === 'achievements') assert.ok(await root.locator('.ui-reference-entry, .role-cell').count() >= 83, 'Both baselines must render the populated public achievements, not an empty bootstrap placeholder');
-    if (state === 'items') assert.ok(await root.locator('.ui-reference-entry, tbody tr').count() >= 35, 'Both baselines retain every public item');
+    if (state === 'achievements') assert.ok(await root.locator('.ui-reference-entry, .role-cell').count() >= 83, 'The reference must render the populated public achievements, not an empty bootstrap placeholder');
+    if (state === 'items') assert.ok(await root.locator('.ui-reference-entry, tbody tr').count() >= 35, 'The reference retains every public item');
     await captureState(state);
     if (['modifiers', 'mechanics'].includes(state)) {
       const categories = state === 'modifiers' ? ['Visits', 'Appearance', 'Chat', 'Other'] : ['Voting', 'Timer', 'Other'];
@@ -103,7 +102,7 @@ async function reviewLearnTasks(page, item, capture, { master = false, after = f
   assert.deepEqual(fixture.unresolved, []);
   assert.deepEqual(fixture.errors, []);
   assert.equal(fixture.writes.filter(write => write.url && !['/api/notifs/read', '/api/user/online'].includes(write.url)).length, 0);
-  return ['populated-reference-tabs-alignments-categories-search-and-empty-without-write', ...(after && !master ? ['selected-tabs-fit-scroll-window-and-keyboard-reaches-first-and-last-sections'] : [])];
+  return ['populated-reference-tabs-alignments-categories-search-and-empty-without-write', ...(after ? ['selected-tabs-fit-scroll-window-and-keyboard-reaches-first-and-last-sections'] : [])];
 }
 
 module.exports = { reviewLearnTasks, settleSelectedTabs };

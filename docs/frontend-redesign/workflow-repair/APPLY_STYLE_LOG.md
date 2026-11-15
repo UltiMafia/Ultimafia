@@ -183,15 +183,20 @@ primitive, delete the old CSS/component, then prove the render.
 - The strategy-windows browser suite passes desktop. Its mobile half fails on
   a pre-existing fixture layout/crash (the fixture's game object lacks the
   current setup/player shape); this is not a control regression.
-- The full final comparative matrix has not been rerun; do not call the site
-  visually accepted until it is.
+- The redesign-only full matrix has been run (924/924 cells, 0 open findings)
+  but it is structural evidence, not visual acceptance.
+- The paired comparison against upstream master was **retired on 2026-11-15**.
+  It graded "differs from master" as a defect, which contradicts the redesign's
+  purpose; see `../audit/README.md`. Master builds, worktrees and master-status
+  fields are no longer part of the audit.
 
 ## Next queue
 
 1. Repair or explicitly retire the stale strategy-mobile and forum-reply
    browser fixtures.
-2. Build the master fixture contract and run the paired comparative matrix;
-   do not substitute redesign-only results for master evidence.
+2. Finish the remaining absolute-contract and cross-route findings. Do not
+   rebuild a master baseline: matching upstream master is not a goal (retired
+   2026-11-15).
 3. Review the remaining intentional exceptions: branded auth buttons, MUI
    progress/menus, game workspace controls, media/upload overlays, the Auth
    dialog, the full-screen strategy reader, the stock table rendering path and

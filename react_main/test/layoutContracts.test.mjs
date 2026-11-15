@@ -10,18 +10,9 @@ test('fill detectors catch narrow blocks even though they have no clipping or ov
   assert.deepEqual(contracts.fillProblems(target(870)), []);
   assert.deepEqual(contracts.fillProblems({ ...target(), intrinsic: true }), []);
 });
-test('unmeasurable blocks and missing master targets stay explicit, never become zero', () => {
+test('unmeasurable blocks stay explicit, never become zero or a defect', () => {
   assert.deepEqual(contracts.fillProblems({ status: 'unmeasurable', reason: 'flex-row allocation unknown' }), []);
   assert.deepEqual(contracts.fillProblems({ status: 'unmeasurable', reason: 'flex-row allocation unknown', declaredFullWidth: true }), []);
-  assert.equal(contracts.matchFillTarget(target(), []).status, 'unverified-target');
-  assert.equal(contracts.matchFillTarget(target(), [target(), target()]).status, 'ambiguous-target');
-  assert.equal(contracts.widthRegression(target(), null), null);
-});
-test('paired fill regression uses allocated-space ratios, not unrelated master widths', () => {
-  const comparison = contracts.widthRegression(target(), target(870));
-  assert.equal(comparison.property, 'pairedFillWidthRegression');
-  assert.ok(comparison.masterDelta < -0.12);
-  assert.equal(contracts.widthRegression(target(870), { ...target(760), allocation: { width: 760 } }), null);
 });
 test('phone navigation contracts measure touch size, active label, wrapping and fixed bars', () => {
   const item = { status: 'measured', box: { width: 80, height: 32 }, active: true, labelWithinWindow: false,

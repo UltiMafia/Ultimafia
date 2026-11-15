@@ -4,10 +4,12 @@
 
 - Everything below the line is history. The tree is clean; all changes are
   committed and pushed to `fork/redesign/workflow-repair-draft`.
-- **Latest complete matrix:** `/var/tmp/ultimafia-full10` — **924 required,
-  924 redesign, 924 master, 924 paired, 0 gaps**, 7,808 findings, 3,160
-  intentional, 4,648 open, visual acceptance false. The registry now includes the
-  transient user-menu state, captured on both branches. Earlier matrices
+- **Latest complete matrix:** redesign-only, 2026-11-15 — **924 required,
+  924 captured, 0 missing, 0 open findings**, 2,040 intentional context rows,
+  visual acceptance false. The last **master-paired** matrix,
+  `/var/tmp/ultimafia-full10` (924 redesign + 924 master, 7,808 findings, 3,160
+  intentional, 4,648 open), is retained as history: master pairing was retired on
+  2026-11-15 because matching master is not a goal. Earlier matrices
   (`full8`: 918 cells with 6 fixture gaps; `full7`: 918/918, 4,622 open) are
   history, not current evidence.
 - **What has been repaired and verified on screen at 320/390/1440:** shared
@@ -23,9 +25,12 @@
   selected-tab clipping, fill shortfalls with evidence, navigation touch and
   wrapping, and graded cross-page divergence (by role, variant and kind).
   Guards fail new hand-written navs, hard-coded widths and one-off layout paths.
-- **Known limits, not fixable locally:** authenticated journeys are fixture-only
-  (no real sign-in was performed) and phone behaviour is viewport emulation, not
-  hardware. Both are stated in the PR record.
+- **Known limits, not fixable in the harness:** every captured journey is fixture
+  data; the harness performs no real sign-in and no real write. That is a limit of
+  the automated evidence, not of the branch: the redesign is used against the live
+  backend in Chrome and Firefox on Linux and Android (see *Live use* under genuine
+  limits). Captured phone images remain viewport emulation; they are not the
+  hardware evidence.
 - **Where to start next:** the open clusters by size from full8 were
   section-container padding, secondary-action surface treatment (~760 rows), and
   text-field height/padding, all now partially addressed by the panel, action and
@@ -106,11 +111,11 @@ Numbered historical evidence directories are not final-HEAD verification.
   visual acceptance false. Structural findings are one kind only — title offset on
   nine surfaces, now graded per header variant. The remaining open rows are
   cross-page style divergence (77 kinds).
-- **Not verifiable here.** Authenticated private workflows (signed-in journeys,
-  moderation actions, account settings) are exercised only through controlled
-  fixtures; no real sign-in was performed and none should be claimed. Physical
-  phone behaviour has not been tested on hardware — every phone capture is
-  viewport emulation. Both need credentials or a device from the owner.
+- **Not verifiable here.** This harness cannot authenticate: signed-in journeys,
+  moderation actions and account settings are exercised only through controlled
+  fixtures, and it performs no real sign-in or write. That is a limit of the
+  automated run, not of the branch, which is used live (see *Live use*). The
+  captured phone pages are viewport emulation, not hardware.
 - **Second gap-free matrix.** `/var/tmp/ultimafia-full7` pairs **918/918 cells
   with zero gaps**: 7,786 findings, 3,164 intentional, **4,622 open** (down from
   7,251), visual acceptance false. The comparison scoping and style corrections
@@ -174,8 +179,10 @@ Numbered historical evidence directories are not final-HEAD verification.
   All six actual-master setup tasks initially failed finding Armed because a Cop
   popover hid background controls from accessibility. Real pointer movement and
   Escape dismissal is verified (no source/DOM accessibility bypass).
-  The standalone `../audit/setup-master-popover-dismissal/` retry omitted
-  `MASTER_TASK_REVIEW=1`, so its three route captures **do not verify that task**.
+  The standalone `../audit/setup-master-popover-dismissal/` retry omitted the
+  then-existing `MASTER_TASK_REVIEW=1` switch, so its three route captures **do
+  not verify that task**. (That switch was removed with master pairing on
+  2026-11-15; this paragraph is history.)
   The actual master driver subsequently exposed its unassociated Setup Name field
   and tooltip text appended to checkbox names. Source/DOM inspection corrected
   those selectors, without editing upstream UI.
@@ -678,10 +685,16 @@ expansion. The family removal/bio interactions have now gained explicit captures
 - Controlled fixture writes remain in memory. The live-public proxy permits
   GET/HEAD only, forwards no identity headers/cookies and never persists response
   bodies. Its screenshots are public guest pages, not authenticated workflows.
-- Sign-in, live hosting/trading/purchasing, family administration and destructive
-  moderation remain unverified. No authentication-project setting was changed.
-- Physical-phone keyboard, browser chrome and safe-area behavior remain
-  unverified. Chromium viewports do not establish those results.
+- **Live use (author report, 2026-11-15).** The branch is daily-driven against the
+  live backend in Chrome and Firefox, on Linux desktop and Android: signed-in
+  games, chat and ordinary site use. This is functional evidence the fixture audit
+  cannot produce, and it supersedes any earlier sentence implying the branch has
+  never run against a real server. It is a usage report, not a recorded run;
+  purchases/trades, family administration and destructive moderation are not
+  itemised in this record. No authentication-project setting was changed.
+- Physical-phone keyboard, browser chrome and safe-area behavior are exercised by
+  that daily use on Android. The automated phone captures remain viewport
+  emulation and are not hardware evidence.
 - Full current-HEAD PR screenshot refresh still needs a final run. The browser
   regression suites above have been rerun for this slice, not for future edits.
 - The backend failure remains unresolved. `git diff --name-only HEAD -- Games
@@ -693,9 +706,9 @@ expansion. The family removal/bio interactions have now gained explicit captures
 
 ## Still required before completion
 
-Expand the stable-ID inventory to every global/workflow state; complete paired
-master coverage (including live same-database evidence and explicit nearest
-ancestors for new surfaces); inspect every image; resolve/classify every
-high/medium candidate; migrate all remaining legacy controls/surfaces/page-title
-paths; finish role/shell checks; run all required suites; commit/push; refresh PR
-images and description from final code. The PR must remain open and draft.
+Expand the stable-ID inventory to every global/workflow state; inspect every
+image; resolve/classify every high/medium candidate; migrate all remaining legacy
+controls/surfaces/page-title paths; finish role/shell checks; run all required
+suites; commit/push; refresh PR images and description from final code. Master
+pairing is not part of completion: it was retired on 2026-11-15 (see
+`../audit/README.md`). The PR must remain open and draft.

@@ -1,5 +1,10 @@
 // One immutable fixture bundle, then sequential palette runs. Never rebuild the
 // served directory while a runner is reading it.
+//
+// Only the redesign is captured. Upstream master is deliberately not built or
+// compared: this branch replaces master's design, so matching it is not a goal.
+// The audit grades absolute usability/layout contracts and cross-route
+// consistency within the redesign itself. See ui-audit/report.cjs.
 const fs = require('node:fs');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
@@ -34,39 +39,24 @@ if (!process.argv.includes('--report-only')) {
   const bundleRoot = path.resolve(process.env.UI_AUDIT_BUNDLE_ROOT || '/tmp/opencode');
   fs.mkdirSync(bundleRoot, { recursive: true, mode: 0o700 });
   const bundles = fs.mkdtempSync(path.join(bundleRoot, 'ui-audit-bundle-'));
-  if (!process.argv.includes('--master-only')) {
-    const directory = path.join(bundles, 'redesign');
-    run(path.join(cwd, 'node_modules/.bin/rsbuild'), ['build', '--no-env', '--config', 'rsbuild.route-review-test.config.ts'], { ...process.env, ROUTE_BUNDLE_DIR: directory });
-    for (const palette of ['dark', 'light']) capture({ ...process.env,
-    UI_AUDIT_BRANCH: 'redesign', ROUTE_BUNDLE_DIR: directory,
+  const directory = path.join(bundles, 'redesign');
+  run(path.join(cwd, 'node_modules/.bin/rsbuild'), ['build', '--no-env', '--config', 'rsbuild.route-review-test.config.ts'], { ...process.env, ROUTE_BUNDLE_DIR: directory });
+  for (const palette of ['dark', 'light']) capture({ ...process.env,
+    ROUTE_BUNDLE_DIR: directory,
     DESIGN_PHASE: phase, ROUTE_THEME: palette, ROUTE_WIDTHS: process.env.ROUTE_WIDTHS || '1440,390,320',
     ROUTE_CONTROLS: '1', ROUTE_TASK_REVIEW: process.env.ROUTE_TASK_REVIEW || '1',
     ROUTE_OUTPUT_DIR: path.join(output, 'captures', `redesign-${phase}-${palette}`),
-    });
-  }
-  if (!process.argv.includes('--redesign-only')) {
-    const directory = path.join(bundles, 'master');
-    run(path.join(cwd, 'node_modules/.bin/rsbuild'), ['build', '--no-env', '--config', 'rsbuild.master-audit-test.config.ts'], { ...process.env, MASTER_AUDIT_BUNDLE_DIR: directory });
-    for (const palette of ['dark', 'light']) capture({ ...process.env,
-      UI_AUDIT_BRANCH: 'master', ROUTE_BUNDLE_DIR: directory,
-      DESIGN_PHASE: phase, ROUTE_THEME: palette, ROUTE_WIDTHS: process.env.ROUTE_WIDTHS || '1440,390,320',
-      ROUTE_CONTROLS: '0', ROUTE_TASK_REVIEW: '0', MASTER_TASK_REVIEW: '1',
-      ROUTE_OUTPUT_DIR: path.join(output, 'captures', `master-${phase}-${palette}`),
-    });
-  }
+  });
 }
 const runs = [];
-for (const branch of ['redesign', 'master']) for (const palette of ['dark', 'light']) {
-  let directory = path.join(output, 'captures', `${branch}-${phase}-${palette}`);
-  // Master is immutable and can be reused across before/after comparisons.
-  // This never substitutes a previous redesign revision for a master capture.
-  if (branch === 'master' && !fs.existsSync(path.join(directory, 'latest-run.json'))) directory = path.join(output, 'captures', `master-before-${palette}`);
+for (const palette of ['dark', 'light']) {
+  const directory = path.join(output, 'captures', `redesign-${phase}-${palette}`);
   if (!fs.existsSync(path.join(directory, 'latest-run.json'))) continue;
   const latest = JSON.parse(fs.readFileSync(path.join(directory, 'latest-run.json')));
   const filename = path.join(directory, latest.report);
-  runs.push({ branch, directory: path.dirname(filename), report: JSON.parse(fs.readFileSync(filename)) });
+  runs.push({ directory: path.dirname(filename), report: JSON.parse(fs.readFileSync(filename)) });
 }
 const inventory = inventoryFromSource(fs.readFileSync(path.join(__dirname, 'routeReviewData.jsx'), 'utf8'));
 const summary = writeReport(output, inventory, runs);
 console.log(JSON.stringify(summary, null, 2));
-if (captureFailed || summary.gaps || summary.openFindings) process.exitCode = 1;
+if (captureFailed || summary.missing || summary.openFindings) process.exitCode = 1;

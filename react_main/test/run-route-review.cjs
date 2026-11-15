@@ -7,16 +7,13 @@ const http = require("node:http");
 const crypto = require("node:crypto");
 const { execFileSync } = require("node:child_process");
 const { measureUi } = require("./ui-audit/measure.cjs");
-const masterEquivalents = require("./ui-audit/master-equivalents.json");
-const { reviewMasterTasks } = require("./ui-audit/master-tasks.cjs");
 const { reviewAdminTasks } = require("./ui-audit/admin-tasks.cjs");
 const { reviewRulesTasks } = require("./ui-audit/rules-tasks.cjs");
 const { reviewLearnTasks, settleSelectedTabs } = require("./ui-audit/learn-tasks.cjs");
 const { reviewReportTasks } = require("./ui-audit/report-tasks.cjs");
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || "/tmp/opencode/redesign-tools/node_modules/playwright");
 const root = path.resolve(__dirname, "../..");
-const upstream = process.env.UI_AUDIT_BRANCH === "master";
-const sourceRoot = upstream ? (process.env.UI_AUDIT_MASTER || "/tmp/opencode/ultimafia-master") : root;
+const sourceRoot = root;
 const directory = process.env.ROUTE_BUNDLE_DIR || "/tmp/opencode/ultimafia-route-review-browser";
 const publicDir = path.join(sourceRoot, "react_main/public");
 const phase = process.env.DESIGN_PHASE || "before";
@@ -60,19 +57,13 @@ const server = http.createServer((req, res) => {
 const hash = filename => crypto.createHash("sha256").update(fs.readFileSync(filename)).digest("hex");
 
 async function main() {
-  if (upstream) {
-    const revision = execFileSync("git", ["rev-parse", "HEAD"], { cwd: sourceRoot, encoding: "utf8" }).trim();
-    const required = execFileSync("git", ["rev-parse", "origin/master"], { cwd: root, encoding: "utf8" }).trim();
-    if (revision !== required) throw new Error("Master source is not the fetched origin/master; refusing a mislabeled baseline");
-    execFileSync("git", ["diff", "--quiet", "HEAD", "--", "react_main/src"], { cwd: sourceRoot });
-  }
   fs.mkdirSync(output, { recursive: true });
   await new Promise(resolve => server.listen(0, "127.0.0.1", resolve));
   const origin = `http://127.0.0.1:${server.address().port}`;
   const browser = await chromium.launch({ headless: true });
   const compiledAssets = fs.readdirSync(path.join(directory, "static/js"), { recursive: true }).filter(file => file.endsWith(".js")).map(file => ({ file: `static/js/${file}`, sha256: hash(path.join(directory, "static/js", file)) }));
   const report = { phase, runName, origin, viewports, compiledAssets,
-    palette, branch: upstream ? "master" : "redesign", data: "controlled-production-component-fixture",
+    palette, branch: "redesign", data: "controlled-production-component-fixture",
     sourceRevision: execFileSync("git", ["rev-parse", "HEAD"], { cwd: sourceRoot, encoding: "utf8" }).trim(),
     trackedSourceDirty: Boolean(execFileSync("git", ["diff", "HEAD", "--", "react_main/src", "react_main/test", "react_main/scripts"], { cwd: sourceRoot, encoding: "utf8" }).trim()),
     visualAcceptance: false, note: "Captured baseline, not visual acceptance. Phone bottom images are separate viewports, never stitched documents.",
@@ -166,22 +157,17 @@ async function main() {
       for (const item of cases) {
         const { page, context, observed } = await newPage(viewport);
          const entry = { ...item, viewport, ...observed, screenshots: [], measurements: [], status: "pending", visualAcceptance: false };
-         const masterEquivalent = upstream ? masterEquivalents[item.name] : null;
-         if (upstream) entry.masterEquivalent = masterEquivalent || { equivalence: "same-route", route: item.route };
         const requestStart = staticFailures.length;
         try {
-          const url = new URL(masterEquivalent?.route || item.route, origin);
-          if (upstream && item.name === "authentication") url.pathname = "/welcome";
+          const url = new URL(item.route, origin);
           url.searchParams.set("fixtureMode", item.mode || "member");
           url.searchParams.set("theme", palette);
           entry.captureRoute = url.pathname + url.search;
           await page.goto(String(url), { waitUntil: "load" });
           await page.waitForFunction(() => window.__routeReview?.ready, { timeout: 15000 });
           // The marker must come from production route content, not Header/sidebar.
-          const content = page.locator(upstream ? ".inner-container" : "#main-content");
-          if (masterEquivalent?.selector) await (masterEquivalent.selector === ".inner-container" ? content : content.locator(masterEquivalent.selector)).first().waitFor({ state: "attached", timeout: 10000 });
-          else if (upstream && item.name === "players") await content.locator('.newest-users').first().waitFor({ state: "attached", timeout: 10000 });
-          else if (item.selector) await content.locator(item.selector).first().waitFor({ state: "attached", timeout: 10000 });
+          const content = page.locator("#main-content");
+          if (item.selector) await content.locator(item.selector).first().waitFor({ state: "attached", timeout: 10000 });
           else await content.getByText(item.text, { exact: false }).first().waitFor({ state: "attached", timeout: 10000 });
           await page.waitForFunction(() => window.__routeReview.pending === 0 && performance.now() - window.__routeReview.lastRequestAt > 400, null, { timeout: 10000, polling: 50 });
           await page.evaluate(() => document.fonts.ready);
@@ -189,15 +175,13 @@ async function main() {
             await Promise.all([...document.images].filter(image => image.currentSrc).map(image => image.decode().catch(() => {})));
             await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
           });
-          await page.locator(upstream ? ".app-shell" : ".site-header").waitFor({ state: "visible", timeout: 3000 });
-          if (upstream) await content.evaluate(element => { element.id = "main-content"; });
+          await page.locator(".site-header").waitFor({ state: "visible", timeout: 3000 });
           const shell = await geometry(page);
           if (shell.contentWidth < viewport.width / 2 || shell.clientHeight < 200) throw new Error(`Hidden or undersized production shell: ${JSON.stringify(shell)}`);
           if (await page.locator("[data-route-review-failure]").count()) throw new Error("Production route error boundary displayed");
           const fixture = await page.evaluate(() => window.__routeReview);
-           if (masterEquivalent?.requireReadFailure) assert.equal(fixture.simulatedReadFailures, 1, "The paired master state must consume the same explicit read failure");
            if (fixture.errors.length || fixture.unresolved.length || observed.runtimeErrors.length) throw new Error("Runtime error or unresolved fixture contract (see JSON)");
-           if (phase === "after" && !upstream) entry.layoutChecks = await checkLayout(page, item);
+           if (phase === "after") entry.layoutChecks = await checkLayout(page, item);
            const filename = `${item.name}-${viewport.width}-top.png`;
            if (!captureStates || captureStates.has('default')) {
             await page.screenshot({ path: path.join(output, filename), fullPage: false, animations: "disabled" });
@@ -207,7 +191,6 @@ async function main() {
           entry.topGeometry = await geometry(page);
           // Also capture desktop bottoms for long routes; every capture is a viewport.
            await page.locator(".site-wrapper").evaluate(element => { element.scrollTop = element.scrollHeight; });
-           if (upstream) await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
           await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
           const bottom = `${item.name}-${viewport.width}-bottom.png`;
            if (!captureStates || captureStates.has('default')) {
@@ -216,7 +199,7 @@ async function main() {
             entry.measurements.push({ state: "default", position: "bottom", screenshot: bottom, ...await page.evaluate(measureUi) });
            }
            entry.bottomGeometry = await geometry(page);
-            if (phase === "after" && !upstream && ["forum-categories", "forum-board"].includes(item.name)) {
+            if (phase === "after" && ["forum-categories", "forum-board"].includes(item.name)) {
              const disclosure = content.locator(".forum-recent-replies").first();
              await disclosure.locator("summary").click();
              assert.ok(await disclosure.getAttribute("open") !== null, "Activity disclosure opens without navigation");
@@ -227,7 +210,7 @@ async function main() {
              entry.screenshots.push(expanded);
              await disclosure.locator("summary").click();
            }
-           if (!upstream && process.env.ROUTE_CONTROLS === "1" && item.name === "host") {
+           if (process.env.ROUTE_CONTROLS === "1" && item.name === "host") {
             await page.locator(".site-wrapper").evaluate(element => { element.scrollTop = 0; });
             await content.getByRole("button", { name: "Host", exact: true }).first().click();
             const dialog = page.getByRole("dialog");
@@ -262,22 +245,7 @@ async function main() {
               await page.getByRole('dialog').getByRole('button', { name: 'Cancel', exact: true }).click();
               assert.equal(await page.evaluate(() => window.__routeReview.writes.filter(write => write.type === 'axios' && write.url !== '/api/notifs/read').length), 0);
             }
-             if (!upstream && process.env.ROUTE_TASK_REVIEW === "1") entry.taskChecks = await reviewTasks(page, item, viewport, entry);
-             if (upstream && process.env.MASTER_TASK_REVIEW === "1") {
-               entry.adminEvidence = [];
-                const captureMaster = async (state, position = "task", metadata = {}) => {
-                 if (captureStates && !captureStates.has(state)) return;
-                 // A task may reload the untouched application for a pending or
-                 // failed read. Restore only the measurement marker, not its UI.
-                 await page.locator('.inner-container').evaluate(element => { element.id = 'main-content'; });
-               const filename = `${item.name}-${viewport.width}-${state}-${position}.png`;
-               await page.screenshot({ path: path.join(output, filename), fullPage: false, animations: "disabled" });
-               entry.screenshots.push(filename);
-               entry.measurements.push({ state, position, screenshot: filename, ...await page.evaluate(measureUi), ...metadata,
-                 masterEquivalent: masterEquivalents[`${item.name}.${state}`] || entry.masterEquivalent });
-               };
-               entry.taskChecks = [...await reviewMasterTasks(page, item, captureMaster), ...await reviewAdminTasks(page, item, captureMaster, { master: true, evidence: entry.adminEvidence }), ...await reviewRulesTasks(page, item, captureMaster, { master: true }), ...await reviewLearnTasks(page, item, captureMaster, { master: true })];
-             }
+             if (process.env.ROUTE_TASK_REVIEW === "1") entry.taskChecks = await reviewTasks(page, item, viewport, entry);
           entry.status = "captured-baseline-not-accepted";
         } catch (error) {
           entry.status = "failed-not-accepted";
