@@ -106,7 +106,7 @@ export default function CompetitiveManagement() {
     try {
       let requestId = sessionStorage.getItem(key);
       if (!requestId) {
-        if (!window.confirm("Restart this open round's countdown using the saved open-days setting? Scores, existing hearts and history stay unchanged. No hearts are granted now. The saved fortune limit still applies.")) return;
+        if (!window.confirm("Restart this open round's countdown using the saved open-days setting? Scores, existing hearts and history stay unchanged. No hearts are granted now. The saved finish line still applies.")) return;
         requestId = crypto.randomUUID();
         sessionStorage.setItem(key, requestId);
       }
@@ -250,41 +250,51 @@ export default function CompetitiveManagement() {
             {seasonData.settings && (
               <Stack spacing={2}>
                 <Typography>Season {seasonData.paused ? "paused" : "playing"}</Typography>
-                {seasonData.operation && <Typography color="warning.main">Operation in progress: {seasonData.operation.name} ({seasonData.operation.phase || "unknown phase"}), since {new Date(seasonData.operation.startedAt).toISOString()}. If this persists, an operator must reconcile it before retrying.</Typography>}
                 <Stack direction="row" spacing={1}>
                   <Button disabled={controlsSaving || !seasonData.paused} onClick={() => saveControls({ paused: false })}>Play</Button>
                   <Button disabled={controlsSaving || seasonData.paused} onClick={() => saveControls({ paused: true })}>Pause</Button>
                   <Button disabled={controlsSaving} onClick={restartClock}>Restart open clock</Button>
                 </Stack>
                 <Typography variant="body2">
-                  Open and review days apply to newly created rounds. Daily hearts apply to future allocations;
-                  zero stops new allocation without removing existing hearts. The fortune limit and grace period
-                  apply to the current round as well. Saving does not reset scores or heart balances.
-                  Restart uses saved open days, preserves Play/Pause, and grants no hearts immediately. It cannot reopen grace/review or completed rounds. A reached fortune limit can still end the restarted round.
-                  Play permits new starts; an existing full lobby cancelled by Pause needs a player
-                  to leave and rejoin to restart its ready check/countdown.
+                  Open and review days, the break and the round interval apply to
+                  rounds that haven't started yet. Daily hearts apply from the next
+                  day; 0 stops new hearts without removing any. The finish line and
+                  grace hours also apply to the current round. Leave the break and
+                  interval empty to keep the weekly start day. Saving never resets
+                  scores or hearts.
                 </Typography>
                 {[
-                  ["openDays", "Open days per new round"],
-                  ["reviewDays", "Review days per new round"],
-                  ["dailyHearts", "Gold hearts per allocation"],
-                  ["fortuneLimit", "Fortune finish limit"],
-                  ["graceHours", "Heart-spending grace hours"],
+                  ["openDays", "Open days per round"],
+                  ["reviewDays", "Review days per round"],
+                  ["dailyHearts", "Gold hearts per day"],
+                  ["finishLinePoints", "Finish line (points)"],
+                  ["graceHours", "Hours to spend remaining hearts"],
+                  ["breakDays", "Break between rounds (days)"],
+                  ["roundIntervalDays", "Minimum days between round starts"],
+                  ["entryMinimumPoints", "Points needed to join (0 = none)"],
                 ].map(([name, label]) => (
                   <TextField key={name} label={label} type="number"
-                    disabled={controlsSaving || (name === "fortuneLimit" && seasonData.settings.fortuneLimit === null)}
+                    disabled={controlsSaving || (name === "finishLinePoints" && seasonData.settings.finishLinePoints === null)}
                     value={seasonData.settings[name] ?? ""}
                     onChange={(event) => {
                       const value = event.target.value === "" ? "" : Number(event.target.value);
                       setSeasonData((current) => ({ ...current, settings: { ...current.settings, [name]: value } }));
                     }} />
                 ))}
-                <FormControlLabel label="No fortune-triggered finish"
-                  control={<Checkbox disabled={controlsSaving} checked={seasonData.settings.fortuneLimit === null}
+                <FormControlLabel label="No finish line"
+                  control={<Checkbox disabled={controlsSaving} checked={seasonData.settings.finishLinePoints === null}
                     onChange={(event) => setSeasonData((current) => ({ ...current,
-                      settings: { ...current.settings, fortuneLimit: event.target.checked ? null : "" },
+                      settings: { ...current.settings, finishLinePoints: event.target.checked ? null : "" },
                     }))} />} />
-                <Button disabled={controlsSaving} onClick={() => saveControls({ settings: seasonData.settings })}>Save settings</Button>
+                <FormControlLabel label="Finish line ends the round the next day"
+                  control={<Checkbox disabled={controlsSaving} checked={Boolean(seasonData.settings.finishAtNextDay)}
+                    onChange={(event) => setSeasonData((current) => ({ ...current,
+                      settings: { ...current.settings, finishAtNextDay: event.target.checked },
+                    }))} />} />
+                <Button disabled={controlsSaving} onClick={() => saveControls({
+                  settings: Object.fromEntries(Object.entries(seasonData.settings).map(([name, value]) =>
+                    [name, value === "" && ["breakDays", "roundIntervalDays"].includes(name) ? null : value])),
+                })}>Save settings</Button>
               </Stack>
             )}
             <Box

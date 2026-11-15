@@ -39,6 +39,7 @@ const dbStats = require("../../db/stats");
 const { isTestBotPlayer } = require("./botPlayers");
 const devControls = require("./devControls");
 const gameEventLog = require("../../modules/gameEventLog");
+const { competitiveEntryError } = require("../../modules/competitiveSettings");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
@@ -897,6 +898,9 @@ module.exports = class Game {
       if (!info || info.goldHearts <= 0) {
         return "You cannot play competitive games because your Gold Hearts are depleted.";
       }
+
+      const entryError = await competitiveEntryError(info);
+      if (entryError) return entryError;
     }
 
     return null;

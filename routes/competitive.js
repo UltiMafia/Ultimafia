@@ -11,7 +11,6 @@ const logger = require("../modules/logging")("(competitive)");
 const errors = require("../lib/errors");
 
 const competitiveSettings = require("../modules/competitiveSettings");
-const withCompetitiveLock = require("../modules/competitiveLock");
 const { DAY } = require("../modules/competitiveClock");
 
 const iso8601DateRegex = /^\d{4}-\d{2}-\d{2}$/;
@@ -132,11 +131,7 @@ router.post("/pause", async function (req, res) {
       return;
     }
 
-    const response = await withCompetitiveLock(latestSeason.number, async (beginMutation) => {
-    const current = await models.CompetitiveSeason.findOne({ number: latestSeason.number, completed: false }).lean();
-    if (!current) return { status: 409, body: "Season changed. Refresh before retrying." };
-    const newPauseState = !current.paused;
-    await beginMutation();
+    const newPauseState = !latestSeason.paused;
 
     await models.CompetitiveSeason.updateOne(
       { _id: ObjectID(latestSeason._id) },
@@ -148,143 +143,183 @@ router.post("/pause", async function (req, res) {
     );
 
     // Create mod action
-    await routeUtils.createModAction(userId, "Toggle Competitive Season Pause", []);
+    routeUtils.createModAction(userId, "Toggle Competitive Season Pause", []);
 
-    await redis.invalidateCompRoundCache(current.number, current.currentRound);
-    return { body: newPauseState };
-    }, false, "toggle pause");
-    return res.status(response.status || 200).send(response.body);
+    res.send(newPauseState);
   } catch (e) {
     logger.error(e);
-    if (e.status === 409) return res.status(409).send(e.message);
     errors.serverError(res, "Error toggling pause for season. Please try again.");
   }
 });
 
 // Explicit controls avoid turning a repeated Play/Pause request into its opposite.
+const settingMinimums = {
+  openDays: 1,
+  reviewDays: 0,
+  dailyHearts: 0,
+  finishLinePoints: 1,
+  graceHours: 0,
+  breakDays: 0,
+  roundIntervalDays: 1,
+  entryMinimumPoints: 0,
+};
+// null turns these off: no finish line, or the old weekly round start.
+const nullableSettings = ["finishLinePoints", "breakDays", "roundIntervalDays"];
+const MAX_SETTING_DAYS = 366;
+
+function validSetting(name, value) {
+  if (name === "finishAtNextDay") return typeof value === "boolean";
+  if (!Object.prototype.hasOwnProperty.call(settingMinimums, name)) return false;
+  if (value === null) return nullableSettings.includes(name);
+  if (!Number.isSafeInteger(value) || value < settingMinimums[name]) return false;
+  if (name.endsWith("Days")) return value <= MAX_SETTING_DAYS;
+  if (name === "graceHours") return value <= MAX_SETTING_DAYS * 24;
+  return true;
+}
+
 router.post("/controls", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
     if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive"))) return;
+
     const { seasonNumber, paused, settings } = req.body;
-    if (!Number.isSafeInteger(seasonNumber) || seasonNumber < 1 ||
-        (paused !== undefined && typeof paused !== "boolean") ||
-        (settings !== undefined && (!settings || typeof settings !== "object" || Array.isArray(settings))) ||
-        (paused === undefined && settings === undefined)) {
+    if (
+      !Number.isSafeInteger(seasonNumber) ||
+      seasonNumber < 1 ||
+      (paused !== undefined && typeof paused !== "boolean") ||
+      (settings !== undefined &&
+        (!settings || typeof settings !== "object" || Array.isArray(settings)))
+    ) {
       return res.status(400).send("Invalid competitive controls.");
     }
-    const response = await withCompetitiveLock(seasonNumber, async (beginMutation) => {
+
     const changes = {};
     if (paused !== undefined) changes.paused = paused;
-    const minimums = { openDays: 1, reviewDays: 0, dailyHearts: 0, fortuneLimit: 1, graceHours: 0 };
     for (const [name, value] of Object.entries(settings || {})) {
-      if (!Object.prototype.hasOwnProperty.call(minimums, name) ||
-          !(name === "fortuneLimit" && value === null) &&
-          (!Number.isSafeInteger(value) || value < minimums[name]) ||
-          (name === "graceHours" && value * 3600000 + Date.now() > 8640000000000000) ||
-          (["openDays", "reviewDays"].includes(name) && value * 86400000 + Date.now() > 8640000000000000)) {
-        return { status: 400, body: "Invalid competitive setting." };
+      if (!validSetting(name, value)) {
+        return res.status(400).send(`Invalid value for ${name}.`);
       }
       changes[name] = value;
     }
-    if (!Object.keys(changes).length) return { status: 400, body: "No changes supplied." };
-    const durationNames = ["openDays", "reviewDays", "graceHours"];
-    const durationSnapshot = {};
-    if (durationNames.some((name) => Object.prototype.hasOwnProperty.call(changes, name))) {
-      // Individually valid durations can still overflow when used together.
-      const currentSeason = await models.CompetitiveSeason.findOne({
-        number: seasonNumber, completed: false,
-      }).lean();
-      if (!currentSeason) return { status: 409, body: "This season is no longer active. Refresh before changing controls." };
-      const effective = competitiveSettings({ ...currentSeason, ...changes });
-      const totalMillis = (effective.openDays + effective.reviewDays) * 86400000 +
-        effective.graceHours * 3600000;
-      if (!Number.isSafeInteger(totalMillis) || totalMillis + Date.now() > 8640000000000000) {
-        return { status: 400, body: "Combined competitive durations exceed the supported date range." };
-      }
-      // Compare the durations read above atomically so concurrent requests
-      // cannot combine two independently valid changes into an invalid total.
-      for (const name of durationNames) {
-        durationSnapshot[name] = currentSeason[name] === undefined ?
-          { $exists: false } : currentSeason[name];
-      }
+    if (!Object.keys(changes).length) {
+      return res.status(400).send("No changes supplied.");
     }
-    await beginMutation();
-    // Return the actual previous values from the same atomic update for the audit.
+
+    // The previous values come back from the same update, for the mod log.
     const season = await models.CompetitiveSeason.findOneAndUpdate(
-      { number: seasonNumber, completed: false, ...durationSnapshot }, { $set: changes }, { new: false }
+      { number: seasonNumber, completed: false },
+      { $set: changes },
+      { new: false }
     ).lean();
-    if (!season) return { status: 409, body: "Season or settings changed. Refresh before changing controls." };
-    // A Redis failure must not prevent recording the already applied change.
-    // Also attempt invalidation if audit persistence fails, so stale pause state
-    // is not retained simply because the audit store is unavailable.
-    try {
-      await routeUtils.createModAction(userId, "Update Competitive Controls", [
-        season.number,
-        JSON.stringify({ before: { paused: season.paused, ...competitiveSettings(season) }, after: changes }),
-      ]);
-    } finally {
-      await redis.invalidateCompRoundCache(season.number, season.currentRound);
+    if (!season) {
+      return res.status(409).send("This season is no longer active. Refresh before changing controls.");
     }
-    return { body: { paused: changes.paused ?? season.paused, settings: competitiveSettings({ ...season, ...changes }) } };
-    }, false, "update controls");
-    return res.status(response.status || 200).send(response.body);
+
+    await redis.invalidateCompRoundCache(season.number, season.currentRound);
+    routeUtils.createModAction(userId, "Update Competitive Controls", [
+      season.number,
+      JSON.stringify({
+        before: { paused: season.paused, ...competitiveSettings(season) },
+        after: changes,
+      }),
+    ]);
+
+    res.send({
+      paused: changes.paused ?? season.paused,
+      settings: competitiveSettings({ ...season, ...changes }),
+    });
   } catch (e) {
     logger.error(e);
-    if (e.status === 409) return res.status(409).send(e.message);
-    errors.serverError(res, "Error updating competitive controls. Refresh before retrying.");
+    errors.serverError(res, "Error updating competitive controls. Please try again.");
   }
 });
 
-// Restart only the active open countdown. Scores, hearts, historical day IDs,
-// historical start date and the configured fortune threshold stay unchanged.
+// Restart only the current round's open countdown. Scores, hearts, day numbers
+// and the round's start date stay as they are.
 router.post("/restartClock", async function (req, res) {
   try {
     const userId = await routeUtils.verifyLoggedIn(req);
     if (!(await routeUtils.verifyPermission(res, userId, "manageCompetitive"))) return;
+
     const { seasonNumber, roundNumber, requestId } = req.body;
-    if (!Number.isSafeInteger(seasonNumber) || seasonNumber < 1 ||
-        !Number.isSafeInteger(roundNumber) || roundNumber < 1 ||
-        typeof requestId !== "string" || !/^[a-zA-Z0-9-]{16,80}$/.test(requestId)) {
+    if (
+      !Number.isSafeInteger(seasonNumber) ||
+      seasonNumber < 1 ||
+      !Number.isSafeInteger(roundNumber) ||
+      roundNumber < 1 ||
+      typeof requestId !== "string" ||
+      !/^[a-zA-Z0-9-]{16,80}$/.test(requestId)
+    ) {
       return res.status(400).send("Invalid restart request.");
     }
-    const response = await withCompetitiveLock(seasonNumber, async (beginMutation) => {
-      const season = await models.CompetitiveSeason.findOne({ number: seasonNumber }).lean();
-      const round = await models.CompetitiveRound.findOne({ season: seasonNumber, number: roundNumber }).lean();
-      const previousRestart = round?.clockRestarts?.find((entry) => entry.requestId === requestId);
-      if (previousRestart) {
-        return { body: { restartedAt: previousRestart.at, replay: true } };
+
+    const season = await models.CompetitiveSeason.findOne({ number: seasonNumber }).lean();
+    const round = await models.CompetitiveRound.findOne({
+      season: seasonNumber,
+      number: roundNumber,
+    }).lean();
+
+    // A retried request returns its first result instead of restarting again.
+    const previousRestart = round?.clockRestarts?.find(
+      (entry) => entry.requestId === requestId
+    );
+    if (previousRestart) {
+      return res.send({ restartedAt: previousRestart.at, replay: true });
+    }
+
+    if (
+      !season ||
+      season.completed ||
+      season.currentRound !== roundNumber ||
+      !round ||
+      round.completed ||
+      round.accounted ||
+      round.openPhaseEndedAt ||
+      round.currentDay < 1
+    ) {
+      return res.status(409).send("Only the current open round's clock can be restarted. Refresh before retrying.");
+    }
+
+    const { openDays } = competitiveSettings(season);
+    const now = Date.now();
+    // The next day boundary is 24 hours from now.
+    const clockBaseAt = now + DAY - round.currentDay * DAY;
+    const after = { clockBaseAt, remainingOpenDays: openDays };
+
+    // Only applies if the round hasn't moved on since it was read.
+    const result = await models.CompetitiveRound.updateOne(
+      {
+        _id: round._id,
+        currentDay: round.currentDay,
+        openPhaseEndedAt: null,
+        "clockRestarts.requestId": { $ne: requestId },
+      },
+      {
+        $set: after,
+        $push: { clockRestarts: { requestId, at: now, openDays, clockBaseAt } },
       }
-      if (!season || season.completed || season.currentRound !== roundNumber ||
-          !round || round.completed || round.accounted || round.openPhaseEndedAt || round.currentDay < 1) {
-        return { status: 409, body: "Only the current open round's clock can be restarted. Refresh before retrying." };
-      }
-      const { openDays } = competitiveSettings(season);
-      const now = Date.now();
-      const clockBaseAt = now + DAY - round.currentDay * DAY;
-      if (!Number.isSafeInteger(clockBaseAt) || now + openDays * DAY > 8640000000000000) {
-        return { status: 400, body: "Restart duration exceeds the supported date range." };
-      }
-      const before = { clockBaseAt: round.clockBaseAt, remainingOpenDays: round.remainingOpenDays };
-      const after = { clockBaseAt, remainingOpenDays: openDays };
-      await beginMutation();
-      await models.CompetitiveRound.updateOne({ _id: round._id }, {
-        $set: after, $push: { clockRestarts: { requestId, at: now, openDays, clockBaseAt } },
-      });
-      try {
-        await routeUtils.createModAction(userId, "Restart Competitive Clock", [
-          seasonNumber, roundNumber, JSON.stringify({ before, after }),
-        ]);
-      } finally {
-        await redis.invalidateCompRoundCache(seasonNumber, roundNumber);
-      }
-      return { body: { restartedAt: now, replay: false } };
-    }, false, "restart clock");
-    return res.status(response.status || 200).send(response.body);
+    );
+    if (result.matchedCount !== 1) {
+      return res.status(409).send("The round changed while restarting. Refresh before retrying.");
+    }
+
+    await redis.invalidateCompRoundCache(seasonNumber, roundNumber);
+    routeUtils.createModAction(userId, "Restart Competitive Clock", [
+      seasonNumber,
+      roundNumber,
+      JSON.stringify({
+        before: {
+          clockBaseAt: round.clockBaseAt,
+          remainingOpenDays: round.remainingOpenDays,
+        },
+        after,
+      }),
+    ]);
+
+    res.send({ restartedAt: now, replay: false });
   } catch (e) {
     logger.error(e);
-    if (e.status === 409) return res.status(409).send(e.message);
-    errors.serverError(res, "Could not finish clock restart. Refresh; do not submit a new restart to retry.");
+    errors.serverError(res, "Could not restart the clock. Refresh before retrying.");
   }
 });
 
@@ -449,31 +484,39 @@ router.post("/endRoundEarly", async function (req, res) {
       return;
     }
 
-    const response = await withCompetitiveLock(season, async (beginMutation) => {
     const competitiveRound = await models.CompetitiveRound.findOne({
       season,
       number: round,
     }).lean();
 
     if (!competitiveRound) {
-      return { status: 404, body: "Round not found." };
+      res.status(404);
+      res.send("Round not found.");
+      return;
     }
 
     // Only allow this while a round is actively in open days.
     if (competitiveRound.currentDay < 1 || competitiveRound.completed) {
-      return { status: 400, body: "Round is not live." };
+      res.status(400);
+      res.send("Round is not live.");
+      return;
     }
 
     if (competitiveRound.remainingOpenDays <= 0) {
-      return { status: 400, body: "Round can only be ended early during open days, not during review days." };
+      res.status(400);
+      res.send(
+        "Round can only be ended early during open days, not during review days."
+      );
+      return;
     }
 
     if (competitiveRound.remainingReviewDays <= 0) {
-      return { status: 400, body: "Round has no review days remaining." };
+      res.status(400);
+      res.send("Round has no review days remaining.");
+      return;
     }
 
     const now = new Date();
-    await beginMutation();
 
     await models.CompetitiveRound.updateOne(
       { _id: ObjectID(competitiveRound._id) },
@@ -490,19 +533,16 @@ router.post("/endRoundEarly", async function (req, res) {
 
     await redis.invalidateCompRoundCache(season, round);
 
-    await routeUtils.createModAction(modUserId, "End Round Early", [season, round]);
+    routeUtils.createModAction(modUserId, "End Round Early", [season, round]);
 
-    return { body: {
+    res.json({
       message:
         "Round open phase ended; players have 24 hours to finish remaining gold hearts.",
       season,
       round,
-    } };
-    }, false, "end round early");
-    return res.status(response.status || 200).send(response.body);
+    });
   } catch (e) {
     logger.error(e);
-    if (e.status === 409) return res.status(409).send(e.message);
     errors.serverError(res, "Error ending round early. Please try again.");
   }
 });
@@ -623,7 +663,7 @@ router.get("/current", async function (req, res) {
       completed: false,
     })
       .sort({ number: -1 })
-      .select("setups setupOrder number numRounds paused currentRound openDays reviewDays dailyHearts fortuneLimit graceHours operationName operationStartedAt operationPhase")
+      .select("setups setupOrder number numRounds paused currentRound openDays reviewDays dailyHearts finishLinePoints finishAtNextDay graceHours breakDays roundIntervalDays entryMinimumPoints")
       .populate([
         {
           path: "setups",
@@ -656,7 +696,6 @@ router.get("/current", async function (req, res) {
       paused: currentSeason.paused,
       currentRound: currentSeason.currentRound,
       settings: competitiveSettings(currentSeason),
-      operation: currentSeason.operationName ? { name: currentSeason.operationName, startedAt: currentSeason.operationStartedAt, phase: currentSeason.operationPhase } : null,
     });
   } catch (e) {
     logger.error(e);
