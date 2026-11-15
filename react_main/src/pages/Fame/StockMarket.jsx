@@ -204,13 +204,13 @@ export default function StockMarket() {
 
   // Define tabs dynamically
   const tabs = useMemo(() => {
-    const list = [{ label: "All Markets", icon: "rankings" }];
+    const list = [{ label: "All Markets", shortLabel: "Markets", icon: "rankings" }];
     if (user.loggedIn) {
-      list.push({ label: "My Portfolio", icon: "inventory" });
+      list.push({ label: "My Portfolio", shortLabel: "Portfolio", icon: "inventory" });
     }
-    list.push({ label: "Transactions", icon: "history" });
+    list.push({ label: "Transactions", shortLabel: "History", icon: "history" });
     if (user.loggedIn && (!hasIpoed || eligibleFamilies.length > 0)) {
-      list.push({ label: "Launch IPO", icon: "trophy" });
+      list.push({ label: "Launch IPO", shortLabel: "IPO", icon: "trophy" });
     }
     return list;
   }, [user.loggedIn, hasIpoed, eligibleFamilies]);
@@ -456,13 +456,18 @@ export default function StockMarket() {
           setActiveTab(val);
           setSearchQuery("");
         }}
-        variant="scrollable"
-        scrollButtons="auto"
-        allowScrollButtonsMobile
-        sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}
+        variant={isMobile ? "fullWidth" : "scrollable"}
+        scrollButtons={isMobile ? false : "auto"}
+        allowScrollButtonsMobile={!isMobile}
+        sx={{
+          borderBottom: 1,
+          borderColor: "divider",
+          mb: 3,
+          ...(isMobile ? { "& .MuiTab-root": { minWidth: 0, padding: "0 6px" } } : {}),
+        }}
       >
         {tabs.map((t) => (
-          <UiTab key={t.label} icon={<UiIcon name={t.icon} size={18} />} iconPosition="start" label={t.label} />
+          <UiTab key={t.label} icon={isMobile ? undefined : <UiIcon name={t.icon} size={18} />} iconPosition="start" label={isMobile ? (t.shortLabel || t.label) : t.label} />
         ))}
       </UiTabs>
 

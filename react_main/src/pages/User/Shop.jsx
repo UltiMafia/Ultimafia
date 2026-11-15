@@ -374,7 +374,7 @@ export default function Shop(props) {
       >
         <UiTab value="shop" label="Shop" />
         <UiTab value="manage" label="Donate" />
-        <UiTab value="transfer" label="Transfer Coins" />
+        <UiTab value="transfer" label="Transfer" />
       </UiTabs>
 
       {activeTab === "shop" && (
