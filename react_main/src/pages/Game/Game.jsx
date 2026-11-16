@@ -2404,12 +2404,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const hasMouse = useMediaQuery("(pointer:fine)");
   const [quoteJump, setQuoteJump] = useState(null);
   const quoteJumpRef = useRef(null);
-  const [quoteJumpNotice, setQuoteJumpNotice] = useState("");
-  useEffect(() => {
-    if (!quoteJumpNotice) return;
-    const timer = setTimeout(() => setQuoteJumpNotice(""), 4000);
-    return () => clearTimeout(timer);
-  }, [quoteJumpNotice]);
   const onQuoteJump = useCallback((quote) => {
     const sourceState = history.states[quote.fromState];
     const sourceMeeting = sourceState?.meetings?.[quote.fromMeetingId];
@@ -2419,7 +2413,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     // Only navigate history already delivered to this viewer. Never fetch or
     // infer a hidden meeting or an anonymous sender.
     if (!sourceMessage) {
-      setQuoteJumpNotice("The original message is not available in your history.");
       return;
     }
     const sourceTabs = getSpeechMeetings(sourceState.meetings);
@@ -2427,7 +2420,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     const sourceTab = sourceTabs.find((meeting) => meeting.id === quote.fromMeetingId);
     const spectatorSource = sourceSpectatorChat?.id === quote.fromMeetingId;
     if (!singleState && !sourceTab && !spectatorSource) {
-      setQuoteJumpNotice("The original message is not available in this chat view.");
       return;
     }
     const target = {
@@ -2438,7 +2430,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     };
     quoteJumpRef.current = target;
     setQuoteJump(target);
-    setQuoteJumpNotice("");
     setAutoScroll(false);
     if (!singleState) {
       updateHistory({ type: "selTab", state: quote.fromState, meetingId: target.tab });
@@ -2733,9 +2724,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
         void row.offsetWidth;
         row.classList.add("reply-jump-highlight");
         setTimeout(() => row.classList.remove("reply-jump-highlight"), 1600);
-        setQuoteJumpNotice("Jumped to the original message.");
-      } else {
-        setQuoteJumpNotice("The original message is not shown with the current chat filters.");
       }
       quoteJumpRef.current = null;
       setQuoteJump(null);
@@ -2865,7 +2853,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           {messages}
         </div>}
         <div className="speech-footer">
-          <span role="status" aria-live="polite">{quoteJumpNotice}</span>
           {newMessageCount > 0 && (
             <button
               type="button"
