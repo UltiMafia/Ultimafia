@@ -325,6 +325,36 @@ if (params.get("sys") === "1")
     content: "Bob has been lynched.",
     time: t0 + 7000,
   });
+// Long transcript for quote navigation: the original is in delivered history,
+// but is not mounted while the quote at the end is visible.
+if (params.get("quoteJump") === "1") {
+  msgs.splice(0, msgs.length, msgs[0], ...Array.from({ length: params.get("short") === "1" ? 0 : 400 }, (_, i) => ({
+    id: `filler-${i}`, senderId: "pB", meetingId: "v1",
+    content: `Filler line ${i}`, time: t0 + (i + 1) * 31000,
+  })), {
+    id: "quote-original", isQuote: true, senderId: "pC", meetingId: "v1",
+    messageId: "m1aaaaaa", fromMeetingId: "v1", fromState: st,
+    time: t0 + 500 * 31000,
+  });
+  game.updateStateViewing = () => {};
+  if (params.get("filtered") === "1") game.filters = { from: "Vinman", contains: "" };
+  // Simulate history becoming unavailable after the quote has rendered.
+  window.__removeOriginal = () => document.addEventListener("click", () => {
+    meeting.messages.splice(0, 1);
+  }, { capture: true, once: true });
+  game.transcriptWindowing = params.get("fullDOM") !== "1";
+  if (params.get("crossState") === "1") {
+    const original = msgs.shift();
+    msgs.splice(200, 0, original);
+    const quote = msgs.pop();
+    game.history.currentState = st + 1;
+    game.history.states[st + 1] = {
+      name: "Night 1", selTab: "v2", alerts: [],
+      meetings: { v2: { ...meeting, id: "v2", messages: [{ ...quote, meetingId: "v2" }] } },
+    };
+    game.stateViewing = st + 1;
+  }
+}
 window.__replies = [];
 window.__quotes = [];
 window.__pins = [];
@@ -355,6 +385,12 @@ function FixtureGame({ children }) {
   const [speechFilters, setSpeechFilters] = React.useState({ from: "", contains: "" });
   const [isolationEnabled, setIsolationEnabled] = React.useState(false);
   window.__setReplyTarget = setReplyTarget;
+  const [stateViewing, setStateViewing] = React.useState(game.stateViewing);
+  const [history, setHistory] = React.useState(game.history);
+  const updateStateViewing = React.useCallback(({ stateNum }) => setStateViewing(stateNum), []);
+  const updateHistory = React.useCallback(({ state, meetingId }) => setHistory(previous => ({
+    ...previous, states: { ...previous.states, [state]: { ...previous.states[state], selTab: meetingId } },
+  })), []);
   return (
     <IsPhoneDeviceContext.Provider value={mobile}>
       <GameContext.Provider
@@ -366,6 +402,9 @@ function FixtureGame({ children }) {
           setSpeechFilters,
           isolationEnabled,
           setIsolationEnabled,
+          ...(params.get("crossState") === "1"
+            ? { stateViewing, history, updateStateViewing, updateHistory }
+            : {}),
         }}
       >
         {children}

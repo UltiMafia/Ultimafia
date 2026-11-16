@@ -288,7 +288,19 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     const scroller = speechDisplayRef.current;
     if (!scroller) return;
     const jump = (event) => {
-      const target = rowIndex.get(String(event.detail.messageId));
+      const { messageId, state, meeting } = event.detail;
+      // Reply references use an id in the current transcript. Quotes also
+      // carry their source phase/meeting: never resolve those by id alone.
+      const scoped = state != null && meeting != null;
+      const index = scoped ? rows.findIndex(({ props }) =>
+        String(props.sourceState ?? props.stateViewing) === String(state) &&
+        String(props.message.meetingId) === String(meeting) &&
+        (String(props.message.id) === String(messageId) ||
+          (props.replyMerged && String(props.replyQuote?.id) === String(messageId)))
+      ) : -1;
+      const target = scoped
+        ? (index < 0 ? null : { index, id: rows[index].props.message.id })
+        : rowIndex.get(String(messageId));
       if (!target) return;
       initializing.current = false;
       cancelAnimationFrame(jumpFrame.current);
@@ -296,7 +308,9 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
       const deadline = performance.now() + 1500;
       const finish = () => {
         const row = [...scroller.querySelectorAll(".message[data-message-id]")]
-          .find((element) => element.dataset.messageId === String(target.id));
+          .find((element) => element.dataset.messageId === String(target.id) &&
+            (!scoped || (element.dataset.messageState === String(state) &&
+              element.dataset.messageMeeting === String(meeting))));
         if (row) {
           row.classList.remove("reply-jump-highlight");
           void row.offsetWidth;
@@ -314,7 +328,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
       scroller.removeEventListener("transcript-jump", jump);
       cancelAnimationFrame(jumpFrame.current);
     };
-  }, [rowIndex, speechDisplayRef, virtualizer]);
+  }, [rows, rowIndex, speechDisplayRef, virtualizer]);
 
   const setScroller = useCallback((element) => {
     speechDisplayRef.current = element;
