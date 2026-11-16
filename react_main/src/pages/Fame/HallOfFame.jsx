@@ -10,7 +10,7 @@ import TrophyCase from "components/TrophyCase";
 import { UserContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { NameWithAvatar } from "pages/User/UserWidgets";
-import { UiAction, UiCard, UiDialog, UiIcon, UiPageHeader, UiTabs, UiTab, UiMenuItem as MenuItem, UiSelect as Select, UiTabs as Tabs, UiField as TextField, UiText as Typography } from "components/ui";
+import { UiAction, UiCard, UiDialog, UiIcon, UiPageHeader, UiTable, UiTabs, UiTab, UiMenuItem as MenuItem, UiSelect as Select, UiTabs as Tabs, UiField as TextField, UiText as Typography } from "components/ui";
 
 import { TIER_ICONS } from "utils/skillRating";
 import { MIN_RATED_GAMES } from "Constants";
@@ -115,102 +115,58 @@ const StandingsTable = React.memo(function StandingsTable({
   sortDirection,
   onSort,
 }) {
-  const columns = getColumns(category, isPhoneDevice);
-  const desktopMetricColumnCount = Math.max(columns.length - 3, 0);
-  const desktopGridTemplate = `3em minmax(0, 1.6fr) minmax(0, 1.4fr)${
-    desktopMetricColumnCount
-      ? ` repeat(${desktopMetricColumnCount}, minmax(4.5em, 0.8fr))`
-      : ""
-  }`;
-  function renderColumnLabel(column) {
-    const label = (
-      <Typography variant="caption" sx={{ fontWeight: 700 }}>
-        {column.label}
-      </Typography>
-    );
-    if (!column.tooltip) return label;
+  // Phones keep the compact rank/name/metric rows; desktop uses the shared table
+  // so standings match every other data table.
+  if (isPhoneDevice) {
     return (
-      <Tooltip title={column.tooltip}>
-        <span>{label}</span>
-      </Tooltip>
+      <Stack className="standings-list" direction="column" spacing={1} divider={<Divider flexItem />}>
+        {users.map((user) => (
+          <Box
+            key={user.userId}
+            className={`standings-row${currentUserId && user.userId === currentUserId ? " is-current" : ""}`}
+          >
+            <Typography variant="h4">{user.rank}.</Typography>
+            <Box className="standings-identity" sx={{ minWidth: 0, "& .user-name": { whiteSpace: "normal", overflowWrap: "anywhere" } }}>
+              <NameWithAvatar id={user.userId} name={user.username} avatar={user.avatar} vanityUrl={user.vanityUrl} />
+            </Box>
+            <Stack direction="column" spacing={0.25} sx={{ gridColumn: 2, textAlign: "left", "& > * > .MuiStack-root": { justifyContent: "flex-start" } }}>
+              <Typography variant="body2">{renderMobileMetric(user, category)}</Typography>
+              <Typography variant="caption">{user.wins}W / {user.losses}L</Typography>
+            </Stack>
+          </Box>
+        ))}
+      </Stack>
     );
   }
 
-  return (
-    <Stack className="standings-list" direction="column" spacing={1} divider={<Divider flexItem />}>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: isPhoneDevice
-            ? "2em minmax(0, 1fr)"
-            : desktopGridTemplate,
-          gap: 1,
-          alignItems: "center",
-          fontWeight: 700,
-        }}
-      >
-        {columns.map((column) =>
-          column.sortKey && !isPhoneDevice ? (
-            <TableSortLabel
-              key={column.label}
-              active={sortBy === column.sortKey}
-              direction={sortBy === column.sortKey ? sortDirection : "desc"}
-              onClick={() => onSort(column.sortKey)}
-              sx={{ justifySelf: "start" }}
-            >
-              {renderColumnLabel(column)}
-            </TableSortLabel>
-          ) : (
-            <Box key={column.label} sx={{ justifySelf: "start" }}>
-              {renderColumnLabel(column)}
+  const labels = getColumns(category, false);
+  const columns = labels.map((column, index) => ({
+    key: column.label,
+    label: column.label,
+    sortable: Boolean(column.sortKey),
+    nowrap: index === 0,
+    align: index === 1 ? "left" : "center",
+    render: index === 0
+      ? (user) => `${user.rank}.`
+      : index === 1
+        ? (user) => (
+            <Box className="standings-identity" sx={{ minWidth: 0, "& .user-name": { whiteSpace: "normal", overflowWrap: "anywhere" } }}>
+              <NameWithAvatar id={user.userId} name={user.username} avatar={user.avatar} vanityUrl={user.vanityUrl} />
             </Box>
           )
-        )}
-      </Box>
-      {users.map((user) => {
-        const isCurrentUser = currentUserId && user.userId === currentUserId;
+        : (user) => renderDesktopCells(user, category)[index - 2],
+  }));
 
-        return (
-          <Box
-            key={user.userId}
-            className="standings-row"
-            sx={{
-              display: "grid",
-              gridTemplateColumns: isPhoneDevice
-                ? "2em minmax(0, 1fr)"
-                : desktopGridTemplate,
-              gap: 1,
-              alignItems: "center",
-              borderRadius: 1,
-              px: 1,
-              py: 0.5,
-              backgroundColor: isCurrentUser ? "action.selected" : "transparent",
-            }}
-          >
-            <Typography variant="h4">{user.rank}.</Typography>
-             <Box className="standings-identity" sx={{ minWidth: 0, "& .user-name": { whiteSpace: "normal", overflowWrap: "anywhere" } }}>
-              <NameWithAvatar
-                id={user.userId}
-                name={user.username}
-                avatar={user.avatar}
-                vanityUrl={user.vanityUrl}
-              />
-            </Box>
-            {isPhoneDevice ? (
-              <Stack direction="column" spacing={0.25} sx={{ gridColumn: 2, textAlign: "left", "& > * > .MuiStack-root": { justifyContent: "flex-start" } }}>
-                <Typography variant="body2">{renderMobileMetric(user, category)}</Typography>
-                <Typography variant="caption">
-                  {user.wins}W / {user.losses}L
-                </Typography>
-              </Stack>
-            ) : (
-              renderDesktopCells(user, category)
-            )}
-          </Box>
-        );
-      })}
-    </Stack>
-  );
+  return <UiTable
+    label={`${category} standings`}
+    columns={columns}
+    rows={users}
+    rowKey="userId"
+    emptyMessage="No players match these filters."
+    sort={{ key: sortBy, direction: sortDirection }}
+    onSort={onSort}
+    rowClassName={(user) => (currentUserId && user.userId === currentUserId ? "is-current" : "")}
+  />;
 });
 
 function SkillRatingAboutContent({ minRatedGames = MIN_RATED_GAMES }) {

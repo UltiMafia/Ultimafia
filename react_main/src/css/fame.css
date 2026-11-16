@@ -7,3 +7,13 @@
 .report-detail-section { margin-bottom: 16px; }
 
 .stock-fee-summary { display: flex; gap: var(--ui-space-xl); background: color-mix(in srgb, var(--scheme-color-text) 2%, var(--scheme-color)); }
+
+/* Stock values keep their direction colour independent of the button tone. */
+.stock-buy-price, .stock-gain { color: var(--mui-palette-success-main); }
+.stock-sell-price, .stock-loss { color: var(--mui-palette-error-main); }
+.stock-liquidity, .stock-dividends { color: #e5bd58; }
+
+/* Compact phone standings: rank, identity, metric. */
+.standings-list { --ui-standings-columns: 2em minmax(0, 1fr); }
+.standings-row { display: grid; grid-template-columns: var(--ui-standings-columns); gap: 8px; align-items: center; border-radius: 4px; padding: 2px 8px; }
+.standings-row.is-current { background: var(--ui-selection-background); }

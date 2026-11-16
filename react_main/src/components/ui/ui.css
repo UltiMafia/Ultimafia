@@ -154,6 +154,7 @@
 .ui-table-sort { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
 .ui-table-sort:hover { color: var(--scheme-color-text); }
 .ui-table tbody tr.is-clickable { cursor: pointer; }
+.ui-table tbody tr.is-current { background: var(--ui-selection-background); }
 .ui-table--comparison :is(th, td) { text-align: center; }
 .ui-table-value { min-width: 0; overflow-wrap: anywhere; }
 .ui-table-value--code { font-family: monospace; }

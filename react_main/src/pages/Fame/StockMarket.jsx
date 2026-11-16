@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback, useMemo } from "react";
 import ReactDOM from "react-dom";
 import axios from "axios";
-import { Box, Stack, InputAdornment, Chip, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, FormControl, InputLabel, Grid, useMediaQuery, useTheme } from "@mui/material";
+import { Box, Stack, InputAdornment, Chip, FormControl, InputLabel, Grid, useMediaQuery, useTheme } from "@mui/material";
 import { PageNav } from "components/Nav";
 import "css/fame.css";
 import CoinIcon from "components/CoinIcon";
@@ -467,6 +467,106 @@ export default function StockMarket() {
     return <Loading />;
   }
 
+  const portfolioRows = marketMode === "player"
+    ? portfolio.map((holding) => ({ ...holding, id: holding.subjectId, displayName: holding.username,
+        matchingStock: stocks.find((s) => s.userId === holding.subjectId) || { shareSupply: 0 } }))
+    : familyPortfolio.map((holding) => ({ ...holding, id: holding.familyId, displayName: holding.familyName,
+        matchingStock: familyStocks.find((s) => s.familyId === holding.familyId) || { shareSupply: 0 } }));
+
+  const portfolioName = (row) => (
+    <Stack direction="row" spacing={1.5} alignItems="center">
+      <StockAvatar
+        targetType={marketMode}
+        id={row.id}
+        name={row.displayName}
+        avatar={row.avatar}
+        siteInfo={siteInfo}
+      />
+      <Typography
+        component="a"
+        href={marketMode === "player"
+          ? (row.vanityUrl ? `/user/${row.vanityUrl}` : `/user/${row.id}`)
+          : `/user/family/${row.id}`}
+        sx={{ color: marketMode === "player"
+          ? resolveDisplayNameColor({
+              accessibleNameColors: user.settings?.accessibleNameColors,
+              rawNameColor: row.nameColor,
+              autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c) => c,
+              theme,
+            }) || "text.primary"
+          : "text.primary", textDecoration: "none", fontWeight: "bold", "&:hover": { textDecoration: "underline" } }}
+      >
+        {row.displayName}
+      </Typography>
+    </Stack>
+  );
+
+  const portfolioColumns = [
+    { key: "name", label: marketMode === "player" ? "Player" : "Family Name", nowrap: true, render: portfolioName },
+    { key: "shares", label: "Shares", align: "right", render: (row) => (
+        <>
+          {row.sharesOwned}
+          <Typography variant="caption" color="text.secondary" display="block">Avg Cost/Share: {row.averageBuyPrice.toFixed(2)} <CoinIcon size={9} /></Typography>
+        </>
+      ) },
+    { key: "costBasis", label: "Cost Basis", align: "right", hideOnPhone: true, nowrap: true,
+      render: (row) => <>{row.costBasis.toFixed(2)} <CoinIcon size={12} /></> },
+    { key: "liquidValue", label: "Liquid Value", align: "right", hideOnPhone: true, nowrap: true,
+      render: (row) => <span className="stock-liquidity">{row.liquidValue.toFixed(2)} <CoinIcon size={12} /></span> },
+    { key: "pnl", label: "P&L", align: "right", nowrap: true,
+      render: (row) => <span className={row.unrealizedPnL >= 0 ? "stock-gain" : "stock-loss"}>{row.unrealizedPnL >= 0 ? "+" : ""}{row.unrealizedPnL.toFixed(2)} <CoinIcon size={12} /></span> },
+    { key: "dividends", label: "Dividends", align: "right", hideOnPhone: true, nowrap: true,
+      render: (row) => <span className="stock-dividends">{row.dividendsReceived.toFixed(2)} <CoinIcon size={12} /></span> },
+    { key: "actions", label: "Actions", align: "center", actions: true, render: (row) => (
+        <Stack direction="row" spacing={1} justifyContent="center">
+          <UiAction size="small" disabled={!user.loggedIn} onClick={() => openTradeModal(row.matchingStock, "buy", marketMode)}>Buy More</UiAction>
+          <UiAction size="small" onClick={() => openTradeModal(row.matchingStock, "sell", marketMode)}>Sell</UiAction>
+        </Stack>
+      ) },
+  ];
+
+  const transactionColumns = [
+    { key: "createdAt", label: "Date/Time", nowrap: true,
+      render: (tx) => `${new Date(tx.createdAt).toLocaleDateString()} ${new Date(tx.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}` },
+    { key: "buyerName", label: "Trader", nowrap: true, render: (tx) => (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Avatar hasImage={tx.buyerAvatar} id={tx.userId} name={tx.buyerName} />
+          <Typography component="a" href={tx.buyerVanityUrl ? `/user/${tx.buyerVanityUrl}` : `/user/${tx.userId}`}
+            sx={{ color: resolveDisplayNameColor({
+              accessibleNameColors: user.settings?.accessibleNameColors,
+              rawNameColor: tx.buyerNameColor,
+              autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c) => c,
+              theme,
+            }) || "text.primary", textDecoration: "none", fontWeight: "bold", "&:hover": { textDecoration: "underline" } }}>
+            {tx.buyerName}
+          </Typography>
+        </Stack>
+      ) },
+    { key: "type", label: "Type", align: "center", render: (tx) => (
+        <UiChip variant="status" tone={tx.type === "buy" ? "positive" : "destructive"}>{tx.type === "buy" ? "Buy" : "Sell"}</UiChip>
+      ) },
+    { key: "target", label: marketMode === "player" ? "Player Stock" : "Family ETF", nowrap: true, render: (tx) => (
+        <Stack direction="row" spacing={1} alignItems="center">
+          <StockAvatar targetType={marketMode}
+            id={marketMode === "player" ? tx.subjectId : tx.familyId}
+            name={marketMode === "player" ? tx.subjectName : tx.familyName}
+            avatar={marketMode === "player" ? tx.subjectAvatar : tx.familyAvatar}
+            siteInfo={siteInfo} />
+          <Typography component="a" href={marketMode === "player"
+              ? (tx.subjectVanityUrl ? `/user/${tx.subjectVanityUrl}` : `/user/${tx.subjectId}`)
+              : `/user/family/${tx.familyId}`}
+            sx={{ color: "text.primary", textDecoration: "none", fontWeight: "bold", "&:hover": { textDecoration: "underline" } }}>
+            {marketMode === "player" ? tx.subjectName : tx.familyName}
+          </Typography>
+        </Stack>
+      ) },
+    { key: "shares", label: "Shares", align: "right", render: (tx) => tx.shares },
+    { key: "price", label: "Price/Share", align: "right", nowrap: true, render: (tx) => <>{(tx.price / tx.shares).toFixed(2)} <CoinIcon size={12} /></> },
+    { key: "total", label: "Total Amount", align: "right", nowrap: true, render: (tx) => (
+        <span className={tx.type === "buy" ? "stock-gain" : "stock-loss"}>{(tx.type === "buy" ? tx.price + tx.fee : tx.price - tx.fee).toFixed(2)} <CoinIcon size={12} /></span>
+      ) },
+  ];
+
   return (
     <Box sx={{ width: '100%', boxSizing: 'border-box', overflowX: 'hidden', textAlign: 'left' }}>
       <UiPageHeader title="Player & Family Stock Market" description="Trade player shares or Family ETFs. Earn passive dividends when they win ranked/competitive matches!">
@@ -815,191 +915,13 @@ export default function StockMarket() {
               )}
             </Stack>
         ) : (
-        <TableContainer
-          component={Paper}
-          variant="outlined"
-          sx={{
-            width: '100%',
-            overflowX: 'auto',
-            backgroundColor: "background.paper",
-          }}
-        >
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>{marketMode === "player" ? "Player" : "Family Name"}</TableCell>
-                <TableCell align="right">Shares</TableCell>
-                <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>Cost Basis</TableCell>
-                <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Liquid Value</TableCell>
-                <TableCell align="right">P&amp;L</TableCell>
-                <TableCell align="right" sx={{ display: { xs: 'none', sm: 'table-cell' } }}>Dividends</TableCell>
-                <TableCell align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {marketMode === "player" ? (
-                portfolio.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} align="center">
-                      <Typography color="text.secondary" sx={{ py: 3 }}>
-                        You don't own any player shares yet.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  portfolio.map((holding) => {
-                    const matchingStock = stocks.find((s) => s.userId === holding.subjectId) || { shareSupply: 0 };
-                    return (
-                      <TableRow key={holding.subjectId} hover>
-                        <TableCell>
-                          <Stack direction="row" spacing={1.5} alignItems="center">
-                            <StockAvatar
-                              targetType="player"
-                              id={holding.subjectId}
-                              name={holding.username}
-                              avatar={holding.avatar}
-                              siteInfo={siteInfo}
-                            />
-                             <Typography
-                              component="a"
-                              href={holding.vanityUrl ? `/user/${holding.vanityUrl}` : `/user/${holding.subjectId}`}
-                              sx={{
-                                color: resolveDisplayNameColor({
-                                  accessibleNameColors: user.settings?.accessibleNameColors,
-                                  rawNameColor: holding.nameColor,
-                                  autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
-                                  theme
-                                }) || "text.primary",
-                                textDecoration: "none",
-                                fontWeight: "bold",
-                                "&:hover": { textDecoration: "underline" },
-                              }}
-                            >
-                              {holding.username}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="right">
-                          {holding.sharesOwned}
-                          <Typography variant="caption" color="text.secondary" display="block">
-                            Avg Cost/Share: {holding.averageBuyPrice.toFixed(2)} <CoinIcon size={9} />
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          {holding.costBasis.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
-                          {holding.liquidValue.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
-                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
-                          {holding.dividendsReceived.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
-                            <UiAction
-                              size="small"
-                              disabled={!user.loggedIn}
-                              onClick={() => openTradeModal(matchingStock, "buy", "player")}
-                            >
-                              Buy More
-                            </UiAction>
-                            <UiAction size="small" 
-                              
-                              
-                              onClick={() => openTradeModal(matchingStock, "sell", "player")}
-                            >
-                              Sell
-                            </UiAction>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )
-              ) : (
-                // Family Portfolio Rendering
-                familyPortfolio.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      <Typography color="text.secondary" sx={{ py: 3 }}>
-                        You don't own any Family ETF shares yet.
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  familyPortfolio.map((holding) => {
-                    const matchingStock = familyStocks.find((s) => s.familyId === holding.familyId) || { shareSupply: 0 };
-                    return (
-                      <TableRow key={holding.familyId} hover>
-                        <TableCell>
-                          <Stack direction="row" spacing={1.5} alignItems="center">
-                            <StockAvatar
-                              targetType="family"
-                              id={holding.familyId}
-                              name={holding.familyName}
-                              avatar={holding.avatar}
-                              siteInfo={siteInfo}
-                            />
-                            <Typography
-                              component="a"
-                              href={`/user/family/${holding.familyId}`}
-                              sx={{
-                                color: "text.primary",
-                                textDecoration: "none",
-                                fontWeight: "bold",
-                                "&:hover": { textDecoration: "underline" },
-                              }}
-                            >
-                              {holding.familyName}
-                            </Typography>
-                          </Stack>
-                        </TableCell>
-                        <TableCell align="right">
-                          {holding.sharesOwned}
-                          <Typography variant="caption" color="text.secondary" display="block">
-                            Avg Cost/Share: {holding.averageBuyPrice.toFixed(2)} <CoinIcon size={9} />
-                          </Typography>
-                        </TableCell>
-                        <TableCell align="right" sx={{ display: { xs: 'none', md: 'table-cell' } }}>
-                          {holding.costBasis.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
-                          {holding.liquidValue.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ fontWeight: "bold", color: holding.unrealizedPnL >= 0 ? "success.main" : "error.main" }}>
-                          {holding.unrealizedPnL >= 0 ? "+" : ""}{holding.unrealizedPnL.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="right" sx={{ color: goldColor, display: { xs: 'none', sm: 'table-cell' } }}>
-                          {holding.dividendsReceived.toFixed(2)} <CoinIcon size={12} />
-                        </TableCell>
-                        <TableCell align="center">
-                          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent="center">
-                            <UiAction
-                              size="small"
-                              onClick={() => openTradeModal(matchingStock, "buy", "family")}
-                            >
-                              Buy More
-                            </UiAction>
-                            <UiAction size="small" 
-                              
-                              
-                              onClick={() => openTradeModal(matchingStock, "sell", "family")}
-                            >
-                              Sell
-                            </UiAction>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })
-                )
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <UiTable
+            label={marketMode === "player" ? "Your player stock portfolio" : "Your family ETF portfolio"}
+            columns={portfolioColumns}
+            rows={portfolioRows}
+            rowKey="id"
+            emptyMessage={marketMode === "player" ? "You don't own any player shares yet." : "You don't own any Family ETF shares yet."}
+          />
         )
       )}
 
@@ -1277,140 +1199,13 @@ export default function StockMarket() {
               )}
             </Stack>
           ) : (
-            <TableContainer
-              component={Paper}
-              variant="outlined"
-              sx={{
-                width: '100%',
-                overflowX: 'auto',
-                backgroundColor: "background.paper",
-              }}
-            >
-              <Table size="small" sx={{ "& .MuiTableCell-root": { px: 1, py: 1.5, fontSize: "var(--ui-text-body)" }, "& .MuiTableCell-head": { fontWeight: "var(--ui-weight-strong)", background: "transparent", color: "var(--um-muted)", lineHeight: "var(--ui-line-body)" } }}>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: "bold" }}>Date/Time</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>Trader</TableCell>
-                    <TableCell align="center" sx={{ fontWeight: "bold" }}>Type</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>{marketMode === "player" ? "Player Stock" : "Family ETF"}</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: "bold" }}>Shares</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: "bold" }}>Price/Share</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: "bold" }}>Total Amount</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {transactions.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={7} align="center">
-                        <Typography color="text.secondary" sx={{ py: 3 }}>
-                          No transactions recorded.
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    transactions.map((tx) => {
-                      const isBuy = tx.type === "buy";
-                      const targetName = marketMode === "player" ? tx.subjectName : tx.familyName;
-                      const targetId = marketMode === "player" ? tx.subjectId : tx.familyId;
-                      const targetAvatar = marketMode === "player" ? tx.subjectAvatar : tx.familyAvatar;
-
-                      return (
-                        <TableRow key={tx.id} hover>
-                          <TableCell sx={{ whiteSpace: "nowrap" }}>
-                            {new Date(tx.createdAt).toLocaleDateString()} {new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                          </TableCell>
-                          <TableCell sx={{ whiteSpace: "nowrap" }}>
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <Avatar
-                                hasImage={tx.buyerAvatar}
-                                id={tx.userId}
-                                name={tx.buyerName}
-                              />
-                              <Typography
-                                component="a"
-                                href={tx.buyerVanityUrl ? `/user/${tx.buyerVanityUrl}` : `/user/${tx.userId}`}
-                                sx={{
-                                  color: resolveDisplayNameColor({
-                                    accessibleNameColors: user.settings?.accessibleNameColors,
-                                    rawNameColor: tx.buyerNameColor,
-                                    autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
-                                    theme
-                                  }) || "text.primary",
-                                  textDecoration: "none",
-                                  fontWeight: "bold",
-                                  "&:hover": { textDecoration: "underline" },
-                                }}
-                              >
-                                {tx.buyerName}
-                              </Typography>
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="center">
-                            <Chip
-                              size="small"
-                              label={isBuy ? "BUY" : "SELL"}
-                              color={isBuy ? "success" : "error"}
-                              variant="outlined"
-                              sx={{ fontWeight: "bold" }}
-                            />
-                          </TableCell>
-                          <TableCell sx={{ whiteSpace: "nowrap" }}>
-                            <Stack direction="row" spacing={1} alignItems="center">
-                              <StockAvatar
-                                targetType={marketMode}
-                                id={targetId}
-                                name={targetName}
-                                avatar={targetAvatar}
-                                siteInfo={siteInfo}
-                              />
-                              {marketMode === "player" ? (
-                                <Typography
-                                  component="a"
-                                  href={tx.subjectVanityUrl ? `/user/${tx.subjectVanityUrl}` : `/user/${tx.subjectId}`}
-                                  sx={{
-                                    color: resolveDisplayNameColor({
-                                      accessibleNameColors: user.settings?.accessibleNameColors,
-                                      rawNameColor: tx.subjectNameColor,
-                                      autoContrastColor: user.autoContrastColor ? user.autoContrastColor.bind(user) : (c => c),
-                                      theme
-                                    }) || "text.primary",
-                                    textDecoration: "none",
-                                    fontWeight: "bold",
-                                    "&:hover": { textDecoration: "underline" },
-                                  }}
-                                >
-                                  {targetName}
-                                </Typography>
-                              ) : (
-                                <Typography
-                                  component="a"
-                                  href={`/user/family/${tx.familyId}`}
-                                  sx={{
-                                    color: "text.primary",
-                                    textDecoration: "none",
-                                    fontWeight: "bold",
-                                    "&:hover": { textDecoration: "underline" },
-                                  }}
-                                >
-                                  {targetName}
-                                </Typography>
-                              )}
-                            </Stack>
-                          </TableCell>
-                          <TableCell align="right" sx={{ fontWeight: "bold" }}>{tx.shares}</TableCell>
-                          <TableCell align="right" sx={{ whiteSpace: "nowrap" }}>
-                            {(tx.price / tx.shares).toFixed(2)} <CoinIcon size={12} />
-                          </TableCell>
-                          <TableCell align="right" sx={{ fontWeight: "bold", color: isBuy ? "success.main" : "error.main", whiteSpace: "nowrap" }}>
-                            {(isBuy ? tx.price + tx.fee : tx.price - tx.fee).toFixed(2)} <CoinIcon size={12} />
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            <UiTable
+              label="Transaction history"
+              columns={transactionColumns}
+              rows={transactions}
+              rowKey="id"
+              emptyMessage="No transactions recorded."
+            />
           )}
 
           {txTotal > 0 && Math.ceil(txTotal / 20) > 1 && (
