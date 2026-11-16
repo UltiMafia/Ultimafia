@@ -10,6 +10,7 @@
 // reply's reference can be checked against the original line's row).
 import React from "react";
 import ReactDOM from "react-dom";
+import { AlertList } from "../src/components/Alerts";
 import { BrowserRouter } from "react-router-dom";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
 import { GameTypeContext, IsPhoneDeviceContext, TextMeetingLayout } from "../src/pages/Game/Game";
@@ -323,6 +324,10 @@ if (params.get("sys") === "1")
 // Long transcript for quote navigation: the original is in delivered history,
 // but is not mounted while the quote at the end is visible.
 if (params.get("quoteJump") === "1") {
+  // AlertList uses the production CSS-variable theme; this legacy fixture
+  // uses createTheme, so supply its two positioning tokens explicitly.
+  document.documentElement.style.setProperty("--mui-spacing", "8px");
+  document.documentElement.style.setProperty("--mui-zIndex-snackbar", "1400");
   msgs.splice(0, msgs.length, msgs[0], ...Array.from({ length: params.get("short") === "1" ? 0 : 400 }, (_, i) => ({
     id: `filler-${i}`, senderId: "pB", meetingId: "v1",
     content: `Filler line ${i}`, time: t0 + (i + 1) * 31000,
@@ -330,6 +335,11 @@ if (params.get("quoteJump") === "1") {
     id: "quote-original", isQuote: true, senderId: "pC", meetingId: "v1",
     messageId: "m1aaaaaa", fromMeetingId: "v1", fromState: st,
     time: t0 + 500 * 31000,
+  });
+  if (params.get("replyJump") === "1") msgs.push({
+    id: "reply-original", senderId: "pC", meetingId: "v1",
+    content: "Reply to the distant original", replyTo: "quote-original",
+    time: t0 + 501 * 31000,
   });
   game.updateStateViewing = () => {};
   if (params.get("filtered") === "1") game.filters = { from: "Vinman", contains: "" };
@@ -366,6 +376,15 @@ if (mobile) {
 window.__sent = [];
 // Stub transport only: the real SpeechInput builds and sends the reply payload.
 game.socket.send = (type, payload) => window.__sent.push({ type, payload });
+function FixtureAlerts({ children }) {
+  const [alerts, setAlerts] = React.useState([]);
+  window.__showUnrelatedAlert = () => setAlerts([{ id: "integration", type: "warning", text: "Unrelated connection warning" }]);
+  if (params.get("quoteJump") !== "1") return children;
+  return <SiteInfoContext.Provider value={{
+    alerts, hideAlert: () => setAlerts([]),
+    showAlert: (text, type) => setAlerts(previous => [...previous, { id: previous.length, text, type }]),
+  }}><AlertList />{children}</SiteInfoContext.Provider>;
+}
 function FixtureGame({ children }) {
   const [replyTarget, setReplyTarget] = React.useState(null);
   window.__setReplyTarget = setReplyTarget;
@@ -401,7 +420,7 @@ ReactDOM.render(
               : undefined,
           }}
         >
-          <FixtureGame>
+          <FixtureAlerts><FixtureGame>
             <GameTypeContext.Provider value={{ singleState: false }}>
               <Box
                 className="game"
@@ -418,7 +437,7 @@ ReactDOM.render(
                 <TextMeetingLayout seatActions={false} />
               </Box>
             </GameTypeContext.Provider>
-          </FixtureGame>
+          </FixtureGame></FixtureAlerts>
         </SiteInfoContext.Provider>
       </UserContext.Provider>
     </ThemeProvider>
