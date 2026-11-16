@@ -12,7 +12,7 @@ const callback = source.slice(callbackStart).split("}, [history, isSpectator, si
   .replace("const onQuoteJump = useCallback((quote) => {", "");
 const effectStart = source.indexOf("  useEffect(() => {\n    if (!quoteJump) return;");
 assert.notEqual(effectStart, -1);
-const effect = source.slice(effectStart).split("}, [quoteJump, singleState, stateViewing, selTab, messages]);")[0]
+const effect = source.slice(effectStart).split("}, [quoteJump, singleState, stateViewing, selTab, messages, windowed]);")[0]
   .replace("  useEffect(() => {", "");
 function run(body, context) {
   return new Function(...Object.keys(context), body)(...Object.values(context));
@@ -65,6 +65,8 @@ test("quote navigation never announces success or unavailable targets", () => {
     };
     Object.assign(context, {
       quoteJump: { message: "original", state: "1", meeting: "town", tab: "town" },
+      windowed: false,
+      cancelAnimationFrame: () => {},
       stateViewing: 1,
       selTab: "town",
       speechDisplayRef: { current: { querySelectorAll: () => present ? [row] : [] } },
