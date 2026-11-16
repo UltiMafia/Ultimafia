@@ -224,24 +224,24 @@ export function ModCommands(props) {
       }
 
       if (arg.type === "select") {
+        // Long scopes read in full instead of clipping inside the dialog.
         return (
-          <FormControl key={arg.name} sx={{ width: "100%" }}>
-            <InputLabel>{arg.label}</InputLabel>
-            <Select
-              value={argValue ?? arg.default ?? ""}
-              label={arg.label}
-              onChange={(e) =>
-                updateArgValue(arg.name, e.target.value, arg.isArray)
-              }
-              disabled={isPrefilled}
-            >
-              {arg.options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <TextField
+            key={arg.name}
+            select
+            selectText="wrap"
+            fullWidth
+            label={arg.label}
+            value={argValue ?? arg.default ?? ""}
+            onChange={(e) => updateArgValue(arg.name, e.target.value, arg.isArray)}
+            disabled={isPrefilled}
+          >
+            {arg.options.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
         );
       }
 
