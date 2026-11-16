@@ -1,7 +1,26 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
+const Action = require("../../Action");
 const { PRIORITY_KILL_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_NIGHT_ROLE_BLOCKER } = require("../../const/Priority");
+
+function rollUnluckyDeath(role) {
+  if (!role.player || !role.player.alive) return;
+  if (role.data.unluckyResolving) return;
+  role.data.unluckyResolving = true;
+  let action = new Action({
+    actor: role.player,
+    target: role.player,
+    game: role.game,
+    labels: ["kill"],
+    run: function () {
+      if (!this.actor || !this.actor.alive) return;
+      if (this.dominates(this.actor)) this.actor.kill("basic", this.actor);
+    },
+  });
+  action.do();
+  role.data.unluckyResolving = false;
+}
 
 module.exports = class UnluckyDeath extends Card {
   constructor(role) {
@@ -109,18 +128,13 @@ module.exports = class UnluckyDeath extends Card {
         let players = this.game.alivePlayers();
         if (players.length == 3) {
           if (Random.randInt(0, 150) <= this.player.role.data.deathChance) {
-            if (this.dominates(this.actor)) {
-              this.actor.kill("basic", this.actor);
-            }
+            rollUnluckyDeath(this);
           }
         }
       },
       death: function (player, killer, killType, instant) {
-        let players = this.game.alivePlayers();
         if (Random.randInt(0, 500) <= this.player.role.data.deathChance) {
-          if (this.dominates(this.actor)) {
-            this.actor.kill("basic", this.actor);
-          }
+          rollUnluckyDeath(this);
         }
       },
     };
