@@ -2288,7 +2288,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const isPhoneDevice = useIsPhoneDevice();
   const { singleState } = useContext(GameTypeContext);
   const { isolationEnabled, isolatedPlayers, isSpectator } = game;
-  const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
+  const { history, players, stateViewing, updateHistory, settings, speechFilters, spectators } =
     game;
   // Explicit fixture overrides win; partial legacy contexts retain the full DOM.
   const windowed = typeof game.transcriptWindowing === "boolean"
@@ -2521,7 +2521,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
         selTab,
         players,
         settings,
-        filters,
+        speechFilters,
         spectators,
         spectatorChatMeeting
       );
@@ -2587,7 +2587,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     players,
     spectators,
     settings,
-    filters,
+    speechFilters,
     spectatorChatMeeting,
     isolationEnabled,
     isolatedPlayers,
@@ -2726,7 +2726,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
 
       <div className="speech-wrapper" data-tutorial="chat-panel">
         {windowed ? <WindowedTranscript
-          key={JSON.stringify([singleState, stateViewing, selTab, filters, settings.messageLayout])}
+          key={JSON.stringify([singleState, stateViewing, selTab, speechFilters, settings.messageLayout])}
           rows={messages}
           speechDisplayRef={speechDisplayRef}
           onScroll={onSpeechScroll}
@@ -2866,7 +2866,7 @@ function getMessagesToDisplay(
   selTab,
   players,
   settings,
-  filters,
+  speechFilters,
   spectators,
   spectatorChatMeeting
 ) {
@@ -2877,16 +2877,16 @@ function getMessagesToDisplay(
 
   messages = mergeSpectatorChat(messages, spectatorChatMeeting, selTab);
 
-  if (filters && (filters.from || filters.contains))
+  if (speechFilters && (speechFilters.from || speechFilters.contains))
     messages = messages.filter((m) => {
       var content = m.content || "";
       var matches =
-        content.toLowerCase().indexOf(filters.contains.toLowerCase()) !== -1;
+        content.toLowerCase().indexOf(speechFilters.contains.toLowerCase()) !== -1;
 
       var playerName = players[m.senderId]?.name || spectators[m.senderId]?.name || "";
       matches =
         matches &&
-        playerName.toLowerCase().indexOf(filters.from.toLowerCase()) !== -1;
+        playerName.toLowerCase().indexOf(speechFilters.from.toLowerCase()) !== -1;
 
       return matches;
     });
