@@ -1226,10 +1226,11 @@ html[data-keyboard="open"] .game .meeting-tabs {
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   position: absolute;
-  right: -52px;
+  right: calc(-36px - 16px * var(--reply-cue-scale, 1));
   top: 50%;
-  width: 32px;
-  height: 32px;
+  width: calc(32px * var(--reply-cue-scale, 1));
+  height: calc(32px * var(--reply-cue-scale, 1));
+  font-size: calc(1em * var(--reply-cue-scale, 1));
   display: grid;
   place-items: center;
   border-radius: 50%;
