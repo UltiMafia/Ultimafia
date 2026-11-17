@@ -8,7 +8,6 @@ import { UserContext, SiteInfoContext } from "../Contexts";
 
 const ACK_SETTING = "hideExternalLinkWarning";
 
-// Keep posted links outside the game, including after the warning is dismissed.
 export default function PostedExternalLink({ href, children }) {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
