@@ -205,7 +205,6 @@ router.post("/controls", async function (req, res) {
       return res.status(400).send("No changes supplied.");
     }
 
-    // The previous values come back from the same update, for the mod log.
     const season = await models.CompetitiveSeason.findOneAndUpdate(
       { number: seasonNumber, completed: false },
       { $set: changes },
@@ -282,7 +281,6 @@ router.post("/restartClock", async function (req, res) {
 
     const { openDays } = competitiveSettings(season);
     const now = Date.now();
-    // The next day boundary is 24 hours from now.
     const clockBaseAt = now + DAY - round.currentDay * DAY;
     const after = { clockBaseAt, remainingOpenDays: openDays };
 

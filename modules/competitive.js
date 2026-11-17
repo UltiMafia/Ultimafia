@@ -154,8 +154,6 @@ async function progressCompetitive() {
       currentSeason.currentRound !== 1 &&
       (settings.breakDays !== null || settings.roundIntervalDays !== null)
     ) {
-      // Start after the break, and no sooner than the interval after the
-      // previous round started.
       let earliest = now.getTime() + (settings.breakDays || 0) * DAY;
       const previousRound = await models.CompetitiveRound.findOne({
         season: seasonNumber,
@@ -263,8 +261,6 @@ async function progressCompetitive() {
           finishLineReachedAt: { $ne: null },
         }))
       ) {
-        // The day the finish line was reached is over: no new hearts, and the
-        // grace period to spend remaining hearts starts now.
         console.log(
           `[progressCompetitive]: Open phase ended for season ${seasonNumber} round ${currentRound.number} (finish line reached the previous day)`
         );

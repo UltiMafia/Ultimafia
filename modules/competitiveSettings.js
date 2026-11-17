@@ -1,7 +1,6 @@
 const models = require("../db/models");
 const constants = require("../data/constants");
 
-// Missing fields keep the established rules for existing seasons.
 function competitiveSettings(season = {}) {
   return {
     openDays: season.openDays ?? constants.openDaysPerCompetitiveRound,
@@ -12,17 +11,13 @@ function competitiveSettings(season = {}) {
       season.finishLinePoints === null
         ? null
         : season.finishLinePoints ?? constants.competitiveRoundFortuneHammer,
-    // Off: the open phase ends as soon as the finish line is reached.
-    // On: that day plays out and the open phase ends at the next day boundary.
     finishAtNextDay: season.finishAtNextDay ?? false,
     graceHours:
       season.graceHours ?? constants.competitiveHeartGracePeriodMillis / 3600000,
     // null keeps the weekly start day; otherwise the next round starts this
     // many days after the previous one ends.
     breakDays: season.breakDays ?? null,
-    // Minimum days from one round's start to the next (e.g. 30 for monthly).
     roundIntervalDays: season.roundIntervalDays ?? null,
-    // Site points a player needs to join competitive games. 0 is no minimum.
     entryMinimumPoints: season.entryMinimumPoints ?? 0,
   };
 }
