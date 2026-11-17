@@ -1,9 +1,5 @@
 import React from "react";
 
-// A deliberately small chat syntax, not a document/HTML renderer:
-// **bold**, *italic*, __underline__, ~~strikethrough~~. Parse only plain
-// segments after the existing whole-line filter. URL spans remain opaque;
-// the existing link/emote/mention pipeline then decorates their text.
 export function formatGameText(content) {
   const parts = [];
   for (const part of (Array.isArray(content) ? content.flat(Infinity) : [content])) {
@@ -82,7 +78,6 @@ export function formatGameText(content) {
       i += token.length;
     }
   }
-  // Unmatched delimiters are literal. No content is discarded.
   while (stack.length > 1) {
     const unclosed = stack.pop();
     append(unclosed.token);
