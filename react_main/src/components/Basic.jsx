@@ -359,48 +359,29 @@ export function iconUsername(text, players, options) {
 
     if (typeof segment != "string") continue;
 
-    const words = segment.trim().split(" ");
+    // Keep whitespace as its own token so inserting inline avatars does not
+    // synthesize another separator after emotify has preserved the originals.
+    const words = segment.split(/(\s+)/).filter((word) => word !== "");
 
     for (let j in words) {
       const word = words[j];
-      let replaced = false;
+      if (/^\s+$/.test(word) || word.length <= 1 || word.charAt(0) !== "%")
+        continue;
 
-      if (word.length > 1 && word.charAt(0) === "%") {
-        const checkName = word.substring(1);
+      const checkName = word.substring(1);
+      const matchedPlayer = Object.values(players).find((curPlayer) => {
+        return curPlayer.name === checkName;
+      });
+      if (!matchedPlayer) continue;
 
-        const matchedPlayer = Object.values(players).find((curPlayer) => {
-          return curPlayer.name === checkName;
-        });
-
-        if (matchedPlayer) {
-          if (matchedPlayer.avatar) {
-            replaced = true;
-
-            words[j] = (
-              <InlineAvatar
-                key={matchedPlayer.userId || matchedPlayer.name}
-                userId={matchedPlayer.userId}
-                username={matchedPlayer.name}
-                compact={Boolean(options && options.compact)}
-              />
-            );
-          } else {
-            // no avatar
-            replaced = true;
-
-            words[j] = (
-              <InlineAvatar
-              username={matchedPlayer.name}
-              compact={Boolean(options && options.compact)}
-              />
-            );
-          }
-        }
-      }
-
-      if (!replaced) {
-        words[j] = words[j] + " ";
-      }
+      words[j] = (
+        <InlineAvatar
+          key={matchedPlayer.userId || matchedPlayer.name}
+          userId={matchedPlayer.avatar ? matchedPlayer.userId : undefined}
+          username={matchedPlayer.name}
+          compact={Boolean(options && options.compact)}
+        />
+      );
     }
 
     text[i] = words;
