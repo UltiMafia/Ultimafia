@@ -36,7 +36,6 @@ export default function ReportDialog({
 
   // Reset only for a new report session. A retained game can temporarily hide
   // the dialog while keeping sessionOpen true, preserving edited fields.
-  // Other callers default sessionOpen to open and retain their existing behavior.
   const dialogSessionStartedRef = useRef(false);
   useEffect(() => {
     if (!sessionOpen) {

@@ -125,7 +125,6 @@ router.post("/send", async function (req, res) {
             : existingReport.reporters,
         };
         if (!hasReporters) {
-          // Legacy evidence is the source of the migrated first entry.
           for (const field of ["reporterId", "rule", "description", "createdAt"]) {
             filter[field] = existingReport[field] === undefined
               ? { $exists: false }
@@ -157,7 +156,6 @@ router.post("/send", async function (req, res) {
             "The case changed while you were submitting. Nothing was added by this submission. Your draft is preserved; review it before submitting again."
           );
         }
-        // No refetch or save: the successful conditional write is the receipt.
         report = existingReport;
         merged = true;
         logger.info(`Report ${report.id} updated: ${action} by user ${userId}`);

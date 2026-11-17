@@ -1564,8 +1564,6 @@ export default function Game(props) {
   else {
     const gameContext = {
       gameId: gameId,
-      // Reporting a transcript line is offered only after the game, never as
-      // an in-game threat. The existing dialog still requires an explicit submit.
       onMessageReport: canReportMessages ? onMessageReport : undefined,
       socket: socket,
       review: review,
