@@ -2502,6 +2502,7 @@ router.post("/kick", async (req, res) => {
     } catch (e) {
       await redis.leaveGame(userIdToKick);
     }
+    gameLoadBalancer.kickSpectator(userIdToKick);
 
     routeUtils.createModAction(userId, "Kick Player", [userIdToKick]);
     res.sendStatus(200);
