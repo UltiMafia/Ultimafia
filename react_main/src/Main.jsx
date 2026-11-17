@@ -27,6 +27,7 @@ import {
 import { getSiteTheme } from "./constants/themes";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import { ConnectionBanner } from "./components/ConnectionBanner";
+import { RemoteBackendBanner } from "./components/RemoteBackendBanner";
 import UserNavSection from "./pages/User/UserNavSection";
 import CookieBanner from "./components/CookieBanner";
 import IosBetaTicker from "./components/IosBetaTicker";
@@ -312,6 +313,7 @@ function Main(props) {
             </ViewActivityContext.Provider>
             <AlertList />
             <ConnectionBanner />
+            <RemoteBackendBanner />
             <FloatingStrategyWindows />
           </ProfileSheetProvider>
         </SheetProvider>
