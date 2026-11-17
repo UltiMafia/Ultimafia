@@ -1,6 +1,5 @@
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import { Tooltip } from "@mui/material";
-import { GameContext } from "Contexts";
 
 export const statesIcons = {
   pregame: require("images/game_state/pregame-state.png"),
@@ -40,6 +39,7 @@ export default function StateIcon({
   winnerGroups,
   unfocused = false,
   size = 40,
+  withTooltip = true,
 }) {
   winnerGroups = winnerGroups.map((g) => g.toLowerCase());
   const normalizedName = stateName.toLowerCase().replace(/[0-9]/g, "").trim();
@@ -118,7 +118,9 @@ export default function StateIcon({
     </div>
   );
 
-  if (unfocused) {
+  // The history strip supplies its own hover summary on desktop, so the plain
+  // name tooltip would otherwise nest inside it.
+  if (unfocused || !withTooltip) {
     return icon;
   } else {
     return <Tooltip title={stateName}>{icon}</Tooltip>;

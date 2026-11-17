@@ -1850,9 +1850,21 @@ export function TopBar({ forceShow = false } = {}) {
     return <></>;
   }
 
+  // A one-phase game (pregame, a single-round game, or a finished single-state
+  // game) has nothing to switch between, so the strip is left out entirely and
+  // the rest of the bar keeps its normal width.
+  const stateCount = Object.keys(game.history.states || {}).length;
+  const showStateSwitcher = !singleState && stateCount > 1;
+
   const logo = (
     <Stack direction="row" sx={{
-      flex: isPhoneDevice ? "1" : "1 1 14rem",
+      // With a history strip beside it, the wordmark is a fixed-size image and
+      // growing would only take width the strip can use.
+      flex: isPhoneDevice
+        ? "1"
+        : showStateSwitcher
+        ? "0 0 auto"
+        : "1 1 14rem",
       alignItems: "center",
     }}>
       <SiteLogo />
@@ -1861,12 +1873,14 @@ export function TopBar({ forceShow = false } = {}) {
 
   const stateSwitcher = (
     <Stack direction="column" spacing={1} sx={{
-      alignItems: "center",
+      alignItems: "stretch",
       justifyContent: "center",
-      flex: "none",
+      flex: isPhoneDevice || !showStateSwitcher ? "none" : "1 1 0",
+      // Keep a usable strip when a large setup wants most of the bar.
+      minWidth: isPhoneDevice || !showStateSwitcher ? 0 : 320,
     }}>
-      {!singleState && (
-        <Paper>
+      {showStateSwitcher && (
+        <Paper sx={{ minWidth: 0 }}>
           <StateSwitcher />
         </Paper>
       )}
@@ -1877,6 +1891,11 @@ export function TopBar({ forceShow = false } = {}) {
     <Setup
       setup={game.setup}
       backgroundColor={getSetupBackgroundColor(game.options, false)}
+      // The setup takes the width its roles need instead of stretching across
+      // whatever the strip (or an empty bar) leaves, capped near the width the
+      // old top bar gave it so a large setup cannot crowd out the strip.
+      fitContent={!isPhoneDevice}
+      maxWidth={!isPhoneDevice ? "32rem" : undefined}
     />
   ) : (
     <></>
@@ -1928,7 +1947,9 @@ export function TopBar({ forceShow = false } = {}) {
         sx={{
           px: 1,
           pb: 1,
-          flexWrap: "wrap",
+          // Everything on the row can shrink to fit, so wrapping would only
+          // push the setup box onto its own line.
+          flexWrap: "nowrap",
           alignItems: "center",
         }}
       >
@@ -1941,7 +1962,9 @@ export function TopBar({ forceShow = false } = {}) {
           ref={game.scrollDownTriggerRef}
           sx={{
             alignItems: "center",
-            flex: "1 1 22rem",
+            // The setup keeps its content width; the strip (or the logo, when
+            // there is no strip) takes the remaining room.
+            flex: "0 1 auto",
             minWidth: "0px",
           }}
         >
