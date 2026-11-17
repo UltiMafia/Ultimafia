@@ -319,6 +319,21 @@ var deprecated = false;
           }
         });
 
+        // The main server removing a user from every game they spectate
+        socket.on("kickSpectator", (data) => {
+          try {
+            if (!socket.isServer)
+              throw new Error("Not authenticated as server.");
+
+            for (const game of Object.values(games))
+              for (const spectator of [...game.spectators])
+                if (spectator.user.id === data.userId)
+                  game.kickSpectator(spectator);
+          } catch (e) {
+            logger.error(e);
+          }
+        });
+
         socket.on("devControl", async (data) => {
           const reply = (result) =>
             socket.send("devControlResult", { requestId: data.requestId, ...result });

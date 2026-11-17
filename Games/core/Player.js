@@ -1035,6 +1035,19 @@ module.exports = class Player {
             return;
           }
         }
+
+        for (let spectator of this.game.spectators) {
+          if (spectator.name.toLowerCase() === cmd.args[0].toLowerCase()) {
+            this.game.kickSpectator(spectator, kickPermanently);
+            this.game.sendAlert(
+              `${spectator.name} was kicked ${andBanned}from the game.`,
+              undefined,
+              undefined,
+              ["info"]
+            );
+            return;
+          }
+        }
         return;
       case "diceroll":
           if (this.game.ranked || this.game.competitive) {

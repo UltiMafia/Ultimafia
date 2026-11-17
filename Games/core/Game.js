@@ -824,6 +824,9 @@ module.exports = class Game {
   }
 
   async spectatorJoinRefusal(user, omniscient) {
+    if (user.id && this.banned[user.id])
+      return "You are banned from this game.";
+
     const canSpectateAny =
       user.id &&
       (await routeUtils.verifyPermission(user.id, "canSpectateAny"));
@@ -1775,6 +1778,12 @@ module.exports = class Game {
     if (permanent) this.banned[player.user.id] = true;
 
     await this.playerLeave(player);
+  }
+
+  kickSpectator(spectator, permanent) {
+    if (permanent && spectator.user.id) this.banned[spectator.user.id] = true;
+
+    spectator.leaveGame();
   }
 
   async reassignHost() {
