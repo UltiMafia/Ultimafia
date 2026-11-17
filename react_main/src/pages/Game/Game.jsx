@@ -3559,7 +3559,6 @@ const MessageRow = React.memo(function MessageRow(props) {
   }
 
   // if right aligned, use flex direction row-reverse to put timestamp on right hand side
-  // Compact aligned keeps a nameplate column; compact inline shares one text flow.
   // otherwise, use flex direction column when in non-compact mode so that nameplate can appear above content
   // otherwise if there is no nameplate, use row to always keep everything on the same line
   const innerClassName = isRightAligned
