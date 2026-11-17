@@ -10,6 +10,7 @@
 // reply's reference can be checked against the original line's row).
 import React from "react";
 import ReactDOM from "react-dom";
+import { AlertList } from "../src/components/Alerts";
 import { BrowserRouter } from "react-router-dom";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
 import { GameTypeContext, IsPhoneDeviceContext, TextMeetingLayout } from "../src/pages/Game/Game";
@@ -320,6 +321,45 @@ if (params.get("sys") === "1")
     content: "Bob has been lynched.",
     time: t0 + 7000,
   });
+// Long transcript for quote navigation: the original is in delivered history,
+// but is not mounted while the quote at the end is visible.
+if (params.get("quoteJump") === "1") {
+  // AlertList uses the production CSS-variable theme; this legacy fixture
+  // uses createTheme, so supply its two positioning tokens explicitly.
+  document.documentElement.style.setProperty("--mui-spacing", "8px");
+  document.documentElement.style.setProperty("--mui-zIndex-snackbar", "1400");
+  msgs.splice(0, msgs.length, msgs[0], ...Array.from({ length: params.get("short") === "1" ? 0 : 400 }, (_, i) => ({
+    id: `filler-${i}`, senderId: "pB", meetingId: "v1",
+    content: `Filler line ${i}`, time: t0 + (i + 1) * 31000,
+  })), {
+    id: "quote-original", isQuote: true, senderId: "pC", meetingId: "v1",
+    messageId: "m1aaaaaa", fromMeetingId: "v1", fromState: st,
+    time: t0 + 500 * 31000,
+  });
+  if (params.get("replyJump") === "1") msgs.push({
+    id: "reply-original", senderId: "pC", meetingId: "v1",
+    content: "Reply to the distant original", replyTo: "quote-original",
+    time: t0 + 501 * 31000,
+  });
+  game.updateStateViewing = () => {};
+  if (params.get("filtered") === "1") game.filters = { from: "Vinman", contains: "" };
+  // Simulate history becoming unavailable after the quote has rendered.
+  window.__removeOriginal = () => document.addEventListener("click", () => {
+    meeting.messages.splice(0, 1);
+  }, { capture: true, once: true });
+  game.transcriptWindowing = params.get("fullDOM") !== "1";
+  if (params.get("crossState") === "1") {
+    const original = msgs.shift();
+    msgs.splice(200, 0, original);
+    const quote = msgs.pop();
+    game.history.currentState = st + 1;
+    game.history.states[st + 1] = {
+      name: "Night 1", selTab: "v2", alerts: [],
+      meetings: { v2: { ...meeting, id: "v2", messages: [{ ...quote, meetingId: "v2" }] } },
+    };
+    game.stateViewing = st + 1;
+  }
+}
 window.__replies = [];
 window.__quotes = [];
 window.__pins = [];
@@ -336,12 +376,30 @@ if (mobile) {
 window.__sent = [];
 // Stub transport only: the real SpeechInput builds and sends the reply payload.
 game.socket.send = (type, payload) => window.__sent.push({ type, payload });
+function FixtureAlerts({ children }) {
+  const [alerts, setAlerts] = React.useState([]);
+  window.__showUnrelatedAlert = () => setAlerts([{ id: "integration", type: "warning", text: "Unrelated connection warning" }]);
+  if (params.get("quoteJump") !== "1") return children;
+  return <SiteInfoContext.Provider value={{
+    alerts, hideAlert: () => setAlerts([]),
+    showAlert: (text, type) => setAlerts(previous => [...previous, { id: previous.length, text, type }]),
+  }}><AlertList />{children}</SiteInfoContext.Provider>;
+}
 function FixtureGame({ children }) {
   const [replyTarget, setReplyTarget] = React.useState(null);
   window.__setReplyTarget = setReplyTarget;
+  const [stateViewing, setStateViewing] = React.useState(game.stateViewing);
+  const [history, setHistory] = React.useState(game.history);
+  const updateStateViewing = React.useCallback(({ stateNum }) => setStateViewing(stateNum), []);
+  const updateHistory = React.useCallback(({ state, meetingId }) => setHistory(previous => ({
+    ...previous, states: { ...previous.states, [state]: { ...previous.states[state], selTab: meetingId } },
+  })), []);
   return (
     <IsPhoneDeviceContext.Provider value={mobile}>
-      <GameContext.Provider value={{ ...game, replyTarget, setReplyTarget }}>
+      <GameContext.Provider value={{
+        ...game, replyTarget, setReplyTarget,
+        ...(params.get("crossState") === "1" ? { stateViewing, history, updateStateViewing, updateHistory } : {}),
+      }}>
         {children}
       </GameContext.Provider>
     </IsPhoneDeviceContext.Provider>
@@ -362,7 +420,7 @@ ReactDOM.render(
               : undefined,
           }}
         >
-          <FixtureGame>
+          <FixtureAlerts><FixtureGame>
             <GameTypeContext.Provider value={{ singleState: false }}>
               <Box
                 className="game"
@@ -379,7 +437,7 @@ ReactDOM.render(
                 <TextMeetingLayout seatActions={false} />
               </Box>
             </GameTypeContext.Provider>
-          </FixtureGame>
+          </FixtureGame></FixtureAlerts>
         </SiteInfoContext.Provider>
       </UserContext.Provider>
     </ThemeProvider>
