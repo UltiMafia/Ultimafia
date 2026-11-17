@@ -1,4 +1,5 @@
 import React, { useContext, useMemo } from "react";
+import CoinIcon from "components/CoinIcon";
 import { GameContext } from "../../Contexts";
 import { SiteInfoContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
@@ -105,7 +106,7 @@ export default function PokerTable() {
             </div>
             <div className="poker-pot" title={`Pot: ${ThePot} chips`}>
               <span className="poker-pot-icon" aria-hidden>
-                <i className="fas fa-coins" />
+                <CoinIcon size={16} />
               </span>
               <span className="poker-pot-amount">{ThePot}</span>
               <span className="poker-pot-label">Pot</span>

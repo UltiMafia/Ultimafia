@@ -46,7 +46,7 @@ export default function CreateChessSetup() {
   }, []);
 
   function onCreateSetup(_roleData, editing, setRedirect, gameSettings) {
-    axios
+    return axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: CHESS_FIXED_ROLES,

@@ -5,13 +5,14 @@ import { Link } from "react-router-dom";
 
 import { UserContext, SiteInfoContext, GameContext } from "Contexts";
 import AvatarUpload from "components/AvatarUpload";
+import UiIcon from "components/ui/UiIcon";
 import ripEmote from "images/emotes/rip.webp";
 
 import "css/user.css";
 import { Time, youtubeRegex } from "components/Basic";
 
 import { Popover } from "@mui/material";
-import { Box, IconButton, Stack, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
@@ -25,6 +26,7 @@ import { observeNameAnimation } from "utils/nameAnimationViewport";
 import { nameGlowStyle, applyNameGlowStyle } from "utils/nameGlowStyle";
 
 import santaDir from "images/holiday/santahat.png";
+import { UiText as Typography, UiAction } from "components/ui";
 
 // Names without a miniprofile must not subscribe to every game update.
 const NameOnlyGameContext = React.createContext(null);
@@ -331,9 +333,9 @@ export function MediaEmbed(props) {
       <div className="media-embed-body" aria-hidden={isCollapsed}>
         {body}
       </div>
-      <IconButton
-        className="media-embed-toggle"
-        size="small"
+      <UiAction
+         variant="ghost" size="small" className="media-embed-toggle"
+        
         onClick={() => setIsCollapsed((c) => !c)}
         aria-expanded={!isCollapsed}
         aria-label={isCollapsed ? "Expand media player" : "Collapse media player"}
@@ -347,7 +349,7 @@ export function MediaEmbed(props) {
         ) : (
           <ExpandLessIcon />
         )}
-      </IconButton>
+      </UiAction>
     </div>
   );
 }
@@ -358,7 +360,6 @@ function RipAvatarIcon({ small, large, absoluteLeftAvatarPx }) {
   } else if (large) {
     avatarSize = 100;
   }
-
   const style = {
     display: "inline-block",
     width: `${avatarSize}px`,
@@ -455,6 +456,7 @@ export function Avatar(props) {
   } else if (large) {
     avatarSize = 100;
   }
+  if (Number.isFinite(props.size) && props.size > 0) avatarSize = props.size;
 
   if (absoluteLeftAvatarPx) {
     style.position = "absolute";
@@ -542,7 +544,9 @@ export function Avatar(props) {
         border: border,
       }}
     >
-      <AvatarPhoto src={photoSrc} onError={setFailedSrc} />
+      <div className="avatar-image">
+        {photoSrc ? <AvatarPhoto src={photoSrc} onError={setFailedSrc} /> : <UiIcon name="person" size={avatarSize} className="avatar-default" style={{ width: "100%", height: "100%" }} />}
+      </div>
       {edit && (
         <div className="edit avatar-edit-overlay">
           <AvatarUpload
@@ -582,10 +586,11 @@ export function Avatar(props) {
             transform: `translateX(50%) translateY(50%)`,
           }}
         >
-          <OnlineStatus
+           <OnlineStatus
             status={onlineStatus}
             lastActive={lastActive}
-            inGame={inGame}
+             inGame={inGame}
+             showCaption={props.showStatusCaption !== false}
           />
         </Box>
       )}
@@ -745,6 +750,7 @@ export function NameWithAvatar(props) {
         />
       ) : (
         <Avatar
+          size={props.avatarSize}
           hasImage={avatarUrl ? true : avatar}
           imageUrl={avatarUrl}
           id={id}
@@ -852,6 +858,9 @@ export function NameWithAvatar(props) {
               }}
               onClose={handleMiniprofileClose}
               disableScrollLock
+              disableAutoFocus
+              disableEnforceFocus
+              disableRestoreFocus
             >
               {userProfile && (
                 <React.Suspense fallback={null}>
@@ -893,7 +902,7 @@ export function StatusIcon(props) {
   return <div className={`status-icon ${props.status}`} />;
 }
 
-export function OnlineStatus({ status, lastActive, inGame }) {
+export function OnlineStatus({ status, lastActive, inGame, showCaption = true }) {
   const isPhoneDevice = useIsPhoneDevice();
 
   const onlineStatusIconSize = isPhoneDevice ? "16px" : "24px";
@@ -929,7 +938,7 @@ export function OnlineStatus({ status, lastActive, inGame }) {
         border: "4px var(--scheme-color) solid",
       }}
     >
-      {caption && (
+      {showCaption && caption && (
         <Typography
           variant="caption"
           sx={{
@@ -985,12 +994,12 @@ export function LoveIcon(props) {
     (isLove && loveType !== "Married" && love.id === userId)
   ) {
     return (
-      <IconButton aria-label="love user">
+      <UiAction  variant="ghost" iconOnly aria-label="love user">
         <i
           className={`fas fa-heart  ${isLove ? "sel-love" : ""}`}
           onClick={onLoveClick}
         />
-      </IconButton>
+      </UiAction>
     );
   }
   return null;
@@ -1007,12 +1016,12 @@ export function MarriedIcon(props) {
   if (userId === love.id) {
     if ((saved && isLove && loveType === "Lover") || isMarried) {
       return (
-        <IconButton aria-label="marry user">
+        <UiAction  variant="ghost" iconOnly aria-label="marry user">
           <i
             className={`fas fa-ring ${isMarried ? "sel-married" : ""}`}
             onClick={onMarryClick}
           />
-        </IconButton>
+        </UiAction>
       );
     }
   }

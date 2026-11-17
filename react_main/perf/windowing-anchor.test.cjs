@@ -14,16 +14,23 @@ async function main(){
  const browser=await(process.env.ENGINE==='chromium'?chromium:webkit).launch();
  const results=[];
  try{
-  const page=await browser.newPage({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true});
+  const width=Number(process.env.ANCHOR_WIDTH||390);
+  const palette=process.env.ANCHOR_THEME||'dark';
+  const page=await browser.newPage({viewport:{width,height:width>=900?1000:844},deviceScaleFactor:3,isMobile:width<900,hasTouch:width<900});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.route('**/*',r=>r.request().url().startsWith(origin)?r.continue():r.abort());
-  await page.goto(origin+'?count=2214&nameplates=1717&cosmetic=mixed&virtual=1');
+   if(process.env.ANCHOR_NOW)await page.addInitScript(now=>{const NativeDate=Date;window.Date=class extends NativeDate{constructor(...args){super(...(args.length?args:[now]))}static now(){return now}}},Number(process.env.ANCHOR_NOW));
+   await page.goto(origin+`?count=2214&nameplates=1717&cosmetic=mixed&virtual=1&theme=${palette}`);
   await page.waitForFunction(()=>window.chatPerf&&document.querySelector('.speech-display .message'));
-  await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1200);
-  await page.waitForFunction(()=>{const s=document.querySelector('.speech-display');return s.scrollHeight-s.clientHeight-s.scrollTop<11});
-  await page.evaluate(()=>{const s=document.querySelector('.speech-display');s.scrollTop=s.scrollHeight/2});
-  await page.waitForTimeout(600);
-  const before=await page.evaluate(()=>{const s=document.querySelector('.speech-display'),top=s.getBoundingClientRect().top;const row=[...s.querySelectorAll('.message')].find(r=>r.getBoundingClientRect().bottom>top);return{id:row.dataset.messageId,offset:row.getBoundingClientRect().top-top,scrollTop:s.scrollTop}});
+   await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(1200);
+   await page.waitForFunction(()=>{const s=document.querySelector('.speech-display');return s.scrollHeight-s.clientHeight-s.scrollTop<11});
+   // Desktop's end command needs a native input before seeking the midpoint.
+   // Mobile WebKit has no wheel support; keep its original cold-seek probe.
+   if(width>=900){await page.locator('.speech-display').hover();await page.mouse.wheel(0,-200);await page.waitForTimeout(200);}
+   await page.evaluate(()=>{const s=document.querySelector('.speech-display');s.scrollTop=s.scrollHeight/2});
+   await page.waitForTimeout(600);
+   const before=await page.evaluate(()=>{const s=document.querySelector('.speech-display'),top=s.getBoundingClientRect().top;const row=[...s.querySelectorAll('.message')].find(r=>r.getBoundingClientRect().bottom>top);return{id:row.dataset.messageId,offset:row.getBoundingClientRect().top-top,scrollTop:s.scrollTop}});
+   assert(Number(before.id.slice(5))>200&&Number(before.id.slice(5))<1800,'probe must actually reach cold middle history, not stay pinned at the end');
   const changed=await page.evaluate(id=>{const r=document.querySelector(`[data-message-id="${id}"]`);const w=r.closest('[data-index]'),t=w?.previousElementSibling?.querySelector('.message');if(!t)return null;t.style.paddingBottom='203px';return{id:t.dataset.messageId}},before.id);
   assert(changed,'must actually resize an overscanned row above the visible anchor');
   await page.waitForTimeout(600);
@@ -55,22 +62,25 @@ async function main(){
         const row=[...s.querySelectorAll('.message')].find(r=>r.getBoundingClientRect().bottom>top);
         if(!row){errors.push({step:i,missing:true});break;}
         const id=row.dataset.messageId,offset=row.getBoundingClientRect().top-top;
+        const beforeItem=row.closest('[data-index]');
+        const beforeGeometry={index:beforeItem?.dataset.index,start:beforeItem?.style.top,height:row.getBoundingClientRect().height,windowHeight:beforeItem?.parentElement.style.height};
         const from=s.scrollTop;s.scrollTop+=direction*32;const motion=s.scrollTop-from;
         await frame();await frame();
         const after=s.querySelector(`[data-message-id="${id}"]`);
         const actual=after?after.getBoundingClientRect().top-s.getBoundingClientRect().top:null;
         const error=actual===null?null:actual-(offset-motion);
-        errors.push({step:i,error});maxMounted=Math.max(maxMounted,s.querySelectorAll('.message').length);
+        errors.push({step:i,error,...(error===null||Math.abs(error)>=2?{id,from,motion,to:s.scrollTop,offset,actual,beforeGeometry,afterGeometry:after?{start:after.closest('[data-index]')?.style.top,height:after.getBoundingClientRect().height,windowHeight:after.closest('[data-index]')?.parentElement.style.height}:null}:{})});maxMounted=Math.max(maxMounted,s.querySelectorAll('.message').length);
       }
       return{direction,maxMounted,maxError:Math.max(...errors.map(x=>x.error===null||x.missing?Infinity:Math.abs(x.error))),failures:errors.filter(x=>x.error===null||x.missing||Math.abs(x.error)>=2)};
     },direction);
     console.log('cold scroll',JSON.stringify(sweep));
+    if(direction===-1&&process.env.ANCHOR_SCREENSHOT)await page.screenshot({path:process.env.ANCHOR_SCREENSHOT,animations:'disabled'});
     assert.equal(sweep.failures.length,0,`visible content jumped during ${direction<0?'upward':'downward'} cold scroll: ${JSON.stringify(sweep.failures.slice(0,3))}`);
     assert(sweep.maxMounted<100,'scroll remains windowed');results.push({name:`cold scroll ${direction<0?'up':'down'}`,...sweep});
   }
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({engine:await browser.version(),results}));
-  if(process.env.ANCHOR_OUTPUT)fs.writeFileSync(process.env.ANCHOR_OUTPUT,JSON.stringify({engine:await browser.version(),results},null,2));
+   console.log(JSON.stringify({engine:await browser.version(),viewport:page.viewportSize(),palette,results}));
+   if(process.env.ANCHOR_OUTPUT)fs.writeFileSync(process.env.ANCHOR_OUTPUT,JSON.stringify({engine:await browser.version(),viewport:page.viewportSize(),palette,results},null,2));
  }finally{await browser.close();server.close()}
 }
 main().catch(e=>{console.error(e);server.close();process.exitCode=1});

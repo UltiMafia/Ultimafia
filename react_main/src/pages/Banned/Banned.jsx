@@ -1,18 +1,8 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { UiPageHeader, UiField as TextField, UiText as Typography, UiAction, UiCard } from "components/ui";
 import axios from "axios";
 import { getAuth, signOut } from "firebase/auth";
-import {
-  Alert,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Divider,
-  Paper,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Chip, CircularProgress, Divider, Stack } from "@mui/material";
 
 import jailer from "images/roles/village/jailer-vivid.png";
 
@@ -130,9 +120,9 @@ export default function Banned() {
             ? "Your site ban has ended. Sign in again to use the site."
             : "You are not signed in to a banned account."}
         </Typography>
-        <Button variant="contained" href="/welcome">
+        <UiAction variant="primary" component="a" href="/welcome">
           Go to the login page
-        </Button>
+        </UiAction>
       </Stack>
     );
   } else {
@@ -242,19 +232,19 @@ export default function Banned() {
             />
             {submitError && <Alert severity="error">{submitError}</Alert>}
             <Box>
-              <Button
-                variant="contained"
-                color="primary"
+              <UiAction
+                 variant="primary" 
+                
                 disabled={!canSubmit}
                 onClick={submitAppeal}
               >
                 {submitting ? "Sending..." : "Submit an appeal"}
-              </Button>
+              </UiAction>
             </Box>
           </Stack>
         ) : (
           info.appeal?.text && (
-            <Paper variant="outlined" sx={{ p: 1.5 }}>
+            <UiCard className="banned-appeal-card">
               <Typography variant="overline" color="text.secondary">
                 Your appeal
                 {info.appeal.submittedAt
@@ -264,7 +254,7 @@ export default function Banned() {
               <Typography sx={{ whiteSpace: "pre-wrap" }}>
                 {info.appeal.text}
               </Typography>
-            </Paper>
+            </UiCard>
           )
         )}
       </Stack>
@@ -282,10 +272,7 @@ export default function Banned() {
         p: { xs: 1.5, sm: 3 },
       }}
     >
-      <Paper
-        elevation={4}
-        sx={{ width: "100%", maxWidth: 640, p: { xs: 2, sm: 4 } }}
-      >
+      <UiCard className="banned-page-card">
         <Stack spacing={1} alignItems="center" sx={{ mb: 3 }}>
           <img
             src={jailer}
@@ -294,28 +281,16 @@ export default function Banned() {
             height={112}
             style={{ imageRendering: "pixelated" }}
           />
-          <Typography
-            variant="h3"
-            component="h1"
-            color="error"
-            sx={{
-              fontWeight: 800,
-              letterSpacing: 2,
-              textAlign: "center",
-              fontSize: { xs: "2rem", sm: "2.75rem" },
-            }}
-          >
-            YOU ARE BANNED
-          </Typography>
+          <UiPageHeader title="You are banned" />
         </Stack>
         {body}
         <Divider sx={{ my: 3 }} />
         <Box sx={{ display: "flex", justifyContent: "center" }}>
-          <Button variant="outlined" onClick={logout}>
+          <UiAction  variant="secondary"  onClick={logout}>
             Log out
-          </Button>
+          </UiAction>
         </Box>
-      </Paper>
+      </UiCard>
     </Box>
   );
 }

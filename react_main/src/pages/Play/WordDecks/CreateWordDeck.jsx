@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
+import UiAction from "../../../components/ui/UiAction";
+import { UiField, UiPageHeader } from "components/ui";
 import { SiteInfoContext } from "../../../Contexts";
 import { useErrorAlert } from "../../../components/Alerts";
 import "css/deck.css";
@@ -35,6 +37,7 @@ export default function CreateWordDeck() {
   const [coverPreview, setCoverPreview] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const coverInputRef = useRef(null);
+  useEffect(() => () => { if (coverPreview) URL.revokeObjectURL(coverPreview); }, [coverPreview]);
 
   useEffect(() => {
     document.title = "Create Word Deck | UltiMafia";
@@ -212,7 +215,8 @@ export default function CreateWordDeck() {
   const inputsDisabled = isDefault;
 
   return (
-    <div className="deck">
+    <div className="deck deck-editor-page">
+      <UiPageHeader variant="editor" title={editId ? "Edit word deck" : "Create word deck"} actions={<Link to="/play/wordDecks">Back to decks</Link>} />
       <div className="main-section">
         <div className="span-panel deck-editor">
           {isDefault && (
@@ -249,7 +253,7 @@ export default function CreateWordDeck() {
           <form onSubmit={onSubmit}>
             <div className="deck-cover-section">
               <span className="deck-field-label">Cover Photo</span>
-              <div
+              <button type="button" aria-label="Upload cover photo" disabled={inputsDisabled}
                 className={`deck-cover-upload ${
                   coverPreview || coverPhoto ? "" : "empty"
                 }`}
@@ -273,6 +277,7 @@ export default function CreateWordDeck() {
                     <span>Click to upload</span>
                   </div>
                 )}
+              </button>
                 <input
                   ref={coverInputRef}
                   className="hidden-upload"
@@ -281,50 +286,38 @@ export default function CreateWordDeck() {
                   onChange={onCoverSelect}
                   disabled={inputsDisabled}
                 />
-              </div>
               {(coverPreview || coverPhoto) && !inputsDisabled && (
-                <a
-                  className="btn deck-cover-remove"
+                <UiAction variant="ghost"
                   onClick={(e) => {
                     e.stopPropagation();
                     onCoverRemove();
                   }}
                 >
                   Remove cover
-                </a>
+                </UiAction>
               )}
             </div>
 
             <div className="deck-top-bar">
               <div className="deck-name-section">
-                <label className="deck-field-label" htmlFor="deck-name-input">
-                  Deck Name
-                </label>
-                <input
+                <UiField
                   id="deck-name-input"
-                  className="deck-input deck-name-input"
-                  type="text"
+                  fullWidth
+                  label="Deck Name"
                   value={deckName}
                   onChange={(e) => setDeckName(e.target.value)}
                   placeholder="Enter deck name"
-                  maxLength={MAX_NAME_LENGTH}
+                  inputProps={{ maxLength: MAX_NAME_LENGTH }}
                   disabled={inputsDisabled}
                 />
-                <label
-                  className="deck-field-label"
-                  htmlFor="deck-description-input"
-                  style={{ marginTop: 12, display: "block" }}
-                >
-                  Description (optional)
-                </label>
-                <input
+                <UiField
                   id="deck-description-input"
-                  className="deck-input deck-name-input"
-                  type="text"
+                  fullWidth
+                  label="Description (optional)"
                   value={deckDescription}
                   onChange={(e) => setDeckDescription(e.target.value)}
                   placeholder="What's in this deck?"
-                  maxLength={MAX_DESCRIPTION_LENGTH}
+                  inputProps={{ maxLength: MAX_DESCRIPTION_LENGTH }}
                   disabled={inputsDisabled}
                 />
               </div>
@@ -337,12 +330,9 @@ export default function CreateWordDeck() {
                     </span>
                   </div>
                   {atLimit && (
-                    <Link
-                      className="btn deck-buy-btn"
-                      to="/user/shop?buy=wordDeck"
-                    >
+                    <UiAction component={Link} to="/user/shop?buy=wordDeck">
                       Buy More Slots
-                    </Link>
+                    </UiAction>
                   )}
                 </div>
               )}
@@ -352,23 +342,13 @@ export default function CreateWordDeck() {
               className="deck-words-section"
               style={{ marginTop: 16, marginBottom: 16 }}
             >
-              <label
-                className="deck-field-label"
-                htmlFor="deck-words-input"
-                style={{ display: "block", marginBottom: 4 }}
-              >
-                Words (one per line)
-              </label>
-              <textarea
+              <UiField
                 id="deck-words-input"
-                className="deck-input"
-                rows={20}
-                style={{
-                  width: "100%",
-                  fontFamily: "monospace",
-                  resize: "vertical",
-                  minHeight: 320,
-                }}
+                className="deck-words-field"
+                fullWidth
+                multiline
+                minRows={12}
+                label="Words (one per line)"
                 value={wordsText}
                 onChange={(e) => setWordsText(e.target.value)}
                 placeholder={
@@ -387,19 +367,19 @@ export default function CreateWordDeck() {
               >
                 <span
                   style={{
-                    color: tooFew || tooMany ? "#d04040" : undefined,
+                    color: tooFew || tooMany ? "var(--ui-danger-text)" : undefined,
                     fontWeight: 600,
                   }}
                 >
                   {wordCount} / {MAX_WORD_DECK_SIZE} words
                 </span>
                 {tooFew && (
-                  <span style={{ color: "#d04040", fontSize: "0.85rem" }}>
+                  <span style={{ color: "var(--ui-danger-text)", fontSize: "var(--ui-text-small)" }}>
                     Need at least {MIN_WORD_DECK_SIZE} words
                   </span>
                 )}
                 {tooMany && (
-                  <span style={{ color: "#d04040", fontSize: "0.85rem" }}>
+                  <span style={{ color: "var(--ui-danger-text)", fontSize: "var(--ui-text-small)" }}>
                     Too many words (max {MAX_WORD_DECK_SIZE})
                   </span>
                 )}
@@ -410,8 +390,8 @@ export default function CreateWordDeck() {
                   className="deck-word-errors"
                   style={{
                     marginTop: 8,
-                    color: "#d04040",
-                    fontSize: "0.85rem",
+                    color: "var(--ui-danger-text)",
+                    fontSize: "var(--ui-text-small)",
                     paddingLeft: 18,
                     maxHeight: 160,
                     overflowY: "auto",
@@ -430,9 +410,8 @@ export default function CreateWordDeck() {
             </div>
 
             <div className="deck-actions">
-              <button
+              <UiAction variant="primary" busy={submitting}
                 type="submit"
-                className="btn btn-success deck-submit-btn"
                 title="Save deck"
                 disabled={
                   inputsDisabled ||
@@ -445,11 +424,8 @@ export default function CreateWordDeck() {
                   !loaded
                 }
               >
-                <i className="fas fa-check-circle fa-lg" />
-                <span style={{ marginLeft: 6 }}>
-                  {editing ? "Save Changes" : "Create Deck"}
-                </span>
-              </button>
+                {editing ? "Save changes" : "Create deck"}
+              </UiAction>
             </div>
           </form>
         </div>

@@ -1,22 +1,9 @@
 import React, { useState, useContext, useEffect } from "react";
 import update from "immutability-helper";
-import {
-  Dialog,
-  DialogContent,
-  Typography,
-  Grid,
-  Stack,
-  TextField,
-  Box,
-  Button,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Autocomplete,
-} from "@mui/material";
+import { Grid, Stack, Box, FormControl, InputLabel } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
+import { UiAction, UiDialog, UiText as Typography, UiField as TextField, UiSelect as Select, UiMenuItem as MenuItem, UiAutocomplete as Autocomplete } from "components/ui";
 import { UserSearchSelect } from "components/Form";
 import { SearchBar } from "components/Nav";
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -139,24 +126,7 @@ export function ModCommands(props) {
           !modCommands[commandName].hidden
         ) {
           hasAvailableCommands = true;
-          return (
-            <Typography
-              onClick={openDialogue}
-              key={commandName}
-              tabindex="0"
-              sx={{
-                pl: 1,
-                userSelect: "none",
-                fontFamily: "RobotoMono",
-                "&:hover": {
-                  backgroundColor: COMMAND_COLOR,
-                  cursor: "pointer",
-                },
-              }}
-            >
-              {commandName}
-            </Typography>
-          );
+          return <UiAction variant="ghost" key={commandName} className="moderation-command-option" onClick={openDialogue}>{commandName}</UiAction>;
         } else {
           return null;
         }
@@ -177,7 +147,7 @@ export function ModCommands(props) {
         >
           {category}
         </Typography>
-        <Box>{groupOptions}</Box>
+        <Box className="moderation-command-options">{groupOptions}</Box>
       </Stack>
     );
   });
@@ -254,24 +224,24 @@ export function ModCommands(props) {
       }
 
       if (arg.type === "select") {
+        // Long scopes read in full instead of clipping inside the dialog.
         return (
-          <FormControl key={arg.name} sx={{ width: "100%" }}>
-            <InputLabel>{arg.label}</InputLabel>
-            <Select
-              value={argValue ?? arg.default ?? ""}
-              label={arg.label}
-              onChange={(e) =>
-                updateArgValue(arg.name, e.target.value, arg.isArray)
-              }
-              disabled={isPrefilled}
-            >
-              {arg.options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <TextField
+            key={arg.name}
+            select
+            selectText="wrap"
+            fullWidth
+            label={arg.label}
+            value={argValue ?? arg.default ?? ""}
+            onChange={(e) => updateArgValue(arg.name, e.target.value, arg.isArray)}
+            disabled={isPrefilled}
+          >
+            {arg.options.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
         );
       }
 
@@ -343,44 +313,10 @@ export function ModCommands(props) {
 
   return (
     <Stack direction="column" spacing={1} key="mod-commands">
-      <Dialog open={isDialogueOpen} onClose={closeDialogue} fullWidth>
-        <DialogContent
-          sx={{
-            px: 1,
-            minHeight: "240px",
-          }}
-        >
-          <Stack direction="column" spacing={1}>
-            <Stack direction="row">
-              <Button onClick={onExecute}>Execute</Button>
-              <Button
-                variant="outlined"
-                onClick={() => setDialogueOpen(false)}
-                sx={{
-                  marginLeft: "auto",
-                }}
-              >
-                Cancel
-              </Button>
-            </Stack>
-            <Typography
-              sx={{
-                fontFamily: "RobotoMono",
-                fontSize: "16px",
-                backgroundColor: COMMAND_COLOR,
-                textAlign: "center",
-              }}
-            >
-              {command}
-            </Typography>
-          </Stack>
-          {args.length > 0 && (
-            <Grid container spacing={1} sx={{ mt: 0 }}>
-              {args}
-            </Grid>
-          )}
-        </DialogContent>
-      </Dialog>
+      <UiDialog open={isDialogueOpen} onClose={closeDialogue} title={command || "Run moderation action"} maxWidth="sm"
+        actions={<><UiAction onClick={closeDialogue}>Cancel</UiAction><UiAction variant="primary" onClick={onExecute}>Execute action</UiAction></>}>
+        {args.length > 0 && <Grid container spacing={1}>{args}</Grid>}
+      </UiDialog>
       <Stack
         direction="column"
         spacing={1}

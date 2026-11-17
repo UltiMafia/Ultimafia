@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Stack, Typography, Link, Chip } from "@mui/material";
+import { Box, Stack, Link, Chip } from "@mui/material";
 import { Time } from "./Basic";
+import { UiText as Typography } from "components/ui";
 
 export default function ReportTypology({ finalRuling }) {
   if (!finalRuling) {

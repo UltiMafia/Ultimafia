@@ -14,6 +14,7 @@ import {
 } from "./Game";
 import { nextStateBell } from "shared/stateBell";
 import { GameContext } from "../../Contexts";
+import { UiDialog, UiAction } from "components/ui";
 import { cardGameAudioConfig } from "../../audio/audioConfigs";
 
 import "css/game.css";
@@ -207,12 +208,10 @@ function RuleRow({ label, cards }) {
   );
 }
 
-function RatscrewRulesModal({ options, onClose }) {
+export function RatscrewRulesModal({ options, onClose }) {
   return (
-    <div className="rs-modal-backdrop" onClick={onClose}>
-      <div className="rs-modal" onClick={(e) => e.stopPropagation()}>
-        <h2 className="rs-modal-title">Ratscrew — Active Rules</h2>
-        <p className="rs-modal-subtitle">Slap when the pile shows:</p>
+    <UiDialog title="Ratscrew rules" onClose={onClose} actions={<UiAction onClick={onClose}>Close</UiAction>}>
+        <p className="ui-section-label">Slap when the pile shows:</p>
         <div className="rs-rules-grid">
           <RuleRow
             label={
@@ -259,23 +258,19 @@ function RatscrewRulesModal({ options, onClose }) {
             />
           )}
         </div>
-        <p className="rs-modal-subtitle">Face cards:</p>
-        <ul className="rs-modal-list">
+        <p className="ui-section-label">Face cards:</p>
+        <ul className="ui-content-list">
           <li>
             Throwing a face card forces the next player to also throw a face
             card — fail and they lose the pile.
           </li>
           <li>Attempts allowed: J = 1, Q = 2, K = 3, A = 4</li>
         </ul>
-        <p className="rs-modal-subtitle">Missed slaps:</p>
-        <ul className="rs-modal-list">
+        <p className="ui-section-label">Missed slaps:</p>
+        <ul className="ui-content-list">
           <li>Burn one card face-down into the pile.</li>
         </ul>
-        <button className="rs-modal-btn" onClick={onClose}>
-          Got it
-        </button>
-      </div>
-    </div>
+    </UiDialog>
   );
 }
 
@@ -335,8 +330,7 @@ function RatscrewBoard({
           <RsPlayedStack cards={stack} />
           <RsToasts toasts={toasts} />
           <div className="rs-actions">
-            <button
-              className="rs-action-btn rs-action-play"
+            <UiAction variant="primary"
               onClick={handlePlay}
               style={playMeeting ? undefined : { visibility: "hidden" }}
               tabIndex={playMeeting ? 0 : -1}
@@ -344,16 +338,13 @@ function RatscrewBoard({
               title="Play (X)"
             >
               Play <span className="rs-key-hint">(X)</span>
-            </button>
-            <button
-              className={`rs-action-btn rs-action-slap${
-                slapMeeting ? "" : " rs-action-disabled"
-              }`}
+            </UiAction>
+            <UiAction disabled={!slapMeeting}
               onClick={handleSlap}
               title="Slap (Space)"
             >
               Slap <span className="rs-key-hint">(Space)</span>
-            </button>
+            </UiAction>
           </div>
           <ActionList meetingFilter={isOtherMeeting} hideIfEmpty bare />
         </div>

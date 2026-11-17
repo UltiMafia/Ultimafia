@@ -1,0 +1,8 @@
+.feedback-page { width: 100%; max-width: 800px; min-width: 0; }
+.feedback-page > p { max-width: 70ch; margin: 0 0 20px; color: var(--um-muted); }
+.feedback-form { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.feedback-classification { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.feedback-form > .ui-action { align-self: flex-start; }
+@media (max-width: 450px) {
+  .feedback-classification { grid-template-columns: minmax(0, 1fr); }
+}

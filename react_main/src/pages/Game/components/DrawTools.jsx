@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { UiAction, UiDialog } from "components/ui";
+import { useViewActive } from "../../../hooks/useViewActivity";
 import "./DrawTools.css";
 
 // Palette tuned for legibility on the white canvas. Pure primaries (#ff0000,
@@ -29,6 +31,13 @@ export default function DrawTools({
   onUndo,
   hidden,
 }) {
+  const active = useViewActive();
+  const available = active && !hidden;
+  const [confirmClear, setConfirmClear] = useState(false);
+  useEffect(() => {
+    if (!available) setConfirmClear(false);
+  }, [available]);
+
   return (
     <div
       className="draw-tools"
@@ -39,6 +48,7 @@ export default function DrawTools({
           <button
             key={c}
             type="button"
+            disabled={!available}
             className={
               "draw-tools-color" +
               (c === color && !eraseMode ? " active" : "")
@@ -49,6 +59,7 @@ export default function DrawTools({
               onErase(false);
             }}
             aria-label={`color ${c}`}
+            aria-pressed={c === color && !eraseMode}
           />
         ))}
       </div>
@@ -58,11 +69,13 @@ export default function DrawTools({
             <button
               key={s.key}
               type="button"
+              disabled={!available}
               className={
                 "draw-tools-size" + (size === s.val ? " active" : "")
               }
               onClick={() => onSize(s.val)}
               aria-label={`brush ${s.key}`}
+              aria-pressed={size === s.val}
               title={`${s.key} (${s.val}px)`}
             >
               <span
@@ -80,31 +93,39 @@ export default function DrawTools({
           ))}
           <button
             type="button"
+            disabled={!available}
             className={
               "draw-tools-erase" + (eraseMode ? " active" : "")
             }
             onClick={() => onErase(!eraseMode)}
             aria-label="eraser"
+            aria-pressed={eraseMode}
             title="Eraser"
           >
             <span className="draw-tools-erase-icon" />
           </button>
         </div>
         <div className="draw-tools-brushes-right">
-          <button type="button" className="draw-tools-undo" onClick={onUndo}>
+          <UiAction disabled={!available} onClick={() => { if (available) onUndo(); }}>
             Undo
-          </button>
-          <button
-            type="button"
-            className="draw-tools-clear"
-            onClick={() => {
-              if (window.confirm("Clear the canvas?")) onClear();
-            }}
+          </UiAction>
+          <UiAction disabled={!available} onClick={() => { if (available) setConfirmClear(true); }}
           >
             Clear
-          </button>
+          </UiAction>
         </div>
       </div>
+      {available && confirmClear && <UiDialog title="Clear the canvas?" onClose={() => setConfirmClear(false)}
+        actions={<>
+          <UiAction onClick={() => setConfirmClear(false)}>Cancel</UiAction>
+          <UiAction variant="danger" onClick={() => {
+            if (!available || !confirmClear) return;
+            setConfirmClear(false);
+            onClear();
+          }}>Clear canvas</UiAction>
+        </>}>
+        <p>Remove all strokes from the current drawing?</p>
+      </UiDialog>}
     </div>
   );
 }

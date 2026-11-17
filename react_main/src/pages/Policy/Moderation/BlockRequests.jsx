@@ -1,10 +1,11 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Button, Chip, Stack, Typography } from "@mui/material";
+import { Box, Chip, Stack } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
 import { SiteInfoContext } from "Contexts";
 import { NameWithAvatar } from "pages/User/UserWidgets";
+import { UiText as Typography, UiAction } from "components/ui";
 
 function formatDate(ms) {
   if (!ms) return "";
@@ -87,14 +88,14 @@ export function BlockRequests({ userId }) {
                   } ${formatDate(request.approvedAt)}`}
                 />
               ) : (
-                <Button
-                  variant="contained"
-                  size="small"
+                <UiAction
+                   variant="primary" size="small" 
+                  
                   disabled={approving === request.id}
                   onClick={() => approve(request)}
                 >
                   Approve
-                </Button>
+                </UiAction>
               )}
             </Box>
           </Stack>

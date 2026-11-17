@@ -39,4 +39,10 @@ assert.equal(
   nameGlowStyle("rgba(96,165,250,.5)")["--name-glow-rgb"],
   "96 165 250"
 );
+// Keep the measured pre-fix peak strength without a brightness filter layer.
+const halo = nameGlowStyle("#60a5fa");
+assert.ok(
+  Math.abs(halo["--name-glow-peak-alpha"] / halo["--name-glow-dim-alpha"] - (0.61 * 1.08) / 0.75) < 1e-10,
+  "compensate the removed brightness filter in shadow alpha, not a clipped layer"
+);
 console.log("GLOW_STYLE_RESTORATION_PASS");

@@ -1,19 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Autocomplete,
-  Box,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { Time } from "components/Basic";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 
-import { COMMAND_COLOR, useModCommands } from "./commands";
+import { useModCommands } from "./commands";
+import { UiAutocomplete as Autocomplete, UiField as TextField, UiText as Typography } from "components/ui";
 
 export function ModActions(props) {
   const [page, setPage] = useState(1);
@@ -124,51 +119,18 @@ export function ModActions(props) {
     ));
 
     return (
-      <Stack
-        direction="column"
-        spacing={0.5}
-        key={action.id}
-        sx={{
-          p: 1,
-          backgroundColor: "var(--scheme-color)",
-        }}
-      >
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            alignItems: "center",
-          }}
-        >
+      <div className="moderation-action-row" key={action.id}>
+        <div className="moderation-action-heading">
           <NameWithAvatar
             id={action.mod?.id || action.modId}
             name={action.mod?.name || `[not found: ${action.modId}]`}
             avatar={action.mod?.avatar || false}
           />
-          <Typography
-            variant="caption"
-            sx={{
-              opacity: "0.6",
-              marginLeft: "auto !important",
-              alignSelf: "start",
-            }}
-          >
-            <Time minSec millisec={Date.now() - action.date} suffix=" ago" />
-          </Typography>
-        </Stack>
-        <Typography
-          sx={{
-            display: "inline",
-            fontFamily: "RobotoMono",
-            fontSize: "16px",
-            textAlign: "center",
-            backgroundColor: COMMAND_COLOR,
-          }}
-        >
-          {action.name}
-        </Typography>
-        {actionArgs}
-      </Stack>
+          <span className="moderation-command">{action.name}</span>
+        </div>
+        <time><Time minSec millisec={Date.now() - action.date} suffix=" ago" /></time>
+        {actionArgs.length > 0 && <div className="moderation-action-args">{actionArgs}</div>}
+      </div>
     );
   });
 
@@ -179,14 +141,8 @@ export function ModActions(props) {
   );
 
   return (
-    <div className="box-panel">
-      <Typography variant="h3">Mod Actions</Typography>
-      <Stack direction="column" spacing={2}>
-        <Stack
-          direction="column"
-          spacing={2}
-          sx={{ mb: 1 }}
-        >
+    <section className="moderation-actions">
+      <div className="moderation-toolbar">
           <Autocomplete
             options={staffNameOptions}
             inputValue={staffNameQuery}
@@ -227,18 +183,14 @@ export function ModActions(props) {
             sx={{ width: "100%", maxWidth: 290 }}
             clearOnEscape
           />
-        </Stack>
-        {pageNav}
-        {actions.length === 0 ? (
-          <Typography variant="body2" color="textSecondary" sx={{ py: 2, textAlign: "center" }}>
-            No actions found.
-          </Typography>
-        ) : (
-          actionRows
-        )}
-        {pageNav}
-      </Stack>
-    </div>
+      </div>
+      {actions.length === 0 ? (
+        <p className="moderation-row-meta">No actions found.</p>
+      ) : (
+        <div className="moderation-action-list">{actionRows}</div>
+      )}
+      {pageNav}
+    </section>
   );
 }
 
@@ -289,10 +241,13 @@ function ModActionArg({ label, arg }) {
   } else {
     value = (
       <Typography
+        component="span"
         sx={{
           display: "inline",
-          fontFamily: "RobotoMono",
-          color: "#28ab48ff",
+          fontFamily: "var(--ui-font-mono, monospace)",
+          fontSize: "var(--ui-text-small)",
+          color: "text.primary",
+          wordBreak: "break-all",
         }}
       >
         {arg}
@@ -301,17 +256,9 @@ function ModActionArg({ label, arg }) {
   }
 
   return (
-    <Stack direction="row" spacing={1}>
-      <Typography
-        sx={{
-          display: "inline",
-          fontFamily: "RobotoMono",
-        }}
-      >
-        {label}
-        {":"}
-      </Typography>
-      {value}
-    </Stack>
+    <div className="moderation-action-arg">
+      <span className="moderation-action-arg-label">{label}</span>
+      <div className="moderation-action-arg-value">{value}</div>
+    </div>
   );
 }

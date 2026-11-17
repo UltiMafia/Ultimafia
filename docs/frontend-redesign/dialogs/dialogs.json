@@ -1,0 +1,497 @@
+{
+  "summary": {
+    "routes": 41,
+    "triggersTried": 0,
+    "overlaysOpened": 144,
+    "byKind": {
+      "popover|1440": 24,
+      "menu|1440": 11,
+      "dialog|1440": 33,
+      "drawer|390": 14,
+      "popover|390": 24,
+      "menu|390": 4,
+      "dialog|390": 34
+    },
+    "findings": 12,
+    "high": 2,
+    "medium": 10,
+    "inventory": {
+      "files": 73,
+      "usages": 89,
+      "byComponent": {
+        "Popover": 24,
+        "UiDialog": 30,
+        "Dialog": 27,
+        "Menu": 4,
+        "Drawer": 1,
+        "Modal": 3
+      }
+    },
+    "visualAcceptance": false
+  },
+  "findings": [
+    {
+      "id": "UD-0001",
+      "severity": "high",
+      "check": "dialog-overflow",
+      "kind": "dialog",
+      "route": "/policy/moderation/tools",
+      "trigger": "Unban",
+      "title": "Unban",
+      "property": "overflowX",
+      "observed": "95px",
+      "familyValue": "no horizontal overflow",
+      "selector": "div.MuiSelect-select.MuiSelect-outlined",
+      "detail": "Content is 95px wider than its box inside this dialog.",
+      "width": 1440
+    },
+    {
+      "id": "UD-0002",
+      "severity": "high",
+      "check": "dialog-overflow",
+      "kind": "dialog",
+      "route": "/policy/moderation/tools",
+      "trigger": "Unban",
+      "title": "Unban",
+      "property": "overflowX",
+      "observed": "90px",
+      "familyValue": "no horizontal overflow",
+      "selector": "div.MuiSelect-select.MuiSelect-outlined",
+      "detail": "Content is 90px wider than its box inside this dialog.",
+      "width": 1440
+    },
+    {
+      "id": "UD-0003",
+      "severity": "medium",
+      "check": "dialog-bodyFontSize",
+      "kind": "dialog",
+      "route": "/community/forums",
+      "trigger": "Search",
+      "title": "Search Forums",
+      "property": "bodyFontSize",
+      "observed": 12,
+      "familyValue": 16,
+      "detail": "dialog bodyFontSize is 12 against 16 across dialogs.",
+      "width": 1440
+    },
+    {
+      "id": "UD-0004",
+      "severity": "medium",
+      "check": "dialog-bodyFontSize",
+      "kind": "dialog",
+      "route": "/community/forums/board/fixture-board",
+      "trigger": "Search",
+      "title": "Search Forums",
+      "property": "bodyFontSize",
+      "observed": 12,
+      "familyValue": 16,
+      "detail": "dialog bodyFontSize is 12 against 16 across dialogs.",
+      "width": 1440
+    },
+    {
+      "id": "UD-0005",
+      "severity": "medium",
+      "check": "dialog-action-height-variance",
+      "kind": "dialog",
+      "route": "/community/forums/board/fixture-board",
+      "trigger": "Create Thread",
+      "title": "Create Thread",
+      "property": "button.height",
+      "observed": "36, 40",
+      "familyValue": "one action height",
+      "detail": "Buttons in this dialog have different heights: 36, 40.",
+      "width": 1440
+    },
+    {
+      "id": "UD-0006",
+      "severity": "medium",
+      "check": "dialog-action-height-variance",
+      "kind": "dialog",
+      "route": "/community/forums/board/fixture-board",
+      "trigger": "Create Thread",
+      "title": "Create Thread",
+      "property": "button.height",
+      "observed": "28, 44",
+      "familyValue": "one action height",
+      "detail": "Buttons in this dialog have different heights: 28, 44.",
+      "width": 1440
+    },
+    {
+      "id": "UD-0007",
+      "severity": "medium",
+      "check": "dialog-bodyFontSize",
+      "kind": "dialog",
+      "route": "/community/forums/thread/fixture-thread-0",
+      "trigger": "Search",
+      "title": "Search Forums",
+      "property": "bodyFontSize",
+      "observed": 12,
+      "familyValue": 16,
+      "detail": "dialog bodyFontSize is 12 against 16 across dialogs.",
+      "width": 1440
+    },
+    {
+      "id": "UD-0008",
+      "severity": "medium",
+      "check": "dialog-action-height-variance",
+      "kind": "dialog",
+      "route": "/learn/setup/fixture-setup-0",
+      "trigger": "Host game",
+      "title": "Host a game",
+      "property": "button.height",
+      "observed": "23.19, 44",
+      "familyValue": "one action height",
+      "detail": "Buttons in this dialog have different heights: 23.19, 44.",
+      "width": 390
+    },
+    {
+      "id": "UD-0009",
+      "severity": "medium",
+      "check": "dialog-titleFontSize",
+      "kind": "popover",
+      "route": "/user/family/fixture-family",
+      "trigger": "Emotes and stickers",
+      "title": "Frequently Used",
+      "property": "titleFontSize",
+      "observed": 16,
+      "familyValue": 18,
+      "detail": "popover titleFontSize is 16 against 18 across popovers.",
+      "width": 1440
+    },
+    {
+      "id": "UD-0010",
+      "severity": "medium",
+      "check": "dialog-bodyFontSize",
+      "kind": "dialog",
+      "route": "/user/family/fixture-family",
+      "trigger": "Trade Shares",
+      "title": "Trade shares",
+      "property": "bodyFontSize",
+      "observed": 14,
+      "familyValue": 16,
+      "detail": "dialog bodyFontSize is 14 against 16 across dialogs.",
+      "width": 1440
+    },
+    {
+      "id": "UD-0011",
+      "severity": "medium",
+      "check": "dialog-max-width",
+      "kind": "dialog",
+      "width": 1440,
+      "route": "/user/family/fixture-family",
+      "trigger": "Trade Shares",
+      "title": "Trade shares",
+      "property": "maxWidth",
+      "observed": "444px",
+      "familyValue": "600px",
+      "detail": "Dialog max-width is 444px; the common frame is 600px."
+    },
+    {
+      "id": "UD-0012",
+      "severity": "medium",
+      "check": "dialog-bodyFontSize",
+      "kind": "dialog",
+      "route": "/user/fixture-minimal",
+      "trigger": "Report user",
+      "title": "Report user",
+      "property": "bodyFontSize",
+      "observed": 14,
+      "familyValue": 16,
+      "detail": "dialog bodyFontSize is 14 against 16 across dialogs.",
+      "width": 1440
+    }
+  ],
+  "census": {
+    "radius": [
+      {
+        "value": "12",
+        "count": 67,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Search @ /community/forums",
+          "Search @ /community/forums/board/fixture-board",
+          "Create Thread @ /community/forums/board/fixture-board"
+        ]
+      },
+      {
+        "value": "6",
+        "count": 63,
+        "kinds": [
+          "popover",
+          "menu"
+        ],
+        "examples": [
+          "View setup: Classic @ /play",
+          "View role: Villager @ /play",
+          "Active @ /audit/new-page"
+        ]
+      },
+      {
+        "value": "16",
+        "count": 14,
+        "kinds": [
+          "drawer"
+        ],
+        "examples": [
+          "View setup: Classic @ /play",
+          "View setup: Classic @ /play/host?game=Mafia",
+          "Preview Harbor residents @ /play/decks?game=Mafia"
+        ]
+      }
+    ],
+    "titleFontSize": [
+      {
+        "value": "20",
+        "count": 67,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Search @ /community/forums",
+          "Search @ /community/forums/board/fixture-board",
+          "Create Thread @ /community/forums/board/fixture-board"
+        ]
+      },
+      {
+        "value": "18",
+        "count": 44,
+        "kinds": [
+          "popover",
+          "drawer"
+        ],
+        "examples": [
+          "View setup: Classic @ /play",
+          "View role: Villager @ /play",
+          "View role: Villager @ /play/create?game=Mafia&copy=fixture-setup-0"
+        ]
+      },
+      {
+        "value": "16",
+        "count": 6,
+        "kinds": [
+          "popover"
+        ],
+        "examples": [
+          "Emotes and stickers @ /user/family/fixture-family",
+          "Emotes and stickers @ /user/family/fixture-family",
+          "Emotes and stickers @ /user/family/fixture-family"
+        ]
+      }
+    ],
+    "bodyFontSize": [
+      {
+        "value": "16",
+        "count": 113,
+        "kinds": [
+          "popover",
+          "menu",
+          "dialog",
+          "drawer"
+        ],
+        "examples": [
+          "View setup: Classic @ /play",
+          "View role: Villager @ /play",
+          "Active @ /audit/new-page"
+        ]
+      },
+      {
+        "value": "12",
+        "count": 6,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Search @ /community/forums",
+          "Search @ /community/forums/board/fixture-board",
+          "Search @ /community/forums/thread/fixture-thread-0"
+        ]
+      },
+      {
+        "value": "14",
+        "count": 4,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Report user @ /user/fixture-minimal",
+          "Trade Shares @ /user/family/fixture-family",
+          "Report user @ /user/fixture-minimal"
+        ]
+      }
+    ],
+    "maxWidth": [
+      {
+        "value": "600px",
+        "count": 65,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Search @ /community/forums",
+          "Search @ /community/forums/board/fixture-board",
+          "Create Thread @ /community/forums/board/fixture-board"
+        ]
+      },
+      {
+        "value": "calc(100% - 32px)",
+        "count": 57,
+        "kinds": [
+          "popover",
+          "menu"
+        ],
+        "examples": [
+          "View setup: Classic @ /play",
+          "View role: Villager @ /play",
+          "Active @ /audit/new-page"
+        ]
+      },
+      {
+        "value": "none",
+        "count": 14,
+        "kinds": [
+          "drawer"
+        ],
+        "examples": [
+          "View setup: Classic @ /play",
+          "View setup: Classic @ /play/host?game=Mafia",
+          "Preview Harbor residents @ /play/decks?game=Mafia"
+        ]
+      },
+      {
+        "value": "1408px",
+        "count": 3,
+        "kinds": [
+          "popover"
+        ],
+        "examples": [
+          "Emotes and stickers @ /user/family/fixture-family",
+          "Emotes and stickers @ /user/family/fixture-family",
+          "Emotes and stickers @ /user/family/fixture-family"
+        ]
+      },
+      {
+        "value": "358px",
+        "count": 3,
+        "kinds": [
+          "popover"
+        ],
+        "examples": [
+          "Emotes and stickers @ /user/family/fixture-family",
+          "Emotes and stickers @ /user/family/fixture-family",
+          "Emotes and stickers @ /user/family/fixture-family"
+        ]
+      },
+      {
+        "value": "444px",
+        "count": 2,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Trade Shares @ /user/family/fixture-family",
+          "Trade Shares @ /user/family/fixture-family"
+        ]
+      }
+    ],
+    "actionHeights": [
+      {
+        "value": "40",
+        "count": 36,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Search @ /community/forums",
+          "Search @ /community/forums/board/fixture-board",
+          "Create Thread @ /community/forums/board/fixture-board"
+        ]
+      },
+      {
+        "value": "44",
+        "count": 31,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Host game @ /learn/setup/fixture-setup-0",
+          "Create Thread @ /community/forums/board/fixture-board",
+          "Report user @ /user/fixture-minimal"
+        ]
+      },
+      {
+        "value": "20.29",
+        "count": 3,
+        "kinds": [
+          "popover"
+        ],
+        "examples": [
+          "Emotes and stickers @ /user/family/fixture-family",
+          "Emotes and stickers @ /user/family/fixture-family",
+          "Emotes and stickers @ /user/family/fixture-family"
+        ]
+      },
+      {
+        "value": "36",
+        "count": 1,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Create Thread @ /community/forums/board/fixture-board"
+        ]
+      },
+      {
+        "value": "34.31",
+        "count": 1,
+        "kinds": [
+          "popover"
+        ],
+        "examples": [
+          "Emotes and stickers @ /user/family/fixture-family"
+        ]
+      },
+      {
+        "value": "19.59",
+        "count": 1,
+        "kinds": [
+          "popover"
+        ],
+        "examples": [
+          "Emotes and stickers @ /user/family/fixture-family"
+        ]
+      },
+      {
+        "value": "23.19",
+        "count": 1,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Host game @ /learn/setup/fixture-setup-0"
+        ]
+      },
+      {
+        "value": "28",
+        "count": 1,
+        "kinds": [
+          "dialog"
+        ],
+        "examples": [
+          "Create Thread @ /community/forums/board/fixture-board"
+        ]
+      },
+      {
+        "value": "32.73",
+        "count": 1,
+        "kinds": [
+          "popover"
+        ],
+        "examples": [
+          "Emotes and stickers @ /user/family/fixture-family"
+        ]
+      }
+    ]
+  }
+}

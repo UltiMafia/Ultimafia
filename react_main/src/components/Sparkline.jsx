@@ -1,7 +1,14 @@
 import React, { useMemo } from "react";
 import { Box } from "@mui/material";
 
-export default function Sparkline({ history, width = 140, height = 40 }) {
+const SIZES = { compact: [100, 30], inline: [60, 20], default: [140, 40] };
+
+export default function Sparkline(props) {
+  const { history, size = "default" } = props;
+  if (!SIZES[size]) throw new TypeError(`Sparkline: unsupported size "${size}"`);
+  const [presetWidth, presetHeight] = SIZES[size];
+  const width = props.width ?? presetWidth;
+  const height = props.height ?? presetHeight;
   const padding = useMemo(() => Math.max(2, Math.round(height * 0.1)), [height]);
   const strokeWidth = useMemo(() => Math.max(1.5, height * 0.06), [height]);
 

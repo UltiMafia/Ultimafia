@@ -5,14 +5,8 @@ import axios from "axios";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 
-import {
-  Box,
-  IconButton,
-  Popover,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Popover, Stack, Tooltip } from "@mui/material";
+import { UiText as Typography, UiAction } from "components/ui";
 
 export default function AdminVisuals({ profileUserId }) {
   const [isFlagged, setIsFlagged] = useState(false);
@@ -211,7 +205,7 @@ export default function AdminVisuals({ profileUserId }) {
           <Tooltip
             title={isFlagged ? "User is flagged" : "User is not flagged"}
           >
-            <IconButton size="small" aria-label="user flagged status">
+            <UiAction  variant="ghost" size="small"  aria-label="user flagged status">
               <i
                 className="fas fa-flag"
                 style={{
@@ -219,7 +213,7 @@ export default function AdminVisuals({ profileUserId }) {
                   opacity: isFlagged ? 1 : 0.35,
                 }}
               />
-            </IconButton>
+            </UiAction>
           </Tooltip>
         )}
         {canViewBans && (
@@ -230,8 +224,8 @@ export default function AdminVisuals({ profileUserId }) {
                 : "No active bans"
             }
           >
-            <IconButton
-              size="small"
+            <UiAction
+               variant="ghost" size="small" 
               aria-label="view active bans"
               onClick={onActiveBansClick}
             >
@@ -241,29 +235,29 @@ export default function AdminVisuals({ profileUserId }) {
                   opacity: activeBans.length > 0 ? 1 : 0.35,
                 }}
               />
-            </IconButton>
+            </UiAction>
           </Tooltip>
         )}
         {canViewAlts && (
           <Tooltip title="View linked accounts">
-            <IconButton
-              size="small"
+            <UiAction
+               variant="ghost" size="small" 
               aria-label="view linked accounts"
               onClick={onAltAccountsClick}
             >
               <i className="fas fa-link" />
-            </IconButton>
+            </UiAction>
           </Tooltip>
         )}
         {canViewIPs && (
           <Tooltip title="View IP addresses">
-            <IconButton
-              size="small"
+            <UiAction
+               variant="ghost" size="small" 
               aria-label="view ip addresses"
               onClick={onIpAddressesClick}
             >
               <i className="fas fa-globe" />
-            </IconButton>
+            </UiAction>
           </Tooltip>
         )}
       </Stack>

@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Stack } from "@mui/material";
 import { readyCheckLocalEnd } from "utils/timerSync";
+import { UiAction, UiDialog, UiText as Typography } from "components/ui";
 
 export default function ReadyCheckDialog({
   open,
@@ -66,44 +59,30 @@ export default function ReadyCheckDialog({
 
   if (!open) return null;
 
+  // The shared dialog owns the title/content/action insets. This dialog is not
+  // dismissible: the ready check must be answered, not escaped.
   return (
-    <Dialog open={open} maxWidth="xs" fullWidth disableEscapeKeyDown>
-      <DialogTitle sx={{ textAlign: "center" }}>Are you ready?</DialogTitle>
-      <DialogContent>
-        <Stack alignItems="center" spacing={2}>
-          <Typography variant="body1">
-            The game is starting! Please confirm you are here.
-          </Typography>
-          <Typography
-            variant="h4"
-            color={remaining < 10000 ? "error" : "primary"}
-          >
-            {(remaining / 1000).toFixed(0)}s
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Failure to ready up will move you to spectators.
-          </Typography>
-        </Stack>
-      </DialogContent>
-      <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-        <Button
-          onClick={onLeave}
-          color="error"
-          variant="outlined"
-          data-ready-check-leave
-        >
-          Leave Game
-        </Button>
-        <Button
-          onClick={onReady}
-          color="success"
-          variant="contained"
-          size="large"
-          autoFocus
-        >
-          I am Ready
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <UiDialog
+      open={open}
+      size="xs"
+      title="Are you ready?"
+      dismissible={false}
+      actions={<>
+        <UiAction onClick={onLeave} data-ready-check-leave>Leave Game</UiAction>
+        <UiAction tone="brand" onClick={onReady} autoFocus>I am Ready</UiAction>
+      </>}
+    >
+      <Stack alignItems="center" spacing={2}>
+        <Typography variant="body1">
+          The game is starting! Please confirm you are here.
+        </Typography>
+        <Typography variant="h4" color={remaining < 10000 ? "error" : "primary"}>
+          {(remaining / 1000).toFixed(0)}s
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          Failure to ready up will move you to spectators.
+        </Typography>
+      </Stack>
+    </UiDialog>
   );
 }

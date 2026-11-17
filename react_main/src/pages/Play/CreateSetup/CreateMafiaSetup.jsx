@@ -209,7 +209,7 @@ export default function CreateMafiaSetup() {
   function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
     const fieldValue = (ref) => formFields.find((f) => f.ref === ref)?.value;
 
-    axios
+    return axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,

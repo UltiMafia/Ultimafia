@@ -1,0 +1,4 @@
+Icons from Pixel Icon Library by HackerNoon
+https://pixeliconlibrary.com/
+Icon artwork licensed CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+Original geometry retained. Monochrome fill recolored through CSS; SVG metadata removed for React rendering.

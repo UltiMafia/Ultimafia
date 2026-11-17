@@ -318,6 +318,8 @@
 
 /* Scrollbar customization */
 .moves-grid::-webkit-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scheme-color-border) transparent;
   width: 4px;
 }
 

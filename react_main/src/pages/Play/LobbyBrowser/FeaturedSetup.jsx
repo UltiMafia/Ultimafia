@@ -1,17 +1,18 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import axios from "axios";
-import { Button, Paper, Stack } from "@mui/material";
+import { UiAction } from "components/ui";
+import LobbySidebarPanel from "./LobbySidebarPanel";
 import Setup from "components/Setup";
 import HostGameDialogue from "components/HostGameDialogue";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { UserContext } from "Contexts";
+import { Link } from "react-router-dom";
 
-export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
+export const FeaturedSetup = ({ lobby }) => {
+  const user = useContext(UserContext);
   const [featuredSetup, setFeaturedSetup] = useState(null);
   const [ishostGameDialogueOpen, setIshostGameDialogueOpen] = useState(false);
   const isMountedRef = useRef(true);
 
-  const isPhoneDevice = useIsPhoneDevice();
-  const isButtonGlowing = !ishostGameDialogueOpen && glowingHostButton;
 
   // Fetch the featured setup for this lobby
   useEffect(() => {
@@ -47,19 +48,18 @@ export const FeaturedSetup = ({ lobby, glowingHostButton }) => {
         setOpen={setIshostGameDialogueOpen}
         setup={featuredSetup}
       />
-      <Paper>
-        <Stack direction="row" spacing={0.5} padding={1}>
-          <Button
-            color="primary"
-            sx={{ maxWidth: "4em" }}
-            className={isButtonGlowing ? "glow-slightly" : ""}
+      <LobbySidebarPanel title="Featured setup" className="featured-setup">
+        <Setup setup={featuredSetup} summary />
+        <div className="featured-setup-action">
+          {user.loggedIn ?
+          <UiAction
+            variant="secondary"
             onClick={() => setIshostGameDialogueOpen(true)}
           >
-            Play Setup
-          </Button>
-          <Setup setup={featuredSetup} />
-        </Stack>
-      </Paper>
+            Host this setup
+          </UiAction> : <Link className="ui-action ui-action--secondary" to="/welcome">Sign in to host</Link>}
+        </div>
+      </LobbySidebarPanel>
     </>
   );
 };

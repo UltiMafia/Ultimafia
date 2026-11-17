@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { Button, Stack, TextField, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import {
   EmailAuthProvider,
   getAuth,
@@ -13,6 +13,7 @@ import {
 } from "firebase/auth";
 
 import { SiteInfoContext } from "../../Contexts";
+import { UiField as TextField, UiText as Typography, UiAction } from "components/ui";
 
 const PENDING_EMAIL_KEY = "pendingEmailChange";
 
@@ -216,8 +217,8 @@ export default function AccountCredentials() {
           }
           disabled={loading}
         />
-        <Button
-          onClick={onChangePassword}
+        <UiAction
+           variant="ghost" onClick={onChangePassword}
           disabled={
             loading ||
             !currentPassword ||
@@ -226,10 +227,10 @@ export default function AccountCredentials() {
           }
         >
           Change password
-        </Button>
-        <Button variant="text" size="small" onClick={onPasswordReset} disabled={loading}>
+        </UiAction>
+        <UiAction  variant="ghost" size="small"   onClick={onPasswordReset} disabled={loading}>
           Forgot your password? Email me a reset link
-        </Button>
+        </UiAction>
       </Stack>
 
       <Stack direction="column" spacing={1}>
@@ -251,12 +252,12 @@ export default function AccountCredentials() {
               onChange={(e) => setFinishPassword(e.target.value)}
               disabled={loading}
             />
-            <Button onClick={onFinishEmailChange} disabled={loading || !finishPassword}>
+            <UiAction  variant="ghost" onClick={onFinishEmailChange} disabled={loading || !finishPassword}>
               Finish email change
-            </Button>
-            <Button variant="text" size="small" onClick={() => savePending(null)} disabled={loading}>
+            </UiAction>
+            <UiAction  variant="ghost" size="small"   onClick={() => savePending(null)} disabled={loading}>
               Cancel
-            </Button>
+            </UiAction>
           </>
         ) : (
           <>
@@ -276,12 +277,12 @@ export default function AccountCredentials() {
               onChange={(e) => setEmailPassword(e.target.value)}
               disabled={loading}
             />
-            <Button
-              onClick={onChangeEmail}
+            <UiAction
+               variant="ghost" onClick={onChangeEmail}
               disabled={loading || !newEmail.trim() || !emailPassword}
             >
               Send verification link
-            </Button>
+            </UiAction>
           </>
         )}
       </Stack>

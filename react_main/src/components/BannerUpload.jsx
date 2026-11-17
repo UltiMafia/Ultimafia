@@ -1,17 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Typography,
-  IconButton,
-  Slider,
-} from "@mui/material";
+import { Box } from "@mui/material";
 
-import photographer from "images/roles/village/photographer-vivid.png";
+import { UiText as Typography, UiSlider as Slider, UiAction, UiDialog } from "components/ui";
 
 // Banner crop viewport (matches profile aspect-ratio ~3:1)
 const PREVIEW_W = 600;
@@ -267,108 +257,58 @@ export default function BannerUpload(props) {
         {props.children}
       </div>
 
-      <Dialog
+      <UiDialog
         open={uploadDialogOpen}
         onClose={handleCloseUpload}
-        maxWidth="sm"
-        fullWidth
+        title="Upload Banner"
+        size="sm"
+        actions={<UiAction  variant="ghost" onClick={handleCloseUpload}>Cancel</UiAction>}
       >
         <Box
           sx={{
             display: "flex",
+            flexDirection: "column",
             alignItems: "center",
-            gap: 1.5,
-            p: 2,
-            flexWrap: "wrap",
+            gap: 2,
           }}
         >
-          <img
-            src={photographer}
-            alt="photographer"
-            width="60"
-            height="60"
-            style={{ flexShrink: 0 }}
+          <Typography variant="body2" color="text.secondary" textAlign="center">
+            Choose an image, then pan and zoom to frame your 3:1 banner.
+            {keepAnimation
+              ? " GIF/WebP can keep animation if you skip crop."
+              : " GIF/WebP will be cropped as a still frame."}
+          </Typography>
+          <UiAction  variant="primary"  onClick={handleBrowseClick}>
+            Browse Files
+          </UiAction>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            style={{ display: "none" }}
           />
-          <DialogTitle
-            sx={{
-              p: 0,
-              flex: 1,
-              fontSize: "1.25rem",
-              lineHeight: 1.3,
-              fontWeight: 600,
-            }}
-          >
-            Upload Banner
-          </DialogTitle>
         </Box>
-        <DialogContent>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 2,
-            }}
-          >
-            <Typography variant="body2" color="text.secondary" textAlign="center">
-              Choose an image, then pan and zoom to frame your 3:1 banner.
-              {keepAnimation
-                ? " GIF/WebP can keep animation if you skip crop."
-                : " GIF/WebP will be cropped as a still frame."}
-            </Typography>
-            <Button variant="contained" onClick={handleBrowseClick}>
-              Browse Files
-            </Button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              style={{ display: "none" }}
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseUpload}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
+      </UiDialog>
 
-      <Dialog
+      <UiDialog
         open={cropDialogOpen}
         onClose={handleCloseCrop}
-        maxWidth="md"
-        fullWidth
+        title="Adjust Banner"
+        size="md"
+        actions={<>
+          <UiAction  variant="ghost" onClick={handleCloseCrop}>Cancel</UiAction>
+          {showKeepAnimation && (
+            <UiAction  variant="secondary" onClick={submitOriginalAnimated} >
+              Keep animation (no crop)
+            </UiAction>
+          )}
+          <UiAction  variant="primary" onClick={submitCroppedStill} >
+            Apply crop
+          </UiAction>
+        </>}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1.5,
-            p: 2,
-            flexWrap: "wrap",
-          }}
-        >
-          <img
-            src={photographer}
-            alt="photographer"
-            width="60"
-            height="60"
-            style={{ flexShrink: 0 }}
-          />
-          <DialogTitle
-            sx={{
-              p: 0,
-              flex: 1,
-              fontSize: "1.25rem",
-              lineHeight: 1.3,
-              fontWeight: 600,
-            }}
-          >
-            Adjust Banner
-          </DialogTitle>
-        </Box>
-        <DialogContent>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2, py: 1 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, py: 1 }}>
             <Box
               ref={previewRef}
               sx={{
@@ -415,12 +355,15 @@ export default function BannerUpload(props) {
             </Box>
 
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, px: 1 }}>
-              <IconButton
-                onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
+              <UiAction
+                iconOnly
+                variant="ghost"
                 size="small"
+                aria-label="Zoom out"
+                onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
               >
                 -
-              </IconButton>
+              </UiAction>
               <Slider
                 value={zoom}
                 onChange={(e, value) => setZoom(value)}
@@ -429,12 +372,15 @@ export default function BannerUpload(props) {
                 step={0.1}
                 sx={{ flex: 1 }}
               />
-              <IconButton
-                onClick={() => setZoom(Math.min(3, zoom + 0.1))}
+              <UiAction
+                iconOnly
+                variant="ghost"
                 size="small"
+                aria-label="Zoom in"
+                onClick={() => setZoom(Math.min(3, zoom + 0.1))}
               >
                 +
-              </IconButton>
+              </UiAction>
             </Box>
 
             {showKeepAnimation && (
@@ -444,19 +390,7 @@ export default function BannerUpload(props) {
               </Typography>
             )}
           </Box>
-        </DialogContent>
-        <DialogActions sx={{ flexWrap: "wrap", gap: 1 }}>
-          <Button onClick={handleCloseCrop}>Cancel</Button>
-          {showKeepAnimation && (
-            <Button onClick={submitOriginalAnimated} variant="outlined">
-              Keep animation (no crop)
-            </Button>
-          )}
-          <Button onClick={submitCroppedStill} variant="contained">
-            Apply crop
-          </Button>
-        </DialogActions>
-      </Dialog>
+      </UiDialog>
 
       <canvas ref={canvasRef} style={{ display: "none" }} />
     </>

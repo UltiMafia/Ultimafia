@@ -5,18 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  Box,
-  Button,
-  ButtonBase,
-  Collapse,
-  IconButton,
-  Stack,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Box, Button, ButtonBase, Collapse, IconButton, Stack, Tooltip, useMediaQuery, useTheme } from "@mui/material";
 
 import { GameContext, UserContext } from "Contexts";
 import { Avatar, NameWithAvatar } from "pages/User/UserWidgets";
@@ -24,6 +13,7 @@ import { RoleCount } from "components/Roles";
 import { playerNameWithAvatarProps } from "../playerDisplay";
 import { KUDOS_ICON } from "pages/User/profileIcons";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+import { UiText as Typography } from "components/ui";
 
 export const KUDOS_NO_ONE = "*";
 

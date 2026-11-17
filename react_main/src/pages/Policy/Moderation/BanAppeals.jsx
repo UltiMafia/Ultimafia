@@ -5,40 +5,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import axios from "axios";
-import {
-  Alert,
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  Divider,
-  FormControlLabel,
-  Link,
-  Paper,
-  Radio,
-  RadioGroup,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-  Typography,
-} from "@mui/material";
+import { Alert, Box, Chip, CircularProgress, Divider, FormControlLabel, Link, Stack } from "@mui/material";
 
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
+import { UiAction, UiChip, UiPending, UiSegmentedControl, UiTable, UiRadio as Radio, UiRadioGroup as RadioGroup, UiField as TextField, UiText as Typography } from "components/ui";
 
 export const BAN_APPEALS_PATH = "/policy/moderation/ban-appeals";
-
-const STATUS_COLORS = {
-  pending: "warning",
-  accepted: "success",
-  denied: "error",
-};
 
 const REPORT_LINK_TEXT = {
   ban: "Linked to this ban by its report ruling",
@@ -75,35 +47,14 @@ export function tallyText(tally) {
 // A queue cell that is a link to the case, filling the cell, so a click
 // anywhere in the row (the name included) opens it, and it can be opened in
 // a new tab.
-function CaseCell({ to, children, sx }) {
-  return (
-    <TableCell sx={{ p: 0, ...sx }}>
-      <Box
-        component={RouterLink}
-        to={to}
-        sx={{
-          display: "block",
-          px: 2,
-          py: "6px",
-          color: "inherit",
-          textDecoration: "none",
-        }}
-      >
-        {children}
-      </Box>
-    </TableCell>
-  );
-}
 
-function StatusChip({ status }) {
-  return (
-    <Chip
-      size="small"
-      label={String(status || "").toUpperCase()}
-      color={STATUS_COLORS[status] || "default"}
-      sx={{ fontWeight: 700 }}
-    />
-  );
+const APPEAL_STATUS_TONES = {
+  approved: "positive", accepted: "positive",
+  denied: "destructive", rejected: "destructive",
+};
+function AppealStatus({ status }) {
+  const value = String(status || "").toLowerCase();
+  return <UiChip variant="status" tone={APPEAL_STATUS_TONES[value] || "neutral"}>{value}</UiChip>;
 }
 
 function UserLink({ id, name }) {
@@ -157,31 +108,27 @@ function AppealList() {
   }, [filter]);
 
   return (
-    <Stack spacing={2} data-testid="ban-appeals-list">
+    <Stack spacing={2} data-testid="ban-appeals-list" className="moderation-ban-appeals">
+      <header className="moderation-section-heading"><h2>Ban appeals</h2><p>Review appeals against site bans. Deciding an appeal does not itself lift the ban.</p></header>
       <Stack
         direction={{ xs: "column", sm: "row" }}
         spacing={1}
         justifyContent="space-between"
         alignItems={{ xs: "flex-start", sm: "center" }}
       >
-        <Typography variant="h3">Ban Appeals</Typography>
-        <ToggleButtonGroup
-          size="small"
-          exclusive
+        <UiSegmentedControl
+          ariaLabel="Appeal status"
           value={filter}
-          onChange={(_, value) => value && setFilter(value)}
-        >
-          <ToggleButton value="pending">Pending</ToggleButton>
-          <ToggleButton value="resolved">Resolved</ToggleButton>
-          <ToggleButton value="all">All</ToggleButton>
-        </ToggleButtonGroup>
+          onChange={setFilter}
+          options={[
+            { value: "pending", label: "Pending" },
+            { value: "resolved", label: "Resolved" },
+            { value: "all", label: "All" },
+          ]}
+        />
       </Stack>
       {error && <Alert severity="error">{error}</Alert>}
-      {!error && !rows && (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-          <CircularProgress />
-        </Box>
-      )}
+      {!error && !rows && <UiPending label="Loading ban appeals" />}
       {rows && rows.length === 0 && (
         <Typography color="text.secondary" sx={{ py: 2, textAlign: "center" }}>
           {filter === "pending"
@@ -192,67 +139,24 @@ function AppealList() {
         </Typography>
       )}
       {rows && rows.length > 0 && (
-        <TableContainer component={Paper} variant="outlined">
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Banned user</TableCell>
-                <TableCell>Ban</TableCell>
-                <TableCell>Banned on</TableCell>
-                <TableCell>Expires</TableCell>
-                <TableCell>Appeal filed</TableCell>
-                <TableCell>Tally</TableCell>
-                <TableCell>Status</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  hover
-                  data-testid="ban-appeal-row"
-                  sx={{ cursor: "pointer" }}
-                  onClick={(e) => {
-                    // The cell links navigate themselves.
-                    if (e.target.closest("a")) return;
-                    navigate(caseLink(row));
-                  }}
-                >
-                  <CaseCell to={caseLink(row)} sx={{ fontWeight: 600 }}>
-                    {row.username}
-                  </CaseCell>
-                  <CaseCell to={caseLink(row)}>
-                    {row.ban
-                      ? `${row.ban.label}${row.ban.active ? "" : " (ended)"}`
-                      : "Ban removed"}
-                  </CaseCell>
-                  <CaseCell to={caseLink(row)}>
-                    {formatDate(row.ban?.issuedAt)}
-                  </CaseCell>
-                  <CaseCell to={caseLink(row)}>
-                    {!row.ban
-                      ? "-"
-                      : row.ban.permanent
-                        ? "Never (permanent)"
-                        : formatDate(row.ban.expires)}
-                  </CaseCell>
-                  <CaseCell to={caseLink(row)}>{formatDate(row.filedAt)}</CaseCell>
-                  <CaseCell to={caseLink(row)}>
-                    {tallyText(row.tally)}
-                    {row.myVote && (
-                      <Typography variant="caption" display="block" color="text.secondary">
-                        You voted {row.myVote}
-                      </Typography>
-                    )}
-                  </CaseCell>
-                  <CaseCell to={caseLink(row)}>
-                    <StatusChip status={row.status} />
-                  </CaseCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <UiTable
+          label="Ban appeals"
+          rows={rows}
+          rowKey="id"
+          onRowClick={(row, event) => {
+            if (event.target.closest("a")) return;
+            navigate(caseLink(row));
+          }}
+          columns={[
+            { key: "username", label: "Banned user", render: (row) => <Box component={RouterLink} to={caseLink(row)} sx={{ color: "inherit", textDecoration: "none", fontWeight: 600 }}>{row.username}</Box> },
+            { key: "ban", label: "Ban", nowrap: true, render: (row) => (row.ban ? `${row.ban.label}${row.ban.active ? "" : " (ended)"}` : "Ban removed") },
+            { key: "issued", label: "Banned on", nowrap: true, render: (row) => formatDate(row.ban?.issuedAt) },
+            { key: "expires", label: "Expires", nowrap: true, render: (row) => (!row.ban ? "-" : row.ban.permanent ? "Never (permanent)" : formatDate(row.ban.expires)) },
+            { key: "filed", label: "Appeal filed", nowrap: true, render: (row) => formatDate(row.filedAt) },
+            { key: "tally", label: "Tally", nowrap: true, render: (row) => <>{tallyText(row.tally)}{row.myVote && <Typography variant="caption" display="block" color="text.secondary">You voted {row.myVote}</Typography>}</> },
+            { key: "status", label: "Status", nowrap: true, render: (row) => <AppealStatus status={row.status} /> },
+          ]}
+        />
       )}
     </Stack>
   );
@@ -271,12 +175,10 @@ function Field({ label, children }) {
 
 function Section({ title, children, testId }) {
   return (
-    <Paper variant="outlined" sx={{ p: 2 }} data-testid={testId}>
-      <Typography variant="h4" sx={{ mb: 1.5 }}>
-        {title}
-      </Typography>
+    <section className="moderation-case-section" data-testid={testId}>
+      <h3>{title}</h3>
       {children}
-    </Paper>
+    </section>
   );
 }
 
@@ -312,13 +214,7 @@ function AppealCase({ appealId }) {
     };
   }, [appealId, applyCase]);
 
-  const back = (
-    <Box>
-      <Button component={RouterLink} to={BAN_APPEALS_PATH} size="small">
-        Back to Ban Appeals
-      </Button>
-    </Box>
-  );
+  const back = <RouterLink className="ui-action ui-action--ghost moderation-back-link" to={BAN_APPEALS_PATH}>Back to Ban Appeals</RouterLink>;
 
   if (error)
     return (
@@ -327,12 +223,7 @@ function AppealCase({ appealId }) {
         <Alert severity="error">{error}</Alert>
       </Stack>
     );
-  if (!data)
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
+  if (!data) return <UiPending label="Loading appeal" />;
 
   const trimmed = justification.trim();
   const canSubmit =
@@ -376,7 +267,7 @@ function AppealCase({ appealId }) {
         <Typography variant="h3">
           Appeal from <UserLink id={data.userId} name={data.username} />
         </Typography>
-        <StatusChip status={data.status} />
+        <AppealStatus status={data.status} />
       </Stack>
       <Typography color="text.secondary" data-testid="case-tally">
         {tallyText(data.tally)}. Deciding does not lift the ban; an accepted
@@ -567,13 +458,13 @@ function AppealCase({ appealId }) {
             {voteError && <Alert severity="error">{voteError}</Alert>}
             {saved && <Alert severity="success">Vote recorded.</Alert>}
             <Box>
-              <Button variant="contained" disabled={!canSubmit} onClick={submitVote}>
+              <UiAction variant="primary" disabled={!canSubmit} busy={submitting} onClick={submitVote}>
                 {submitting
                   ? "Saving..."
                   : data.myVote
                     ? "Change vote"
                     : "Submit vote"}
-              </Button>
+              </UiAction>
             </Box>
           </Stack>
         )}

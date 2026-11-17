@@ -13,7 +13,7 @@ import ForumSearch from "./ForumSearch";
 import ModerationSideDrawer from "components/ModerationSideDrawer";
 
 import "css/forums.css";
-import { Button } from "@mui/material";
+import { UiBreadcrumb, UiAction, UiIcon } from "components/ui";
 
 export default function Forums() {
   const [forumNavInfo, updateForumNavInfo] = useForumNavInfo();
@@ -62,43 +62,28 @@ function ForumNav(props) {
   const forumNavInfo = props.forumNavInfo;
 
   return (
-    <div className="span-panel">
-      <div className="forum-nav">
+      <UiBreadcrumb className="forum-nav">
         <div className="path">
           <NavLink to="/community/forums">
-            <i className="fas fa-home home" />
             Forums
           </NavLink>
           {forumNavInfo.board && (
             <NavLink to={`/community/forums/board/${forumNavInfo.board.id}`}>
-              <i className="fas fa-chevron-right separator" />
+              <UiIcon name="next" size={16} className="separator" />
               {forumNavInfo.board.name}
-            </NavLink>
-          )}
-          {forumNavInfo.thread && (
-            <NavLink to={`/community/forums/thread/${forumNavInfo.thread.id}`}>
-              <i className="fas fa-chevron-right separator" />
-              {forumNavInfo.thread.title}
             </NavLink>
           )}
         </div>
         <div className="forum-nav-actions" style={{ marginLeft: "auto" }}>
-          <Button
+          <UiAction
             onClick={props.onSearchClick}
-            startIcon="🔎"
-            variant="text"
-            size="small"
-            sx={{
-              color: "var(--scheme-color-text)",
-              fontFamily: "var(--primaryFont)",
-              fontWeight: 700,
-            }}
+            variant="ghost"
           >
+            <UiIcon name="search" size={20} />
             Search
-          </Button>
+          </UiAction>
         </div>
-      </div>
-    </div>
+      </UiBreadcrumb>
   );
 }
 

@@ -1,0 +1,377 @@
+{
+  "library": "Pixelarticons (free set)",
+  "author": "Gerrit Halfmann",
+  "repository": "https://github.com/halfmage/pixelarticons",
+  "revision": "c9ecc2da61afde85dbe539025e3d931c6152ad75",
+  "license": "MIT",
+  "licenseSha256": "eb113ac5006542496193a0641f8e90dcaf392e5025540ba45c2ee042af3ae51d",
+  "modifications": "None to SVG artwork. Path attributes extracted into icons.js for local React rendering.",
+  "files": [
+    {
+      "name": "archive",
+      "file": "archive.svg",
+      "sha256": "fbe07da48dc75ec49d07b51d2dc32e9b140f932bca4ee9a921201e8d202855ff",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/archive.svg"
+    },
+    {
+      "name": "arrow-bar-left",
+      "file": "arrow-bar-left.svg",
+      "sha256": "589a730d6cecf6bfffda2bfd151537d904b9b1f17b055ae534c7a56091d00640",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/arrow-bar-left.svg"
+    },
+    {
+      "name": "arrow-bar-right",
+      "file": "arrow-bar-right.svg",
+      "sha256": "b237393c1e8c1e767ac7661d088d54d36e1073bcbd7f450d9692832a82c13b3e",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/arrow-bar-right.svg"
+    },
+    {
+      "name": "arrow-left",
+      "file": "arrow-left.svg",
+      "sha256": "e97c564d0b86da241d52b980c21f5ec568e28cc3f25a4dc101963064838c6aba",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/arrow-left.svg"
+    },
+    {
+      "name": "arrow-right",
+      "file": "arrow-right.svg",
+      "sha256": "a9fd4628e683e2fe9f5cf1dd70e790ffc8050a4a77bd290c6fef7818798c9541",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/arrow-right.svg"
+    },
+    {
+      "name": "bell",
+      "file": "bell.svg",
+      "sha256": "be1864d3c0b794813b2c533f8adda27b78092ba0416725ea2d20e11f9bc60ff1",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/bell.svg"
+    },
+    {
+      "name": "book-open",
+      "file": "book-open.svg",
+      "sha256": "a36417e30abc82e93e37ffa844c791fece78c99e445a7710bf63d37df7199859",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/book-open.svg"
+    },
+    {
+      "name": "bookmark",
+      "file": "bookmark.svg",
+      "sha256": "444956b195922980bc174394c7638ea63a1c14a4d0ca3e2a6efd54fbc936b314",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/bookmark.svg"
+    },
+    {
+      "name": "cancel",
+      "file": "cancel.svg",
+      "sha256": "a877d86b614fbeb07bc15d49eccde621648df496db3ebce32e2f9efd6f19cbe5",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/cancel.svg"
+    },
+    {
+      "name": "chart",
+      "file": "chart.svg",
+      "sha256": "dab01bf39a1582ca18ad31fb12bcfa20b2985668624e6754f569d55309a34b69",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/chart.svg"
+    },
+    {
+      "name": "check",
+      "file": "check.svg",
+      "sha256": "539e0df8b4519ae07a2d803d10b27be6343819a7912f0c038745cfa65fcd37db",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/check.svg"
+    },
+    {
+      "name": "chevron-down",
+      "file": "chevron-down.svg",
+      "sha256": "6a171e86a93d229ac81c54388819c3903787cb412308ff80e1347705a7797928",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/chevron-down.svg"
+    },
+    {
+      "name": "chevron-left",
+      "file": "chevron-left.svg",
+      "sha256": "264dbd0445ec38c10b97f8d7296bf1b0f9b5c68d96a99a140b64f04a509fd30c",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/chevron-left.svg"
+    },
+    {
+      "name": "chevron-right",
+      "file": "chevron-right.svg",
+      "sha256": "b4f9b4e2317ac4ff07ac6291eaead2e6c553d3cea8e63163f520843561c3fe8c",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/chevron-right.svg"
+    },
+    {
+      "name": "chevron-up",
+      "file": "chevron-up.svg",
+      "sha256": "6a727339e4aff63d6478b2565b7e96e3115157faf31e8a804bbf02947d5e54e4",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/chevron-up.svg"
+    },
+    {
+      "name": "circle-info",
+      "file": "circle-info.svg",
+      "sha256": "34deb9f8f2b23372e1fa34e256673d1ab8de1f6e3300af35b6092b7e7ced4acc",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/circle-info.svg"
+    },
+    {
+      "name": "circle-question",
+      "file": "circle-question.svg",
+      "sha256": "c225eee40873a64895b9b2ccfd1bbdabc9cf3cb6d49ad6320948763c74708f59",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/circle-question.svg"
+    },
+    {
+      "name": "clock",
+      "file": "clock.svg",
+      "sha256": "3642e7e8754a7ece948364c909cb8655ac5b442be540d5dc8b85c8464b1ac63a",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/clock.svg"
+    },
+    {
+      "name": "close",
+      "file": "close.svg",
+      "sha256": "9944c7d86468bffbcabdf3e94e03736b58eb0f8a38dba7844201a048f2d2aa6e",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/close.svg"
+    },
+    {
+      "name": "code",
+      "file": "code.svg",
+      "sha256": "6858abe3ebac5a7b736c5e8c22fd23503a558a5f4f0d9064aad52bec8e365431",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/code.svg"
+    },
+    {
+      "name": "coins",
+      "file": "coins.svg",
+      "sha256": "4a8e5134492462e0f43e078278b2b4ff9c2d9014ffc3ce161b5cac1c0de17b6c",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/coins.svg"
+    },
+    {
+      "name": "copy",
+      "file": "copy.svg",
+      "sha256": "2a5f7c61a136f1c238049218fababee15733c0ca688ebcc57a6e4d78a0c3dec2",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/copy.svg"
+    },
+    {
+      "name": "date-time",
+      "file": "date-time.svg",
+      "sha256": "38d226c9cc12099762352acf00b55b337238ddacfb4c8a3c790f9e269b6b5131",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/date-time.svg"
+    },
+    {
+      "name": "external-link",
+      "file": "external-link.svg",
+      "sha256": "3b8f3c44eb134fe5ba3660c2c55eeb28d86628920ce035c5fd5f76d061984083",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/external-link.svg"
+    },
+    {
+      "name": "eye",
+      "file": "eye.svg",
+      "sha256": "6c06b1ee38261313b90ccc80aa8cd70c41ffd691cd013cd698a51a1989903b2e",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/eye.svg"
+    },
+    {
+      "name": "eye-off",
+      "file": "eye-off.svg",
+      "sha256": "1740324e57a42ca37aab79364a8d78a0953d237acf6b5fc6b35b2a4633a42e50",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/eye-off.svg"
+    },
+    {
+      "name": "file-text",
+      "file": "file-text.svg",
+      "sha256": "5e43d838eb7ca7ff0b8f3093893433054cea3add1282c5278c70438294347a10",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/file-text.svg"
+    },
+    {
+      "name": "flag",
+      "file": "flag.svg",
+      "sha256": "98efb72a8051f47f70e4e034ae5452c37df3ec1b7143766cba48b4e2b3562fd1",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/flag.svg"
+    },
+    {
+      "name": "gamepad",
+      "file": "gamepad.svg",
+      "sha256": "4b385667f20e542c2a89762ff331b40e3e29eb988de273f138b791f3cdea2f0d",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/gamepad.svg"
+    },
+    {
+      "name": "heart",
+      "file": "heart.svg",
+      "sha256": "6a927c32de0e8277a7cb6172d535f3028834b9b2dea2709ca08413909dee2c02",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/heart.svg"
+    },
+    {
+      "name": "link",
+      "file": "link.svg",
+      "sha256": "50602cffe209b6b2b7a6fcc591a540683f3379eb2a14a84d776bfd4aaf188a73",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/link.svg"
+    },
+    {
+      "name": "lock",
+      "file": "lock.svg",
+      "sha256": "5c28ff6d67054b62536bfde533b11dd84827659cb059e5b6334029cc7a647438",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/lock.svg"
+    },
+    {
+      "name": "logout",
+      "file": "logout.svg",
+      "sha256": "b918d4ccdb6b74941b3db3ec765187e187bb74611948256d247df371c452a06a",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/logout.svg"
+    },
+    {
+      "name": "menu",
+      "file": "menu.svg",
+      "sha256": "5de638e86355169e61b633af0115ed7c13c3fbd6fd5f09d2909950e1a9841e93",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/menu.svg"
+    },
+    {
+      "name": "message",
+      "file": "message.svg",
+      "sha256": "e6bccfcc5d1f12b7ed3ecc77ba0432c2b35b59daafa4f0cd41cd05de901d510d",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/message.svg"
+    },
+    {
+      "name": "message-reply",
+      "file": "message-reply.svg",
+      "sha256": "910f2454544b1907e76958f4c6ab0df3cce6ceefe4a917c476cd7e96fe2e022e",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/message-reply.svg"
+    },
+    {
+      "name": "minus",
+      "file": "minus.svg",
+      "sha256": "7e194bd76e06a6ff37035d445547833064c16f2f2e376b9e0cac8617ed033a08",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/minus.svg"
+    },
+    {
+      "name": "moon",
+      "file": "moon.svg",
+      "sha256": "93b21e16334e65b49bf7c7061dc1f23168e47343a3fbc90ecd9cc75fd089e108",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/moon.svg"
+    },
+    {
+      "name": "more-horizontal",
+      "file": "more-horizontal.svg",
+      "sha256": "7eb851ae75d08ba6f1f55a12fe53991f13ba1295dbd1042285d5a2b52e39189f",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/more-horizontal.svg"
+    },
+    {
+      "name": "package",
+      "file": "package.svg",
+      "sha256": "0eeb6ec3f2ed2d6991a39400ad40f3a92180b7675e5eff1c442cb7fbc6610444",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/package.svg"
+    },
+    {
+      "name": "pencil",
+      "file": "pencil.svg",
+      "sha256": "de547af9cc67017b1c6228f65ab317f681558cdca67b0afeeb22709136de80a2",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/pencil.svg"
+    },
+    {
+      "name": "plus",
+      "file": "plus.svg",
+      "sha256": "b7b6631409898550d823f06488c66c995f273e2eabdea5d06c8f3643e4f5a4de",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/plus.svg"
+    },
+    {
+      "name": "quote-text-inline",
+      "file": "quote-text-inline.svg",
+      "sha256": "cf218e48991c056386e2899f17a1ec5fda1bed81e33a32f01bc7fbf36037e8a7",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/quote-text-inline.svg"
+    },
+    {
+      "name": "reload",
+      "file": "reload.svg",
+      "sha256": "526f3918e7825d013cae51a17824f748f7e2b68656c860745ad260106360a40a",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/reload.svg"
+    },
+    {
+      "name": "search",
+      "file": "search.svg",
+      "sha256": "ed931ec3576a46cc2f10d53b4643a4f19f5e4cec8e7ae943c4f6db81d384b5e5",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/search.svg"
+    },
+    {
+      "name": "send",
+      "file": "send.svg",
+      "sha256": "660755f1b428050a46fe0f9cf597a31228c0f70e3de8655d69b35aee850e792a",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/send.svg"
+    },
+    {
+      "name": "settings-cog",
+      "file": "settings-cog.svg",
+      "sha256": "0cd460e87e94dcf2d8481166ca15f6d55a7454e5f5c8fb47a296fd2f94753802",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/settings-cog.svg"
+    },
+    {
+      "name": "shield",
+      "file": "shield.svg",
+      "sha256": "0b49fedb50fe3b26e83a70d2eba3466db0766d9e41cf6e3f7391f6dc93d30efc",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/shield.svg"
+    },
+    {
+      "name": "skull",
+      "file": "skull.svg",
+      "sha256": "c236ffdade712b102c325bbe101698ef4ea6733ab220207116d7e1c589c4e12c",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/skull.svg"
+    },
+    {
+      "name": "sliders-horizontal",
+      "file": "sliders-horizontal.svg",
+      "sha256": "74ce138a8a6c108d0984f7d48557a8bd86fc75f8babb57e8f40a39323af024a3",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/sliders-horizontal.svg"
+    },
+    {
+      "name": "smile",
+      "file": "smile.svg",
+      "sha256": "3b4ee545b722ff8e80e8a12a13946a597f6cc552ce13284c8bbdef181aae248f",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/smile.svg"
+    },
+    {
+      "name": "star",
+      "file": "star.svg",
+      "sha256": "66e73c19e046f3c060dea9299ef1896b6f17120d129025149620d84d76d0f6ff",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/star.svg"
+    },
+    {
+      "name": "sun",
+      "file": "sun.svg",
+      "sha256": "ece0f656771f449ed865d1a3ab2759b6fa0f759d50178afe2690c3c07247e0c8",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/sun.svg"
+    },
+    {
+      "name": "trash",
+      "file": "trash.svg",
+      "sha256": "4aff6085c3617f4ce64cd44cef95f48115e563debd110b7d23ed2e7430871e53",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/trash.svg"
+    },
+    {
+      "name": "trophy",
+      "file": "trophy.svg",
+      "sha256": "f84272c4d2d69478202574d4a609729832b648d167e8f308c89a5d11d4f041ec",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/trophy.svg"
+    },
+    {
+      "name": "unlink",
+      "file": "unlink.svg",
+      "sha256": "5db0d4db401d1453288c6100dbf80718fe7e17fb8483b9ca426daf70c04c1009",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/unlink.svg"
+    },
+    {
+      "name": "unlock",
+      "file": "unlock.svg",
+      "sha256": "b80309803ad50be702b1b0f83dce838a28cedcacf8e50f8cc7df068d42906304",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/unlock.svg"
+    },
+    {
+      "name": "user",
+      "file": "user.svg",
+      "sha256": "17b4a7950d37cb6af135301c90c27d8617d91b3cc7b1d2fb5b10c4cdf4401209",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/user.svg"
+    },
+    {
+      "name": "user-plus",
+      "file": "user-plus.svg",
+      "sha256": "4f891c1cd10ad1ffcb18cff4eeb14dea5967453148893dc83af35e160577c4d7",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/user-plus.svg"
+    },
+    {
+      "name": "users",
+      "file": "users.svg",
+      "sha256": "5c85db676b5c15490ec5eab912d5999c96e7574f847e7b15c4e124c141cada67",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/users.svg"
+    },
+    {
+      "name": "warning-diamond",
+      "file": "warning-diamond.svg",
+      "sha256": "09e1318ac0798b7a85d77321900730d2652ad0cb5049881212c5eb021fffdfa3",
+      "source": "https://raw.githubusercontent.com/halfmage/pixelarticons/c9ecc2da61afde85dbe539025e3d931c6152ad75/svg/warning-diamond.svg"
+    }
+  ]
+}

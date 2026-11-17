@@ -53,7 +53,7 @@ export default function CreateDrawItSetup() {
       roundAmt: Number(roundAmt) || 3,
     };
 
-    axios
+    return axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,

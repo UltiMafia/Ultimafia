@@ -1,10 +1,14 @@
-import React, { useEffect, useReducer } from "react";
+import React from "react";
+import UiAction from "./ui/UiAction";
+import UiIcon from "./ui/UiIcon";
+import UiPagination from "./ui/UiPagination";
 import { NavLink, useLocation } from "react-router-dom";
 
 import Dropdown from "./Dropdown";
 
 import "css/nav.css";
-import { IconButton, Box, Typography, TextField } from "@mui/material";
+import { Box } from "@mui/material";
+import { UiField as TextField } from "components/ui";
 
 export function Nav(props) {
   return <div className="nav">{props.children}</div>;
@@ -46,110 +50,19 @@ export function SubNav(props) {
 }
 
 export function PageNav(props) {
-  const page = props.page;
-  const maxPage = props.maxPage;
-  const range = props.range || 5;
-  const onNav = props.onNav;
-  const inverted = props.inverted;
-  const noRange = maxPage == null;
-
-  const [pages, updatePages] = useReducer(
-    () => {
-      if (noRange) return [page];
-
-      var sel = page <= maxPage ? page : 1;
-      var i = sel;
-      var j = sel + 1;
-      var list = [];
-      var changed = true;
-
-      while (changed) {
-        changed = false;
-
-        if (list.length < range && i >= 1) {
-          list.unshift(i--);
-          changed = true;
-        }
-
-        if (list.length < range && j <= maxPage) {
-          list.push(j++);
-          changed = true;
-        }
-      }
-
-      return list;
-    },
-    maxPage,
-    (pages) => {
-      if (noRange) return [1];
-
-      var list = [];
-
-      for (let i = 0; i < pages; i++) list.push(i + 1);
-
-      return list;
-    }
-  );
-
-  useEffect(() => {
-    updatePages();
-  }, [page, range, maxPage]);
-
-  function onClick(page) {
-    if (page >= 1 && (noRange || page <= maxPage)) onNav(page);
-  }
-
-  const fontSize = "16px";
-  const IconButtonSx = { width: "24px", height: "24px" };
-  const pageNums = pages.map((page) => {
-    let extraSx = null;
-    if (props.page === page) {
-      extraSx = { background: "var(--scheme-color-sec)" };
-    }
-
-    return (
-      <IconButton
-        color="primary"
-        key={page}
-        onClick={() => onClick(page)}
-        sx={{ ...IconButtonSx, ...extraSx, fontSize }}
-      >
-        <Typography>{page}</Typography>
-      </IconButton>
-    );
-  });
-
-  return (
-    <Box className={`page-nav ${inverted ? "inverted" : ""}`}>
-      <IconButton color="primary" sx={IconButtonSx} onClick={() => onClick(1)}>
-        <i style={{ fontSize }} className="fas fa-angle-double-left" />
-      </IconButton>
-      <IconButton
-        color="primary"
-        sx={IconButtonSx}
-        onClick={() => onClick(page - 1)}
-      >
-        <i style={{ fontSize }} className="fas fa-angle-left" />
-      </IconButton>
-      {pageNums}
-      <IconButton
-        color="primary"
-        sx={IconButtonSx}
-        onClick={() => onClick(page + 1)}
-      >
-        <i style={{ fontSize }} className="fas fa-angle-right" />
-      </IconButton>
-      {!noRange && (
-        <IconButton
-          color="primary"
-          sx={IconButtonSx}
-          onClick={() => onClick(maxPage)}
-        >
-          <i style={{ fontSize }} className="fas fa-angle-double-right" />
-        </IconButton>
-      )}
-    </Box>
-  );
+  // One pagination widget for every list. `inverted` is accepted during
+  // migration and ignored; the architecture guard counts it so it can only
+  // shrink. See docs/frontend-redesign/UI_CONTROLS.md.
+  if (props.maxPage == null && props.page == null) return null;
+  // Unknown totals stay unknown: UiPagination renders cursor arrows instead of
+  // inventing a single page, which would disable "next".
+  return <UiPagination
+    page={props.page || 1}
+    count={props.maxPage}
+    label={props.label || "Pagination"}
+    disabled={Boolean(props.disabled)}
+    onChange={value => props.onNav?.(value)}
+  />;
 }
 
 export function getPageNavFilterArg(newPage, oldPage, pageItems, sortField) {
@@ -176,6 +89,7 @@ export function SearchBar(props) {
         variant="outlined"
         value={props.value}
         placeholder={props.placeholder}
+        inputProps={{ "aria-label": props.label || props.placeholder || "Search" }} size="small"
         onChange={onInput}
         fullWidth
       />

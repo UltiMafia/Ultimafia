@@ -1,0 +1,24 @@
+.family-page { min-width: 0; width: 100%; }
+.family-header { min-width: 0; flex-wrap: wrap; }
+.family-header > :last-child { min-width: 0; }
+.family-page .name-with-avatar .MuiStack-root { min-width: 0; }
+.family-page .name-with-avatar .user-name { white-space: normal; overflow-wrap: anywhere; }
+.family-page .family-profile-panel .bio { margin: 16px 0; }
+.family-page .family-profile-panel .buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.family-page .md-content { overflow-wrap: anywhere; }
+.family-page-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; align-items: start; }
+.family-main, .family-rail { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.family-comments { min-width: 0; }
+.family-comments > h2 { margin: 0 0 16px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); font-weight: 700; }
+@media (max-width: 1000px) {
+  /* One column: the column gap becomes a card gap and must match the 16px
+     rhythm inside each column. */
+  .family-page-layout { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+.family-profile-panel .md-content .media-embed-wrap,
+.family-profile-panel .md-content .video-responsive-generic { max-width: min(100%, 800px); margin-inline: auto; }
+/* Pending-invite Accept/Reject share the rail row evenly, as MUI's sx flex: 1
+   did before the UiAction migration. */
+.family-invite-action.ui-action { flex: 1; }
+
+.family-trophy-spotlight { box-shadow: 0 0 25px 2px rgba(255, 215, 0, 0.4); border: 1px solid rgba(255, 215, 0, 0.6); }

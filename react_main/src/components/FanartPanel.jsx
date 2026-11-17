@@ -1,22 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  Stack,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, IconButton, Stack, Tooltip } from "@mui/material";
 
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "./Alerts";
 import ImageViewer from "./ImageViewer";
+import { confirmAction, UiSection, UiField as TextField, UiText as Typography, UiAction, UiDialog } from "components/ui";
 
 export default function FanartPanel({ roleId }) {
   const user = useContext(UserContext);
@@ -110,10 +99,10 @@ export default function FanartPanel({ roleId }) {
   const canCreate =
     user && user.loggedIn && user.perms && user.perms.postReply && roleId;
 
-  function onDelete(item) {
+  async function onDelete(item) {
     if (!item?.id) return;
     if (
-      !window.confirm(
+      !await confirmAction(
         "Are you sure you wish to delete this fanart? This cannot be undone."
       )
     )
@@ -151,36 +140,24 @@ export default function FanartPanel({ roleId }) {
 
   return (
     <>
-      <Stack direction="column" spacing={1}>
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{ alignItems: "center", width: "100%", px: 1 }}
-        >
-          <Typography
-            sx={{
-              flexGrow: 1,
-              fontWeight: 700,
-              fontSize: "1.15rem",
-              letterSpacing: "0.01em",
+      <UiSection
+        title="Fanart"
+        className="role-fanart-section"
+        actions={canCreate && (
+          <UiAction
+             variant="ghost" size="small" 
+            aria-label="Add fanart"
+            onClick={() => {
+              setTitle("");
+              setFile(null);
+              setDialogOpen(true);
             }}
           >
-            Fanart
-          </Typography>
-          {canCreate && (
-            <IconButton
-              size="small"
-              onClick={() => {
-                setTitle("");
-                setFile(null);
-                setDialogOpen(true);
-              }}
-            >
-              <i className="fas fa-plus" />
-            </IconButton>
-          )}
-        </Stack>
-
+            <i className="fas fa-plus" />
+          </UiAction>
+        )}
+      >
+        <Stack direction="column" spacing={1}>
         {loading ? (
           <Typography variant="body2" sx={{ opacity: 0.7 }}>
             Loading fanart...
@@ -359,57 +336,54 @@ export default function FanartPanel({ roleId }) {
             )}
           </Stack>
         )}
-      </Stack>
+        </Stack>
+      </UiSection>
       {viewerUrl && (
         <ImageViewer imageUrl={viewerUrl} onClose={() => setViewerUrl(null)} />
       )}
       {canCreate && (
-        <Dialog
+        <UiDialog
           open={dialogOpen}
           onClose={() => {
             if (!submitting) setDialogOpen(false);
           }}
-          fullWidth
-          maxWidth="sm"
-        >
-          <DialogTitle>Post Fanart</DialogTitle>
-          <DialogContent dividers>
-            <Stack direction="column" spacing={2}>
-              <TextField
-                label="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                inputProps={{ maxLength: 80 }}
-                fullWidth
-                autoFocus
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={onFileChange}
-                style={{ width: "100%" }}
-              />
-            </Stack>
-          </DialogContent>
-          <DialogActions>
-            <Button
+          title="Post Fanart"
+          actions={<>
+            <UiAction
+              variant="ghost"
               onClick={() => {
                 if (!submitting) setDialogOpen(false);
               }}
               disabled={submitting}
             >
               Cancel
-            </Button>
-            <Button
+            </UiAction>
+            <UiAction
+              variant="primary"
               onClick={onSubmit}
-              disabled={
-                submitting || !title.trim() || !file || !canCreate
-              }
+              disabled={submitting || !title.trim() || !file || !canCreate}
             >
               Post Fanart
-            </Button>
-          </DialogActions>
-        </Dialog>
+            </UiAction>
+          </>}
+        >
+          <Stack direction="column" spacing={2}>
+            <TextField
+              label="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              inputProps={{ maxLength: 80 }}
+              fullWidth
+              autoFocus
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={onFileChange}
+              style={{ width: "100%" }}
+            />
+          </Stack>
+        </UiDialog>
       )}
     </>
   );

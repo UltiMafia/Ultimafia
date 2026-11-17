@@ -1,7 +1,8 @@
 import React from "react";
-import { Box, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Stack, Tooltip } from "@mui/material";
 import { capitalize } from "utils";
 import CasePanel from "./CasePanel";
+import { UiText as Typography } from "components/ui";
 
 // Trophy icons - extendible: add new trophy types here
 export const TROPHY_ICONS = {
@@ -20,7 +21,7 @@ export default function TrophyCase({
   panelStyle = {},
   headingStyle = {},
   showHeading = true,
-  className = "box-panel trophy-case",
+  className = "trophy-case",
   wrapInPanel = true,
 }) {
   if (!trophies || trophies.length === 0) {

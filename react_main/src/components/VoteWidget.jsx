@@ -5,19 +5,13 @@ import update from "immutability-helper";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/UserWidgets";
+import UiIcon from "./ui/UiIcon";
 import { usePopoverOpen } from "hooks/usePopoverOpen";
 
-import {
-  Divider,
-  IconButton,
-  Popover,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { Divider, Popover, Stack } from "@mui/material";
+import { UiAction, UiText as Typography } from "components/ui";
 
 export function VoteWidget(props) {
-  const theme = useTheme();
   const item = props.item;
   const itemType = props.itemType;
   const itemHolder = props.itemHolder;
@@ -26,6 +20,9 @@ export function VoteWidget(props) {
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
+  const variant = props.variant || "stack";
+  // Page and row votes read across; comment votes read down the left edge.
+  const horizontal = variant === "page" || variant === "row";
   const [userVotes, setUserVotes] = useState([]);
 
   const upvoters = userVotes.slice().filter((vote) => vote.direction === 1);
@@ -101,45 +98,40 @@ export function VoteWidget(props) {
   }
 
   return (
-    <Stack direction="column">
-      <IconButton
-        className={`fas fa-arrow-up`}
-        sx={{
-          fontSize: "1em",
-          color: "inherit",
-          ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
-        }}
+    <Stack
+      direction={horizontal ? "row" : "column"}
+      alignItems="center"
+      className={`ui-vote ui-vote--${variant}`}
+      role={props.ariaLabel ? "group" : undefined}
+      aria-label={props.ariaLabel}
+      data-ui-control="vote"
+      data-ui-variant={variant}
+    >
+      <UiAction
+        iconOnly
+        variant="ghost"
+        aria-label="Upvote"
+        aria-pressed={item.vote === 1}
+        disabled={!user.perms?.vote}
         onClick={() => onVote(item.id, 1)}
-      />
-      <IconButton
+      ><UiIcon name="up" size={18} /></UiAction>
+      <UiAction
+        className="ui-vote-count"
+        variant="ghost"
+        aria-label="View votes"
+        disabled={!user.perms?.viewVotes}
         onClick={(e) => getVotes(e, item.id)}
-        sx={{
-          position: "relative",
-          fontSize: "1em",
-          color: "inherit",
-          minWidth: "2em",
-          minHeight: "2em",
-        }}
       >
-        <Typography
-          sx={{
-            position: "absolute",
-            lineHeight: "1",
-            color: "inherit",
-          }}
-        >
-          {item.voteCount ?? 0}
-        </Typography>
-      </IconButton>
-      <IconButton
-        className={`fas fa-arrow-down`}
-        sx={{
-          fontSize: "1em",
-          color: "inherit",
-          ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
-        }}
+        {item.voteCount ?? 0}
+      </UiAction>
+      <UiAction
+        iconOnly
+        variant="ghost"
+        aria-label="Downvote"
+        aria-pressed={item.vote === -1}
+        disabled={!user.perms?.vote}
         onClick={() => onVote(item.id, -1)}
-      />
+      ><UiIcon name="down" size={18} /></UiAction>
       <Popover
         open={popoverOpen}
         sx={{ pointerEvents: openByClick ? "auto" : "none" }}

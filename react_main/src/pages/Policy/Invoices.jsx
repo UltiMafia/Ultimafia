@@ -1,236 +1,119 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
-import {
-  Button,
-  Chip,
-  MenuItem,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  TextField,
-  Typography,
-  Paper,
-} from "@mui/material";
+import { Chip } from "@mui/material";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 import { useErrorAlert } from "components/Alerts";
-import { Loading } from "components/Loading";
+import { UiAction, UiDialog, UiField, UiMenuItem, UiPageHeader, UiPending, UiTable, UiText } from "components/ui";
 import { NameWithAvatar } from "pages/User/UserWidgets";
+import { LatestRequest } from "lib/latestRequest";
 
 function userIsOwner(user) {
-  return (user?.groups || []).some((g) => g && g.name === "Owner");
+  return (user?.groups || []).some((group) => group && group.name === "Owner");
 }
 
 function statusColor(status) {
   if (status === "completed") return "success";
   if (status === "pending") return "warning";
   if (status === "rejected") return "error";
-  if (status === "expired" || status === "failed") return "default";
   return "default";
 }
 
 function formatWhen(value) {
   if (!value) return "-";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "-";
-  return d.toLocaleString();
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "-" : date.toLocaleString(undefined, { hour12: true });
 }
 
 export default function Invoices() {
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
   const errorAlert = useErrorAlert();
-
   const [status, setStatus] = useState("all");
   const [page, setPage] = useState(1);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [busyId, setBusyId] = useState("");
+  const [readError, setReadError] = useState(false);
+  const [reviewTarget, setReviewTarget] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [reviewError, setReviewError] = useState(false);
+  const reads = useRef(new LatestRequest());
+  const permitted = user.loaded && user.loggedIn && userIsOwner(user);
 
   const load = useCallback(() => {
-    axios
-      .get("/api/crypto/admin/invoices", { params: { status, page } })
-      .then((res) => setData(res.data))
-      .catch(errorAlert)
-      .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- errorAlert identity changes every render
+    const request = reads.current.begin();
+    setLoading(true);
+    setReadError(false);
+    return axios.get("/api/crypto/admin/invoices", { params: { status, page }, signal: request.signal })
+      .then(res => { if (request.isCurrent()) setData(res.data); })
+      .catch(() => { if (request.isCurrent()) setReadError(true); })
+      .finally(() => { if (request.isCurrent()) setLoading(false); });
   }, [status, page]);
 
+  useEffect(() => { document.title = "Invoices | UltiMafia"; }, []);
   useEffect(() => {
-    document.title = "Invoices | UltiMafia";
-  }, []);
+    if (permitted) load();
+    const requests = reads.current;
+    return () => requests.invalidate();
+  }, [permitted, load]);
 
-  useEffect(() => {
-    if (!user.loaded || !user.loggedIn || !userIsOwner(user)) return;
-    load();
-  }, [user.loaded, user.loggedIn, load]);
-
-  async function review(invoiceId, action) {
-    const verb = action === "approve" ? "approve and credit" : "reject";
-    if (!window.confirm(`Really ${verb} invoice ${invoiceId}?`)) return;
-    setBusyId(invoiceId);
+  async function review() {
+    if (!reviewTarget || busy) return;
+    const { invoiceId, action } = reviewTarget;
+    setBusy(true);
+    setReviewError(false);
     try {
       await axios.post(`/api/crypto/admin/invoices/${invoiceId}/${action}`);
-      siteInfo.showAlert(
-        action === "approve" ? "Invoice approved. Coins credited." : "Invoice rejected.",
-        "success"
-      );
+      siteInfo.showAlert(action === "approve" ? "Invoice approved. Coins credited." : "Invoice rejected.", "success");
+      setReviewTarget(null);
       load();
-    } catch (e) {
-      errorAlert(e);
-    } finally {
-      setBusyId("");
-    }
+    } catch (error) { setReviewError(true); errorAlert(error); }
+    finally { setBusy(false); }
   }
 
-  if (!user.loaded) return <Loading />;
-  if (!user.loggedIn || !userIsOwner(user)) {
-    return <Navigate to="/policy/rules" replace />;
-  }
+  if (!user.loaded) return <UiPending />;
+  if (!permitted) return <Navigate to="/policy/rules" replace />;
 
   const invoices = data?.invoices || [];
-  const totalPages = Math.max(
-    1,
-    Math.ceil((data?.total || 0) / (data?.pageSize || 50))
-  );
+  const totalPages = Math.max(1, Math.ceil((data?.total || 0) / (data?.pageSize || 50)));
+  const columns = [
+    { key: "createdAt", label: "Created", render: row => formatWhen(row.createdAt) },
+    { key: "userId", label: "User", render: row => <NameWithAvatar small id={row.userId} name={row.userName} avatar={Boolean(row.userAvatar)} /> },
+    { key: "chain", label: "Network", render: row => row.chainLabel || row.chain },
+    { key: "asset", label: "Token" },
+    { key: "usd", label: "USD", render: row => `$${row.usd}` },
+    { key: "expectedAmount", label: "Amount", render: row => `${row.expectedAmount} ${row.asset}` },
+    { key: "coins", label: "Coins" },
+    { key: "status", label: "Status", render: row => <Chip size="small" label={row.status} color={statusColor(row.status)} /> },
+    { key: "actions", label: "Actions", render: row => row.canApprove || row.canReject ? <div className="ui-action-row">
+      {row.canApprove && <UiAction variant="primary" disabled={busy} onClick={() => { setReviewError(false); setReviewTarget({ invoiceId: row.id, action: "approve" }); }}>Approve</UiAction>}
+      {row.canReject && <UiAction variant="danger-quiet" disabled={busy} onClick={() => { setReviewError(false); setReviewTarget({ invoiceId: row.id, action: "reject" }); }}>Reject</UiAction>}
+    </div> : "-" },
+  ];
 
-  return (
-    <Stack spacing={2}>
-      <Typography variant="h2">Invoices</Typography>
-      <Typography variant="body2" color="textSecondary">
-        Crypto donation invoices. Approve unpaid invoices to credit coins.
-        Reject closes them without payment.
-      </Typography>
-      <TextField
-        select
-        label="Status"
-        value={status}
-        onChange={(e) => {
-          setPage(1);
-          setStatus(e.target.value);
-        }}
-        sx={{ maxWidth: 240 }}
-      >
-        <MenuItem value="all">All</MenuItem>
-        <MenuItem value="unpaid">Unpaid</MenuItem>
-        <MenuItem value="pending">Pending</MenuItem>
-        <MenuItem value="expired">Expired</MenuItem>
-        <MenuItem value="completed">Completed</MenuItem>
-        <MenuItem value="rejected">Rejected</MenuItem>
-        <MenuItem value="failed">Failed</MenuItem>
-      </TextField>
-
-      {loading && !data ? (
-        <Loading />
-      ) : (
-        <TableContainer component={Paper} variant="outlined">
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Created</TableCell>
-                <TableCell>User</TableCell>
-                <TableCell>Network</TableCell>
-                <TableCell>Token</TableCell>
-                <TableCell>USD</TableCell>
-                <TableCell>Amount</TableCell>
-                <TableCell>Coins</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {invoices.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={9}>
-                    <Typography variant="body2">No invoices.</Typography>
-                  </TableCell>
-                </TableRow>
-              )}
-              {invoices.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{formatWhen(row.createdAt)}</TableCell>
-                  <TableCell>
-                    <NameWithAvatar
-                      small
-                      id={row.userId}
-                      name={row.userName}
-                      avatar={Boolean(row.userAvatar)}
-                    />
-                  </TableCell>
-                  <TableCell>{row.chainLabel || row.chain}</TableCell>
-                  <TableCell>{row.asset}</TableCell>
-                  <TableCell>${row.usd}</TableCell>
-                  <TableCell>
-                    {row.expectedAmount} {row.asset}
-                  </TableCell>
-                  <TableCell>{row.coins}</TableCell>
-                  <TableCell>
-                    <Chip
-                      size="small"
-                      label={row.status}
-                      color={statusColor(row.status)}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {row.canApprove || row.canReject ? (
-                      <Stack direction="row" spacing={1}>
-                        {row.canApprove && (
-                          <Button
-                            size="small"
-                            variant="contained"
-                            disabled={busyId === row.id}
-                            onClick={() => review(row.id, "approve")}
-                          >
-                            Approve
-                          </Button>
-                        )}
-                        {row.canReject && (
-                          <Button
-                            size="small"
-                            color="error"
-                            disabled={busyId === row.id}
-                            onClick={() => review(row.id, "reject")}
-                          >
-                            Reject
-                          </Button>
-                        )}
-                      </Stack>
-                    ) : (
-                      "-"
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-
-      {totalPages > 1 && (
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Button
-            size="small"
-            disabled={page <= 1}
-            onClick={() => setPage((p) => p - 1)}
-          >
-            Previous
-          </Button>
-          <Typography variant="body2">
-            Page {page} of {totalPages}
-          </Typography>
-          <Button
-            size="small"
-            disabled={page >= totalPages}
-            onClick={() => setPage((p) => p + 1)}
-          >
-            Next
-          </Button>
-        </Stack>
-      )}
-    </Stack>
-  );
+  return <>
+    <UiPageHeader title="Invoices" description="Crypto donation invoices. Approve unpaid invoices to credit coins. Reject closes them without payment." />
+    <div className="ui-action-row">
+      <UiField select label="Status" value={status} disabled={busy} onChange={event => { setPage(1); setStatus(event.target.value); }}>
+        {["all", "unpaid", "pending", "expired", "completed", "rejected", "failed"].map(value => <UiMenuItem key={value} value={value}>{value[0].toUpperCase() + value.slice(1)}</UiMenuItem>)}
+      </UiField>
+    </div>
+    {readError ? <div role="alert">Could not load invoices. <UiAction onClick={load}>Retry</UiAction></div> :
+      loading ? <UiPending label="Loading invoices" /> : <UiTable label="Donation invoices" columns={columns} rows={invoices} rowKey="id" emptyMessage="No invoices." />}
+    {totalPages > 1 && <div className="ui-action-row">
+      <UiAction disabled={page <= 1 || busy || loading} onClick={() => setPage(value => value - 1)}>Previous</UiAction>
+      <UiText>Page {page} of {totalPages}</UiText>
+      <UiAction disabled={page >= totalPages || busy || loading} onClick={() => setPage(value => value + 1)}>Next</UiAction>
+    </div>}
+    <UiDialog open={!!reviewTarget} title={reviewTarget?.action === "approve" ? "Approve invoice" : "Reject invoice"}
+      dismissible={!busy} onClose={() => setReviewTarget(null)} actions={<>
+        <UiAction disabled={busy} onClick={() => setReviewTarget(null)}>Cancel</UiAction>
+        <UiAction variant={reviewTarget?.action === "approve" ? "primary" : "danger"} busy={busy} onClick={review}>
+          {reviewTarget?.action === "approve" ? "Approve and credit" : "Reject invoice"}
+        </UiAction>
+      </>}>
+      <UiText>{reviewTarget?.action === "approve" ? "Approve and credit coins for" : "Reject"} invoice {reviewTarget?.invoiceId}?</UiText>
+      {reviewError && <UiText role="alert">Could not review invoice. Try again or cancel.</UiText>}
+    </UiDialog>
+  </>;
 }

@@ -546,64 +546,6 @@
   margin-right: 8px;
 }
 
-/* Active-rules modal */
-.ld-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-}
-
-.ld-modal {
-  background: var(--scheme-color-sec, #fff);
-  color: var(--scheme-color-text, #111);
-  border-radius: 10px;
-  padding: 24px;
-  max-width: 420px;
-  width: calc(100% - 32px);
-  max-height: calc(100vh - 32px);
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--scheme-color-border, #ddd);
-}
-
-.ld-modal-title {
-  margin: 0 0 12px;
-  font-size: 1.2rem;
-}
-
-.ld-modal-list {
-  margin: 0 0 8px;
-  padding-left: 20px;
-  font-size: 0.95rem;
-  line-height: 1.6;
-}
-
-.ld-modal-list li {
-  margin: 6px 0;
-}
-
-.ld-modal-btn {
-  display: block;
-  margin: 18px auto 0;
-  padding: 10px 32px;
-  font-size: 1rem;
-  font-weight: bold;
-  background: #2e7d32;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.ld-modal-btn:hover {
-  background: #43a047;
-}
-
 .ld-bet-log {
   margin-bottom: 8px;
   padding: 8px;

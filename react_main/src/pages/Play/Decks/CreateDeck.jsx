@@ -2,8 +2,11 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import { SiteInfoContext } from "../../../Contexts";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import axios from "axios";
+import UiAction from "../../../components/ui/UiAction";
+import UiIcon from "../../../components/ui/UiIcon";
+import { UiField, UiPageHeader } from "components/ui";
 import { useErrorAlert } from "../../../components/Alerts";
 import "css/deck.css";
 import "css/form.css";
@@ -45,6 +48,8 @@ export default function CreateDecks() {
 
   const [deckName, setDeckName] = useState("");
   const [editing, setEditing] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [slots, setSlots] = useState({ owned: 0, purchased: 0 });
   const [coverPhoto, setCoverPhoto] = useState("");
@@ -58,18 +63,24 @@ export default function CreateDecks() {
     setSelectedFiles(newArr);
   };
 
-  if (params.get("edit") && !editing) {
+  const editId = params.get("edit");
+  useEffect(() => {
+    if (!editId) return;
+    let cancelled = false;
     setEditing(true);
     axios
-      .get(`/api/deck/${params.get("edit")}`)
+      .get(`/api/deck/${editId}`)
       .then((res) => {
+        if (cancelled) return;
         let deck = res.data;
         setDeckName(deck.name);
         setCoverPhoto(deck.coverPhoto || "");
         getDeckProfiles(deck.profiles, deck.id);
       })
-      .catch(errorAlert);
-  }
+      .catch(error => { if (!cancelled) { setLoadError(true); errorAlert(error); } });
+    return () => { cancelled = true; };
+  }, [editId]);
+  useEffect(() => () => { if (coverPreview) URL.revokeObjectURL(coverPreview); }, [coverPreview]);
 
   function onCoverSelect(e) {
     const file = e.target.files && e.target.files[0];
@@ -138,6 +149,9 @@ export default function CreateDecks() {
   }
 
   function onCreateDeck(editing, data) {
+    if (saving || loadError) return;
+    if (!deckName.trim()) { errorAlert("Deck name is required."); return; }
+    setSaving(true);
     let profiles = data.cards;
     axios
       .post("/api/deck/create", {
@@ -170,7 +184,8 @@ export default function CreateDecks() {
             .catch(() => {});
         }
       })
-      .catch(errorAlert);
+      .catch(errorAlert)
+      .finally(() => setSaving(false));
   }
 
   function onFileUpload(profiles) {
@@ -218,7 +233,9 @@ export default function CreateDecks() {
   const atLimit = slots.owned >= slots.purchased;
 
   return (
-    <div className="deck">
+    <div className="deck deck-editor-page">
+      <UiPageHeader variant="editor" title={editId ? "Edit character deck" : "Create character deck"} actions={<Link to="/play/decks">Back to decks</Link>} />
+      {loadError && <p role="alert">Could not load this deck. Return to the deck list and try again.</p>}
       <div className="main-section">
         <div className="span-panel deck-editor">
           <form
@@ -228,7 +245,7 @@ export default function CreateDecks() {
           >
             <div className="deck-cover-section">
               <span className="deck-field-label">Cover Photo</span>
-              <div
+              <button type="button" aria-label="Upload cover photo"
                 className={`deck-cover-upload ${
                   coverPreview || coverPhoto ? "" : "empty"
                 }`}
@@ -251,6 +268,7 @@ export default function CreateDecks() {
                     <span>Click to upload</span>
                   </div>
                 )}
+              </button>
                 <input
                   ref={coverInputRef}
                   className="hidden-upload"
@@ -258,32 +276,27 @@ export default function CreateDecks() {
                   accept="image/*"
                   onChange={onCoverSelect}
                 />
-              </div>
               {(coverPreview || coverPhoto) && (
-                <a
-                  className="btn deck-cover-remove"
+                <UiAction variant="ghost"
                   onClick={(e) => {
                     e.stopPropagation();
                     onCoverRemove();
                   }}
                 >
                   Remove cover
-                </a>
+                </UiAction>
               )}
             </div>
             <div className="deck-top-bar">
               <div className="deck-name-section">
-                <label className="deck-field-label" htmlFor="deck-name-input">
-                  Deck Name
-                </label>
-                <input
+                <UiField
                   id="deck-name-input"
-                  className="deck-input deck-name-input"
-                  type="text"
+                  fullWidth
+                  label="Deck Name"
                   value={deckName}
                   onChange={(e) => setDeckName(e.target.value)}
                   placeholder="Enter deck name"
-                  maxLength={25}
+                  inputProps={{ maxLength: 25 }}
                 />
               </div>
               {!params.get("edit") && (
@@ -295,12 +308,9 @@ export default function CreateDecks() {
                     </span>
                   </div>
                   {atLimit && (
-                    <Link
-                      className="btn deck-buy-btn"
-                      to="/user/shop?buy=anonymousDeck"
-                    >
+                    <UiAction component={Link} to="/user/shop?buy=anonymousDeck">
                       Buy More Decks
-                    </Link>
+                    </UiAction>
                   )}
                 </div>
               )}
@@ -326,49 +336,55 @@ export default function CreateDecks() {
                         getValues={getValues}
                         selectedFile={selectedFiles[index]}
                       />
-                      <input
-                        className="deck-input"
-                        placeholder="Name"
-                        maxLength={20}
-                        {...register(`cards.${index}.name`)}
-                        defaultValue={profile.name}
+                      <Controller
+                        name={`cards.${index}.name`}
+                        control={control}
+                        render={({ field }) => (
+                          <UiField
+                            className="deck-card-name"
+                            fullWidth
+                            aria-label={`Card ${index + 1} name`}
+                            placeholder="Name"
+                            inputProps={{ maxLength: 20 }}
+                            {...field}
+                          />
+                        )}
                       />
                       <input
                         className="color-input"
+                        aria-label={`Card ${index + 1} color`}
                         type="color"
                         {...register(`cards.${index}.color`)}
                         defaultValue={profile.color}
                       />
-                      <a
-                        className="btn deck-delete-btn"
+                      <UiAction iconOnly variant="danger-quiet"
                         onClick={() => removeProfile(index)}
-                        title="Delete card"
+                        title="Delete card" aria-label={`Delete card ${index + 1}`}
                       >
-                        <i className="fas fa-trash-alt"></i>
-                      </a>
+                        <UiIcon name="delete" size={18} />
+                      </UiAction>
                     </section>
                   );
                 })}
               </div>
             )}
             <div className="deck-actions">
-              <button
+               <UiAction variant="primary"
+                 busy={saving} disabled={loadError}
                 type="submit"
-                className="btn btn-success deck-submit-btn"
                 title="Save deck"
               >
-                <i className="fas fa-check-circle fa-lg"></i>
-              </button>
+                {editing ? "Save deck" : "Create deck"}
+              </UiAction>
               {editing && fields.length < 50 && (
-                <a
-                  className="btn deck-add-btn"
+                <UiAction
                   onClick={() =>
                     append({ name: `Profile ${fields.length + 1}` })
                   }
                   title="Add card"
                 >
-                  <i className="fas fa-plus"></i>
-                </a>
+                  <UiIcon name="add" size={18} /> Add card
+                </UiAction>
               )}
             </div>
           </form>

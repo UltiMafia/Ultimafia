@@ -7,7 +7,7 @@
   --gradient-color-light: #76bd5b;
   --gradient-color-dark: #385b2b;
 
-  --primaryFont: RobotoSlab;
+  --primaryFont: var(--ui-font-body, system-ui);
   --hoverTransition: 0.2s;
   --game-row-odd: #21232a;
   --game-row: #41434d;
@@ -71,9 +71,7 @@ body {
 
   overflow-x: initial;
 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  font-family: var(--ui-font-body, system-ui);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -217,37 +215,6 @@ a {
   background-color: var(--scheme-color-background);
 }
 
-.box-panel {
-  display: flex;
-  flex-flow: column;
-
-  padding: var(--mui-spacing);
-
-  background-color: var(--scheme-color);
-  color: var(--scheme-color-text);
-}
-
-.box-panel .heading {
-  margin-bottom: var(--mui-spacing);
-}
-
-.box-panel .MuiTypography-h3 {
-  margin-bottom: var(--mui-spacing);
-}
-
-.box-panel .MuiTypography-h4 {
-  margin-bottom: var(--mui-spacing);
-}
-
-.box-panel .content {
-  display: flex;
-  flex-flow: column;
-}
-
-.box-panel .heading {
-  font-weight: 700;
-}
-
 .loading-page {
   display: flex;
   flex-flow: row;
@@ -375,10 +342,16 @@ input:focus:not(:focus-visible) {
   align-items: center;
   justify-content: center;
 
-  padding: 5px;
-  border: none;
-
-  background-color: var(--scheme-color-sec);
+  min-height: var(--ui-action-height);
+  padding: 8px 14px;
+  border: 1px solid var(--scheme-color-border);
+  border-radius: var(--ui-radius);
+  font-family: var(--ui-font-body, system-ui);
+  font-size: var(--ui-text-body);
+  font-weight: var(--ui-weight-strong);
+  line-height: 1.25;
+  color: var(--scheme-color-text);
+  background-color: var(--scheme-color);
   outline: none;
   text-decoration: none;
   cursor: pointer;
@@ -396,13 +369,16 @@ input:focus:not(:focus-visible) {
 }
 
 .btn-theme {
-  background-color: #ac2222;
-  color: white;
+  background-color: var(--mui-palette-primary-main);
+  color: var(--mui-palette-primary-contrastText);
+  border-color: transparent;
 }
 
 .btn-theme-sec {
-  background-color: var(--scheme-color-sec);
+  background-color: transparent;
 }
+
+.btn:focus-visible { outline: 2px solid var(--um-accent); outline-offset: 2px; }
 
 .popover hr {
   margin: 5px 0px;
@@ -412,10 +388,6 @@ input:focus:not(:focus-visible) {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-}
-
-.panel-grid .box-panel {
-  margin: 0px;
 }
 
 .super {
@@ -526,8 +498,8 @@ input:focus:not(:focus-visible) {
 
   color: white;
 
-  font-family: Arial;
-  font-size: 12px;
+  font-family: var(--ui-font-body, system-ui);
+  font-size: var(--ui-text-caption);
   font-weight: 900;
 }
 
@@ -572,10 +544,8 @@ input:focus:not(:focus-visible) {
 
   opacity: 1;
   font-weight: normal;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  font-size: 16px;
+  font-family: var(--ui-font-body, system-ui);
+  font-size: var(--ui-text-body);
   color: var(--scheme-color-text);
 }
 
@@ -768,28 +738,31 @@ input:focus:not(:focus-visible) {
 }
 
 @media only screen and (min-width: 700px) {
-  /* For Webkit browsers like Chrome, Safari, and new Edge */
+  /* One scrollbar style for every engine. WebKit variants cover Chrome/Safari;
+     the standard properties cover Firefox and future engines. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scheme-color-border) var(--scheme-color-background);
+  }
+
   *::-webkit-scrollbar {
-    width: 8px;
+    width: var(--ui-scrollbar-size);
+    height: var(--ui-scrollbar-size);
   }
 
   *::-webkit-scrollbar-track {
-    background: #888;
+    background: var(--scheme-color-background);
   }
 
   *::-webkit-scrollbar-thumb {
-    background: #555;
+    background: var(--scheme-color-border);
+    border: 2px solid var(--scheme-color-background);
+    border-radius: var(--ui-radius-control);
   }
 
   *::-webkit-scrollbar-thumb:hover {
-    background: #444;
+    background: var(--um-muted);
   }
-
-  /*!* Standard CSS scrollbar styling *!*/
-  /** {*/
-  /*    scrollbar-width: thin;*/
-  /*    scrollbar-color: #555 #888;*/
-  /*}*/
 }
 
 .MuiDialogTitle-root,
@@ -800,3 +773,23 @@ input:focus:not(:focus-visible) {
 .MuiDialogContent-root .MuiTypography-root {
   font-family: inherit;
 }
+
+.cookie-customize { margin-top: var(--ui-space-sm); align-self: flex-start; }
+
+.welcome-auth-card { padding: var(--ui-panel-padding); }
+
+.banned-page-card { width: 100%; max-width: var(--ui-prose-width); padding: var(--ui-space-lg); }
+@media (min-width: 600px) { .banned-page-card { padding: var(--ui-space-xl); } }
+
+.poll-option.ui-action { justify-content: flex-start; text-align: left; white-space: normal; margin-bottom: 8px; }
+
+.shop-panel { height: 100%; }
+.stamp-suggestions { max-height: 200px; overflow-y: auto; padding: 0; margin-top: 4px; }
+.stamp-suggestion.ui-action { justify-content: flex-start; text-align: left; white-space: normal; padding: 8px 16px; min-height: var(--ui-action-height); }
+.stamp-suggestion.ui-action + .stamp-suggestion.ui-action { border-top: 1px solid var(--scheme-color-border); }
+
+.strategy-reader-action { align-self: flex-start; }
+
+@media (max-width: 900px), (pointer: coarse) { .stamp-suggestion.ui-action { min-height: var(--ui-touch-height); } }
+
+.learn-game-field-icon .game-icon { display: block; width: var(--ui-text-heading); height: var(--ui-text-heading); }

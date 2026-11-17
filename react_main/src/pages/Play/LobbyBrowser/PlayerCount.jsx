@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/material";
+import UiIcon from "components/ui/UiIcon";
 import { usePopover, InfoPopover } from "components/Popover";
 
 import "css/join.css";
@@ -9,6 +10,7 @@ import {
   displayedLobbyCount,
   lobbyBarValue,
 } from "shared/lobbyCount";
+import { UiText as Typography } from "components/ui";
 
 export const PlayerCount = (props) => {
   const game = props.game;
@@ -24,6 +26,7 @@ export const PlayerCount = (props) => {
   );
   const spectatingAllowed = props.spectatingAllowed || false;
   const spectatorCount = props.spectatorCount || 0;
+  const showSeats = props.showSeats !== false;
 
   const gameNotFinished = ["Open", "In Progress"].includes(status);
 
@@ -46,12 +49,18 @@ export const PlayerCount = (props) => {
     <>
       <InfoPopover {...popoverProps} title={`Game ${gameId}`} />
       <Box
-        className="player-count"
+        component="button"
+        type="button"
+        ref={infoRef}
+        className={`player-count${showSeats ? "" : " spectator-count"}`}
+        aria-label={gameNotFinished ? `${showSeats ? `${numSlotsTaken} of ${numSlotsTotal} seats filled, ` : ""}${spectatingAllowed ? `${spectatorCount} spectators` : "spectating disabled"}. View game details` : "View finished game details"}
+        aria-expanded={popoverOpen}
         aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
         aria-haspopup="true"
         onClick={handleClick}
       >
         <progress
+          aria-hidden="true"
           value={lobbyBarValue(status, numSlotsTaken)}
           max={numSlotsTotal}
         />
@@ -78,20 +87,21 @@ export const PlayerCount = (props) => {
               />
             </Typography>
           )}
-          {gameNotFinished && (
+          {gameNotFinished && showSeats && (
             <Typography>
               {numSlotsTaken}/{numSlotsTotal}
             </Typography>
           )}
           {gameNotFinished && !spectatingAllowed && (
-            <i className="fas fa-eye-slash" />
+            <UiIcon name="eyeOff" size={16} />
           )}
           {gameNotFinished && spectatingAllowed && (
             <>
-              <i className="fas fa-eye" />
+              <UiIcon name="eye" size={16} />
               <Typography>{spectatorCount}</Typography>
             </>
           )}
+          <Typography component="span" className="player-count-details">Details</Typography>
         </Stack>
       </Box>
     </>

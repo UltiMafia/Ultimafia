@@ -71,8 +71,8 @@ Browser cases exercise actual React 17/React Router/MUI components:
   and no redirect on server-driven leave while browsing another page;
 - game-entry spectator/bot intent retained through lazy mounting, authentication,
   guest joins and reconnects while browsing, with only server-confirmed seat
-  changes replacing the spectator reconnect mode; explicit lobby Spectate
-  actions use document navigation so a retained seated session is not reused;
+   changes replacing the spectator reconnect mode; explicit lobby Spectate/Join
+   actions send `spectate`/`takeSeat` exactly once over the retained socket;
 - full public lobbies hide Join but retain Spectate, without exposing private,
   broken or spectating-disabled games or bypassing the logged-in requirement;
 - conditional/imperative site redirects not hijacking a game while inactive;
@@ -100,9 +100,10 @@ frame updates, CSS, MUI transition and assertions are real. This is not a phone
 FPS benchmark or proof of physical touch capture. Native mouse drag was also
 smoke-tested against the real local application.
 
-The explicit Spectate regression observes document navigation and prevents the
-actual reload so the fixture can finish. It verifies the client action, not a
-live server's membership transition; the game-engine tests cover that path.
+The explicit Spectate/Join regression forwards navigation-keyed membership state
+like `Main`, verifies the actual socket sends and retains socket identity around
+server acknowledgements. The older document-navigation expectation was obsolete.
+This verifies client behavior, not a live server's membership transition.
 
 ## Retained-view rules
 
@@ -119,9 +120,10 @@ Session-owner and ready-check navigation remains intentionally app-global.
 Game/chat sockets and game state updates intentionally continue while browsing.
 The hosted session owns its original game-entry query, not the current site's
 URL. Server-confirmed membership changes update its spectator reconnect mode.
-An explicit Spectate action uses a document navigation (like the in-game
-Spectate button) to ask the server to change membership; ordinary navigation back
-to the game retains the existing session and never implicitly takes a seat.
+An explicit Spectate/Join action carries `requestedMembership` in router state;
+the retained game sends `spectate`/`takeSeat` over its existing socket. The server
+acknowledges membership before reconnect mode is changed. Ordinary navigation back
+retains the existing session and never implicitly takes a seat.
 Changing account identity discards the previous game's client session; it does
 not send another account's leave command or promise that the server seat has
 already been removed. A same-account refresh preserves the session.

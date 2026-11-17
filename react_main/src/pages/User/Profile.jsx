@@ -1,12 +1,13 @@
 // React 17 does not batch state updates outside its own event handlers.
 import { unstable_batchedUpdates } from "react-dom";
-import React, { useState, useEffect, useContext, useRef, useMemo, Suspense, lazy } from "react";
+import React, { useState, useEffect, useContext, Suspense, lazy } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
-import colorContrast from "color-contrast";
-import { Icon } from "@iconify/react";
+import { UiCard, UiPage, UiPageHeader, UiSegmentedControl, confirmAction, UiField as TextField, UiMenuItem, UiText as Typography } from "components/ui";
+import ProfileStatsSummary from "./ProfileStatsSummary";
+const PieChart = lazy(() => import("./PieChart").then((module) => ({ default: module.PieChart })));
 
 import { UserContext, SiteInfoContext } from "Contexts";
 import {
@@ -36,6 +37,8 @@ import {
   mergeStatsBuckets,
 } from "utils/mafiaStats";
 import Comments from "../Community/Comments";
+import CoinIcon from "components/CoinIcon";
+import { UiAction, UiIcon } from "components/ui";
 
 import "css/user.css";
 import { Modal } from "components/Modal";
@@ -53,26 +56,7 @@ import AdminVisuals from "./AdminVisuals";
 import { ProfileSkeleton } from "components/Skeletons";
 import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 import { GameRow } from "pages/Play/LobbyBrowser/GameRow";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  Grid,
-  IconButton,
-  Paper,
-  Popover,
-  Stack,
-  TextField,
-  ToggleButton,
-  ToggleButtonGroup,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Box, Divider, Grid, Popover, Stack, Tooltip, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
@@ -103,12 +87,9 @@ export {
 // Each of these renders only behind a flag, but importing them statically put
 // their whole dependency tree in the chunk every profile view downloads:
 // ModerationSideDrawer drags in the Moderation page (commands.js alone is 40KB)
-// and RapSheet, and PieChart drags in d3.
+// and RapSheet.
 const ModerationSideDrawer = lazy(() => import("components/ModerationSideDrawer"));
 const ReportDialog = lazy(() => import("../../components/ReportDialog"));
-const PieChart = lazy(() =>
-  import("./PieChart").then((m) => ({ default: m.PieChart }))
-);
 
 function FavoritedRolesPanel({
   favoriteRoles = [],
@@ -132,7 +113,7 @@ function FavoritedRolesPanel({
       title={`Favorited Roles`}
       panelStyle={panelStyle}
       headingStyle={headingStyle}
-      className="box-panel favorited-roles"
+      className="favorited-roles"
       emptyMessage="No favorited roles"
     >
       {items.map(({ gameType, roleName, id }) => (
@@ -166,7 +147,7 @@ function RoleIconCreditsPanel({
       title={`Role Icon Credits (${items.length})`}
       panelStyle={panelStyle}
       headingStyle={headingStyle}
-      className="box-panel role-icon-credits"
+      className="role-icon-credits"
       emptyMessage="No role icon credits"
     >
       {items.map(({ roleName, skin, key }) => (
@@ -174,6 +155,23 @@ function RoleIconCreditsPanel({
       ))}
     </CasePanel>
   );
+}
+
+function ProfileGameRow({ game, action = null }) {
+  const status = game.status || "Finished";
+  const won = game.won;
+  return <article className={`profile-game-row${game.ranked ? " is-ranked" : ""}${game.competitive ? " is-competitive" : ""}`}>
+    <span className={`profile-game-result${won === true ? " is-win" : won === false ? " is-loss" : ""}`}>{won === true ? "Win" : won === false ? "Loss" : "Played"}</span>
+    <div className="profile-game-copy">
+      <Link className="profile-game-title" to={`/game/${game.id}`}>{game.setup?.name || "Game"}</Link>
+      <p>{[game.setup?.gameType, game.lobby, status].filter(Boolean).join(" · ")}</p>
+      {game.broken && <p className="profile-game-unavailable">Unavailable</p>}
+    </div>
+    <div className="profile-game-actions">
+      <Link className="ui-action ui-action--secondary" to={`/game/${game.id}`}>{status === "Finished" ? "Review" : "Open"}</Link>
+      {action}
+    </div>
+  </article>;
 }
 
 export default function Profile() {
@@ -185,6 +183,7 @@ export default function Profile() {
   const [avatar, setAvatar] = useState();
   const [banner, setBanner] = useState();
   const [bannerExt, setBannerExt] = useState("webp");
+  const [bannerFailed, setBannerFailed] = useState(false);
   const [profileBackground, setProfileBackground] = useState(false);
   const [skillRating, setSkillRating] = useState(null);
   const [bio, setBio] = useState("");
@@ -233,7 +232,6 @@ export default function Profile() {
   /** All finished games in DB (any mode); from GET /api/user/:id/profile `totalGames`. */
   const [profileTotalGames, setProfileTotalGames] = useState(0);
   const [groups, setGroups] = useState([]);
-  const [showStatsModal, setShowStatsModal] = useState(false);
   const [ratingsTab, setRatingsTab] = useState("wins");
   const [statsBucket, setStatsBucket] = useState("ranked");
   const [mediaUrl, setMediaUrl] = useState("");
@@ -489,11 +487,11 @@ export default function Profile() {
     return true;
   }
 
-  function onClearBanner(e) {
+  async function onClearBanner(e) {
     e.stopPropagation();
     e.preventDefault();
     if (
-      !window.confirm(
+      !await confirmAction(
         "Remove your profile banner?"
       )
     ) {
@@ -550,9 +548,9 @@ export default function Profile() {
     }
   }
 
-  function onAvatarRemove() {
+  async function onAvatarRemove() {
     if (
-      !window.confirm(
+      !await confirmAction(
         "Remove your avatar and return to the default letter avatar?"
       )
     ) {
@@ -569,9 +567,9 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
-  function onFriendUserClick() {
+  async function onFriendUserClick() {
     if (isFriend || isFriendRequested) {
-      var shouldUnfriend = window.confirm(
+      var shouldUnfriend = await confirmAction(
         "Are you sure you wish to unfriend or cancel your friend request?"
       );
       if (!shouldUnfriend) return;
@@ -593,8 +591,8 @@ export default function Profile() {
   }
 
   function onDeleteFriend(friendId) {
-    return () => {
-      var shouldUnfriend = window.confirm(
+    return async () => {
+      var shouldUnfriend = await confirmAction(
         "Are you sure you wish to delete this friend?"
       );
       if (!shouldUnfriend) return;
@@ -610,8 +608,8 @@ export default function Profile() {
   }
 
   function onUnarchiveGame(gameId, description) {
-    return () => {
-      var shouldDelete = window.confirm(
+    return async () => {
+      var shouldDelete = await confirmAction(
         `Are you sure you wish to unarchive ${description}? If the game is old enough to be expired then it will eventually be deleted.`
       );
       if (!shouldDelete) return;
@@ -631,17 +629,17 @@ export default function Profile() {
     };
   }
 
-  function onLoveUserClick() {
+  async function onLoveUserClick() {
     if (isLove) {
       if (love === null || love === undefined) {
-        var shouldCancel = window.confirm(
+        var shouldCancel = await confirmAction(
           "Are you sure you want to cancel your love?"
         );
         if (!shouldCancel) {
           return;
         }
       } else if (love.type === "Lover") {
-        var shouldBreakup = window.confirm(
+        var shouldBreakup = await confirmAction(
           "Are you sure you want to break up?"
         );
         if (!shouldBreakup) {
@@ -649,7 +647,7 @@ export default function Profile() {
         }
       }
     } else {
-      if (!window.confirm("Are you sure you wish to send a love request?")) {
+      if (!await confirmAction("Are you sure you wish to send a love request?")) {
         return;
       }
     }
@@ -680,9 +678,9 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
-  function onMarryUserClick() {
+  async function onMarryUserClick() {
     if (isMarried && love.type === "Lover") {
-      var shouldCancel = window.confirm(
+      var shouldCancel = await confirmAction(
         "Are you sure you want to stop proposing?"
       );
       if (!shouldCancel) {
@@ -690,7 +688,7 @@ export default function Profile() {
       }
     }
     if (isMarried && love.type === "Married") {
-      var shouldDivorce = window.confirm("Are you sure you want to divorce?");
+      var shouldDivorce = await confirmAction("Are you sure you want to divorce?");
       if (!shouldDivorce) {
         return;
       }
@@ -723,9 +721,9 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
-  function onBlockUserClick() {
+  async function onBlockUserClick() {
     if (!isBlocked) {
-      var shouldBlock = window.confirm(
+      var shouldBlock = await confirmAction(
         "Block this user? Neither of you will be able to send the other DMs or comment on each other's profile. Keeping them out of your games also needs a moderator to approve the block."
       );
       if (!shouldBlock) return;
@@ -746,11 +744,11 @@ export default function Profile() {
       .catch(errorAlert);
   }
 
-  function onFamilyJoinRequestClick() {
+  async function onFamilyJoinRequestClick() {
     if (!userFamily) return;
 
     if (
-      !window.confirm(
+      !await confirmAction(
         `Are you sure you want to invite ${name} to join ${userFamily.name}?`
       )
     ) {
@@ -894,9 +892,9 @@ export default function Profile() {
       });
   }
 
-  function onPokeDismissClick(fromUserId) {
+  async function onPokeDismissClick(fromUserId) {
     if (
-      !window.confirm(
+      !await confirmAction(
         "Dismiss this poke? They won't be able to poke you again for 30 days."
       )
     )
@@ -1037,23 +1035,13 @@ export default function Profile() {
     zIndex: 1,
   };
   const headingStyle = {};
-  // Body text that sits directly on the panel rather than on a Paper surface.
-  // MUI's text.primary/text.secondary are resolved against the theme background,
-  // not against a custom profile backgroundColor, so text drawn straight onto the
-  // panel needs the same treatment the headings already get.
-  const panelTextStyle = {};
   const bannerStyle = {};
 
   if (settings.backgroundColor) {
-    panelStyle.backgroundColor = settings.backgroundColor;
-
-    // ensure good color contrast for headings
-    if (colorContrast(settings.backgroundColor, "#000") > 7) {
-      headingStyle.color = "#000";
-    } else {
-      headingStyle.color = "#fff";
-    }
-    panelTextStyle.color = headingStyle.color;
+    // The custom color tints every content card instead of filling only the
+    // components that happen to receive panelStyle. The header keeps the full
+    // color as the profile's anchor. A tint keeps arbitrary user colors readable.
+    panelStyle.backgroundColor = `color-mix(in srgb, ${settings.backgroundColor} 24%, var(--scheme-color))`;
   }
 
   const bannerExtSafe = ["webp", "gif", "png", "jpg", "jpeg"].includes(bannerExt)
@@ -1062,6 +1050,8 @@ export default function Profile() {
   const bannerUrl = banner
     ? `/uploads/${profileUserId}_banner.${bannerExtSafe}?t=${siteInfo.cacheVal}`
     : null;
+  const showBanner = banner && !bannerFailed;
+  useEffect(() => { setBannerFailed(false); }, [bannerUrl]);
 
   // Prefer <img> for all banners so GIF/animated WebP play reliably
   if (settings.bannerFormat === "stretch") {
@@ -1110,52 +1100,10 @@ export default function Profile() {
     });
   }
 
-  const recentGamesRows = recentGames.map((game, index) => {
-    return (
-      <div key={game.id} style={{ display: "flex", alignItems: "center" }}>
-        <div style={{ width: "20px", textAlign: "center", flexShrink: 0 }}>
-          {game.won === true && (
-            <i
-              className="fas fa-check"
-              style={{ color: "#4caf50", fontSize: "14px" }}
-              title="Win"
-            />
-          )}
-          {game.won === false && (
-            <i
-              className="fas fa-times"
-              style={{ color: "#f44336", fontSize: "14px" }}
-              title="Loss"
-            />
-          )}
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <GameRow
-            game={game}
-            type={game.status || "Finished"}
-            odd={index % 2 === 1}
-            small
-          />
-        </div>
-      </div>
-    );
-  });
+  const recentGamesRows = recentGames.map(game => <ProfileGameRow game={game} key={game.id} />);
 
-  const archivedGamesRows = archivedGames.map((game) => {
-    return (
-      <div className="archived-game" key={game.id}>
-        {showDeleteArchivedGame && (
-          <div className="btns-wrapper">
-            <i
-              className="fas fa-trash"
-              onClick={onUnarchiveGame(game.id, game.description)}
-            />
-          </div>
-        )}
-        <GameRow game={game} type={game.status || "Finished"} small />
-      </div>
-    );
-  });
+  const archivedGamesRows = archivedGames.map(game => <ProfileGameRow game={game} key={game.id}
+    action={showDeleteArchivedGame ? <UiAction variant="ghost" iconOnly aria-label="Unarchive game" onClick={onUnarchiveGame(game.id, game.description)}><UiIcon name="delete" size={18} /></UiAction> : null} />);
 
   const createdSetupRows = createdSetups.map((setup) => (
     <Setup setup={setup} key={setup.id} />
@@ -1227,24 +1175,21 @@ export default function Profile() {
         <Stack direction="row" className="options">
           {!isSelf && user.loggedIn && (
             <>
-              <IconButton aria-label="friend user">
-                <i
-                  className={`fas fa-user-plus ${isFriend || isFriendRequested ? "sel" : ""}`}
-                  onClick={onFriendUserClick}
-                />
-              </IconButton>
+              <UiAction iconOnly variant="ghost" aria-label="friend user" onClick={onFriendUserClick}>
+                <i className={`fas fa-user-plus ${isFriend || isFriendRequested ? "sel" : ""}`} />
+              </UiAction>
               {userFamily &&
                 userFamily.isLeader &&
                 userFamily.memberCount < (userFamily.memberLimit || 20) && (
-                  <IconButton
+                  <UiAction
+                    iconOnly
+                    variant="ghost"
                     aria-label="request to join family"
                     title={`Invite to ${userFamily.name}`}
+                    onClick={onFamilyJoinRequestClick}
                   >
-                    <i
-                      className="fas fa-users"
-                      onClick={onFamilyJoinRequestClick}
-                    />
-                  </IconButton>
+                    <i className="fas fa-users" />
+                  </UiAction>
                 )}
               <LoveIcon
                 isLove={isLove}
@@ -1262,21 +1207,18 @@ export default function Profile() {
                 isMarried={isMarried}
                 onClick={onMarryUserClick}
               />
-              <IconButton
+              <UiAction
+                iconOnly
+                variant="ghost"
                 aria-label="block user"
                 onClick={onBlockUserClick}
                 title="Block user"
-                sx={{ cursor: "pointer", touchAction: "manipulation" }}
               >
                 <i className={`fas fa-ban ${isBlocked ? "sel" : ""}`} />
-              </IconButton>
-              <IconButton
-                size="small"
-                onClick={onReportClick}
-                sx={{ cursor: "pointer", touchAction: "manipulation" }}
-              >
-                <i className="fas fa-flag" />
-              </IconButton>
+              </UiAction>
+              <UiAction variant="ghost" iconOnly aria-label="Report user" onClick={onReportClick}>
+                <UiIcon name="flag" />
+              </UiAction>
               {reportDialogOpen && (
                 <Suspense fallback={null}>
                   <ReportDialog
@@ -1289,40 +1231,30 @@ export default function Profile() {
               {isFriend && !pokesDisabled && !user.settings?.disablePokes && (
                 <>
                   {pokeStatus.status === "none" && (
-                    <IconButton
-                      aria-label="poke user"
-                      title="Poke"
-                      onClick={onPokeClick}
-                    >
+                    <UiAction iconOnly variant="ghost" aria-label="poke user" title="Poke" onClick={onPokeClick}>
                       <i className="fas fa-hand-pointer btn-poke" />
-                    </IconButton>
+                    </UiAction>
                   )}
                   {pokeStatus.status === "pending_sent" && (
-                    <IconButton
-                      aria-label="poke sent"
-                      title="You already poked this person."
-                      disabled
-                    >
+                    <UiAction iconOnly variant="ghost" aria-label="poke sent" title="You already poked this person." disabled>
                       <i className="fas fa-hand-pointer btn-poke disabled" />
-                    </IconButton>
+                    </UiAction>
                   )}
                   {pokeStatus.status === "pending_received" && (
-                    <IconButton
+                    <UiAction
+                      iconOnly
+                      variant="ghost"
                       aria-label="poke back"
                       title={`Poke back${pokeStatus.count > 1 ? ` (streak: ${pokeStatus.count})` : ""}`}
                       onClick={() => onPokeBackClick(userId)}
                     >
                       <i className="fas fa-hand-pointer btn-poke sel" />
-                    </IconButton>
+                    </UiAction>
                   )}
                   {pokeStatus.status === "cooldown" && (
-                    <IconButton
-                      aria-label="poke cooldown"
-                      title="You cannot poke this person yet."
-                      disabled
-                    >
+                    <UiAction iconOnly variant="ghost" aria-label="poke cooldown" title="You cannot poke this person yet." disabled>
                       <i className="fas fa-hand-pointer btn-poke disabled" />
-                    </IconButton>
+                    </UiAction>
                   )}
                 </>
               )}
@@ -1364,7 +1296,7 @@ export default function Profile() {
     : 50;
 
   const nameBox = (
-    <Grid item xs={12} md={6} className="avi-name">
+    <Grid item xs={12} className="avi-name">
       <Box
         sx={{
           display: "flex",
@@ -1420,23 +1352,7 @@ export default function Profile() {
             }}
           >
             {badges}
-            <Typography
-              variant="h2"
-              onClick={canViewNameHistory ? onNameClick : undefined}
-              sx={{
-                flexShrink: "2",
-                fontWeight: "600",
-                cursor: canViewNameHistory ? "pointer" : "default",
-                "&:hover": canViewNameHistory
-                  ? {
-                      textDecoration: "underline",
-                      opacity: 0.8,
-                    }
-                  : {},
-              }}
-            >
-              {name}
-            </Typography>
+            <UiPageHeader variant="identity" title={name} titleAction={canViewNameHistory ? { label: `View ${name}'s name history`, onClick: onNameClick } : undefined} />
             {pronouns && (
               <Typography
                 variant="caption"
@@ -1461,6 +1377,32 @@ export default function Profile() {
             >
               Joined {new Date(joined).toLocaleDateString()}
             </Typography>
+          )}
+          {(profileFamily || (love.id != null && (isLove || isMarried))) && (
+            <Stack direction="row" spacing={2} sx={{ alignItems: "center", justifyContent: "center", mt: 0.5, flexWrap: "wrap", gap: 1 }}>
+              {profileFamily && (
+                <Link
+                  className="name-with-avatar"
+                  to={`/user/family/${profileFamily.id}`}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                >
+                  <Typography variant="caption" color="text.secondary">Member of</Typography>
+                  <FamilyAvatarImage id={profileFamily.id} size={20} />
+                  <Typography variant="body2">{profileFamily.name}</Typography>
+                </Link>
+              )}
+              {love.id != null && (isLove || isMarried) && (
+                <Link
+                  className="name-with-avatar"
+                  to={`/user/${love.id}`}
+                  style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+                >
+                  <Typography variant="caption" color="text.secondary">{getLoveTitle(love.type)}</Typography>
+                  <Avatar hasImage={love.avatar} id={love.id} name={love.name} small />
+                  <Typography variant="body2">{love.name}</Typography>
+                </Link>
+              )}
+            </Stack>
           )}
         </Stack>
       </Box>
@@ -1551,18 +1493,9 @@ export default function Profile() {
     </Grid>
   );
 
-  const aviGridItems = isPhoneDevice ? (
+  const aviGridItems = (
     <>
       {nameBox}
-      {inLoveBox}
-      {familyBox}
-      {buttonsBox}
-    </>
-  ) : (
-    <>
-      {familyBox}
-      {nameBox}
-      {inLoveBox}
       {buttonsBox}
     </>
   );
@@ -1604,7 +1537,7 @@ export default function Profile() {
   );
 
   return (
-    <>
+    <UiPage width="wide" className="profile-page">
       <TradeDialog
         open={tradeModalOpen}
         onClose={() => setTradeModalOpen(false)}
@@ -1618,14 +1551,6 @@ export default function Profile() {
         } : null}
         onSuccess={refetchProfile}
       />
-      {stats && (
-        <StatsModal
-          stats={stats}
-          statsBucket={statsBucket}
-          show={showStatsModal}
-          setShow={setShowStatsModal}
-        />
-      )}
       {moderationDrawerOpen && (
         <Suspense fallback={null}>
           <ModerationSideDrawer
@@ -1635,7 +1560,7 @@ export default function Profile() {
           />
         </Suspense>
       )}
-      <Grid container rowSpacing={1} columnSpacing={1} className="profile">
+      <Grid container rowSpacing={2} columnSpacing={3} className="profile" data-custom-background={Boolean(settings.backgroundColor)} style={{ "--profile-card-tint": panelStyle.backgroundColor }}>
         <Grid item xs={12}>
           <Stack
             direction="row"
@@ -1643,18 +1568,15 @@ export default function Profile() {
               justifyContent: "center",
             }}
           >
-            {/* 900px max banner size + 16px padding on box-panel + 8px padding on content = 924px */}
-            <div
-              className="box-panel"
-              style={{ ...panelStyle, width: "100%", maxWidth: "924px" }}
-            >
+            <UiCard variant="flush" className="profile-header-panel profile-tinted">
               <div className="content" style={{ gap: "8px" }}>
-                {banner && (
+                {showBanner && (
                   <div className="banner" style={bannerStyle}>
                     <img
                       className="banner-media"
                       src={bannerUrl}
                       alt=""
+                      onError={() => setBannerFailed(true)}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -1670,7 +1592,7 @@ export default function Profile() {
                     {bannerUpload}
                   </div>
                 )}
-                {!banner && (
+                {!showBanner && (
                   <Box
                     className="banner no-banner"
                     sx={{ width: "100%", height: "24px !important" }}
@@ -1680,12 +1602,12 @@ export default function Profile() {
                 )}
                 <Grid container>{aviGridItems}</Grid>
               </div>
-            </div>
+            </UiCard>
           </Stack>
         </Grid>
         <Grid item xs={12} md={8}>
-          <Stack direction="column" spacing={1}>
-            <div className="box-panel" style={panelStyle}>
+          <Stack direction="column" spacing={2}>
+            <UiCard className="profile-tinted">
               <div
                 className={`bio${isSelf && !editingBio ? " edit" : ""}`}
                 onClick={onBioClick}
@@ -1699,20 +1621,17 @@ export default function Profile() {
                   <>
                     <TextEditor value={bio} onChange={setBio} />
                     <div className="buttons">
-                      <div className="btn btn-theme" onClick={onEditBio}>
+                      <UiAction variant="primary" onClick={onEditBio}>
                         Submit
-                      </div>
-                      <div
-                        className="btn btn-theme-sec"
-                        onClick={onCancelEditBio}
-                      >
+                      </UiAction>
+                      <UiAction onClick={onCancelEditBio}>
                         Cancel
-                      </div>
+                      </UiAction>
                     </div>
                   </>
                 )}
               </div>
-            </div>
+            </UiCard>
             <Scrapbook
               stamps={stamps}
               hiddenStamps={hiddenStamps}
@@ -1721,25 +1640,20 @@ export default function Profile() {
               onTradeAction={refetchProfile}
               profileUserId={profileUserId}
               profileUserName={name}
-              panelStyle={panelStyle}
               headingStyle={headingStyle}
             />
             {!isPhoneDevice && (
-              <Box
-                sx={{
-                  mt: "16px !important",
-                  px: 2,
-                }}
-              >
+              <UiCard className="profile-comments profile-tinted">
+                <h2>Comments</h2>
                 <Comments fullWidth location={profileUserId} />
-              </Box>
+              </UiCard>
             )}
           </Stack>
         </Grid>
         <Grid item xs={12} md={4}>
-          <Stack direction="column" spacing={1}>
+          <Stack direction="column" spacing={2}>
             {mediaUrl && (
-              <div className="box-panel" style={panelStyle}>
+              <UiCard className="profile-tinted">
                 <MediaEmbed
                   key={`${profileUserId}:${mediaUrl}`}
                   mediaUrl={mediaUrl}
@@ -1747,19 +1661,10 @@ export default function Profile() {
                   collapsible
                   collapsed={collapseMedia}
                 ></MediaEmbed>
-              </div>
+              </UiCard>
             )}
-            <div className="box-panel" style={panelStyle}>
+            <UiCard className="profile-tinted">
               <div className="content trophies-content">
-                {karmaInfo && (
-                  <div className="karma-vote-wrap">
-                    <KarmaVoteWidget
-                      item={karmaInfo}
-                      setItem={setKarmaInfo}
-                      userId={profileUserId}
-                    />
-                  </div>
-                )}
                 <div className="trophies-grid">
                   <Tooltip
                     title="Earned from outstanding performance in ranked and competitive games."
@@ -1778,6 +1683,7 @@ export default function Profile() {
                     </div>
                   </Tooltip>
                   {karmaInfo && (
+                    <div className="trophy-karma">
                     <Tooltip
                       title="Upvotes from other players on your profile."
                       arrow
@@ -1796,6 +1702,10 @@ export default function Profile() {
                         </div>
                       </div>
                     </Tooltip>
+                    <div className="karma-vote-wrap">
+                      <KarmaVoteWidget item={karmaInfo} setItem={setKarmaInfo} userId={profileUserId} />
+                    </div>
+                    </div>
                   )}
                   <Tooltip
                     title="Earned by winning ranked and competitive games. Accumulates toward prestige at the end of a competitive round."
@@ -1851,24 +1761,24 @@ export default function Profile() {
                   </Tooltip>
                 </div>
               </div>
-            </div>
+            </UiCard>
             {(isSelf || user.perms.seeModPanel) && (
               <RapSheet userId={profileUserId} />
             )}
             {trophyCase}
             {stockInfo && (
-              <div className="box-panel" style={panelStyle}>
+              <UiCard className="profile-tinted">
                 <Typography variant="h3" sx={headingStyle}>
                   Stock & Equity
                 </Typography>
-                <div className="content" style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px" }}>
+                <div className="content" style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   <Stack direction="row" justifyContent="space-between" alignItems="center">
                     <Box>
                       <Typography variant="caption" color="text.secondary" display="block">
                         Current Price
                       </Typography>
                       <Typography variant="h4" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        {stockInfo.buyPrice.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "24px", verticalAlign: "middle" }} />
+                        {stockInfo.buyPrice.toFixed(2)} <CoinIcon size={24} />
                       </Typography>
                     </Box>
                     <Box>
@@ -1890,7 +1800,7 @@ export default function Profile() {
                         Market Cap
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        {stockInfo.marketCap.toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+                        {stockInfo.marketCap.toFixed(2)} <CoinIcon size={14} />
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -1906,110 +1816,59 @@ export default function Profile() {
                         Dividends Paid
                       </Typography>
                       <Typography variant="body2" sx={{ fontWeight: "bold", color: goldColor, display: "flex", alignItems: "center", gap: 0.5 }}>
-                        {(stockInfo.dividendsPaidOut || 0).toFixed(2)} <Icon icon="lucide:coins" style={{ fontSize: "14px", verticalAlign: "middle" }} />
+                        {(stockInfo.dividendsPaidOut || 0).toFixed(2)} <CoinIcon size={14} />
                       </Typography>
                     </Grid>
                   </Grid>
 
                   {user.loggedIn && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
+                    <UiAction
+                      variant="primary"
+                      block
+                      className="profile-trade-action"
                       onClick={handleOpenTrade}
-                      sx={{ mt: 1, fontWeight: "bold" }}
-                      startIcon={<i className="fas fa-chart-line" />}
                     >
+                      <i className="fas fa-chart-line" />
                       Trade Shares
-                    </Button>
+                    </UiAction>
                   )}
                 </div>
-              </div>
+              </UiCard>
             )}
             {hasAnyStats &&
               !settings.hideStatistics && (
-                <div className="box-panel ratings" style={panelStyle}>
-                  <Typography variant="h3" sx={headingStyle}>
-                    Mafia Ratings
-                    <Typography component="span" variant="body2" sx={{ opacity: 0.5, ml: 1 }}>
-                      {profileTotalGames.toLocaleString()} total games
-                      {totalGames !== profileTotalGames ? (
-                        <>
-                          {" "}
-                          · {totalGames} in this view
-                        </>
-                      ) : null}
-                    </Typography>
-                  </Typography>
-                  <ToggleButtonGroup
-                    size="small"
-                    exclusive
+                <UiCard className="ratings profile-tinted">
+                  <Stack spacing={2}>
+                  <Typography variant="h3">Mafia Ratings</Typography>
+                  <UiSegmentedControl
+                    ariaLabel="Statistics range"
                     value={statsBucket}
-                    onChange={(e, v) => v && setStatsBucket(v)}
-                    sx={{
-                      mb: 1,
-                      display: "flex",
-                      justifyContent: "center",
-                      "& .MuiToggleButton-root": {
-                        px: 1.5,
-                        py: 0.25,
-                        fontSize: "0.7rem",
-                        textTransform: "none",
-                        border: "1px solid",
-                        borderColor: "divider",
-                        color: "text.secondary",
-                      },
-                      "& .MuiToggleButton-root.Mui-selected": {
-                        backgroundColor: "action.selected",
-                        color: "text.primary",
-                      },
-                    }}
-                  >
-                    <ToggleButton value="ranked">Ranked + Comp</ToggleButton>
-                    <ToggleButton value="unranked">Unranked</ToggleButton>
-                    <ToggleButton value="combined">All Games</ToggleButton>
-                  </ToggleButtonGroup>
+                    onChange={setStatsBucket}
+                    options={[
+                      { value: "ranked", label: "Ranked + Comp" },
+                      { value: "unranked", label: "Unranked" },
+                      { value: "combined", label: "All Games" },
+                    ]}
+                  />
                   {totalGames < RequiredTotalForStats ? (
                     <Typography
                       variant="body2"
-                      sx={{ textAlign: "center", opacity: 0.5, py: 2, ...panelTextStyle }}
+                      sx={{ textAlign: "center", py: 2 }}
                     >
                       No data yet.
                     </Typography>
                   ) : (
                     <>
-                      <Stack spacing={2} sx={{ px: 1, py: 1 }}>
-                        <Paper variant="outlined" sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", borderRadius: 2, backgroundColor: "background.paper" }}>
-                          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1, color: "text.secondary" }}>
-                            Win/Loss Distribution
-                          </Typography>
-                          <Box sx={{ my: 1, display: "flex", justifyContent: "center" }}>
-                            <Suspense fallback={null}>
-                              <PieChart
-                                wins={getWins(mafiaStats)}
-                                losses={getLosses(mafiaStats)}
-                                abandons={getAbandons(mafiaStats)}
-                              />
-                            </Suspense>
-                          </Box>
-                          <Typography variant="body2" sx={{ mt: 1, fontWeight: "bold" }}>
-                            Wins: {Math.round((getWins(mafiaStats) / totalGames) * 100)}% ({getWins(mafiaStats)}W / {getLosses(mafiaStats)}L)
-                          </Typography>
-                        </Paper>
+                      <Stack spacing={2}>
+                        <ProfileStatsSummary wins={getWins(mafiaStats)} losses={getLosses(mafiaStats)} abandons={getAbandons(mafiaStats)} total={totalGames} />
+                        <div className="profile-ratings-pie">
+                          <Suspense fallback={null}>
+                            <PieChart wins={getWins(mafiaStats)} losses={getLosses(mafiaStats)} abandons={getAbandons(mafiaStats)} />
+                          </Suspense>
+                        </div>
 
                         {statsBucket === "ranked" && skillRating?.tier ? (
-                          <Paper
-                            variant="outlined"
-                            sx={{
-                              p: 1.5,
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                              backgroundColor: "background.paper",
-                              borderColor: "divider",
-                              borderRadius: 2
-                            }}
-                          >
+                          <UiCard className="profile-tier-summary">
                             {TIER_ICONS[skillRating.tier] && (
                               <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                                 <img
@@ -2025,19 +1884,9 @@ export default function Profile() {
                                   {skillRating.tier}
                                 </Typography>
                                 {skillRating.rank && (
-                                  <Paper
-                                    sx={{
-                                      px: 1,
-                                      py: 0.25,
-                                      fontSize: "0.75rem",
-                                      fontWeight: "bold",
-                                      backgroundColor: "primary.main",
-                                      color: "primary.contrastText",
-                                      borderRadius: 1
-                                    }}
-                                  >
+                                  <span className="profile-rank-chip">
                                     Rank #{skillRating.rank}
-                                  </Paper>
+                                  </span>
                                 )}
                               </Stack>
                               
@@ -2076,42 +1925,40 @@ export default function Profile() {
                                 </Grid>
                               </Grid>
                             </Stack>
-                          </Paper>
+                          </UiCard>
                         ) : statsBucket === "ranked" ? (
-                          <Paper variant="outlined" sx={{ p: 2, display: "flex", justifyContent: "center", alignItems: "center", borderRadius: 2, backgroundColor: "background.paper" }}>
-                            <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic", textAlign: "center", p: 1 }}>
-                              {/* Counts rated games from the rating system itself, not the
-                                  profile's total game count -- the two differ, and for players
-                                  from before the rating system they differ by thousands. */}
-                              {ratedGames > 0
-                                ? `Not enough rated games played (${ratedGames}/${ratedGamesRequired}). Play at least ${ratedGamesRequired} ranked or competitive games to establish a skill rating.`
-                                : `No rated games played yet. Play at least ${ratedGamesRequired} ranked or competitive games to establish a skill rating.`
-                              }
-                            </Typography>
-                          </Paper>
+                          <Typography variant="body2" color="text.secondary" sx={{ fontStyle: "italic", textAlign: "center", py: 1 }}>
+                            {/* Counts rated games from the rating system itself, not the
+                                profile's total game count -- the two differ, and for players
+                                from before the rating system they differ by thousands. */}
+                            {ratedGames > 0
+                              ? `Not enough rated games played (${ratedGames}/${ratedGamesRequired}). Play at least ${ratedGamesRequired} ranked or competitive games to establish a skill rating.`
+                              : `No rated games played yet. Play at least ${ratedGamesRequired} ranked or competitive games to establish a skill rating.`
+                            }
+                          </Typography>
                         ) : null}
                       </Stack>
 
-                      <Box sx={{ mt: 2, display: "flex", justifyContent: "center" }}>
-                        <Button
-                          variant="text"
+                      <Box sx={{ display: "flex", justifyContent: "center" }}>
+                        <UiAction
+                          variant="ghost"
                           size="small"
                           onClick={() => setRatingsTab(ratingsTab === "query" ? "wins" : "query")}
-                          startIcon={<i className={ratingsTab === "query" ? "fas fa-chevron-up" : "fas fa-chevron-down"} />}
-                          sx={{ textTransform: "none", fontWeight: 700 }}
                         >
+                          <i className={ratingsTab === "query" ? "fas fa-chevron-up" : "fas fa-chevron-down"} />
                           {ratingsTab === "query" ? "Hide Detailed Stats Breakdown" : "Show Detailed Stats Breakdown"}
-                        </Button>
+                        </UiAction>
                       </Box>
 
                       {ratingsTab === "query" && (
-                        <Box sx={{ mt: 2, borderTop: "1px solid", borderColor: "divider", pt: 2 }}>
+                        <Box sx={{ borderTop: "1px solid", borderColor: "divider", pt: 2 }}>
                           <StatsQueryView stats={stats} statsBucket={statsBucket} />
                         </Box>
                       )}
                     </>
                   )}
-                </div>
+                  </Stack>
+                </UiCard>
               )}
             {isSelf && pendingConfirmationTrades.length > 0 && (
               <PendingTradeConfirmations
@@ -2119,23 +1966,14 @@ export default function Profile() {
                 stamps={stamps}
                 lockedCountsByRoleKey={lockedCountsByRoleKey}
                 onAction={refetchProfile}
-                panelStyle={panelStyle}
                 headingStyle={headingStyle}
               />
             )}
-            <div className="box-panel recent-games" style={panelStyle}>
+            <UiCard className="recent-games profile-tinted">
               <Typography variant="h3" style={headingStyle}>
                 Recent Games
               </Typography>
               <div className="content" style={{ padding: "0px" }}>
-                {recentGamesMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={recentGamesPage}
-                    maxPage={recentGamesMaxPage}
-                    onNav={onRecentGamesPageNav}
-                  />
-                )}
                 {recentGamesLoading && (
                   <Typography
                     sx={{
@@ -2164,17 +2002,17 @@ export default function Profile() {
                   />
                 )}
               </div>
-            </div>
+            </UiCard>
             {friendRequests.length > 0 && (
-              <div className="box-panel" style={panelStyle}>
+              <UiCard className="profile-tinted">
                 <Typography variant="h3" style={headingStyle}>
                   Friend Requests
                 </Typography>
                 <div className="content">{friendRequestRows}</div>
-              </div>
+              </UiCard>
             )}
             {incomingPokes.length > 0 && !user.settings?.disablePokes && (
-              <div className="box-panel" style={panelStyle}>
+              <UiCard className="profile-tinted">
                 <Typography variant="h3" style={headingStyle}>
                   Pokes
                 </Typography>
@@ -2210,14 +2048,13 @@ export default function Profile() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </UiCard>
             )}
-            <div className="box-panel" style={panelStyle}>
+            <UiCard className="profile-tinted">
               <Typography variant="h3" style={headingStyle}>
                 Friends
               </Typography>
               <div className="content">
-                <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
                 {friendRows}
                 {friends.length === 0 && (
                   <Typography
@@ -2230,20 +2067,12 @@ export default function Profile() {
                 )}
                 <PageNav inverted page={friendsPage} onNav={onFriendsPageNav} />
               </div>
-            </div>
-            <div className="box-panel" style={panelStyle}>
+            </UiCard>
+            <UiCard className="profile-tinted">
               <Typography variant="h3" style={headingStyle}>
                 Setups Created
               </Typography>
               <div className="content">
-                {setupsMaxPage > 1 && (
-                  <PageNav
-                    inverted
-                    page={setupsPage}
-                    maxPage={setupsMaxPage}
-                    onNav={onSetupsPageNav}
-                  />
-                )}
                 {setupsLoading && (
                   <Typography
                     sx={{
@@ -2264,7 +2093,7 @@ export default function Profile() {
                   />
                 )}
               </div>
-            </div>
+            </UiCard>
             <AchievementPanel
               achievements={achievements}
               panelStyle={panelStyle}
@@ -2283,7 +2112,7 @@ export default function Profile() {
               siteInfo={siteInfo}
             />
             {archivedGamesRows.length !== 0 && (
-              <div className="box-panel archived-games" style={panelStyle}>
+              <UiCard className="archived-games profile-tinted">
                 <Typography variant="h3" sx={headingStyle}>
                   Archived Games{" "}
                   {showDelete && (
@@ -2298,13 +2127,16 @@ export default function Profile() {
                     {archivedGamesRows}
                   </Stack>
                 </div>
-              </div>
+              </UiCard>
             )}
           </Stack>
         </Grid>
         {isPhoneDevice && (
-          <Grid item xs={12} sx={{ mt: 1 }}>
-            <Comments fullWidth location={profileUserId} />
+          <Grid item xs={12}>
+            <UiCard className="profile-comments profile-tinted">
+              <h2>Comments</h2>
+              <Comments fullWidth location={profileUserId} />
+            </UiCard>
           </Grid>
         )}
       </Grid>
@@ -2366,19 +2198,17 @@ export default function Profile() {
           )}
         </Box>
       </Popover>
-    </>
+    </UiPage>
   );
 }
 
 export function KarmaVoteWidget(props) {
-  const theme = useTheme();
   const item = props.item;
   const setItem = props.setItem;
   const userId = props.userId;
 
   const user = useContext(UserContext);
   const errorAlert = useErrorAlert();
-  const widgetRef = useRef();
 
   function updateItemVoteCount(direction, newDirection) {
     var voteCount = item.voteCount;
@@ -2414,164 +2244,10 @@ export function KarmaVoteWidget(props) {
   }
 
   return (
-    <Stack direction="column" spacing={1}>
-      <IconButton
-        className={`fas fa-arrow-up`}
-        style={{
-          fontSize: "16px",
-          ...(item.vote === 1 ? { color: theme.palette.info.main } : {}),
-        }}
-        onClick={() => onVote(1)}
-      />
-      <IconButton
-        className={`fas fa-arrow-down`}
-        style={{
-          fontSize: "16px",
-          ...(item.vote === -1 ? { color: theme.palette.info.main } : {}),
-        }}
-        onClick={() => onVote(-1)}
-      />
-    </Stack>
-  );
-}
-
-function StatsModal(props) {
-  const [statsFilter, setStatsFilter] = useState("all");
-  const [statsFilterQuery, setStatsFilterQuery] = useState("");
-
-  const statsFilters = ["all", "bySetup", "byRole", "byAlignment"];
-  const statsFilterNames = {
-    all: "All",
-    bySetup: "Setup",
-    byRole: "Role",
-    byAlignment: "Alignment",
-  };
-  const statsKeyNames = {
-    totalGames: "Total Games",
-    wins: "Wins",
-    abandons: "Abandons",
-  };
-
-  var statsRowNames;
-  const mafia = props.stats["Mafia"] || {};
-  const bucket =
-    props.statsBucket === "ranked"
-      ? mafia.all || {}
-      : props.statsBucket === "unranked"
-        ? mafia.unranked || {}
-        : mergeStatsBuckets(mafia.all || {}, mafia.unranked || {});
-  var stats =
-    statsFilter === "all"
-      ? bucket
-      : bucket?.[statsFilter];
-
-  if (stats == null) {
-    stats = [];
-    statsRowNames = [];
-  }
-  if (statsFilter === "all") {
-    stats = [stats];
-    statsRowNames = ["All"];
-  } else {
-    statsRowNames = Object.keys(stats).filter((key) =>
-      key.toLowerCase().includes(statsFilterQuery)
-    );
-    stats = statsRowNames.map((key) => stats[key]);
-    statsRowNames = statsRowNames.map(
-      (key) => `${statsFilterNames[statsFilter]}: ${key}`
-    );
-  }
-
-  const filterDropdownOptions = statsFilters.map((filter) => (
-    <option key={filter} value={filter}>
-      {statsFilterNames[filter]}
-    </option>
-  ));
-
-  const statsRows = stats.map((statsObj, i) => {
-    let totalGames = getTotalGames(statsObj);
-    let statsList = Object.keys(statsObj).map((statKey) => {
-      let statData = statsObj[statKey];
-
-      switch (statKey) {
-        case "totalGames":
-          // statsObj.totalGames is not accurate for legacy data — it was
-          // added after "wins" was already being tracked, so older games
-          // have wins.total > statsObj.totalGames. Derive from helpers.
-          statData = <div className="stat-data">{totalGames}</div>;
-          break;
-        case "wins":
-        case "abandons":
-          statData = (
-            <div className="stat-data">
-              {statData.count}/{totalGames}
-            </div>
-          );
-          break;
-        case "reads":
-        case "survival":
-          statData = <div></div>;
-          break;
-      }
-
-      return (
-        <div className="stat" key={statKey}>
-          <div className="stat-name">{statsKeyNames[statKey]}</div>
-          {statData}
-        </div>
-      );
-    });
-
-    return (
-      <div className="stats-row" key={statsRowNames[i]}>
-        <div className="stats-row-name">{statsRowNames[i]}</div>
-        <div className="stats-list">{statsList}</div>
-      </div>
-    );
-  });
-
-  const header = "Ranked Stats";
-
-  const content = (
-    <div className="stats-wrapper">
-      <div className="filter">
-        <select
-          value={statsFilter}
-          onChange={(e) => setStatsFilter(e.target.value)}
-        >
-          {filterDropdownOptions}
-        </select>
-        <input
-          type="text"
-          placeholder="Query"
-          onChange={(e) => setStatsFilterQuery(e.target.value.toLowerCase())}
-        />
-      </div>
-      <div className="stats">{statsRows}</div>
+    <div className="ui-inline-actions" role="group" aria-label="Profile karma" data-ui-control="karma">
+      <UiAction iconOnly variant="ghost" aria-label="Upvote profile" aria-pressed={item.vote === 1} onClick={() => onVote(1)}><UiIcon name="up" /></UiAction>
+      <UiAction iconOnly variant="ghost" aria-label="Downvote profile" aria-pressed={item.vote === -1} onClick={() => onVote(-1)}><UiIcon name="down" /></UiAction>
     </div>
-  );
-
-  const footer = (
-    <div className="control">
-      <div className="post btn btn-theme" onClick={() => props.setShow(false)}>
-        Close
-      </div>
-    </div>
-  );
-
-  function onCancel() {
-    props.setShow(false);
-  }
-
-  return (
-    <Modal
-      className="stats-modal"
-      show={props.show}
-      onBgClick={onCancel}
-      header={header}
-      content={content}
-      footer={footer}
-    />
   );
 }
 
@@ -2644,32 +2320,29 @@ export function StatsQueryView({ stats, statsBucket }) {
 
   return (
     <div className="stats-query">
-      <div className="query-type-tabs">
-        {Object.keys(typeNames).map((t) => (
-          <div
-            key={t}
-            className={"query-type-tab" + (queryType === t ? " active" : "")}
-            onClick={() => setQueryType(t)}
-          >
-            {typeNames[t]}
-          </div>
-        ))}
-      </div>
+      <UiSegmentedControl
+        ariaLabel="Detailed stats breakdown"
+        value={queryType}
+        onChange={setQueryType}
+        options={Object.entries(typeNames).map(([value, label]) => ({ value, label }))}
+      />
       {keys.length === 0 ? (
         <div className="query-empty">No {typeNames[queryType]} data yet.</div>
       ) : (
         <>
-          <select
-            className="query-select"
+          <TextField
+            select
+            fullWidth
+            label={typeNames[queryType]}
             value={selectedKey}
             onChange={(e) => setSelectedKey(e.target.value)}
           >
             {keys.map((k) => (
-              <option key={k} value={k}>
+              <UiMenuItem key={k} value={k}>
                 {displayKey(k)}
-              </option>
+              </UiMenuItem>
             ))}
-          </select>
+          </TextField>
           {selectedStats && (
             <div className="query-stats">
               <div className="query-stat">

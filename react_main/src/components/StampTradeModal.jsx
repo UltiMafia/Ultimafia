@@ -1,22 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Box,
-  Typography,
-  TextField,
-  Stack,
-  Divider,
-} from "@mui/material";
+import { Box, Stack, Divider } from "@mui/material";
 
 import { SiteInfoContext, UserContext } from "Contexts";
 import { StampItem } from "components/Scrapbook";
 import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/UserWidgets";
+import { UiText as Typography, UiField as TextField, UiAction, UiDialog } from "components/ui";
 
 export default function StampTradeModal({
   open,
@@ -149,8 +139,11 @@ export default function StampTradeModal({
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
+    <UiDialog
+      open={open}
+      onClose={onClose}
+      size="sm"
+      title={
         <Stack direction="row" alignItems="center" spacing={1.5}>
           <span>Trade</span>
           <StampItem role={stamp.role} gameType={stamp.gameType} size="small" />
@@ -158,9 +151,42 @@ export default function StampTradeModal({
             {stamp.role}
           </Typography>
         </Stack>
-      </DialogTitle>
-
-      <DialogContent dividers>
+      }
+      actions={<>
+        <UiAction  variant="ghost" onClick={onClose} >
+          Cancel
+        </UiAction>
+        {selectedTradeId ? (
+          <UiAction
+             variant="primary" onClick={handleRespond}
+            
+            
+            disabled={submitting}
+          >
+            Respond to Trade
+          </UiAction>
+        ) : (
+          <>
+            <UiAction
+               variant="primary" onClick={handleStart}
+              
+              
+              disabled={submitting}
+            >
+              {startLabel}
+            </UiAction>
+            <UiAction
+               variant="primary" onClick={handleGift}
+              
+              
+              disabled={submitting || !(recipientId || selectedFriendId)}
+            >
+              Gift
+            </UiAction>
+          </>
+        )}
+      </>}
+    >
         <Typography variant="subtitle2" sx={{ mb: 1 }}>
           Incoming trades
         </Typography>
@@ -251,42 +277,6 @@ export default function StampTradeModal({
             )}
           </>
         )}
-      </DialogContent>
-
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Cancel
-        </Button>
-        {selectedTradeId ? (
-          <Button
-            onClick={handleRespond}
-            variant="contained"
-            color="primary"
-            disabled={submitting}
-          >
-            Respond to Trade
-          </Button>
-        ) : (
-          <>
-            <Button
-              onClick={handleStart}
-              variant="contained"
-              color="primary"
-              disabled={submitting}
-            >
-              {startLabel}
-            </Button>
-            <Button
-              onClick={handleGift}
-              variant="contained"
-              color="secondary"
-              disabled={submitting || !(recipientId || selectedFriendId)}
-            >
-              Gift
-            </Button>
-          </>
-        )}
-      </DialogActions>
-    </Dialog>
+    </UiDialog>
   );
 }

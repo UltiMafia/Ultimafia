@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link, useParams, useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import update from "immutability-helper";
-import { Popover, List, ListItem, Typography, Button } from "@mui/material";
+import { Popover, List, ListItem } from "@mui/material";
 
 import CustomMarkdown from "components/CustomMarkdown";
 import { useErrorAlert } from "components/Alerts";
@@ -17,8 +17,10 @@ import { appendForumQuote, canComposeForumReply } from "./forumReplyComposer.mjs
 import { pastedForumReplyImage } from "./forumReplyImagePaste.mjs";
 
 import { VoteWidget } from "components/VoteWidget";
+import { UiAction, UiField, UiIcon, confirmAction, UiText as Typography } from "components/ui";
 import { EmoteReactions } from "components/EmoteReactions";
 import "css/emote-reactions.css";
+import "css/comments.css";
 import { NameWithAvatar } from "../../User/UserWidgets";
 
 function formatForumDate(timestamp) {
@@ -88,21 +90,22 @@ function MentionEditor({ value, onChange, onPaste, readOnly, rosterUsers, mentio
     <div className="mention-autocomplete-wrapper" ref={editorRef}>
       <TextEditor value={value} onChange={onChange} onPaste={onPaste} readOnly={readOnly} />
       <div className="mention-picker-row">
-        <button
+        <UiAction
+          size="small"
           className="mention-ping-btn"
-          type="button"
           onClick={() => { setPickerOpen((o) => !o); setPickerQuery(""); }}
         >
           <i className="fas fa-at" /> Ping
-        </button>
+        </UiAction>
         {pickerOpen && (
           <div className="mention-dropdown">
-            <input
-              className="mention-search"
-              autoFocus
+            <UiField
+              className="mention-search-field"
               placeholder="Search..."
+              autoFocus
               value={pickerQuery}
               onChange={(e) => setPickerQuery(e.target.value)}
+              inputProps={{ "aria-label": "Search players and role tags" }}
             />
             {filtered.length === 0 && (
               <div className="mention-no-results">No matches</div>
@@ -663,8 +666,8 @@ function onAddTag(targetUserId) {
       .catch(errorAlert);
   }
 
-  function onRemovePetition() {
-    const shouldRemove = window.confirm(
+  async function onRemovePetition() {
+    const shouldRemove = await confirmAction(
       "Are you sure you wish to remove this petition?"
     );
     if (!shouldRemove) return;
@@ -724,19 +727,19 @@ function onAddTag(targetUserId) {
           <div className="reply-image-preview">
             {replyImagePreview && <img src={replyImagePreview} alt="Pasted attachment preview"
               style={{ maxWidth: "100%", maxHeight: 240 }} />}
-            <button type="button" className="btn btn-theme-sec" disabled={postingReply}
-              onClick={() => setReplyImage(null)}>Remove image</button>
+            <UiAction variant="secondary" disabled={postingReply}
+              onClick={() => setReplyImage(null)}>Remove image</UiAction>
           </div>
         )}
-        <div className="post-btn-wrapper">
-          <button type="button" className="post-reply btn btn-theme"
-            disabled={postingReply} onClick={onPostReply}>
-            {postingReply ? "Posting..." : "Post"}
-          </button>
-          <button type="button" className="btn btn-theme-sec"
+        <div className="thread-submit-actions" style={{ marginTop: 12 }}>
+          <UiAction variant="secondary"
             disabled={postingReply} onClick={onPostCancel}>
             Cancel
-          </button>
+          </UiAction>
+          <UiAction variant="primary" busy={postingReply}
+            disabled={postingReply} onClick={onPostReply}>
+            {postingReply ? "Posting..." : "Post reply"}
+          </UiAction>
         </div>
       </fieldset>
     </div>
@@ -945,35 +948,39 @@ function onAddTag(targetUserId) {
                         </div>
                       )}
                       <div className="tag-add-row">
-                        <input
-                          type="text"
+                        <UiField
+                          className="forum-inline-field"
+                          placeholder="Tag name..."
                           value={newTagText}
                           onChange={(e) => setNewTagText(e.target.value)}
                           onKeyDown={(e) =>
                             e.key === "Enter" && onAddTag(entry.user.id)
                           }
-                          placeholder="Tag name..."
+                          inputProps={{ "aria-label": "Tag name" }}
                         />
                         <input
                           className="roster-color-input"
                           type="color"
+                          aria-label="Tag color"
                           value={newTagColor}
                           onChange={(e) => setNewTagColor(e.target.value)}
                         />
-                        <div
-                          className="btn btn-theme-sec"
+                        <UiAction
+                          size="small"
                           onClick={() => onAddTag(entry.user.id)}
                         >
                           Add
-                        </div>
-                        <div
+                        </UiAction>
+                        <UiAction
+                          size="small"
+                          variant="ghost"
                           className="preset-save-btn"
                           onClick={onSavePreset}
                           title="Save as preset"
                         >
                           <i className="fas fa-bookmark" />
                           Save
-                        </div>
+                        </UiAction>
                       </div>
                     </div>
                   )}
@@ -982,16 +989,17 @@ function onAddTag(targetUserId) {
             </div>
             {isAuthor && (
               <div className="add-poster-row">
-                <input
-                  type="text"
+                <UiField
+                  className="forum-inline-field"
+                  placeholder="Add username..."
                   value={newRosterUsername}
                   onChange={(e) => setNewRosterUsername(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && onAddRosterEntry()}
-                  placeholder="Add username..."
+                  inputProps={{ "aria-label": "Username to add" }}
                 />
-                <div className="btn btn-theme-sec" onClick={onAddRosterEntry}>
+                <UiAction size="small" onClick={onAddRosterEntry}>
                   Add
-                </div>
+                </UiAction>
               </div>
             )}
           </div>
@@ -1021,27 +1029,31 @@ function onAddTag(targetUserId) {
             </div>
             {petitionEditing ? (
               <div className="petition-edit-form">
-                <input
-                  type="text"
+                <UiField
+                  fullWidth
+                  label="Petition title"
                   value={petitionEditTitle}
                   onChange={(e) => setPetitionEditTitle(e.target.value)}
                   placeholder="Petition title..."
-                  maxLength={200}
+                  inputProps={{ maxLength: 200 }}
                 />
-                <textarea
+                <UiField
+                  fullWidth
+                  multiline
+                  minRows={4}
+                  label="Petition body"
                   value={petitionEditBody}
                   onChange={(e) => setPetitionEditBody(e.target.value)}
                   placeholder="Describe what you are petitioning for..."
-                  maxLength={5000}
-                  rows={4}
+                  inputProps={{ maxLength: 5000 }}
                 />
                 <div className="petition-edit-buttons">
-                  <div className="btn btn-theme" onClick={onSavePetition}>
+                  <UiAction variant="primary" onClick={onSavePetition}>
                     Save
-                  </div>
-                  <div className="btn btn-theme-sec" onClick={onCancelEditPetition}>
+                  </UiAction>
+                  <UiAction onClick={onCancelEditPetition}>
                     Cancel
-                  </div>
+                  </UiAction>
                 </div>
               </div>
             ) : (
@@ -1073,10 +1085,9 @@ function onAddTag(targetUserId) {
                   ))}
                 </div>
                 {user.loggedIn && (
-                  <div
-                    className={`petition-sign-btn btn ${
-                      threadInfo.petition.hasSigned ? "btn-theme-sec" : "btn-theme"
-                    }`}
+                  <UiAction
+                    className="petition-sign-btn"
+                    variant={threadInfo.petition.hasSigned ? "secondary" : "primary"}
                     onClick={onSignPetition}
                   >
                     <i
@@ -1085,7 +1096,7 @@ function onAddTag(targetUserId) {
                       }`}
                     />
                     {threadInfo.petition.hasSigned ? "Signed" : "Sign"}
-                  </div>
+                  </UiAction>
                 )}
               </>
             )}
@@ -1096,12 +1107,6 @@ function onAddTag(targetUserId) {
       </div>
       <ThreadPoll threadId={threadId} locked={threadInfo.locked} />
       <div className="replies-wrapper">
-        <PageNav
-          inverted
-          page={page}
-          maxPage={threadInfo.pageCount}
-          onNav={onThreadPageNav}
-        />
         <div className="replies">
           {replies.length === 0 && "No replies yet"}
           {replies}
@@ -1116,14 +1121,13 @@ function onAddTag(targetUserId) {
           (!threadInfo.locked || user.perms.postInLocked) &&
           canReply && (
             <div style={{ marginTop: "16px" }}>
-              <Button
-                variant="contained"
-                color="primary"
+              <UiAction
+                variant="primary"
                 onClick={() => onReplyClick(null, "bottom")}
-                sx={{ minWidth: "120px" }}
+                style={{ minWidth: "120px" }}
               >
                 Reply
-              </Button>
+              </UiAction>
             </div>
           )}
         {replyTarget === "bottom" && replyForm}
@@ -1187,25 +1191,16 @@ function Post(props) {
       "lastVisit",
     ])
   );
-  const authorSubContent =
-    profileJoinDate || profileLastSeenDate ? (
-      <div className="forum-author-meta">
-        <div>
-          <Time minSec millisec={Date.now() - postInfo.postDate} /> ago
-        </div>
-        {profileJoinDate && <div>Join Date {profileJoinDate}</div>}
-        {profileLastSeenDate && <div>Last Seen {profileLastSeenDate}</div>}
-      </div>
-    ) : (
-      <div className="forum-author-meta">
-        <div>
-          <Time minSec millisec={Date.now() - postInfo.postDate} /> ago
-        </div>
-      </div>
-    );
+  const authorSubContent = (
+    <div className="forum-author-meta">
+      <Time minSec millisec={Date.now() - postInfo.postDate} /> ago
+      {profileJoinDate && <span> · Joined {profileJoinDate}</span>}
+      {profileLastSeenDate && <span> · Last seen {profileLastSeenDate}</span>}
+    </div>
+  );
 
-  function onDeleteClick() {
-    const shouldDelete = window.confirm(
+  async function onDeleteClick() {
+    const shouldDelete = await confirmAction(
       "Are you sure you wish to delete this?"
     );
 
@@ -1284,32 +1279,23 @@ function Post(props) {
 
   return (
     <div
-      className={`post span-panel ${postInfo.deleted ? "deleted" : ""} ${
+      className={`post ${postInfo.deleted ? "deleted" : ""} ${
         props.className || ""
       }`}
       id={id}
     >
-      <div className="vote-wrapper">
-        <VoteWidget
-          item={voteItem}
-          itemType={itemType}
-          itemHolder={voteItemHolder}
-          setItemHolder={setVoteItemHolder}
-          itemKey={itemKey}
-        />
-      </div>
       <div className="main-wrapper">
         <div className="heading">
           <div className="heading-left">
             {hasTitle && (
-              <div className="title">
+              <h1 className="title">
                 {locked && <i className="fas fa-lock" />}
                 {postInfo.pinned && <i className="fas fa-thumbtack" />}
                 {postInfo.restricted && (
                   <i className="fas fa-user-lock" title="Restricted thread" />
                 )}
                 {postInfo.title}
-              </div>
+              </h1>
             )}
             <div className="author-row">
               <div className="post-info">
@@ -1317,12 +1303,11 @@ function Post(props) {
                   id={postInfo.author.id}
                   name={postInfo.author.name}
                   avatar={postInfo.author.avatar}
+                  avatarSize={32}
                   groups={postInfo.author.groups}
                   vanityUrl={postInfo.author.vanityUrl}
-                  includeMiniprofile
-                  large
-                  subContent={authorSubContent}
                 />
+                {authorSubContent}
               </div>
               {postInfo.author?.forumBanner && (
                 <img
@@ -1340,49 +1325,37 @@ function Post(props) {
                   user.perms.postReply &&
                   (!locked || user.perms.postInLocked) &&
                   canReply && (
-                    <i className="fas fa-reply" onClick={onReplyClick} />
+                    <UiAction variant="ghost" onClick={onReplyClick}><UiIcon name="reply" size={18} />Reply</UiAction>
                   )}
                 {itemType === "thread" && user.perms.pinThreads && (
-                  <i
-                    className={`fas fa-thumbtack ${
-                      postInfo.pinned ? "fa-rotate-180" : ""
-                    }`}
-                    onClick={onTogglePinnedClick}
-                  />
+                    <UiAction variant="ghost" iconOnly aria-label="Pin thread" aria-pressed={!!postInfo.pinned}
+                      onClick={onTogglePinnedClick}
+                    ><UiIcon name="pin" size={18} /></UiAction>
                 )}
                 {itemType === "thread" && user.perms.lockThreads && (
-                  <i
-                    className={`fas fa-lock${postInfo.locked ? "-open" : ""}`}
-                    onClick={onToggleLockedClick}
-                  />
+                    <UiAction variant="ghost" iconOnly aria-label={postInfo.locked ? "Unlock thread" : "Lock thread"}
+                      onClick={onToggleLockedClick}
+                    ><UiIcon name="lock" size={18} /></UiAction>
                 )}
                 {(user.perms.deleteAnyPost ||
                   (user.perms.deleteOwnPost &&
                     postInfo.author.id === user.id)) && (
-                  <i className="fas fa-trash" onClick={onDeleteClick} />
+                  <UiAction variant="danger-quiet" iconOnly aria-label="Delete post" onClick={onDeleteClick}><UiIcon name="delete" size={18} /></UiAction>
                 )}
                 {user.perms.editPost &&
                   postInfo.author.id === user.id &&
                   (!locked || user.perms.postInLocked) && (
-                    <i className="fas fa-pencil-alt" onClick={onEditClick} />
+                    <UiAction variant="ghost" iconOnly aria-label="Edit post" onClick={onEditClick}><UiIcon name="edit" size={18} /></UiAction>
                   )}
                 {itemType === "thread" && user.loggedIn && (
                   <>
-                    <i
-                      className={`fa${
-                        postInfo.author.id === user.id
-                          ? postInfo.replyNotify
-                            ? "s"
-                            : "r"
-                          : postInfo.isSubscribed
-                          ? "s"
-                          : "r"
-                      } fa-bell`}
+                    <UiAction variant="ghost" iconOnly aria-label="Follow thread"
+                      aria-pressed={!!(postInfo.author.id === user.id ? postInfo.replyNotify : postInfo.isSubscribed)}
                       onClick={onNotifyClick}
                       onMouseEnter={handlePopoverOpen}
                       onMouseLeave={handlePopoverClose}
                       style={{ cursor: "pointer" }}
-                    />
+                    ><UiIcon name="notification" size={18} /></UiAction>
                     <Popover
                       sx={{
                         pointerEvents: "none",
@@ -1453,14 +1426,14 @@ function Post(props) {
                   </>
                 )}
                 {permaLink && (
-                  <Link to={permaLink} onClick={() => onPermaLinkClick()}>
-                    <i className="fas fa-link" />
+                  <Link className="forum-permalink" aria-label="Link to this post" to={permaLink} onClick={() => onPermaLinkClick()}>
+                    <UiIcon name="link" size={18} />
                   </Link>
                 )}
               </>
             )}
             {postInfo.deleted && user.perms.restoreDeleted && (
-              <i className="fas fa-trash-restore" onClick={onRestoreClick} />
+              <UiAction variant="ghost" onClick={onRestoreClick}>Restore post</UiAction>
             )}
           </div>
         </div>
@@ -1470,27 +1443,35 @@ function Post(props) {
           </div>
         )}
         {!postInfo.deleted && !editing && (
-          <EmoteReactions
-            item={voteItem}
-            itemType={itemType}
-            itemHolder={voteItemHolder}
-            setItemHolder={setVoteItemHolder}
-            itemKey={itemKey}
-          />
+          <footer className="post-footer comment-footer">
+            <div className="comment-vote">
+              <VoteWidget
+                item={voteItem}
+                itemType={itemType}
+                itemHolder={voteItemHolder}
+                setItemHolder={setVoteItemHolder}
+                itemKey={itemKey}
+              />
+            </div>
+            <EmoteReactions
+              item={voteItem}
+              itemType={itemType}
+              itemHolder={voteItemHolder}
+              setItemHolder={setVoteItemHolder}
+              itemKey={itemKey}
+            />
+          </footer>
         )}
         {editing && (
           <div className="edit-wrapper">
             <TextEditor value={editContent} onChange={setEditContent} />
-            <div className="post-btn-wrapper">
-              <div
-                className="post-reply btn btn-theme-sec"
-                onClick={onEditSave}
-              >
-                Save
-              </div>
-              <div className="btn btn-theme-sec" onClick={onEditCancel}>
+            <div className="thread-submit-actions" style={{ marginTop: 12 }}>
+              <UiAction variant="secondary" onClick={onEditCancel}>
                 Cancel
-              </div>
+              </UiAction>
+              <UiAction variant="primary" onClick={onEditSave}>
+                Save
+              </UiAction>
             </div>
           </div>
         )}

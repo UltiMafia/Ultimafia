@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef, useMemo } from "react";
+import { UiPage, UiSection, UiProductCard, UiTabs, UiTab, confirmAction, UiText as Typography, UiField as TextField, UiTabs as Tabs, UiAction, UiCard, UiDialog } from "components/ui";
 import { useLocation } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 import axios from "axios";
@@ -7,30 +8,11 @@ import update from "immutability-helper";
 import { useErrorAlert } from "../../components/Alerts";
 import { UserContext, SiteInfoContext } from "../../Contexts";
 
-import {
-  Box,
-  Button,
-  Typography,
-  Card,
-  TextField,
-  Stack,
-  Paper,
-  Grid2,
-  CardActionArea,
-  Divider,
-  Tabs,
-  Tab,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  InputAdornment,
-  IconButton,
-} from "@mui/material";
+import { Box, Stack, Grid2, Divider, InputAdornment } from "@mui/material";
 
 import { PageSkeleton } from "../../components/Skeletons";
 
-import coin from "images/umcoin.png";
+import CoinIcon from "components/CoinIcon";
 import CryptoDonate from "./CryptoDonate";
 
 const SHOP_CATEGORIES = [
@@ -283,9 +265,9 @@ export default function Shop(props) {
       });
   };
 
-  function onBuyItem(index) {
+  async function onBuyItem(index) {
     const item = shopInfo.shopItems[index];
-    const shouldBuy = window.confirm(
+    const shouldBuy = await confirmAction(
       `Are you sure you wish to buy ${item.name} for ${item.price.toFixed(2)} coins?`
     );
 
@@ -338,30 +320,16 @@ export default function Shop(props) {
     return map;
   }, [shopInfo.shopItems]);
 
-  const renderShopCard = ({ item, index: i }) => {
+  const renderShopItem = ({ item, index: i }) => {
     const numOwned = user.itemsOwned[item.key] || 0;
     const disabled = item.disabled || numOwned === item.limit;
 
     return (
-      <Grid2
-        size={{
-          xs: 12,
-          md: 6,
-        }}
-        key={i}
-      >
-        <Card
-          variant="outlined"
-          sx={(theme) => ({
-            width: "100%",
-            height: "100%",
-            opacity: disabled ? "50%" : undefined,
-            borderColor: theme.palette.primary.main,
-          })}
-        >
-          <CardActionArea
-            disabled={disabled}
-            onClick={() => {
+      <UiProductCard key={item.key} title={item.name} description={item.desc}
+        ownership={`Owned: ${numOwned}${item.limit != null ? ` / ${item.limit}` : ""}`}
+        price={<>{item.price.toFixed(2)} <CoinIcon size={20} alt="coins" /></>}
+        disabled={disabled} unavailableLabel={item.disabled ? "Unavailable" : "Limit reached"}
+        onBuy={() => {
               if (item.key === "stamp") {
                 setStampDialogOpen(true);
                 setShowSuggestions(true);
@@ -371,52 +339,7 @@ export default function Shop(props) {
               } else {
                 onBuyItem(i);
               }
-            }}
-            sx={{ px: 1.5, py: 1 }}
-          >
-            <Stack
-              direction="row"
-              spacing={1.5}
-              alignItems="center"
-              sx={{ width: "100%" }}
-            >
-              <Stack sx={{ flex: 1, minWidth: 0 }}>
-                <Stack direction="row" spacing={1} alignItems="baseline">
-                  <Typography variant="h3" sx={{ lineHeight: 1.2 }}>
-                    {item.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Owned: {numOwned}
-                    {item.limit != null && ` / ${item.limit}`}
-                  </Typography>
-                </Stack>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                    overflow: "hidden",
-                    lineHeight: 1.4,
-                    minHeight: "calc(2 * 1.4em)",
-                  }}
-                >
-                  {item.desc}
-                </Typography>
-              </Stack>
-              <Stack
-                direction="row"
-                spacing={0.5}
-                alignItems="center"
-                sx={{ flexShrink: 0 }}
-              >
-                <Typography>{item.price.toFixed(2)}</Typography>
-                <img src={coin} style={{ width: "20px", height: "20px" }} />
-              </Stack>
-            </Stack>
-          </CardActionArea>
-        </Card>
-      </Grid2>
+        }} />
     );
   };
 
@@ -425,8 +348,7 @@ export default function Shop(props) {
   if (!loaded) return <PageSkeleton />;
 
   return (
-    <Stack direction="column" spacing={1}>
-      <Paper sx={{ p: 2 }}>
+    <UiPage title="Shop" width="wide" className="shop-page" actions={
         <Stack
           direction="row"
           spacing={1}
@@ -437,82 +359,33 @@ export default function Shop(props) {
           <Typography variant="h3" className="balance">
             You have: {shopInfo.balance.toFixed(2)}
           </Typography>
-          <img
-            className="um-coin"
-            src={coin}
-            style={{ width: "20px", height: "20px" }}
-            alt="Coin Icon"
-          />
+          <CoinIcon size={20} alt="Coin Icon" />
         </Stack>
-      </Paper>
+      }>
 
-      <Tabs
+      <UiTabs
         value={activeTab}
         onChange={(_, newValue) => setActiveTab(newValue)}
-        centered
         sx={{
           borderBottom: 1,
           borderColor: "divider",
         }}
       >
-        <Tab value="shop" label="Shop" />
-        <Tab value="manage" label="Donate" />
-        <Tab value="transfer" label="Transfer Coins" />
-      </Tabs>
+        <UiTab value="shop" label="Shop" />
+        <UiTab value="manage" label="Donate" />
+        <UiTab value="transfer" label="Transfer" />
+      </UiTabs>
 
       {activeTab === "shop" && (
         <>
-          <Divider flexItem orientation="horizontal" />
-          <Stack spacing={2.5} sx={{ pt: 1 }}>
+          <Stack spacing={2.5}>
             {SHOP_CATEGORIES.map((c) => {
               const entries = itemsByCategory[c.key] || [];
               if (entries.length === 0) return null;
               return (
-                <Box key={c.key}>
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    spacing={1.5}
-                    sx={{ mb: 1.5 }}
-                  >
-                    <Box
-                      sx={(theme) => ({
-                        flex: 1,
-                        height: "1px",
-                        background: `linear-gradient(to right, transparent, ${theme.palette.primary.main}99)`,
-                      })}
-                    />
-                    <Typography
-                      variant="h4"
-                      sx={(theme) => ({
-                        fontWeight: 700,
-                        letterSpacing: "0.28em",
-                        textTransform: "uppercase",
-                        color: theme.palette.primary.main,
-                        fontSize: { xs: 16, md: 20 },
-                        whiteSpace: "nowrap",
-                        "&::before, &::after": {
-                          content: '"\\25C6"',
-                          margin: "0 0.65em",
-                          fontSize: "0.7em",
-                          opacity: 0.7,
-                        },
-                      })}
-                    >
-                      {c.label}
-                    </Typography>
-                    <Box
-                      sx={(theme) => ({
-                        flex: 1,
-                        height: "1px",
-                        background: `linear-gradient(to left, transparent, ${theme.palette.primary.main}99)`,
-                      })}
-                    />
-                  </Stack>
-                  <Grid2 container spacing={1}>
-                    {entries.map((entry) => renderShopCard(entry))}
-                  </Grid2>
-                </Box>
+                <UiSection key={c.key} title={c.label}>
+                  <div className="ui-product-grid">{entries.map(renderShopItem)}</div>
+                </UiSection>
               );
             })}
           </Stack>
@@ -521,7 +394,7 @@ export default function Shop(props) {
 
       {activeTab === "manage" && (
         <Stack spacing={2} sx={{ pt: 1 }}>
-          <Paper sx={{ p: 2 }}>
+          <UiCard>
             <Stack spacing={1}>
               <Typography variant="body2">
                 All funds are used for running UM. No salaries are paid, and no
@@ -536,7 +409,7 @@ export default function Shop(props) {
                 these methods, reach out to @golbolco on Discord.
               </Typography>
             </Stack>
-          </Paper>
+          </UiCard>
           <Grid2 container spacing={1}>
           <Grid2
             size={{
@@ -544,7 +417,7 @@ export default function Shop(props) {
               md: 6,
             }}
           >
-            <Paper sx={{ p: 2, height: "100%" }}>
+            <UiCard className="shop-panel">
               <Stack spacing={1}>
                 <Typography variant="h3">Cash</Typography>
                 <Typography variant="body2">1 USD = 5 coins.</Typography>
@@ -593,7 +466,7 @@ export default function Shop(props) {
                   </Typography>
                 )}
               </Stack>
-            </Paper>
+            </UiCard>
           </Grid2>
           <Grid2
             size={{
@@ -601,12 +474,12 @@ export default function Shop(props) {
               md: 6,
             }}
           >
-            <Paper sx={{ p: 2, height: "100%" }}>
+            <UiCard className="shop-panel">
               <Stack spacing={1}>
                 <Typography variant="h3">Crypto</Typography>
                 <CryptoDonate />
               </Stack>
-            </Paper>
+            </UiCard>
           </Grid2>
           </Grid2>
         </Stack>
@@ -615,7 +488,7 @@ export default function Shop(props) {
       {activeTab === "transfer" && (
         <Grid2 container spacing={1} sx={{ pt: 1 }}>
           <Grid2 size={{ xs: 12, md: 6 }}>
-            <Paper sx={{ p: 2, height: "100%" }}>
+            <UiCard className="shop-panel">
               <Stack spacing={1}>
                 <Typography variant="h3">Transfer coins</Typography>
                 <TextField
@@ -629,170 +502,156 @@ export default function Shop(props) {
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
-                <Button onClick={handleTransferCoins}>Transfer</Button>
+                <UiAction variant="primary" block onClick={handleTransferCoins}>Transfer</UiAction>
               </Stack>
-            </Paper>
+            </UiCard>
           </Grid2>
         </Grid2>
       )}
 
-      <Dialog
+      <UiDialog
         open={stampDialogOpen}
+        overflowVisible
         onClose={() => {
           setStampDialogOpen(false);
           setStampGameUrl("");
           setSelectedSuggestion(null);
           setStampSuggestions([]);
         }}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Buy Scrapbook Stamp</DialogTitle>
-        <DialogContent sx={{ overflow: "visible" }}>
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            Enter the URL or ID of a Mafia game you won. You will receive a
-            stamp of the role you played.
-          </Typography>
-          <Box sx={{ position: "relative" }}>
-            <TextField
-              autoFocus
-              fullWidth
-              label="Game URL or ID"
-              value={stampGameUrl}
-              onChange={(e) => {
-                setStampGameUrl(e.target.value);
+        title="Buy Scrapbook Stamp"
+        size="sm"
+        actions={
+          <>
+            <UiAction
+              variant="ghost"
+              onClick={() => {
+                setStampDialogOpen(false);
+                setStampGameUrl("");
                 setSelectedSuggestion(null);
-                setShowSuggestions(false);
+                setStampSuggestions([]);
               }}
-              placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
-              InputProps={stampSuggestions.length > 0 ? {
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      size="small"
-                      onClick={() => setShowSuggestions((v) => !v)}
-                    >
-                      <i
-                        className={`fas fa-chevron-${showSuggestions ? "up" : "down"}`}
-                        style={{ fontSize: "12px" }}
-                      />
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              } : undefined}
-            />
-            {showSuggestions && stampSuggestions.length > 0 && (
-              <Paper
-                sx={{
-                  position: "absolute",
-                  zIndex: 1301,
-                  left: 0,
-                  right: 0,
-                  maxHeight: 200,
-                  overflowY: "auto",
-                }}
-              >
-                {stampSuggestions.map((s) => (
-                  <Box
-                    key={s.gameId}
-                    sx={{
-                      px: 2,
-                      py: 1,
-                      cursor: "pointer",
-                      "&:hover": { bgcolor: "action.hover" },
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      setStampGameUrl(s.gameId);
-                      setSelectedSuggestion(s);
-                      setShowSuggestions(false);
-                    }}
-                  >
-                    <Typography variant="body2">
-                      {s.gameId} — {s.role}
-                    </Typography>
-                  </Box>
-                ))}
-              </Paper>
-            )}
-          </Box>
-          {selectedSuggestion && (
-            <Typography
-              variant="caption"
-              sx={{ mt: 1, display: "block" }}
-              color="success.main"
             >
-              Stamp role: {selectedSuggestion.role}
-            </Typography>
-          )}
-          {!selectedSuggestion && stampGameUrl.trim() && (
-            <Typography
-              variant="caption"
-              sx={{ mt: 1, display: "block" }}
-              color={parseGameId(stampGameUrl) ? "textSecondary" : "error"}
+              Cancel
+            </UiAction>
+            <UiAction
+              variant="primary"
+              disabled={!parseGameId(stampGameUrl)}
+              onClick={() => {
+                const gameId = parseGameId(stampGameUrl);
+                if (!gameId) {
+                  siteInfo.showAlert("Could not parse a game ID.", "error");
+                  return;
+                }
+                const stampIndex = shopInfo.shopItems.findIndex((si) => si.key === "stamp");
+                const stampItem = shopInfo.shopItems[stampIndex];
+                axios
+                  .post("/api/shop/checkStampEligibility", { gameId })
+                  .then(async (eligibility) => {
+                    const shouldBuy = await confirmAction(
+                      `You will receive a stamp for ${eligibility.data.role}. Purchase for ${stampItem.price.toFixed(2)} coins?`
+                    );
+                    if (!shouldBuy) return;
+                    return axios.post("/api/shop/spendCoins", {
+                      item: stampIndex,
+                      gameId: eligibility.data.gameId,
+                    });
+                  })
+                  .then((res) => {
+                    if (!res) return;
+                    siteInfo.showAlert(
+                      `Stamp purchased: ${res.data.role}!`,
+                      "success"
+                    );
+                    setStampGameUrl("");
+                    setSelectedSuggestion(null);
+                    setStampSuggestions([]);
+                    setStampDialogOpen(false);
+                    setShopInfo((prev) => ({
+                      ...prev,
+                      balance: prev.balance - stampItem.price,
+                    }));
+                  })
+                  .catch(errorAlert);
+              }}
             >
-              {parseGameId(stampGameUrl)
-                ? `Game ID: ${parseGameId(stampGameUrl)}`
-                : "Could not parse a game ID from this input."}
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              setStampDialogOpen(false);
-              setStampGameUrl("");
+              Check Eligibility
+            </UiAction>
+          </>
+        }
+      >
+        <Typography variant="body2" sx={{ mb: 2 }}>
+          Enter the URL or ID of a Mafia game you won. You will receive a
+          stamp of the role you played.
+        </Typography>
+        <Box sx={{ position: "relative" }}>
+          <TextField
+            autoFocus
+            fullWidth
+            label="Game URL or ID"
+            value={stampGameUrl}
+            onChange={(e) => {
+              setStampGameUrl(e.target.value);
               setSelectedSuggestion(null);
-              setStampSuggestions([]);
+              setShowSuggestions(false);
             }}
+            placeholder="e.g. https://ultimafia.com/game/abc123 or abc123"
+            InputProps={stampSuggestions.length > 0 ? {
+              endAdornment: (
+                <InputAdornment position="end">
+                  <UiAction
+                    variant="ghost" size="small"
+                    onClick={() => setShowSuggestions((v) => !v)}
+                  >
+                    <i
+                      className={`fas fa-chevron-${showSuggestions ? "up" : "down"}`}
+                      style={{ fontSize: "12px" }}
+                    />
+                  </UiAction>
+                </InputAdornment>
+              ),
+            } : undefined}
+          />
+          {showSuggestions && stampSuggestions.length > 0 && (
+            <UiCard className="stamp-suggestions">
+              {stampSuggestions.map((s) => (
+                <UiAction
+                  key={s.gameId}
+                  variant="ghost"
+                  block
+                  className="stamp-suggestion"
+                  onClick={() => {
+                    setStampGameUrl(s.gameId);
+                    setSelectedSuggestion(s);
+                    setShowSuggestions(false);
+                  }}
+                >
+                  {s.gameId} — {s.role}
+                </UiAction>
+              ))}
+            </UiCard>
+          )}
+        </Box>
+        {selectedSuggestion && (
+          <Typography
+            variant="caption"
+            sx={{ mt: 1, display: "block" }}
+            color="success.main"
           >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            disabled={!parseGameId(stampGameUrl)}
-            onClick={() => {
-              const gameId = parseGameId(stampGameUrl);
-              if (!gameId) {
-                siteInfo.showAlert("Could not parse a game ID.", "error");
-                return;
-              }
-              const stampIndex = shopInfo.shopItems.findIndex((si) => si.key === "stamp");
-              const stampItem = shopInfo.shopItems[stampIndex];
-              axios
-                .post("/api/shop/checkStampEligibility", { gameId })
-                .then((eligibility) => {
-                  const shouldBuy = window.confirm(
-                    `You will receive a stamp for ${eligibility.data.role}. Purchase for ${stampItem.price.toFixed(2)} coins?`
-                  );
-                  if (!shouldBuy) return;
-                  return axios.post("/api/shop/spendCoins", {
-                    item: stampIndex,
-                    gameId: eligibility.data.gameId,
-                  });
-                })
-                .then((res) => {
-                  if (!res) return;
-                  siteInfo.showAlert(
-                    `Stamp purchased: ${res.data.role}!`,
-                    "success"
-                  );
-                  setStampGameUrl("");
-                  setSelectedSuggestion(null);
-                  setStampSuggestions([]);
-                  setStampDialogOpen(false);
-                  setShopInfo((prev) => ({
-                    ...prev,
-                    balance: prev.balance - stampItem.price,
-                  }));
-                })
-                .catch(errorAlert);
-            }}
+            Stamp role: {selectedSuggestion.role}
+          </Typography>
+        )}
+        {!selectedSuggestion && stampGameUrl.trim() && (
+          <Typography
+            variant="caption"
+            sx={{ mt: 1, display: "block" }}
+            color={parseGameId(stampGameUrl) ? "textSecondary" : "error"}
           >
-            Check Eligibility
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Stack>
+            {parseGameId(stampGameUrl)
+              ? `Game ID: ${parseGameId(stampGameUrl)}`
+              : "Could not parse a game ID from this input."}
+          </Typography>
+        )}
+      </UiDialog>
+    </UiPage>
   );
 }

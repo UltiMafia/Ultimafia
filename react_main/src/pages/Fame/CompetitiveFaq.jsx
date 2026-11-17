@@ -1,20 +1,14 @@
 import React, { useEffect } from "react";
+import { UiPageHeader, UiTable, UiText as Typography } from "components/ui";
 import { useTheme } from "@mui/material/styles";
-import {
-  Typography,
-  Link,
-  List,
-  ListItem,
-  ListItemText,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  TableContainer,
-  Stack,
-} from "@mui/material";
+import { Box, Link, List, ListItem, ListItemText, Stack } from "@mui/material";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
+
+const prestigeRows = [
+  ["1st", 20], ["2nd", 18], ["3rd", 16], ["4th", 14], ["5th", 12],
+  ["6th", 10], ["7th", 9], ["8th", 8], ["9th", 7], ["10th", 6],
+  ["11th", 3], ["12th", 3], ["13th", 3], ["14th", 3], ["15th", 3],
+].map(([rank, points]) => ({ rank, points }));
 
 const POINTS_ICON = require(`images/points.png`);
 const PRESTIGE_ICON = require(`images/prestige.png`);
@@ -24,9 +18,7 @@ export default function CompetitiveFaq() {
 
   return (
     <>
-      <Typography variant="h2" gutterBottom>
-        Competitive FAQ
-      </Typography>
+      <UiPageHeader title="Competitive FAQ" />
       <Typography variant="h3" gutterBottom>
         What is competitive?
       </Typography>
@@ -138,80 +130,17 @@ export default function CompetitiveFaq() {
         For example, if two players tie for 2nd place, both players receive the
         prestige points for 2nd place.
       </Typography>
-      <Stack direction="row" sx={{ justifyContent: "center", mb: 4 }}>
-        <TableContainer sx={{ maxWidth: isPhoneDevice ? "80%" : "50%" }}>
-          <Table aria-label="prestige table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Ranking</TableCell>
-                <TableCell>Prestige Points Awarded</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              <TableRow>
-                <TableCell>1st</TableCell>
-                <TableCell>20</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>2nd</TableCell>
-                <TableCell>18</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>3rd</TableCell>
-                <TableCell>16</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>4th</TableCell>
-                <TableCell>14</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>5th</TableCell>
-                <TableCell>12</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>6th</TableCell>
-                <TableCell>10</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>7th</TableCell>
-                <TableCell>9</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>8th</TableCell>
-                <TableCell>8</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>9th</TableCell>
-                <TableCell>7</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>10th</TableCell>
-                <TableCell>6</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>11th</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>12th</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>13th</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>14th</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>15th</TableCell>
-                <TableCell>3</TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Stack>
+      <Box sx={{ width: "100%", maxWidth: "var(--ui-prose-width)", mx: "auto", mb: 4 }}>
+        <UiTable
+          label="Prestige points by rank"
+          columns={[
+            { key: "rank", label: "Ranking" },
+            { key: "points", label: "Prestige points awarded" },
+          ]}
+          rows={prestigeRows}
+          rowKey="rank"
+        />
+      </Box>
       <Typography variant="h3" gutterBottom>
         What happens at the end of a season?
       </Typography>
@@ -222,7 +151,7 @@ export default function CompetitiveFaq() {
         points receives a gold trophy, the second highest receives a silver
         trophy, and the third highest receives a bronze trophy.
       </Typography>
-      <Typography variant="h2" gutterBottom>
+      <Typography variant="h3" gutterBottom sx={{ lineHeight: "var(--ui-line-heading)" }}>
         Miscellaneous FAQ
       </Typography>
       <Typography variant="h3" gutterBottom>

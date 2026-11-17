@@ -1,27 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  FormControl,
-  Grid2,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  Tab,
-  TableSortLabel,
-  Tabs,
-  TextField,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Divider, FormControl, Grid2, InputLabel, Stack, TableSortLabel, Tooltip } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
 
 import { useErrorAlert } from "components/Alerts";
@@ -31,6 +10,7 @@ import TrophyCase from "components/TrophyCase";
 import { UserContext } from "Contexts";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { NameWithAvatar } from "pages/User/UserWidgets";
+import { UiAction, UiCard, UiDialog, UiIcon, UiPageHeader, UiTable, UiTabs, UiTab, UiMenuItem as MenuItem, UiSelect as Select, UiTabs as Tabs, UiField as TextField, UiText as Typography } from "components/ui";
 
 import { TIER_ICONS } from "utils/skillRating";
 import { MIN_RATED_GAMES } from "Constants";
@@ -46,8 +26,7 @@ const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 function getColumns(category, isPhoneDevice) {
   const compactColumns = [
     { label: "Rank", sortKey: null },
-    { label: "User", sortKey: "username" },
-    { label: "Metric", sortKey: null },
+    { label: "Player / metric", sortKey: "username" },
   ];
   if (isPhoneDevice) return compactColumns;
 
@@ -136,101 +115,58 @@ const StandingsTable = React.memo(function StandingsTable({
   sortDirection,
   onSort,
 }) {
-  const columns = getColumns(category, isPhoneDevice);
-  const desktopMetricColumnCount = Math.max(columns.length - 3, 0);
-  const desktopGridTemplate = `3em minmax(0, 1.6fr) minmax(0, 1.4fr)${
-    desktopMetricColumnCount
-      ? ` repeat(${desktopMetricColumnCount}, minmax(4.5em, 0.8fr))`
-      : ""
-  }`;
-  function renderColumnLabel(column) {
-    const label = (
-      <Typography variant="caption" sx={{ fontWeight: 700 }}>
-        {column.label}
-      </Typography>
-    );
-    if (!column.tooltip) return label;
+  // Phones keep the compact rank/name/metric rows; desktop uses the shared table
+  // so standings match every other data table.
+  if (isPhoneDevice) {
     return (
-      <Tooltip title={column.tooltip}>
-        <span>{label}</span>
-      </Tooltip>
+      <Stack className="standings-list" direction="column" spacing={1} divider={<Divider flexItem />}>
+        {users.map((user) => (
+          <Box
+            key={user.userId}
+            className={`standings-row${currentUserId && user.userId === currentUserId ? " is-current" : ""}`}
+          >
+            <Typography variant="h4">{user.rank}.</Typography>
+            <Box className="standings-identity" sx={{ minWidth: 0, "& .user-name": { whiteSpace: "normal", overflowWrap: "anywhere" } }}>
+              <NameWithAvatar id={user.userId} name={user.username} avatar={user.avatar} vanityUrl={user.vanityUrl} />
+            </Box>
+            <Stack direction="column" spacing={0.25} sx={{ gridColumn: 2, textAlign: "left", "& > * > .MuiStack-root": { justifyContent: "flex-start" } }}>
+              <Typography variant="body2">{renderMobileMetric(user, category)}</Typography>
+              <Typography variant="caption">{user.wins}W / {user.losses}L</Typography>
+            </Stack>
+          </Box>
+        ))}
+      </Stack>
     );
   }
 
-  return (
-    <Stack direction="column" spacing={1} divider={<Divider flexItem />}>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: isPhoneDevice
-            ? "3em minmax(0, 1fr) minmax(0, 7em)"
-            : desktopGridTemplate,
-          gap: 1,
-          alignItems: "center",
-          fontWeight: 700,
-        }}
-      >
-        {columns.map((column) =>
-          column.sortKey && !isPhoneDevice ? (
-            <TableSortLabel
-              key={column.label}
-              active={sortBy === column.sortKey}
-              direction={sortBy === column.sortKey ? sortDirection : "desc"}
-              onClick={() => onSort(column.sortKey)}
-              sx={{ justifySelf: "start" }}
-            >
-              {renderColumnLabel(column)}
-            </TableSortLabel>
-          ) : (
-            <Box key={column.label} sx={{ justifySelf: "start" }}>
-              {renderColumnLabel(column)}
+  const labels = getColumns(category, false);
+  const columns = labels.map((column, index) => ({
+    key: column.label,
+    label: column.label,
+    sortable: Boolean(column.sortKey),
+    nowrap: index === 0,
+    align: index === 1 ? "left" : "center",
+    render: index === 0
+      ? (user) => `${user.rank}.`
+      : index === 1
+        ? (user) => (
+            <Box className="standings-identity" sx={{ minWidth: 0, "& .user-name": { whiteSpace: "normal", overflowWrap: "anywhere" } }}>
+              <NameWithAvatar id={user.userId} name={user.username} avatar={user.avatar} vanityUrl={user.vanityUrl} />
             </Box>
           )
-        )}
-      </Box>
-      {users.map((user) => {
-        const isCurrentUser = currentUserId && user.userId === currentUserId;
+        : (user) => renderDesktopCells(user, category)[index - 2],
+  }));
 
-        return (
-          <Box
-            key={user.userId}
-            sx={{
-              display: "grid",
-              gridTemplateColumns: isPhoneDevice
-                ? "3em minmax(0, 1fr) minmax(0, 7em)"
-                : desktopGridTemplate,
-              gap: 1,
-              alignItems: "center",
-              borderRadius: 1,
-              px: 1,
-              py: 0.5,
-              backgroundColor: isCurrentUser ? "action.selected" : "transparent",
-            }}
-          >
-            <Typography variant="h4">{user.rank}.</Typography>
-            <Box sx={{ overflowX: "clip" }}>
-              <NameWithAvatar
-                id={user.userId}
-                name={user.username}
-                avatar={user.avatar}
-                vanityUrl={user.vanityUrl}
-              />
-            </Box>
-            {isPhoneDevice ? (
-              <Stack direction="column" spacing={0.25} sx={{ textAlign: "right" }}>
-                <Typography variant="body2">{renderMobileMetric(user, category)}</Typography>
-                <Typography variant="caption">
-                  {user.wins}W / {user.losses}L
-                </Typography>
-              </Stack>
-            ) : (
-              renderDesktopCells(user, category)
-            )}
-          </Box>
-        );
-      })}
-    </Stack>
-  );
+  return <UiTable
+    label={`${category} standings`}
+    columns={columns}
+    rows={users}
+    rowKey="userId"
+    emptyMessage="No players match these filters."
+    sort={{ key: sortBy, direction: sortDirection }}
+    onSort={onSort}
+    rowClassName={(user) => (currentUserId && user.userId === currentUserId ? "is-current" : "")}
+  />;
 });
 
 function SkillRatingAboutContent({ minRatedGames = MIN_RATED_GAMES }) {
@@ -403,44 +339,13 @@ export default function HallOfFame() {
   const activeSortDirection = data?.sort?.sortDirection || sortDirection;
 
   return (
-    <Stack direction="column" spacing={1}>
-      <Grid2 container columns={isPhoneDevice ? 1 : 3} spacing={1}>
-        <Grid2 size={2}>
-          <Stack direction="column" spacing={0.5}>
-            <Typography variant="h2" sx={{ textAlign: isPhoneDevice ? "center" : "left" }}>
-              Hall of Fame
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ textAlign: isPhoneDevice ? "center" : "left" }}
-            >
-              Recognition for top players by skill rating and collected loot — trophies,
-              kudos, karma, achievements, and scrapbook progress.
-            </Typography>
-          </Stack>
-        </Grid2>
-        <Grid2 size={1}>
-          <Paper
-            elevation={2}
-            sx={{
-              p: 1.5,
-              height: "100%",
-            }}
-          >
-            <Stack direction="column" spacing={0.5}>
-              <Typography variant="h4">Current filters</Typography>
-              <Typography variant="body2">{filterSummary}</Typography>
-              {data?.myRank && (
-                <Typography variant="body2">Your rank: #{data.myRank}</Typography>
-              )}
-            </Stack>
-          </Paper>
-        </Grid2>
-      </Grid2>
+    <>
+      <UiPageHeader title="Hall of Fame" description="Recognition for top players by skill rating and collected loot — trophies, kudos, karma, achievements, and scrapbook progress.">
+        <p>Current filters: {filterSummary}{data?.myRank ? ` · Your rank: #${data.myRank}` : ""}</p>
+      </UiPageHeader>
 
-      <Tabs
-        centered
-        value={category}
+      <UiTabs
+                value={category}
         onChange={handleCategoryChange}
         variant={isPhoneDevice ? "scrollable" : "standard"}
         allowScrollButtonsMobile
@@ -450,11 +355,11 @@ export default function HallOfFame() {
         }}
       >
         {CATEGORY_OPTIONS.map((option) => (
-          <Tab key={option.value} label={option.label} value={option.value} />
+          <UiTab key={option.value} label={option.label} value={option.value} />
         ))}
-      </Tabs>
+      </UiTabs>
 
-      <Paper elevation={2} sx={{ p: 2 }}>
+      <UiCard>
         <Stack direction="column" spacing={1}>
           <Grid2 container columns={isPhoneDevice ? 1 : 5} spacing={1}>
             <Grid2 size={1}>
@@ -534,9 +439,9 @@ export default function HallOfFame() {
             </Grid2>
           </Grid2>
         </Stack>
-      </Paper>
+      </UiCard>
 
-      <Paper elevation={2} sx={{ p: 2 }}>
+      <UiCard>
         <Stack direction="column" spacing={1}>
           <Stack
             direction={isPhoneDevice ? "column" : "row"}
@@ -549,12 +454,12 @@ export default function HallOfFame() {
                   {CATEGORY_OPTIONS.find((option) => option.value === category)?.label} Leaders
                 </Typography>
                 {category === "skillRating" && (
-                  <IconButton
+                  <UiAction iconOnly variant="ghost"
                     onClick={() => setSkillRatingAboutOpen(true)}
                     aria-label="skill rating about"
                   >
-                    <i className="fas fa-question-circle" />
-                  </IconButton>
+                    <UiIcon name="help" />
+                  </UiAction>
                 )}
               </Stack>
               <Typography variant="caption">
@@ -567,13 +472,13 @@ export default function HallOfFame() {
                 {user.loggedIn && (
                   <Tooltip title={data?.myRank ? "Jump to your page" : "You are currently unranked"}>
                     <span>
-                      <Button
-                        variant="outlined"
+                      <UiAction
+                         variant="secondary" 
                         onClick={handleJumpToMyRank}
                         disabled={!data?.myRank}
                       >
                         Jump to My Rank
-                      </Button>
+                      </UiAction>
                     </span>
                   </Tooltip>
                 )}
@@ -602,20 +507,15 @@ export default function HallOfFame() {
             <Typography variant="body2">No ranked users matched the current filters.</Typography>
           )}
         </Stack>
-      </Paper>
+      </UiCard>
 
-      <Dialog
+      <UiDialog title="About the Skill Rating System"
         open={skillRatingAboutOpen}
         onClose={() => setSkillRatingAboutOpen(false)}
         maxWidth="sm"
-        fullWidth
-        scroll="body"
       >
-        <DialogTitle>About the Skill Rating System</DialogTitle>
-        <DialogContent>
           <SkillRatingAboutContent minRatedGames={data?.filters?.minRatedGames} />
-        </DialogContent>
-      </Dialog>
-    </Stack>
+      </UiDialog>
+    </>
   );
 }

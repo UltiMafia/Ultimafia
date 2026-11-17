@@ -1,6 +1,5 @@
 import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
 import { UserContext, SiteInfoContext } from "../Contexts";
-import { SearchBar } from "./Nav";
 import { hyphenDelimit } from "../utils";
 import { Alignments, getModifiedRoleBadgeClass } from "../Constants";
 import {
@@ -10,12 +9,7 @@ import {
   ListItemIcon,
   ListItemText,
   Popover,
-  Tabs,
-  Tab,
   Box,
-  Typography,
-  Grid2,
-  Paper,
   Stack,
   Divider,
 } from "@mui/material";
@@ -26,6 +20,7 @@ import { PopoverContent } from "./Popover";
 import { getKeyboardActivationProps } from "../utils/keyboard";
 import { getAlignmentColor, SmallRoleList } from "./Setup";
 import { CellSearch, Cell } from "./CellSearch";
+import { UiText as Typography } from "./ui";
 
 export function RoleDetails({
   gameType,
@@ -374,7 +369,7 @@ export function RoleCount({
   const popoverProps = {
     ...keyboardProps,
     onClick: handleRoleCountClick,
-    onMouseEnter: popoverDisabled ? undefined : handleMouseEnter,
+    onMouseEnter: popoverDisabled || isPhoneDevice ? undefined : handleMouseEnter,
     onMouseLeave: popoverDisabled ? undefined : handleMouseLeave,
     style: {
       cursor: isInteractive ? "pointer" : "default",
@@ -774,7 +769,7 @@ export function ModifierCount(props) {
         aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
         aria-haspopup="true"
         onClick={handleRoleCountClick}
-        onMouseEnter={handleMouseEnter}
+        onMouseEnter={isPhoneDevice ? undefined : handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         style={{
           height: iconLength,
@@ -914,7 +909,7 @@ export function GameSettingCount(props) {
         aria-owns={popoverOpen ? "mouse-over-popover" : undefined}
         aria-haspopup="true"
         onClick={handleRoleCountClick}
-        onMouseEnter={handleMouseEnter}
+        onMouseEnter={isPhoneDevice ? undefined : handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         style={{
           height: iconLength,
@@ -1139,6 +1134,8 @@ export function RoleSearch(props) {
 
   return (
     <CellSearch
+      variant={props.onAddClick ? "picker" : "directory"}
+      label="Roles"
       tabs={tabs}
       tabValue={roleListType}
       onTabChange={setRoleListType}
@@ -1161,7 +1158,6 @@ export function RoleSearch(props) {
           icon={icon}
         />
       )}
-      gridColumns={{ xs: 4, sm: 6, md: 8 }}
     />
   );
 }
@@ -1253,6 +1249,8 @@ export function ModifierSearch(props) {
 
   return (
     <CellSearch
+      variant={props.onAddClick ? "picker" : "directory"}
+      label="Modifiers"
       tabs={tabs}
       tabValue={roleListType}
       onTabChange={onTabChange}
@@ -1276,7 +1274,6 @@ export function ModifierSearch(props) {
           icon={icon}
         />
       )}
-      gridColumns={{ xs: 2, sm: 6, md: 8 }}
     />
   );
 }
@@ -1285,10 +1282,7 @@ export function GameSettingSearch(props) {
   const [roleListType, setRoleListType] = useState("Standard");
 
   const [searchVal, setSearchVal] = useState("");
-  const roleCellRefs = useRef([]);
-  const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const isPhoneDevice = useIsPhoneDevice();
 
   function onAlignNavClick(alignment) {
     setSearchVal("");
@@ -1327,16 +1321,9 @@ export function GameSettingSearch(props) {
 
   if (!siteInfo.gamesettings) return <Loading small />;
 
-  const alignButtons = ["Standard", "Voting", "Timer", "Other"].map((type) => (
-    <Tab
-      label={type}
-      value={type}
-      onClick={() => onAlignNavClick(type)}
-      key={type}
-    />
-  ));
+  const tabs = ["Standard", "Voting", "Timer", "Other"].map(type => ({ label: type, value: type }));
 
-  const roleCells = siteInfo.gamesettings[props.gameType].map((role, i) => {
+  const items = siteInfo.gamesettings[props.gameType].filter(role => {
     const searchTerms = searchVal
       .split(",")
       .filter((term) => term.trim() !== "")
@@ -1357,55 +1344,21 @@ export function GameSettingSearch(props) {
           */
       );
 
-    if (
+    return (
       !role.disabled &&
       getCompatibleGameSettingsOther(props.curMods).includes(role.name) &&
       (role.category === roleListType ||
         (searchVal.length > 0 &&
           (role.name.toLowerCase().indexOf(searchVal) !== -1 || matchesSearch)))
-    ) {
-      return (
-        <Grid2 size={{ xs: 2 }} key={role.name}>
-          <Cell
-            onAddClick={props.onAddClick}
-            item={role}
-            icon={
-              <GameSettingCount
-                iconLength="2em"
-                role={role.name}
-                gameType={props.gameType}
-              />
-            }
-          />
-        </Grid2>
-      );
-    }
+    );
   });
 
   return (
-    <Stack direction="column" spacing={1}>
-      <Stack direction={isPhoneDevice ? "column-reverse" : "row"} spacing={1}>
-        <Tabs
-          value={roleListType}
-          onChange={(_, value) => setRoleListType(value)}
-        >
-          {alignButtons}
-        </Tabs>
-        <Box sx={{ ml: isPhoneDevice ? undefined : "auto !important" }}>
-          <SearchBar
-            value={searchVal}
-            placeholder="🔎 Game Setting Name"
-            onInput={onSearchInput}
-          />
-        </Box>
-      </Stack>
-      <Divider direction="horizontal" sx={{ mb: 1 }} />
-      <Paper sx={{ p: 1 }}>
-        <Grid2 className="cell-search-grid" container spacing={1} columns={{ xs: 2, sm: 6, md: 8 }}>
-          {roleCells}
-        </Grid2>
-      </Paper>
-    </Stack>
+    <CellSearch variant={props.onAddClick ? "picker" : "directory"} label="Game settings"
+      tabs={tabs} tabValue={roleListType} onTabChange={onAlignNavClick}
+      searchPlaceholder="🔎 Game Setting Name" searchVal={searchVal} onSearchInput={onSearchInput}
+      items={items} renderIcon={item => <GameSettingCount iconLength="2em" role={item.name} gameType={props.gameType} />}
+      renderCell={(item, icon) => <Cell item={item} icon={icon} onAddClick={props.onAddClick} />} />
   );
 }
 

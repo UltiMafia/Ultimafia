@@ -1,0 +1,809 @@
+{
+  "generatedAt": "2026-11-15T23:27:16.158Z",
+  "count": 96,
+  "byKind": {
+    "mui-inline-scale": 25,
+    "native-hidden": 2,
+    "native-file": 10,
+    "native-confirm": 2,
+    "native-widget": 31,
+    "native-form": 26
+  },
+  "actionable": 38,
+  "sanctioned": 12,
+  "game": 46,
+  "files": 45,
+  "topFiles": [
+    [
+      "pages/Game/Game.jsx",
+      15
+    ],
+    [
+      "pages/Game/SnakeGameDisplay.jsx",
+      7
+    ],
+    [
+      "pages/Game/DrawItGame.jsx",
+      5
+    ],
+    [
+      "components/FanartPanel.jsx",
+      4
+    ],
+    [
+      "components/gameComponents/StateSwitcher.jsx",
+      4
+    ],
+    [
+      "pages/Play/Decks/CreateDeck.jsx",
+      4
+    ],
+    [
+      "components/Auth.jsx",
+      3
+    ],
+    [
+      "components/Form.jsx",
+      3
+    ],
+    [
+      "pages/Game/JottoGame.jsx",
+      3
+    ],
+    [
+      "pages/Game/PokerHandHistory.jsx",
+      3
+    ],
+    [
+      "pages/Game/components/DrawTools.jsx",
+      3
+    ],
+    [
+      "components/Scrapbook.jsx",
+      2
+    ]
+  ],
+  "entries": [
+    {
+      "file": "Main.jsx",
+      "line": 89,
+      "kind": "mui-inline-scale",
+      "name": "Paper",
+      "snippet": "<Paper sx={{ mx: \"auto\", my: \"10%\", p: 1, width: \"320px\", }} >"
+    },
+    {
+      "file": "components/Auth.jsx",
+      "line": 589,
+      "kind": "native-hidden",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input hidden />"
+    },
+    {
+      "file": "components/Auth.jsx",
+      "line": 673,
+      "kind": "native-hidden",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input hidden />"
+    },
+    {
+      "file": "components/Auth.jsx",
+      "line": 816,
+      "kind": "mui-inline-scale",
+      "name": "DialogContent",
+      "snippet": "<DialogContent sx={{ p: 2, height: \"100%\", display: \"flex\", flexDirection: \"column\", overflow: \"hidden\" }}>"
+    },
+    {
+      "file": "components/AvatarUpload.jsx",
+      "line": 242,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input ref={fileInputRef} type=\"file\" accept=\"image/*\" onChange="
+    },
+    {
+      "file": "components/BannerUpload.jsx",
+      "line": 284,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input ref={fileInputRef} type=\"file\" accept=\"image/*\" onChange={handleF"
+    },
+    {
+      "file": "components/Basic.jsx",
+      "line": 231,
+      "kind": "native-confirm",
+      "name": "window.confirm",
+      "snippet": "window.confirm(\"Visit external link?\")"
+    },
+    {
+      "file": "components/DeathSoundUpload.jsx",
+      "line": 700,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input ref={fileInputRef} type=\"file\" accept=\"audio/mpeg,audio/mp3,audio/ogg,audio/wav,aud"
+    },
+    {
+      "file": "components/EmotePicker.jsx",
+      "line": 49,
+      "kind": "mui-inline-scale",
+      "name": "Button",
+      "snippet": "<Button key={sticker.id || sticker.shortcode} onClick={() => onSelect(sticker.shortcode)} "
+    },
+    {
+      "file": "components/FanartPanel.jsx",
+      "line": 181,
+      "kind": "mui-inline-scale",
+      "name": "IconButton",
+      "snippet": "<IconButton size=\"small\" onClick={goPrev} aria-label=\"Previous fan"
+    },
+    {
+      "file": "components/FanartPanel.jsx",
+      "line": 246,
+      "kind": "mui-inline-scale",
+      "name": "IconButton",
+      "snippet": "<IconButton size=\"small\" onClick={(e) => { e.stopPro"
+    },
+    {
+      "file": "components/FanartPanel.jsx",
+      "line": 276,
+      "kind": "mui-inline-scale",
+      "name": "IconButton",
+      "snippet": "<IconButton size=\"small\" onClick={goNext} aria-label=\"Next fanart\""
+    },
+    {
+      "file": "components/FanartPanel.jsx",
+      "line": 379,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input type=\"file\" accept=\"image/*\" onChange={onFileChange} styl"
+    },
+    {
+      "file": "components/Form.jsx",
+      "line": 891,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input className=\"hidden-upload\" ref={inputRef} type=\"file\" onChange={(e) => props.onFil"
+    },
+    {
+      "file": "components/Form.jsx",
+      "line": 1030,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input id={this.state.id} style={{ visibility: \"hidden\", height: \"0\" }} type=\""
+    },
+    {
+      "file": "components/Form.jsx",
+      "line": 1176,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input id={this.state.id} style={{ visibility: \"hidden\", height: \"0\" }} type=\""
+    },
+    {
+      "file": "components/MobileNav.jsx",
+      "line": 59,
+      "kind": "mui-inline-scale",
+      "name": "Paper",
+      "snippet": "<Paper component=\"nav\" aria-label=\"Primary navigation\" className=\"mobile-nav\" elevation={8} "
+    },
+    {
+      "file": "components/ModerationSideDrawer.jsx",
+      "line": 33,
+      "kind": "mui-inline-scale",
+      "name": "IconButton",
+      "snippet": "<IconButton edge=\"start\" color={COMMAND_COLOR} aria-label=\"Moderation tools\" onClick={()"
+    },
+    {
+      "file": "components/ProviderButton.jsx",
+      "line": 48,
+      "kind": "mui-inline-scale",
+      "name": "Button",
+      "snippet": "<Button fullWidth onClick={onClick} disabled={disabled} data-provider={provider} data-ui-v"
+    },
+    {
+      "file": "components/Scrapbook.jsx",
+      "line": 162,
+      "kind": "native-widget",
+      "scope": "site",
+      "name": "button",
+      "snippet": "<button className=\"scrapbook-flip-arrow scrapbook-flip-arrow--left\" onClick={() => handleFlip(\"prev\")} "
+    },
+    {
+      "file": "components/Scrapbook.jsx",
+      "line": 208,
+      "kind": "native-widget",
+      "scope": "site",
+      "name": "button",
+      "snippet": "<button className=\"scrapbook-flip-arrow scrapbook-flip-arrow--right\" onClick={() => handleFlip(\"next\")} "
+    },
+    {
+      "file": "components/Setup.jsx",
+      "line": 294,
+      "kind": "native-widget",
+      "scope": "site",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"setup-name-trigger\" onClick={handleClick} aria-haspopup=\"true\" aria-expanded="
+    },
+    {
+      "file": "components/Setup.jsx",
+      "line": 300,
+      "kind": "native-widget",
+      "scope": "site",
+      "name": "button",
+      "snippet": "<button className=\"setup-more-roles\" type=\"button\" onClick={() => setSummaryExpanded(value => !value)} aria-expanded={su"
+    },
+    {
+      "file": "components/SignInWithAppleButton.jsx",
+      "line": 39,
+      "kind": "mui-inline-scale",
+      "name": "Button",
+      "snippet": "<Button fullWidth onClick={onClick} disabled={disabled} aria-label={label} data-ui-variant"
+    },
+    {
+      "file": "components/TutorialOverlay.jsx",
+      "line": 198,
+      "kind": "mui-inline-scale",
+      "name": "Paper",
+      "snippet": "<Paper ref={boxRef} elevation={8} data-testid=\"tutorial-overlay\" sx={{ position: \"fixed\""
+    },
+    {
+      "file": "components/TutorialOverlay.jsx",
+      "line": 243,
+      "kind": "mui-inline-scale",
+      "name": "IconButton",
+      "snippet": "<IconButton size=\"small\" sx={{ minWidth: 40, minHeight: 40, mt: -0.75, mr: -0.75, flexShrink: 0 }} "
+    },
+    {
+      "file": "components/alerts/Announcement.jsx",
+      "line": 111,
+      "kind": "native-widget",
+      "scope": "site",
+      "name": "button",
+      "snippet": "<button className=\"announcement-summary\" type=\"button\" onClick={openDialog} aria-haspopup=\"dialog\" aria-label=\"Read anno"
+    },
+    {
+      "file": "components/dms/FloatingDmWindow.jsx",
+      "line": 163,
+      "kind": "mui-inline-scale",
+      "name": "Paper",
+      "snippet": "<Paper ref={boxRef} elevation={10} data-testid=\"dm-window\" data-collapsed={dm.collapsed ? \"true\""
+    },
+    {
+      "file": "components/gameComponents/ChangeSetupDialog.jsx",
+      "line": 134,
+      "kind": "mui-inline-scale",
+      "name": "DialogTitle",
+      "snippet": "<DialogTitle sx={{ p: 0, flex: 1, fontSize: \"1.25rem\", lineHei"
+    },
+    {
+      "file": "components/gameComponents/RoleRevealModal.jsx",
+      "line": 87,
+      "kind": "mui-inline-scale",
+      "name": "DialogTitle",
+      "snippet": "<DialogTitle sx={{ p: 0, width: \"100%\", fontSize: \"1.25rem\", "
+    },
+    {
+      "file": "components/gameComponents/StateSwitcher.jsx",
+      "line": 27,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "select",
+      "snippet": "<select aria-label=\"View phase\" value={stateViewing} onChange={event => goTo(Number(event.target.value))}>"
+    },
+    {
+      "file": "components/gameComponents/StateSwitcher.jsx",
+      "line": 29,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"return-to-live\" aria-label={review ? \"Go to final phase\" : \"Return to current\"} onClick"
+    },
+    {
+      "file": "components/gameComponents/StateSwitcher.jsx",
+      "line": 35,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "select",
+      "snippet": "<select aria-label=\"View phase\" value={stateViewing} onChange={event => goTo(Number(event.target.value))}>"
+    },
+    {
+      "file": "components/gameComponents/StateSwitcher.jsx",
+      "line": 37,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"return-to-live-compact\" aria-label=\"Return to current\" onClick={() => updateStateViewin"
+    },
+    {
+      "file": "components/strategyWindows/FloatingStrategyWindows.jsx",
+      "line": 116,
+      "kind": "mui-inline-scale",
+      "name": "Paper",
+      "snippet": "<Paper ref={boxRef} elevation={12} data-testid=\"strategy-window\" data-setup-id={win.setupId} "
+    },
+    {
+      "file": "pages/Chat/Chat.jsx",
+      "line": 671,
+      "kind": "mui-inline-scale",
+      "name": "Paper",
+      "snippet": "<Paper className=\"site-chat\" elevation={embedded ? 0 : 4} data-testid={directsOnly ? \"dm-chat\" : undef"
+    },
+    {
+      "file": "pages/Community/Forums/Thread.jsx",
+      "line": 961,
+      "kind": "native-form",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input className=\"roster-color-input\" type=\"color\" "
+    },
+    {
+      "file": "pages/Game/BattleshipGame.jsx",
+      "line": 380,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button key={type} type=\"button\" className={`battleship-ship-chip${ "
+    },
+    {
+      "file": "pages/Game/CheatGame.jsx",
+      "line": 531,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button key={card} type=\"button\" className={`ch-hand-card${isSelected ? \" ch-h"
+    },
+    {
+      "file": "pages/Game/DiceWarsGame.jsx",
+      "line": 711,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button onClick={() => setShowIntro(false)} style={{ padding: \"1"
+    },
+    {
+      "file": "pages/Game/DiceWarsGame.jsx",
+      "line": 736,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button onClick={() => gameSocket.send(\"endTurn\", {})} style={{ displa"
+    },
+    {
+      "file": "pages/Game/DrawItGame.jsx",
+      "line": 354,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button key={t.index} type=\"button\" className={ "
+    },
+    {
+      "file": "pages/Game/DrawItGame.jsx",
+      "line": 373,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" onClick={() => setReplayDrawerPage((p) => Math.max(0, "
+    },
+    {
+      "file": "pages/Game/DrawItGame.jsx",
+      "line": 385,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" onClick={() => setReplayDrawerPage((p) => "
+    },
+    {
+      "file": "pages/Game/DrawItGame.jsx",
+      "line": 406,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" onClick={() => startReplayAnimation(totalPoints)} >"
+    },
+    {
+      "file": "pages/Game/DrawItGame.jsx",
+      "line": 412,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "input",
+      "snippet": "<input type=\"range\" min={0} max={totalPoints} value={eff"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 1744,
+      "kind": "mui-inline-scale",
+      "name": "Button",
+      "snippet": "<Button variant=\"contained\" color=\"primary\" size=\"large\" fullWidth dat"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 1757,
+      "kind": "mui-inline-scale",
+      "name": "Button",
+      "snippet": "<Button variant=\"contained\" color=\"primary\" size=\"large\" fullWidth dat"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 2611,
+      "kind": "mui-inline-scale",
+      "name": "Tabs",
+      "snippet": "<Tabs value={selTab || false} onChange={onTabChange} sx={{ flexGrow: 1, "
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 2624,
+      "kind": "mui-inline-scale",
+      "name": "Tab",
+      "snippet": "<Tab key={meeting.id} value={meeting.id} label={meeting.name} sx"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 2662,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"new-messages-pill\" onClick={jumpToLatest} "
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 3733,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"message-pin-action\" aria-label={props.pinned ? \"Unpin message\" : \"Pin mes"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 4538,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "input",
+      "snippet": "<input type=\"checkbox\" checked={isPlayerIsolated(player.id)} onChange={() => togglePlayerIsolati"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 5229,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"inventory-cell-button\" onClick={handleClick} disabled={"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 6400,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "textarea",
+      "snippet": "<textarea readOnly={cannotModifyLastWill} className=\"last-will-entry\" value={lastWil"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 6547,
+      "kind": "native-confirm",
+      "name": "window.confirm",
+      "snippet": "window.confirm( \"Disable alert sounds? You won't be pinged when a game starts or when you're about to be kicke"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 6754,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"btn btn-theme\" onClick={cancel}>"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 6806,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "input",
+      "snippet": "<input id=\"isolateMessagesCheckbox\" type=\"checkbox\" value={isolationEnabled} "
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 6814,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "input",
+      "snippet": "<input type=\"text\" placeholder=\"From user\" value={filters.from} onChange"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 6821,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "input",
+      "snippet": "<input type=\"text\" placeholder=\"Contains\" value={filters.contains} onCha"
+    },
+    {
+      "file": "pages/Game/Game.jsx",
+      "line": 6925,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "textarea",
+      "snippet": "<textarea className=\"notes-entry\" value={notes} onChange={(e) => onNotesUpdate(e.tar"
+    },
+    {
+      "file": "pages/Game/JottoGame.jsx",
+      "line": 309,
+      "kind": "mui-inline-scale",
+      "name": "Button",
+      "snippet": "<Button key={letter} onClick={() => updateCheatSheet(letter)} variant=\"text\" "
+    },
+    {
+      "file": "pages/Game/JottoGame.jsx",
+      "line": 346,
+      "kind": "mui-inline-scale",
+      "name": "Button",
+      "snippet": "<Button onClick={() => confirm(\"Are you sure you want to reset all letters?\") && updateCheat"
+    },
+    {
+      "file": "pages/Game/JottoGame.jsx",
+      "line": 548,
+      "kind": "mui-inline-scale",
+      "name": "Button",
+      "snippet": "<Button variant=\"contained\" onClick={handleOnSubmit} disabled={disabled || textData.length < min"
+    },
+    {
+      "file": "pages/Game/LiarsDiceGame.jsx",
+      "line": 585,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"ld-face-trigger\" aria-label={face ? `Choose"
+    },
+    {
+      "file": "pages/Game/LiarsDiceGame.jsx",
+      "line": 605,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button key={f} type=\"button\" className=\"ld-face-option\" "
+    },
+    {
+      "file": "pages/Game/PokerHandHistory.jsx",
+      "line": 113,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"poker-history-toggle\" onClick={() => setOpen((v) => !v)} "
+    },
+    {
+      "file": "pages/Game/PokerHandHistory.jsx",
+      "line": 140,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"poker-history-page-btn\" onClick={() => "
+    },
+    {
+      "file": "pages/Game/PokerHandHistory.jsx",
+      "line": 151,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"poker-history-page-btn\" onClick={() => "
+    },
+    {
+      "file": "pages/Game/SDPlayerCircle.jsx",
+      "line": 163,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button className={`sd-vote-btn sd-vote-btn--ja${myVote === \"Ja!\" ? \" sd-vote-btn--selected\" : \"\"}${"
+    },
+    {
+      "file": "pages/Game/SDPlayerCircle.jsx",
+      "line": 169,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button className={`sd-vote-btn sd-vote-btn--nein${myVote === \"Nein!\" ? \" sd-vote-btn--selected\" : \""
+    },
+    {
+      "file": "pages/Game/SDPolicyAction.jsx",
+      "line": 9,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button className={`sd-policy-card sd-policy-card--${modifier}${selected ? \" sd-policy-card--selected\" : \"\"}`} "
+    },
+    {
+      "file": "pages/Game/SecretDictatorGame.jsx",
+      "line": 332,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"sd-game-info-title\" onClick={() => setExpanded((v) => !v)} "
+    },
+    {
+      "file": "pages/Game/SnakeGameDisplay.jsx",
+      "line": 439,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button onClick={() => setWrapView((v) => !v)} title={wrapView ? \"Exit wrap view\" : \"Wrap view (came"
+    },
+    {
+      "file": "pages/Game/SnakeGameDisplay.jsx",
+      "line": 498,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button style={dpadBtnStyle} onClick={() => onMove(\"up\")} aria-label=\"Up\">"
+    },
+    {
+      "file": "pages/Game/SnakeGameDisplay.jsx",
+      "line": 501,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button style={{ ...dpadBtnStyle, opacity: 0.7 }} onClick={onCollapse} aria-label=\"Hide controls"
+    },
+    {
+      "file": "pages/Game/SnakeGameDisplay.jsx",
+      "line": 508,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button style={dpadBtnStyle} onClick={() => onMove(\"left\")} aria-label=\"Left\">"
+    },
+    {
+      "file": "pages/Game/SnakeGameDisplay.jsx",
+      "line": 512,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button style={dpadBtnStyle} onClick={() => onMove(\"right\")} aria-label=\"Right\">"
+    },
+    {
+      "file": "pages/Game/SnakeGameDisplay.jsx",
+      "line": 516,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button style={dpadBtnStyle} onClick={() => onMove(\"down\")} aria-label=\"Down\">"
+    },
+    {
+      "file": "pages/Game/SnakeGameDisplay.jsx",
+      "line": 526,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button style={{ ...dpadBtnStyle, opacity: 0.6 }} onClick={onClick} aria-label=\"Show controls\" >"
+    },
+    {
+      "file": "pages/Game/SpotItGame.jsx",
+      "line": 191,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button onClick={onDismiss} style={{ padding: \"10px 32px\", fontSize: \"16px\","
+    },
+    {
+      "file": "pages/Game/WackyWordsGame.jsx",
+      "line": 251,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button onClick={canPrev ? onPrev : undefined} disabled={!canPrev} style={arrowStyle"
+    },
+    {
+      "file": "pages/Game/WackyWordsGame.jsx",
+      "line": 265,
+      "kind": "native-form",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button onClick={canNext ? onNext : undefined} disabled={!canNext} style={arrowStyle"
+    },
+    {
+      "file": "pages/Game/components/DrawGuessedList.jsx",
+      "line": 39,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"draw-guessed-list-toggle\" onClick={() => setCollapsed(!collapse"
+    },
+    {
+      "file": "pages/Game/components/DrawTools.jsx",
+      "line": 48,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button key={c} type=\"button\" disabled={!available} className={ "
+    },
+    {
+      "file": "pages/Game/components/DrawTools.jsx",
+      "line": 69,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button key={s.key} type=\"button\" disabled={!available} classNam"
+    },
+    {
+      "file": "pages/Game/components/DrawTools.jsx",
+      "line": 94,
+      "kind": "native-widget",
+      "scope": "game",
+      "name": "button",
+      "snippet": "<button type=\"button\" disabled={!available} className={ \"draw-tools-er"
+    },
+    {
+      "file": "pages/Game/components/Kudos.jsx",
+      "line": 490,
+      "kind": "mui-inline-scale",
+      "name": "Button",
+      "snippet": "<Button data-testid=\"kudos-noone\" variant=\"text\" fullWidth size=\"small\" disabled"
+    },
+    {
+      "file": "pages/Play/Decks/CreateDeck.jsx",
+      "line": 248,
+      "kind": "native-widget",
+      "scope": "site",
+      "name": "button",
+      "snippet": "<button type=\"button\" aria-label=\"Upload cover photo\" className={`deck-cover-upload ${ "
+    },
+    {
+      "file": "pages/Play/Decks/CreateDeck.jsx",
+      "line": 272,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input ref={coverInputRef} className=\"hidden-upload\" type=\"file\" "
+    },
+    {
+      "file": "pages/Play/Decks/CreateDeck.jsx",
+      "line": 353,
+      "kind": "native-form",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input className=\"color-input\" aria-label={`Card ${index + 1} color`} "
+    },
+    {
+      "file": "pages/Play/Decks/CreateDeck.jsx",
+      "line": 456,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input id={`preview-${props.indx}`} {...props.reg(`cards.${props.indx}.image`)} clas"
+    },
+    {
+      "file": "pages/Play/WordDecks/CreateWordDeck.jsx",
+      "line": 256,
+      "kind": "native-widget",
+      "scope": "site",
+      "name": "button",
+      "snippet": "<button type=\"button\" aria-label=\"Upload cover photo\" disabled={inputsDisabled} className={`deck-cover-u"
+    },
+    {
+      "file": "pages/Play/WordDecks/CreateWordDeck.jsx",
+      "line": 281,
+      "kind": "native-file",
+      "scope": "site",
+      "name": "input",
+      "snippet": "<input ref={coverInputRef} className=\"hidden-upload\" type=\"file\" "
+    },
+    {
+      "file": "pages/User/Profile.jsx",
+      "line": 1524,
+      "kind": "native-widget",
+      "scope": "site",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"banner-edit-action banner-remove\" title=\"Remo"
+    },
+    {
+      "file": "pages/User/UserWidgets.jsx",
+      "line": 562,
+      "kind": "native-widget",
+      "scope": "site",
+      "name": "button",
+      "snippet": "<button type=\"button\" className=\"avatar-edit-action avatar-remove\" title=\"Remo"
+    }
+  ]
+}

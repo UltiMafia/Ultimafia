@@ -37,23 +37,8 @@
   cursor: pointer;
 }
 
-.form input[type="color"]:hover,
-.form input[type="date"]:hover,
-.form input[type="datetime-local"]:hover {
+.form input[type="color"]:hover {
   border-color: rgb(var(--mui-palette-common-onBackgroundChannel));
-}
-
-.form input[type="date"],
-.form input[type="datetime-local"] {
-  padding: 0 14px;
-  min-height: var(--min-input-height);
-  font-family: "Roboto";
-  font-size: 1em;
-  width: 100%;
-  background-color: unset;
-  border-width: 1px;
-  border-radius: var(--mui-shape-borderRadius);
-  border-color: rgba(var(--mui-palette-common-onBackgroundChannel) / 0.23);
 }
 
 .form input[type="range"] {

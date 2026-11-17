@@ -41,6 +41,7 @@ export default function SignInWithAppleButton({
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
+      data-ui-variant="provider-apple"
       sx={{
         mt: 1.5,
         height: 40,

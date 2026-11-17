@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useContext, useState } from "react";
+import CoinIcon from "components/CoinIcon";
 
 import {
   useSocketListeners,
@@ -142,7 +143,7 @@ export default function TexasHoldEmGame(props) {
         innerRightNavigationProps={{
           label: "Game",
           value: "actions",
-          icon: <i className="fas fa-coins" />,
+          icon: <CoinIcon size={16} />,
         }}
         innerRightContent={
           <div className="poker-center-panel">

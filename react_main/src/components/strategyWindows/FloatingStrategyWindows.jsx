@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Box, IconButton, Paper, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Paper, Stack } from "@mui/material";
 
 import { StrategiesSection } from "../Strategies";
+import UiIcon from "../ui/UiIcon";
 import {
   clampWindowPos,
   clampWindowSize,
@@ -13,6 +14,7 @@ import {
 } from "../../utils/strategyWindow";
 import { useStrategyWindows } from "./StrategyWindowsContext";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
+import { UiText as Typography, UiAction } from "components/ui";
 
 // Above the game's panels and the DM window (1250), below MUI dialogs/menus
 // (1300) so a dialog still opens over a guide.
@@ -139,7 +141,7 @@ function FloatingStrategyWindow({ win, zIndex }) {
       <Stack
         direction="row"
         alignItems="center"
-        spacing={0.75}
+        spacing={1}
         data-testid="strategy-window-titlebar"
         title="Drag to move"
         {...titleBarHandlers}
@@ -148,13 +150,13 @@ function FloatingStrategyWindow({ win, zIndex }) {
         }}
         sx={{
           flexShrink: 0,
-          height: STRATEGY_TITLE_BAR_HEIGHT,
-          pl: 1.25,
-          pr: 0.5,
+          minHeight: STRATEGY_TITLE_BAR_HEIGHT,
+          pl: 1.5,
+          pr: 0.75,
           cursor: "move",
           touchAction: "none",
           userSelect: "none",
-          bgcolor: "action.hover",
+          bgcolor: "background.paper",
           borderBottom: collapsed ? "none" : "1px solid",
           borderColor: "divider",
         }}
@@ -171,29 +173,24 @@ function FloatingStrategyWindow({ win, zIndex }) {
         >
           {windowTitle(win)}
         </Typography>
-        <Tooltip title={collapsed ? "Expand" : "Collapse"}>
-          <IconButton
-            size="small"
-            data-testid="strategy-window-collapse"
-            aria-label={collapsed ? "Expand guides" : "Collapse guides"}
-            onClick={() => sw.toggleCollapsed(win.id)}
-          >
-            <i
-              className={collapsed ? "fas fa-chevron-up" : "fas fa-chevron-down"}
-              style={{ fontSize: 12 }}
-            />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Close">
-          <IconButton
-            size="small"
-            data-testid="strategy-window-close"
-            aria-label="Close guides"
-            onClick={() => sw.closeWindow(win.id)}
-          >
-            <i className="fas fa-times" style={{ fontSize: 13 }} />
-          </IconButton>
-        </Tooltip>
+        <UiAction
+           variant="ghost" size="small" 
+          data-testid="strategy-window-collapse"
+          aria-label={collapsed ? "Expand guides" : "Collapse guides"}
+          title={collapsed ? "Expand" : "Collapse"}
+          onClick={() => sw.toggleCollapsed(win.id)}
+        >
+          <UiIcon name={collapsed ? "up" : "down"} size={18} />
+        </UiAction>
+        <UiAction
+           variant="ghost" size="small" 
+          data-testid="strategy-window-close"
+          aria-label="Close guides"
+          title="Close"
+          onClick={() => sw.closeWindow(win.id)}
+        >
+          <UiIcon name="close" size={20} />
+        </UiAction>
       </Stack>
 
       <Box

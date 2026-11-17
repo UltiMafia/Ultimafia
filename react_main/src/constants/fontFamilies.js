@@ -1,5 +1,12 @@
+import { uiTokens } from "../components/ui/designTokens.js";
+
 export const FONT_FAMILY_STACKS = {
   default: {
+    heading: uiTokens.fontFamily,
+    body: uiTokens.fontFamily,
+    primaryFont: uiTokens.fontFamily,
+  },
+  classic: {
     heading: "RobotoSlab, serif",
     body: "Roboto, sans-serif",
     primaryFont: "RobotoSlab, serif",

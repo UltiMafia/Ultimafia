@@ -1,19 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
-import {
-  Box,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useErrorAlert } from "components/Alerts";
+import { Link } from "react-router-dom";
+import { UiAction, UiField, UiPageHeader } from "components/ui";
 import { UserContext, SiteInfoContext } from "Contexts";
+import "css/feedback.css";
 
 const TYPE_OPTIONS = [
   { value: "bug", label: "Bug Report" },
@@ -39,15 +29,18 @@ export default function Feedback() {
   const [category, setCategory] = useState("general");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const submission = useRef(false);
   const user = useContext(UserContext);
   const siteInfo = useContext(SiteInfoContext);
-  const errorAlert = useErrorAlert();
 
   useEffect(() => {
     document.title = "Feedback | UltiMafia";
   }, []);
 
   const handleSubmit = async () => {
+    if (!user.loggedIn || submission.current) return;
     if (!title.trim()) {
       siteInfo.showAlert("Please provide a title for your feedback.", "error");
       return;
@@ -57,6 +50,8 @@ export default function Feedback() {
       return;
     }
 
+    submission.current = true;
+    setError(""); setSuccess("");
     try {
       setSubmitting(true);
       const res = await axios.post("/api/feedback/submit", {
@@ -66,21 +61,15 @@ export default function Feedback() {
         description: description.trim(),
       });
 
-      siteInfo.showAlert(
-        res?.data?.toString() || "Your feedback has been submitted.",
-        "success"
-      );
+      setSuccess(typeof res.data === "string" ? res.data : "Your feedback has been submitted.");
       setTitle("");
       setType("bug");
       setCategory("general");
       setDescription("");
     } catch (e) {
-      if (e?.response?.data) {
-        siteInfo.showAlert(e.response.data.toString(), "error");
-      } else {
-        errorAlert(e);
-      }
+      setError(typeof e.response?.data === "string" && e.response.data.length <= 200 ? e.response.data : "Could not submit your feedback. Your draft has been kept; please try again.");
     } finally {
+      submission.current = false;
       setSubmitting(false);
     }
   };
@@ -88,18 +77,18 @@ export default function Feedback() {
   const disabled = !user.loggedIn || submitting;
 
   return (
-    <Box sx={{ px: 2, py: 2 }}>
-      <Typography variant="h3" gutterBottom>
-        Feedback
-      </Typography>
-      <Typography variant="body2" color="text.secondary" paragraph>
-        Found a bug or have an idea to improve UltiMafia? Submit it here and
-        we'll open a tracked issue on our GitHub for the team to triage.
-      </Typography>
-
-      <Paper sx={{ p: 3, maxWidth: 560 }}>
-        <Stack spacing={2}>
-          <TextField
+    <section className="feedback-page">
+      <UiPageHeader title="Feedback" />
+      <p>Report a bug or suggest a change. Submitting creates a tracked GitHub issue for the team to review.</p>
+      {!user.loggedIn && <p className="feedback-sign-in"><Link to="/auth/login">Sign in</Link> to submit feedback.</p>}
+      {success && <p role="status">{success}</p>}
+      {error && <p role="alert">{error}</p>}
+      <form className="feedback-form" onSubmit={event => { event.preventDefault(); handleSubmit(); }}>
+          <div className="feedback-classification">
+            <UiField select size="small" label="Feedback type" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={type} disabled={disabled} onChange={event => setType(event.target.value)}>{TYPE_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</UiField>
+            <UiField select size="small" label="Category" InputLabelProps={{ shrink: true }} SelectProps={{ native: true }} value={category} disabled={disabled} onChange={event => setCategory(event.target.value)}>{CATEGORY_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</UiField>
+          </div>
+          <UiField
             label="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -108,64 +97,30 @@ export default function Feedback() {
             inputProps={{ maxLength: MAX_TITLE_LENGTH }}
             helperText={`${title.length}/${MAX_TITLE_LENGTH} characters`}
             placeholder="Brief summary of your feedback"
+            required
           />
-          <FormControl fullWidth disabled={disabled}>
-            <InputLabel id="feedback-type-label">Feedback Type</InputLabel>
-            <Select
-              labelId="feedback-type-label"
-              label="Feedback Type"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
-            >
-              {TYPE_OPTIONS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth disabled={disabled}>
-            <InputLabel id="feedback-category-label">Category</InputLabel>
-            <Select
-              labelId="feedback-category-label"
-              label="Category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              {CATEGORY_OPTIONS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                  {opt.label}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
+          <UiField
             label="Describe your feedback"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             fullWidth
             multiline
-            rows={6}
-            placeholder="Include steps to reproduce, screenshots, or any other context that might help..."
+            minRows={8}
+            placeholder="What happened? What did you expect? For a bug, include the steps to reproduce it and any relevant game or page link."
             disabled={disabled}
             inputProps={{ maxLength: MAX_DESCRIPTION_LENGTH }}
             helperText={`${description.length}/${MAX_DESCRIPTION_LENGTH} characters`}
+            required
           />
           {user.loggedIn ? (
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
+            <UiAction
+              type="submit" variant="primary" busy={submitting}
               disabled={submitting || !title.trim() || !description.trim()}
             >
-              {submitting ? "Submitting..." : "Submit Feedback"}
-            </Button>
-          ) : (
-            <Typography color="text.secondary">
-              You must be logged in to submit feedback.
-            </Typography>
-          )}
-        </Stack>
-      </Paper>
-    </Box>
+              Submit feedback
+            </UiAction>
+          ) : null}
+      </form>
+    </section>
   );
 }

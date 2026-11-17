@@ -1,24 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import {
-  Typography,
-  CircularProgress,
-  Stack,
-  Grid2,
-  Divider,
-  Tabs,
-  Tab,
-  Box,
-  Tooltip,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Paper,
-  IconButton,
-  Button,
-  TextField,
-} from "@mui/material";
+import { CircularProgress, Stack, Grid2, Divider, Box, Tooltip, FormControl, InputLabel } from "@mui/material";
 import { NameWithAvatar, Avatar } from "../User/UserWidgets";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import Setup from "components/Setup";
@@ -29,6 +11,8 @@ import { UserContext, SiteInfoContext } from "Contexts";
 import { PageNav, SearchBar } from "components/Nav";
 import { useErrorAlert } from "components/Alerts";
 import { formatUTCDateOnly, formatUTCDateTime } from "utils";
+import { UiAction, UiIcon, UiPageHeader, UiCard, UiField, UiTabs, UiTab, UiText as Typography, UiTabs as Tabs, UiSelect as Select, UiMenuItem as MenuItem, UiField as TextField } from "components/ui";
+import "css/fame.css";
 
 export const QUERY_PARAM_SEASON = "season";
 export const QUERY_PARAM_ROUND = "round";
@@ -103,12 +87,9 @@ function Overview({ roundInfo, seasonInfo }) {
           </Select>
         </FormControl>
       </Stack>
-      <Grid2 container columns={isPhoneDevice ? 1 : 2} spacing={1}>
+      <Grid2 container columns={isPhoneDevice ? 1 : 2} spacing={2}>
         <Grid2 size={1}>
-          <Paper elevation={2} sx={{
-            p: 2,
-            height: "100%",
-          }}>
+          <UiCard className="competitive-standings-card">
             <Stack direction="column" spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
               <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1} sx={{
                 alignItems: "center",
@@ -183,13 +164,10 @@ function Overview({ roundInfo, seasonInfo }) {
                 );
               })}
             </Stack>
-          </Paper>
+          </UiCard>
         </Grid2>
         <Grid2 size={1}>
-          <Paper elevation={2} sx={{
-            p: 2,
-            height: "100%",
-          }}>
+          <UiCard className="competitive-standings-card">
             <Stack direction="column" spacing={1} divider={<Divider orientation="horizontal" flexItem />}>
               <Stack direction={isPhoneDevice ? "column" : "row"} spacing={1} sx={{
                 alignItems: "center",
@@ -268,12 +246,10 @@ function Overview({ roundInfo, seasonInfo }) {
                 );
               })}
             </Stack>
-          </Paper>
+          </UiCard>
         </Grid2>
       </Grid2>
-      <Paper elevation={2} sx={{
-        p: 2,
-      }}>
+      <UiCard>
         <Grid2 container columns={isPhoneDevice ? 1 : 3} spacing={1}>
           {seasonInfo.setupOrder.map((roundSetups, i) => (
             <Grid2 size={1}>
@@ -323,7 +299,7 @@ function Overview({ roundInfo, seasonInfo }) {
             </Grid2>
           ))}
         </Grid2>
-      </Paper>
+      </UiCard>
     </Stack>
   );
 }
@@ -391,13 +367,7 @@ function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
         <Stack direction="column" spacing={1} key={day}>
           <Typography variant="h3">Day {day}</Typography>
           {currentRoundGamesByDay[day].map((gameCompletion) => (
-            <Paper
-              elevation={2}
-              sx={{
-                p: 2,
-                height: "100%",
-              }}
-            >
+            <UiCard className="competitive-history-card">
               <Grid2
                 container
                 columns={isPhoneDevice ? 1 : 2}
@@ -450,7 +420,7 @@ function GameHistory({ roundInfo, canManageCompetitive, reloadRoundInfo }) {
                   )}
                 </Grid2>
               </Grid2>
-            </Paper>
+            </UiCard>
           ))}
         </Stack>
       ))}
@@ -511,43 +481,45 @@ function SeasonRoundSelect({ seasonNumber, roundNumber, setSearchParams }) {
 
   return (
     <Stack direction="row" spacing={1}>
-      <FormControl fullWidth>
-        <InputLabel id="season-select-label">Season</InputLabel>
-        <Select
-          labelId="season-select-label"
-          id="season-select"
-          value={seasonNumber}
-          label="Season"
-          onChange={handleSeasonChange}
-        >
-          <MenuItem value={"latest"}>Latest</MenuItem>
-          {seasonList.map((season) => (
-            <MenuItem value={season.number} key={season.number}>
-              {season.number}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <UiField
+        select
+        size="small"
+        fullWidth
+        label="Season"
+        id="season-select"
+        value={seasonNumber}
+        onChange={handleSeasonChange}
+        InputLabelProps={{ shrink: true }}
+        SelectProps={{ native: true }}
+      >
+        <option value={"latest"}>Latest</option>
+        {seasonList.map((season) => (
+          <option value={season.number} key={season.number}>
+            {season.number}
+          </option>
+        ))}
+      </UiField>
       {roundList && (
-        <FormControl fullWidth>
-          <InputLabel id="round-select-label">Round</InputLabel>
-          <Select
-            labelId="round-select-label"
-            id="round-select"
-            value={roundNumber}
-            label="Round"
-            onChange={handleRoundChange}
-          >
-            <MenuItem value={"latest"}>Latest</MenuItem>
-            {roundList
-              .filter((round) => round.number > 0)
-              .map((round) => (
-                <MenuItem value={round.number} key={round.number}>
-                  {round.number}
-                </MenuItem>
-              ))}
-          </Select>
-        </FormControl>
+        <UiField
+          select
+          size="small"
+          fullWidth
+          label="Round"
+          id="round-select"
+          value={roundNumber}
+          onChange={handleRoundChange}
+          InputLabelProps={{ shrink: true }}
+          SelectProps={{ native: true }}
+        >
+          <option value={"latest"}>Latest</option>
+          {roundList
+            .filter((round) => round.number > 0)
+            .map((round) => (
+              <option value={round.number} key={round.number}>
+                {round.number}
+              </option>
+            ))}
+        </UiField>
       )}
     </Stack>
   );
@@ -661,37 +633,16 @@ export default function Competitive() {
   }
 
   return (
-    <Stack direction="column" spacing={1}>
+    <>
+      <UiPageHeader title={displayTitle} description={caption || undefined} />
       <Grid2
         container
-        columns={isPhoneDevice ? 1 : 3}
+        columns={isPhoneDevice ? 1 : 2}
         spacing={1}
         sx={{
           alignItems: "center",
         }}
       >
-        <Grid2 size={1}>
-          <Stack
-            direction="column"
-            spacing={0.5}
-            sx={{
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h2">{displayTitle}</Typography>
-            {caption && (
-              <Typography
-                variant="caption"
-                sx={{
-                  display: "block",
-                  textAlign: isPhoneDevice ? "center" : "right",
-                }}
-              >
-                {caption}
-              </Typography>
-            )}
-          </Stack>
-        </Grid2>
         <Grid2 size={1}>
           <SeasonRoundSelect
             seasonNumber={seasonNumber}
@@ -779,9 +730,9 @@ export default function Competitive() {
                   marginLeft: "auto !important",
                 }}
               >
-                <IconButton component={Link} to="faq" aria-label="faq">
-                  <i className="fas fa-question-circle" />
-                </IconButton>
+                <UiAction iconOnly variant="ghost" component={Link} to="faq" aria-label="Competitive FAQ">
+                  <UiIcon name="help" />
+                </UiAction>
               </Box>
             </Stack>
           </Grid2>
@@ -789,20 +740,19 @@ export default function Competitive() {
       </Grid2>
       {currentRoundInfo.round && (
         <>
-          <Tabs
-            centered
-            value={tab}
+          <UiTabs
+                        value={tab}
             onChange={(_, newValue) => setTab(newValue)}
             sx={{
               borderBottom: 1,
               borderColor: "divider",
             }}
           >
-            <Tab label="Overview" value="overview" />
+            <UiTab label="Overview" value="overview" />
             {roundHasStarted && (
-              <Tab label="Round History" value="gameHistory" />
+              <UiTab label="Round History" value="gameHistory" />
             )}
-          </Tabs>
+          </UiTabs>
           <Stack spacing={1} sx={{ display: tab === "overview" ? undefined : "none" }}>
             <Overview
               roundInfo={currentRoundInfo}
@@ -818,7 +768,7 @@ export default function Competitive() {
           </Box>
         </>
       )}
-    </Stack>
+    </>
   );
 }
 
@@ -940,15 +890,13 @@ function PointsAdjustmentForm({ gameCompletion, roundInfo, reloadRoundInfo }) {
           onChange={(e) => setPoints(e.target.value)}
           sx={{ width: 100 }}
         />
-        <Button
-          variant="contained"
-          color="primary"
+        <UiAction
+          variant="primary"
           onClick={onSubmit}
-          disabled={submitting}
-          sx={{ whiteSpace: "nowrap" }}
+          busy={submitting}
         >
-          {submitting ? "Updating..." : "Apply"}
-        </Button>
+          Apply
+        </UiAction>
       </Stack>
     </Box>
   );

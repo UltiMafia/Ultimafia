@@ -1,4 +1,5 @@
 import React from "react";
+import { UiDialog, UiAction } from "components/ui";
 
 function PolicyCard({ policy, selected, onClick }) {
   const isVeto = policy === "Veto Agenda";
@@ -14,7 +15,7 @@ function PolicyCard({ policy, selected, onClick }) {
   );
 }
 
-function VetoAssentModal({ meeting, socket }) {
+export function VetoAssentModal({ meeting, socket }) {
   const currentVote = meeting.votes ? Object.values(meeting.votes)[0] : null;
 
   const handleSelect = (selection) => {
@@ -22,29 +23,15 @@ function VetoAssentModal({ meeting, socket }) {
   };
 
   return (
-    <div className="sd-peek-overlay">
-      <div className="sd-peek-dialog" onClick={(e) => e.stopPropagation()}>
-        <div className="sd-peek-title">VETO REQUEST</div>
-        <div className="sd-peek-subtitle">
+    <UiDialog title="Veto request" dismissible={false} actions={<>
+      <UiAction variant="primary" aria-pressed={currentVote === "Yes"} onClick={() => handleSelect("Yes")}>Accept veto</UiAction>
+      <UiAction aria-pressed={currentVote === "No"} onClick={() => handleSelect("No")}>Reject veto</UiAction>
+    </>}>
+        <p>
           The Chancellor wants to discard all policies and advance the election tracker.
           Do you consent?
-        </div>
-        <div className="sd-veto-assent-buttons">
-          <button
-            className={`sd-veto-assent-btn sd-veto-assent-btn--accept${currentVote === "Yes" ? " sd-veto-assent-btn--selected" : ""}`}
-            onClick={() => handleSelect("Yes")}
-          >
-            Accept Veto
-          </button>
-          <button
-            className={`sd-veto-assent-btn sd-veto-assent-btn--reject${currentVote === "No" ? " sd-veto-assent-btn--selected" : ""}`}
-            onClick={() => handleSelect("No")}
-          >
-            Reject Veto
-          </button>
-        </div>
-      </div>
-    </div>
+        </p>
+    </UiDialog>
   );
 }
 

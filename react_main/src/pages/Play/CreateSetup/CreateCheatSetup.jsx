@@ -43,7 +43,7 @@ export default function CreateCheatSetup() {
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
-    axios
+    return axios
       .post("/api/setup/create", {
         gameType: gameType,
         roles: roleData.roles,

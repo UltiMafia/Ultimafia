@@ -1,24 +1,13 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import {
-  Box,
-  Button,
-  Chip,
-  CircularProgress,
-  IconButton,
-  InputBase,
-  ListItemIcon,
-  ListItemText,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, Chip, CircularProgress, InputBase, ListItemIcon, ListItemText, Menu, Stack } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { alpha, useTheme } from "@mui/material/styles";
 
 import { Avatar, StatusIcon } from "../../pages/User/UserWidgets";
 import { UserText } from "../Basic";
 import EmotePicker from "../EmotePicker";
+import MessageComposer from "../ui/MessageComposer";
+import UiIcon from "../ui/UiIcon";
 import { MaxChatMessageLength } from "../../Constants";
 import { formatUnreadBadge } from "../../utils/unreadBadge";
 import {
@@ -35,6 +24,7 @@ import {
   sortDirects,
 } from "../../utils/dmWindow";
 import { UserContext } from "../../Contexts";
+import { UiMenuItem as MenuItem, UiText as Typography, UiAction } from "components/ui";
 
 // X Chat style body of the floating DM window: a conversation list, one
 // conversation (back arrow top-left), and a new-message view where you type
@@ -108,16 +98,16 @@ export default function DmPanel(props) {
       </Typography>
     );
     actions = (
-      <IconButton
-        size="small"
+      <UiAction
+         variant="ghost" size="small" 
         data-testid="dm-new"
         aria-label="New message"
         title="New message"
         onClick={props.onNew}
         disabled={loading}
       >
-        <i className="fas fa-plus" style={{ fontSize: 14 }} />
-      </IconButton>
+        <UiIcon name="add" size={20} />
+      </UiAction>
     );
     body = (
       <ConversationList
@@ -166,16 +156,17 @@ export default function DmPanel(props) {
 
 function BackButton({ onClick }) {
   return (
-    <IconButton
+    <UiAction
+      iconOnly
       size="small"
+      variant="ghost"
       data-testid="dm-back"
       aria-label="Back"
       title="Back"
       onClick={onClick}
-      sx={{ ml: -0.5 }}
     >
-      <i className="fas fa-arrow-left" style={{ fontSize: 15 }} />
-    </IconButton>
+      <UiIcon name="back" size={20} />
+    </UiAction>
   );
 }
 
@@ -264,9 +255,9 @@ function ConversationList({ loading, directs, notifsByChannel, selfId, onOpen, o
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           Message someone, or pick a few people for a group chat.
         </Typography>
-        <Button variant="contained" size="small" onClick={onNew} sx={{ borderRadius: 99 }}>
+        <UiAction variant="primary" size="small" onClick={onNew}>
           New message
-        </Button>
+        </UiAction>
       </Box>
     );
 
@@ -475,72 +466,35 @@ function ConversationView(props) {
         })}
       </Box>
       {sendError && <InlineError text={sendError} />}
-      <Box sx={{ px: 1.5, py: 1, borderTop: `1px solid ${theme.palette.divider}` }}>
-        <Stack
-          direction="row"
-          alignItems="center"
-          sx={{
-            bgcolor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.05)",
-            borderRadius: 99,
-            pl: 2,
-            pr: 0.5,
-          }}
-        >
-          <InputBase
+      <Box sx={{ px: 1.5, py: 1 }}>
+          <MessageComposer
             value={textInput}
             onChange={(e) => {
               setTextInput(e.target.value);
               if (sendError) clearSendError();
             }}
             onKeyDown={(e) => {
+              if (e.nativeEvent?.isComposing || e.isComposing || e.keyCode === 229) return;
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
                 onSend(textInput);
               }
             }}
             placeholder="Start a new message"
-            inputProps={{ maxLength: MaxChatMessageLength, "aria-label": "Message", "data-testid": "dm-input" }}
+            inputProps={{ maxLength: MaxChatMessageLength, "aria-label": "Message", "data-testid": "dm-input", enterKeyHint: "send" }}
             sx={{ flex: 1, fontSize: "0.875rem", py: 0.75 }}
             disabled={!loaded}
-          />
-          {/* Same picker as game chat: site emotes, my custom emotes and
-              my stickers, inserted as ":code:" text. */}
-          <Box
-            data-testid="dm-emote-picker"
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              "& .dropdown-control": {
-                minWidth: 0,
-                width: 32,
-                height: "32px !important",
-                p: 0.5,
-                border: "none !important",
-                borderRadius: "50%",
-              },
-              "& .dropdown-control img": { width: 20, height: 20 },
-              opacity: loaded ? 1 : 0.5,
-              pointerEvents: loaded ? "auto" : "none",
-            }}
-          >
+            canSend={loaded && !!textInput.trim()} onSend={() => onSend(textInput)} sendLabel="Send"
+            sendButtonProps={{ "data-testid": "dm-send" }}
+            tools={loaded && <Box data-testid="dm-emote-picker">
             <EmotePicker
               onEmoteSelected={(emote) => {
                 setTextInput(insertEmote(textInput, emote));
                 if (sendError) clearSendError();
               }}
             />
-          </Box>
-          <IconButton
-            size="small"
-            color="primary"
-            aria-label="Send"
-            data-testid="dm-send"
-            disabled={!loaded || !textInput.trim().length}
-            onClick={() => onSend(textInput)}
-          >
-            <i className="fas fa-paper-plane" style={{ fontSize: 14 }} />
-          </IconButton>
-        </Stack>
+          </Box>}
+          />
       </Box>
     </>
   );
@@ -770,18 +724,17 @@ function NewConversationView(props) {
         })}
       </Box>
       <Box sx={{ px: 2, py: 1.25, borderTop: `1px solid ${theme.palette.divider}` }}>
-        <Button
-          fullWidth
-          variant="contained"
+        <UiAction
+          variant="primary"
+          block
           data-testid="dm-start"
           disabled={!selected.length}
           onClick={() => onStart(selectedIds)}
-          sx={{ borderRadius: 99, fontWeight: 700, textTransform: "none" }}
         >
           {selected.length > 1
             ? `Start group chat (${selected.length + 1} people)`
             : "Start conversation"}
-        </Button>
+        </UiAction>
       </Box>
     </>
   );

@@ -1,0 +1,30 @@
+.player-directory-layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 40px; align-items: start; }
+.player-directory-layout > *, .family-directory { min-width: 0; }
+.directory-summary { margin: 0; color: var(--um-muted); font-size: var(--ui-text-small); }
+.player-directory-list, .family-directory-list { list-style: none; margin: 0; padding: 0; }
+.player-directory-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--scheme-color-border); min-width: 0; }
+.player-directory-row .name-with-avatar { min-width: 0; }
+.player-directory-status { display: inline-flex; align-items: center; gap: 8px; color: var(--um-muted); font-size: var(--ui-text-small); flex-shrink: 0; }
+.player-directory-row--new { align-items: start; flex-direction: column; gap: 4px; }
+.directory-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 20px 0; }
+.directory-toolbar > label { display: grid; gap: 6px; font-size: var(--ui-text-small); }
+.directory-toolbar > label:first-child { flex: 1; min-width: 180px; }
+.directory-toolbar > .MuiFormControl-root:first-child { flex: 1; min-width: 180px; }
+.directory-toolbar .directory-checkbox { display: flex; align-items: center; min-height: var(--ui-action-height); gap: 8px; }
+.directory-toolbar input[type="checkbox"] { width: 18px; min-height: 18px; accent-color: var(--um-accent); }
+.family-directory-row { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 16px; padding: 22px 0; border-bottom: 1px solid var(--scheme-color-border); align-items: start; }
+.family-directory-copy { min-width: 0; }
+.family-directory-copy h2 { margin: 0 0 8px; font-size: var(--ui-text-heading); line-height: var(--ui-line-heading); overflow-wrap: anywhere; }
+.family-directory-copy h2 a { color: var(--scheme-color-text); }
+.family-directory-copy p { margin: 8px 0; }
+.family-directory-facts { display: flex; flex-wrap: wrap; gap: 8px 20px; color: var(--um-muted); font-size: var(--ui-text-small); }
+.family-directory-facts > span { display: inline-flex; align-items: center; gap: 4px; }
+.family-application-status { font-weight: 600; color: var(--um-muted); }
+.family-application-status.is-open { color: #63b884; }
+.light-mode .family-application-status.is-open { color: #24723f; }
+@media (max-width: 900px) {
+  .player-directory-layout { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .family-directory-row { grid-template-columns: 48px minmax(0, 1fr); gap: 12px; }
+  .family-directory-row > :last-child { grid-column: 2; }
+  .family-directory-row > :first-child { max-width: 48px; max-height: 48px; }
+}

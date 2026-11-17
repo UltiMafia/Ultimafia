@@ -1,19 +1,12 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
-import {
-  Paper,
-  Typography,
-  Box,
-  Stack,
-  Button,
-  LinearProgress,
-  Tooltip,
-} from "@mui/material";
+import { Box, Stack, LinearProgress, Tooltip } from "@mui/material";
 import { UserContext } from "Contexts";
 import { useErrorAlert } from "components/Alerts";
 import { getPageNavFilterArg, PageNav } from "components/Nav";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import LobbySidebarPanel from "pages/Play/LobbyBrowser/LobbySidebarPanel";
+import { UiAction, UiCard, UiText as Typography } from "components/ui";
 
 function VoterAvatars({ optionIndex, poll }) {
   if (!poll.voterInfo || !poll.voterInfo[optionIndex]) {
@@ -67,7 +60,6 @@ function Polls({
 
   return (
     <Stack spacing={2}>
-      {!isThreadPoll && <PageNav page={pollPage} onNav={onPollPageNav} />}
       {allPolls.map((poll) => {
         const isActive = !poll.completed;
         const completedDate =
@@ -109,18 +101,16 @@ function Polls({
 
                 return (
                   <Box key={index}>
-                    <Button
-                      variant={isUserVote ? "contained" : "outlined"}
-                      fullWidth
+                    <UiAction
+                      className="poll-option"
+                      data-ui-variant="poll-option"
+                      variant={isUserVote ? "primary" : "secondary"}
+                      block
+                      aria-pressed={isUserVote}
                       onClick={() =>
                         !poll.completed && handleVote(index, poll.id)
                       }
                       disabled={poll.completed}
-                      sx={{
-                        justifyContent: "flex-start",
-                        textAlign: "left",
-                        mb: 1,
-                      }}
                     >
                       <Stack
                         direction="row"
@@ -135,7 +125,7 @@ function Polls({
                           {voteCount} ({percentage.toFixed(1)}%)
                         </Typography>
                       </Stack>
-                    </Button>
+                    </UiAction>
                     <LinearProgress
                       variant="determinate"
                       value={percentage}
@@ -368,12 +358,12 @@ export function Poll({ lobby, threadId, locked }) {
 
   if (loading) {
     return (
-      <Paper sx={{ p: 2 }}>
+      <UiCard>
         <Typography color="primary" gutterBottom>
           Poll
         </Typography>
         <LinearProgress />
-      </Paper>
+      </UiCard>
     );
   }
 

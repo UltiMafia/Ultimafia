@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
-import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
+import { Box, Divider, Stack } from "@mui/material";
 import { UserContext } from "Contexts";
 import { DailyChallengeData } from "constants/DailyChallenge";
 import { RoleCount } from "components/Roles";
 
-import umcoin from "images/umcoin.png";
+import CoinIcon from "components/CoinIcon";
 import LobbySidebarPanel from "./LobbySidebarPanel";
+import { UiText as Typography } from "components/ui";
 
 export const DailyChallenges = () => {
   const user = useContext(UserContext);
@@ -66,16 +67,7 @@ export const DailyChallenges = () => {
           >
             {reward}
           </Typography>
-          <img
-            className="um-coin"
-            src={umcoin}
-            alt="Coin Icon"
-            style={{
-              width: "20px",
-              height: "20px",
-              marginLeft: "4px",
-            }}
-          />
+          <CoinIcon size={20} alt="Coin Icon" />
         </Stack>
         <Typography> {description}</Typography>
       </Box>

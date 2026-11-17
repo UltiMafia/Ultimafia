@@ -1,15 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
+import { UiPageHeader, UiText as Typography, UiCard } from "components/ui";
 import { useSearchParams, Link } from "react-router-dom";
-import {
-  Box,
-  Card,
-  CardContent,
-  Typography,
-  Chip,
-  Pagination,
-  Alert,
-  Paper,
-} from "@mui/material";
+import { Box, Chip, Alert } from "@mui/material";
+import { PageNav } from "components/Nav";
 import axios from "axios";
 
 import { useErrorAlert } from "../../../components/Alerts";
@@ -150,15 +143,9 @@ export default function SearchResults(props) {
 
   return (
     <Box sx={{ p: 2 }}>
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          🔎
-          <Typography variant="h5" component="h1">
-            Search Results
-          </Typography>
-        </Box>
+      <UiPageHeader variant="forum" title="Search results" />
 
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
           {query && (
             <Chip
               icon="🔎"
@@ -185,10 +172,9 @@ export default function SearchResults(props) {
           )}
         </Box>
 
-        <Typography variant="body2" color="text.secondary">
-          Found {totalThreads} threads and {totalReplies} replies
-        </Typography>
-      </Paper>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Found {totalThreads} threads and {totalReplies} replies
+      </Typography>
 
       {allResults.length === 0 ? (
         <Alert severity="info">
@@ -197,8 +183,7 @@ export default function SearchResults(props) {
       ) : (
         <>
           {allResults.map((result, index) => (
-            <Card key={`${result.type}-${result.id}`} sx={{ mb: 2 }}>
-              <CardContent>
+            <UiCard key={`${result.type}-${result.id}`} className="search-result-card">
                 <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
                   <Box sx={{ flex: 1 }}>
                     <Box
@@ -335,18 +320,15 @@ export default function SearchResults(props) {
                     </Box>
                   </Box>
                 </Box>
-              </CardContent>
-            </Card>
+            </UiCard>
           ))}
 
           {totalPages > 1 && (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-              <Pagination
-                count={totalPages}
+              <PageNav
+                maxPage={totalPages}
                 page={page}
-                onChange={handlePageChange}
-                color="primary"
-                size="large"
+                onNav={(newPage) => handlePageChange(null, newPage)}
               />
             </Box>
           )}

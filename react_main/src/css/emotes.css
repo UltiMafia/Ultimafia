@@ -3,6 +3,11 @@
   --sticker-size: 96px;
 }
 
+/* emoji-picker-react hardcodes its sticky category headings at 16px. Popover
+   section headings elsewhere use the section scale; match it here. The extra
+   class beats the library's runtime-injected single-class rule. */
+.EmojiPickerReact .epr-emoji-category-label { font-size: var(--ui-text-section); }
+
 .emote {
   position: relative;
   z-index: 1;

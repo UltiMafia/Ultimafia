@@ -1,32 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
+import { UiPage, UiAction, UiSection, UiIcon, UiSectionNav, UiSectionNavItem, confirmAction, UiText as Typography, UiMenuItem as MenuItem, UiSelect as Select, UiField as TextField, UiCheckbox as Checkbox, UiSwitch as Switch } from "components/ui";
 import { Link, Route, Routes } from "react-router-dom";
 import { ViewNavigate as Navigate, useViewNavigate as useNavigate } from "hooks/useViewActivity";
 import axios from "axios";
 import update from "immutability-helper";
 import { ContrastComparison } from "utilsFolder/autoContrast";
 
-import {
-  Box,
-  Button,
-  Typography,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  LinearProgress,
-  Paper,
-  ButtonGroup,
-  Stack,
-  Divider,
-  Tabs,
-  Tab,
-  Checkbox,
-  FormControlLabel,
-  Switch,
-  Chip,
-  Link as MuiLink,
-} from "@mui/material";
+import { Box, FormControl, InputLabel, LinearProgress, Stack, Divider, FormControlLabel, Chip, Link as MuiLink } from "@mui/material";
 import { useColorScheme } from "@mui/material/styles";
 
 import { UserContext, SiteInfoContext } from "Contexts";
@@ -43,7 +23,6 @@ import "css/settings.css";
 import { setCaptchaVisible } from "utils";
 import { PageSkeleton } from "components/Skeletons";
 import { Loading } from "components/Loading";
-import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 
 const githubStatusChips = {
   pending: { label: "Pending approval", color: "warning" },
@@ -92,9 +71,6 @@ function GithubSettings() {
   return (
     <Stack direction="column" spacing={2}>
       <Box>
-        <Typography variant="h4" sx={{ mb: 1 }}>
-          GitHub
-        </Typography>
         <Typography variant="body2" color="text.secondary">
           Link your GitHub account to show your code contributions to{" "}
           <MuiLink href="https://github.com/UltiMafia/Ultimafia" target="_blank" rel="noopener noreferrer">
@@ -117,17 +93,17 @@ function GithubSettings() {
           )}
         </Stack>
       )}
-      <Stack direction="row" spacing={1}>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems="start">
         <TextField
-          sx={{ minWidth: "240px" }}
+          sx={{ width: "100%", maxWidth: "480px" }}
           label="GitHub Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           disabled={saving}
         />
-        <Button onClick={onSave} disabled={saving || unchanged}>
+        <UiAction  variant="ghost" onClick={onSave} disabled={saving || unchanged}>
           {username.trim() ? "Save" : "Remove"}
-        </Button>
+        </UiAction>
       </Stack>
     </Stack>
   );
@@ -165,9 +141,6 @@ function CookieSettings() {
   return (
     <Stack direction="column" spacing={3}>
       <Box>
-        <Typography variant="h4" sx={{ mb: 1 }}>
-          Cookie Preferences
-        </Typography>
         <Typography variant="body2" color="text.secondary" paragraph>
           Manage your cookie preferences. These settings are stored in your browser 
           and apply to this device only. For more information, see our{" "}
@@ -250,54 +223,39 @@ function CookieSettings() {
       <Divider />
 
       <Stack direction="row" spacing={2}>
-        <Button onClick={handleAcceptAll} variant="outlined" color="primary">
+        <UiAction onClick={handleAcceptAll} variant="primary">
           Accept All
-        </Button>
-        <Button onClick={handleRejectAll} variant="outlined" color="secondary">
+        </UiAction>
+        <UiAction onClick={handleRejectAll} variant="secondary">
           Reject All
-        </Button>
+        </UiAction>
       </Stack>
     </Stack>
   );
 }
 
 function SettingsSection({ sections, activeSection }) {
-  const isPhoneDevice = useIsPhoneDevice();
-  const wrapInPaper = activeSection.wrapInPaper === true;
-
-  let content = activeSection.content;
-  if (wrapInPaper) {
-    content = (
-      <Paper sx={{ p: 2 }}>
-        {content}
-      </Paper>
-    );
-  }
-
   return (
-    <Stack direction="column" spacing={1}>
-      <Stack
-        direction="row"
-        spacing={1}
-      >
-        <Tabs value={activeSection.path} aria-label="Settings Sections">
+    <UiPage title="Settings" className="settings-page">
+      <div className="settings-layout">
+        <UiSectionNav label="Settings sections">
           {sections.map((section) => (
-            <Tab
-              label={section.title}
+            <UiSectionNavItem
               key={section.path}
-              value={section.path}
-              color="inherit"
-              component={Link}
               to={`../${section.path}`}
-              sx={{
-                minWidth: isPhoneDevice ? 0 : undefined,
-              }}
-            />
+              active={activeSection.path === section.path}
+            >{section.title}</UiSectionNavItem>
           ))}
-        </Tabs>
-      </Stack>
-      {content}
-    </Stack>
+        </UiSectionNav>
+        <div className="settings-content">
+          <header className="settings-section-heading">
+            <h2 className="ui-section-title">{activeSection.title}</h2>
+            <p>{activeSection.description}</p>
+          </header>
+          {activeSection.content}
+        </div>
+      </div>
+    </UiPage>
   );
 }
 
@@ -327,7 +285,7 @@ export default function Settings() {
       ref: "referralURL",
       type: "text",
       value: (deps) =>
-        `${import.meta.env.REACT_APP_URL}/auth/login?ref=${deps.user.id}`,
+        `${window.location.origin}/auth/login?ref=${deps.user.id}`,
       fixed: true,
       highlight: true,
     },
@@ -451,9 +409,10 @@ export default function Settings() {
       groupName: "Appearance",
       options: [
         {
-          label: "Default (Roboto Slab)",
+          label: "Default (Fira Sans)",
           value: "default",
         },
+        { label: "Classic (Roboto / Roboto Slab)", value: "classic" },
         {
           label: "System (system-ui)",
           value: "system",
@@ -692,21 +651,21 @@ export default function Settings() {
               onClick={deps.onProfileBackgroundEdit}
               onFileUpload={deps.onProfileBackgroundUpload}
             >
-              <Button variant="outlined">Upload Background Image</Button>
+              <UiAction  variant="secondary" >Upload Background Image</UiAction>
             </HiddenUpload>
             {deps.user.profileBackground && (
               <>
                 <Typography variant="caption" sx={{ color: "success.main" }}>
                   Background uploaded
                 </Typography>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  size="small"
+                <UiAction
+                   variant="danger" size="small" 
+                  
+                  
                   onClick={deps.onProfileBackgroundRemove}
                 >
                   Remove
-                </Button>
+                </UiAction>
               </>
             )}
           </Stack>
@@ -728,21 +687,21 @@ export default function Settings() {
               onClick={deps.onForumBannerEdit}
               onFileUpload={deps.onForumBannerUpload}
             >
-              <Button variant="outlined">Upload Forum Banner</Button>
+              <UiAction  variant="secondary" >Upload Forum Banner</UiAction>
             </HiddenUpload>
             {deps.user.forumBanner && (
               <>
                 <Typography variant="caption" sx={{ color: "success.main" }}>
                   Forum banner uploaded
                 </Typography>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  size="small"
+                <UiAction
+                   variant="danger" size="small" 
+                  
+                  
                   onClick={deps.onForumBannerRemove}
                 >
                   Remove
-                </Button>
+                </UiAction>
               </>
             )}
           </Stack>
@@ -1194,23 +1153,34 @@ export default function Settings() {
     {
       title: "Site",
       path: "site",
+      description: "Appearance, accessibility and community preferences. Changes save as you make them.",
       content: (
         <Form
-          fields={siteFields}
+          fields={siteFields.map(field => ({ ...field, groupName: ({
+            referralURL: "Referral link", onlyFriendDMs: "Messages and privacy", disablePokes: "Messages and privacy",
+            hideDeleted: "Messages and privacy", hideTutorialButton: "Tutorial and animation",
+            disableSnowstorm: "Tutorial and animation", disableMediaAutoplay: "Tutorial and animation", disableAnimatedAvatars: "Tutorial and animation",
+          })[field.ref] || field.groupName })).sort((a, b) => {
+            const order = ["Appearance", "Messages and privacy", "Censors", "Tutorial and animation", "Referral link"];
+            return order.indexOf(a.groupName) - order.indexOf(b.groupName);
+          })}
           deps={{ user }}
           onChange={(action) => onSettingChange(action, updateSiteFields)}
-          wrapGroupsInPaper
-          halfWidth
         />
       ),
     },
     {
-      title: "User",
+      title: "Profile",
       path: "profile",
+      description: "Your public identity, profile media and visibility. Fields with a Save button apply only when saved.",
       content: (
         <>
           <Form
-            fields={profileFields}
+            fields={profileFields.map(field => ({ ...field, groupName: ({
+              username: "Identity", pronouns: "Identity", birthday: "Identity", vanityUrl: "Identity",
+              youtube: "Profile media", autoplay: "Profile media", collapseMedia: "Profile media",
+              hideStatistics: "Visibility", hideKarma: "Visibility", hidePointsNegative: "Visibility", hideJoinDate: "Visibility", hideDonorBadge: "Visibility",
+            })[field.ref] || "Profile appearance" }))}
             deps={{
               name: user.name,
               pronouns: user.pronouns,
@@ -1230,8 +1200,6 @@ export default function Settings() {
               onForumBannerRemove,
             }}
             onChange={(action) => onSettingChange(action, updateProfileFields)}
-            wrapGroupsInPaper
-            halfWidth
           />
         </>
       ),
@@ -1239,9 +1207,14 @@ export default function Settings() {
     {
       title: "Game",
       path: "game",
+      description: "Your in-game appearance, sounds and accessibility preferences. These do not change game rules.",
       content: (
         <Form
-          fields={gameFields}
+          fields={gameFields.map(field => ({ ...field, groupName: ({
+            ignoreTextColor: "Readability", ignoreNameFonts: "Readability", accessibleNameColors: "Readability", disableProTips: "Readability",
+            deathMessage: "Death message and sounds", deathSound: "Death message and sounds", ignoreDeathSounds: "Death message and sounds",
+            customEmotes: "Emotes and stickers", customStickers: "Emotes and stickers",
+          })[field.ref] || "Player appearance" }))}
           deps={{
             deathMessage: user.settings.deathMessage,
             user,
@@ -1249,64 +1222,51 @@ export default function Settings() {
             errorAlert,
           }}
           onChange={(action) => onSettingChange(action, updateGameFields)}
-          wrapGroupsInPaper
-          halfWidth
         />
       ),
     },
     {
       title: "Account",
       path: "account",
-      wrapInPaper: true,
+      description: "Manage your sign-in details and account access.",
       content: (
         <Stack direction="column" spacing={2}>
           <AccountCredentials />
-          <Button
-            variant="outlined"
-            sx={{ minWidth: "120px" }}
-            onClick={onDeleteClick}
-            startIcon={
-              <i className="fas fa-exclamation-triangle" aria-hidden="true" />
-            }
-            endIcon={
-              <i className="fas fa-exclamation-triangle" aria-hidden="true" />
-            }
-          >
-            Delete Account
-          </Button>
+          <UiSection title="Delete account" className="settings-danger-section">
+            <p>Account deletion is permanent. You will be asked to confirm before continuing.</p>
+            <UiAction variant="danger" onClick={onDeleteClick}><UiIcon name="warning" />Delete account</UiAction>
+          </UiSection>
         </Stack>
       ),
     },
     {
       title: "GitHub",
       path: "github",
-      wrapInPaper: true,
+      description: "Connect your contributions to your UltiMafia profile.",
       content: <GithubSettings />,
     },
     {
       title: "Cookies",
       path: "cookies",
-      wrapInPaper: true,
+      description: "Choose which optional cookies this browser may use.",
       content: <CookieSettings />,
     },
     {
       title: "Family",
       path: "family",
-      wrapInPaper: true,
+      description: "Family membership, appearance and management. Available actions depend on your membership and permissions.",
       content: (
         <Stack direction="column" spacing={3}>
           {/* No Family Section */}
           {!userFamily && !user.itemsOwned?.createFamily && (
             <Box>
-              <Typography variant="h4" sx={{ mb: 2 }}>
-                Family
-              </Typography>
               <Typography>No family.</Typography>
+              <Link to="/community/families">Find a family</Link>
             </Box>
           )}
 
           {/* Create Family Section */}
-          {user.itemsOwned?.createFamily && (
+          {Number(user.itemsOwned?.createFamily) > 0 && (
             <Box>
               <Typography variant="h4" sx={{ mb: 2 }}>
                 Create Family
@@ -1336,9 +1296,9 @@ export default function Settings() {
                     name="familyAvatar"
                     keepAnimation={Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar")}
                   >
-                    <Button variant="outlined" disabled={!!userFamily}>
+                    <UiAction  variant="secondary"  disabled={!!userFamily}>
                       Upload Avatar
-                    </Button>
+                    </UiAction>
                   </AvatarUpload>
                   {familyAvatarUploaded && (
                     <Typography
@@ -1349,14 +1309,13 @@ export default function Settings() {
                     </Typography>
                   )}
                 </Stack>
-                <Button
-                  variant="contained"
+                <UiAction
+                  variant="primary"
                   onClick={onCreateFamily}
                   disabled={!familyName.trim() || !!userFamily}
-                  sx={{ minWidth: "240px" }}
                 >
                   Create Family
-                </Button>
+                </UiAction>
               </Stack>
             </Box>
           )}
@@ -1408,7 +1367,7 @@ export default function Settings() {
                       name="familyAvatarExisting"
                       keepAnimation={Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedAvatar")}
                     >
-                      <Button variant="outlined">Upload New Avatar</Button>
+                      <UiAction  variant="secondary" >Upload New Avatar</UiAction>
                     </AvatarUpload>
                     {userFamily.avatar && (
                       <Typography
@@ -1451,11 +1410,11 @@ export default function Settings() {
                       onFileUpload={onFamilyBannerUpload}
                       keepAnimation={!!(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))}
                     >
-                      <Button variant="outlined">
+                      <UiAction  variant="secondary" >
                         {(Array.isArray(userFamily?.perks) && userFamily.perks.includes("familyAnimatedBanner"))
                           ? "Upload / Crop Banner"
                           : "Upload Banner"}
-                      </Button>
+                      </UiAction>
                     </BannerUpload>
                     {userFamily.banner && (
                       <>
@@ -1465,14 +1424,14 @@ export default function Settings() {
                         >
                           Banner uploaded
                         </Typography>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
+                        <UiAction
+                           variant="danger" size="small" 
+                          
+                          
                           onClick={onFamilyBannerRemove}
                         >
                           Remove
-                        </Button>
+                        </UiAction>
                       </>
                     )}
                   </Stack>
@@ -1530,13 +1489,13 @@ export default function Settings() {
                           }
                           label="Collapse player"
                         />
-                        <Button
-                          variant="contained"
-                          size="small"
+                        <UiAction
+                           variant="primary" size="small" 
+                          
                           onClick={onFamilyMediaSave}
                         >
                           Save media
-                        </Button>
+                        </UiAction>
                       </Stack>
                     </Stack>
                   )}
@@ -1560,9 +1519,9 @@ export default function Settings() {
                       onClick={onFamilyBackgroundEdit}
                       onFileUpload={onFamilyBackgroundUpload}
                     >
-                      <Button variant="outlined">
+                      <UiAction  variant="secondary" >
                         Upload Background Image
-                      </Button>
+                      </UiAction>
                     </HiddenUpload>
                     {userFamily.background && (
                       <>
@@ -1572,14 +1531,14 @@ export default function Settings() {
                         >
                           Background uploaded
                         </Typography>
-                        <Button
-                          variant="outlined"
-                          color="error"
-                          size="small"
+                        <UiAction
+                           variant="danger" size="small" 
+                          
+                          
                           onClick={onFamilyBackgroundRemove}
                         >
                           Remove
-                        </Button>
+                        </UiAction>
                       </>
                     )}
                   </Stack>
@@ -1624,34 +1583,23 @@ export default function Settings() {
                       placeholder="Search for a family member..."
                       onChange={(userId) => setTransferLeaderUserId(userId)}
                     />
-                    <Button
-                      variant="outlined"
+                    <UiAction
+                      variant="secondary"
                       onClick={onTransferLeadership}
                       disabled={!transferLeaderUserId}
-                      sx={{ minWidth: "240px" }}
                     >
                       Transfer Leadership
-                    </Button>
+                    </UiAction>
                   </Stack>
                 </Box>
 
                 {/* Delete Family */}
                 <Box>
                   <Divider sx={{ my: 2 }} />
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={onDeleteFamily}
-                    sx={{ minWidth: "240px" }}
-                    startIcon={
-                      <i
-                        className="fas fa-exclamation-triangle"
-                        aria-hidden="true"
-                      />
-                    }
-                  >
+                  <UiAction variant="danger" onClick={onDeleteFamily}>
+                    <i className="fas fa-exclamation-triangle" aria-hidden="true" />
                     Delete Family
-                  </Button>
+                  </UiAction>
                 </Box>
               </Stack>
             </Box>
@@ -1695,14 +1643,9 @@ export default function Settings() {
 
                 {/* Leave Family */}
                 <Box>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    onClick={onLeaveFamily}
-                    sx={{ minWidth: "240px" }}
-                  >
+                  <UiAction variant="danger" onClick={onLeaveFamily}>
                     Leave Family
-                  </Button>
+                  </UiAction>
                 </Box>
               </Stack>
             </Box>
@@ -1769,9 +1712,9 @@ export default function Settings() {
       .catch(deps.errorAlert);
   }
 
-  function onBirthdayClear(deps) {
+  async function onBirthdayClear(deps) {
     if (
-      !window.confirm(
+      !await confirmAction(
         "Are you sure you want to clear your birthday? You won't be able to set it again without asking a moderator."
       )
     ) {
@@ -1928,8 +1871,8 @@ export default function Settings() {
       .catch(deps.errorAlert);
   }
 
-  function onVanityUrlClear(deps) {
-    if (!window.confirm("Are you sure you want to clear your vanity URL?")) {
+  async function onVanityUrlClear(deps) {
+    if (!await confirmAction("Are you sure you want to clear your vanity URL?")) {
       return;
     }
 
@@ -2036,8 +1979,8 @@ export default function Settings() {
     return true;
   }
 
-  function onForumBannerRemove() {
-    if (!window.confirm("Are you sure you wish to remove your forum banner?")) {
+  async function onForumBannerRemove() {
+    if (!await confirmAction("Are you sure you wish to remove your forum banner?")) {
       return;
     }
 
@@ -2089,9 +2032,9 @@ export default function Settings() {
       });
   }
 
-  function onProfileBackgroundRemove() {
+  async function onProfileBackgroundRemove() {
     if (
-      !window.confirm(
+      !await confirmAction(
         "Are you sure you wish to remove your profile background?"
       )
     ) {
@@ -2160,8 +2103,8 @@ export default function Settings() {
       .catch(errorAlert);
   }
 
-  function onDeleteClick() {
-    if (window.confirm("Are you sure you wish to **DELETE** your account?")) {
+  async function onDeleteClick() {
+    if (await confirmAction("Are you sure you wish to **DELETE** your account?")) {
       axios
         .post("/api/user/delete")
         .then(() => {
@@ -2268,9 +2211,9 @@ export default function Settings() {
       .catch(errorAlert);
   }
 
-  function onFamilyBannerRemove() {
+  async function onFamilyBannerRemove() {
     if (!userFamily?.id) return;
-    if (!window.confirm("Remove the family banner?")) return;
+    if (!await confirmAction("Remove the family banner?")) return;
     axios
       .delete(`/api/family/${userFamily.id}/banner`)
       .then(() => {
@@ -2302,14 +2245,14 @@ export default function Settings() {
       .catch(errorAlert);
   }
 
-  function onTransferLeadership() {
+  async function onTransferLeadership() {
     if (!transferLeaderUserId) {
       siteInfo.showAlert("Please select a family member", "error");
       return;
     }
 
     if (
-      !window.confirm(
+      !await confirmAction(
         "Are you sure you want to transfer leadership? You will lose the ability to manage the family."
       )
     ) {
@@ -2328,9 +2271,9 @@ export default function Settings() {
       .catch(errorAlert);
   }
 
-  function onDeleteFamily() {
+  async function onDeleteFamily() {
     if (
-      !window.confirm(
+      !await confirmAction(
         "Are you sure you want to delete your family? This will remove all members and cannot be undone."
       )
     ) {
@@ -2349,9 +2292,9 @@ export default function Settings() {
       .catch(errorAlert);
   }
 
-  function onLeaveFamily() {
+  async function onLeaveFamily() {
     if (
-      !window.confirm(
+      !await confirmAction(
         "Are you sure you want to leave this family? You will need to be re-invited to rejoin."
       )
     ) {
@@ -2375,9 +2318,9 @@ export default function Settings() {
     return true;
   }
 
-  function onFamilyBackgroundRemove() {
+  async function onFamilyBackgroundRemove() {
     if (
-      !window.confirm("Are you sure you wish to remove the family background?")
+      !await confirmAction("Are you sure you wish to remove the family background?")
     ) {
       return;
     }

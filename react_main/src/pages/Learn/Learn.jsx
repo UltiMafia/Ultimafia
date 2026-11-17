@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import React from "react";
+import { Route, Routes } from "react-router-dom";
 import { ViewNavigate as Navigate } from "hooks/useViewActivity";
 
 import Setups from "./Setup/SetupPage";
@@ -9,18 +9,12 @@ import LearnGlossary from "./LearnGlossary";
 
 import "css/play.css";
 
-import { Box, Card, Link, AppBar, Toolbar } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import { UiPage } from "components/ui";
 
 export default function Learn(props) {
-  const theme = useTheme();
-  const location = useLocation();
-  let setupView = location.pathname.startsWith("/learn/setup");
 
   return (
-    <>
-      <Box sx={{ flexGrow: 1 }}>
-        <Card sx={{ padding: theme.spacing(3), textAlign: "justify" }}>
+    <UiPage className="reference-page">
           <Routes>
             <Route path="games" element={<Games />} />
             <Route path="setup/:setupId" element={<Setups />} />
@@ -28,8 +22,6 @@ export default function Learn(props) {
             <Route path="glossary" element={<LearnGlossary />} />
             <Route path="*" element={<Navigate to="games" />} />
           </Routes>
-        </Card>
-      </Box>
-    </>
+    </UiPage>
   );
 }

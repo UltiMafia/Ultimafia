@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { UiDialog, UiAction } from "components/ui";
 import { SiteInfoContext } from "Contexts";
 import { RoleCount } from "components/Roles";
 import { useAvatarImageUrl } from "utils/avatarUrl";
@@ -239,8 +240,10 @@ export function PlayerCircle({
       </div>
 
       {confirmTarget && activeMeeting && (
-        <div className="sd-nominate-overlay" onClick={handleCancel}>
-          <div className="sd-nominate-dialog" onClick={(e) => e.stopPropagation()}>
+        <UiDialog title={activeMeeting.actionName} onClose={handleCancel} actions={<>
+          <UiAction onClick={handleCancel}>Cancel</UiAction>
+          <UiAction variant="primary" onClick={handleConfirm}>Confirm</UiAction>
+        </>}>
             <p className="sd-nominate-text">
               {(CONFIRM_DIALOG_TEXT[activeMeeting.actionName] || ((n) => `${activeMeeting.actionName}: ${n}?`))(confirmTarget.name)
                 .split(new RegExp(`(${confirmTarget.name})`))
@@ -249,16 +252,7 @@ export function PlayerCircle({
                   : part
                 )}
             </p>
-            <div className="sd-nominate-actions">
-              <button className="sd-nominate-btn sd-nominate-btn--ok" onClick={handleConfirm}>
-                OK
-              </button>
-              <button className="sd-nominate-btn sd-nominate-btn--cancel" onClick={handleCancel}>
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
+        </UiDialog>
       )}
     </>
   );

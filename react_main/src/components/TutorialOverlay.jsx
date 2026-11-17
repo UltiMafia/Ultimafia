@@ -1,10 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
-import { Box, Button, IconButton, Paper, Stack, Typography } from "@mui/material";
+import { Box, IconButton, Paper, Stack } from "@mui/material";
 
 import { useSocketListeners } from "pages/Game/Game";
 import { UserContext } from "../Contexts";
 import { HIGHLIGHT_CLASS, HIGHLIGHT_CSS, resolveHighlights } from "../lib/tutorialHighlight";
+import { UiText as Typography, UiAction } from "components/ui";
 
 const POS_KEY = "tutorialBoxPos";
 
@@ -273,17 +274,17 @@ export default function TutorialOverlay({ socket }) {
           gap={1}
           sx={{ mt: 1.5, "& > button": { minHeight: 40, width: { xs: "100%", sm: "auto" } } }}
         >
-          <Button
-            variant={step.hasNext ? "contained" : "outlined"}
+          <UiAction
+            variant={step.hasNext ? "primary" : "secondary"}
             size="small"
             data-testid="tutorial-next"
             disabled={!step.hasNext}
             onClick={nextStep}
           >
             Next
-          </Button>
-          <Button
-            variant={canContinue ? "contained" : "outlined"}
+          </UiAction>
+          <UiAction
+            variant={canContinue ? "primary" : "secondary"}
             size="small"
             data-testid="tutorial-continue"
             disabled={!canContinue}
@@ -291,7 +292,7 @@ export default function TutorialOverlay({ socket }) {
             title={canContinue ? "" : "Finish this phase's steps first"}
           >
             Continue / Next phase ▸
-          </Button>
+          </UiAction>
         </Stack>
       )}
       {!collapsed && step.done && (
@@ -303,16 +304,16 @@ export default function TutorialOverlay({ socket }) {
           sx={{ mt: 1.5, "& > button": { minHeight: 40, width: { xs: "100%", sm: "auto" } } }}
         >
           {step.failed && (
-            <Button variant="contained" size="small" disabled={leaving} onClick={() => leaveTo("/play/tutorial", step.storyline)}>
+            <UiAction  variant="primary" size="small"   disabled={leaving} onClick={() => leaveTo("/play/tutorial", step.storyline)}>
               Try again
-            </Button>
+            </UiAction>
           )}
-          <Button variant={step.failed ? "outlined" : "contained"} size="small" disabled={leaving} onClick={() => leaveTo("/play/tutorial")}>
+          <UiAction variant={step.failed ? "secondary" : "primary"} size="small" disabled={leaving} onClick={() => leaveTo("/play/tutorial")}>
             Play another tutorial
-          </Button>
-          <Button size="small" disabled={leaving} onClick={() => leaveTo("/play")}>
+          </UiAction>
+          <UiAction  variant="ghost" size="small"  disabled={leaving} onClick={() => leaveTo("/play")}>
             Back to Play
-          </Button>
+          </UiAction>
         </Stack>
       )}
     </Paper>

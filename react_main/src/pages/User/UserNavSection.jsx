@@ -5,22 +5,15 @@ import { NameWithAvatar, Avatar } from "./UserWidgets";
 import { FamilyAvatarImage } from "utils/avatarUrl";
 import { useNow } from "../../hooks/useNow";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
-import {
-  Divider,
-  Stack,
-  Tooltip,
-  Typography,
-  IconButton,
-  Badge,
-  Box,
-} from "@mui/material";
+import { Divider, Stack, Tooltip, Badge, Box } from "@mui/material";
 import NavDropdown from "../../components/NavDropdown";
 import CountBadge from "../../components/CountBadge";
 import { SiteInfoContext } from "../../Contexts";
 import DmButton from "../../components/dms/DmButton";
 
 import "css/main.css";
-import exitIcon from "../../images/emotes/exit.png";
+import UiIcon from "../../components/ui/UiIcon";
+import { UiText as Typography } from "components/ui";
 
 export default function UserNavSection({
   openAnnouncements,
@@ -71,10 +64,11 @@ export default function UserNavSection({
   ) : null;
 
   const userMenuItems = [
+    ...(isMobile ? [{ text: `${user.redHearts ?? 0} red hearts · ${user.goldHearts ?? 0} gold hearts`, info: true }, { divider: true }] : []),
     {
       text: "Profile",
       path: profilePath,
-      icon: (<i className="fas fa-user"/>),
+      icon: (<UiIcon name="person" />),
     },
     ...(userFamily
       ? [
@@ -90,56 +84,52 @@ export default function UserNavSection({
       path: "/user/notifications",
       icon: (
         <Badge badgeContent={unreadCount} color="error" max={99}>
-          <i className="fas fa-bell"/>
+          <UiIcon name="notification" />
         </Badge>
       ),
     },
     {
       text: "Settings",
       path: "/user/settings",
-      icon: (<i className="fas fa-cog"/>),
+      icon: (<UiIcon name="settings" />),
     },
     {
       text: "Shop",
       path: "/user/shop",
-      icon: (<i className="fas fa-coins"/>),
+      icon: (<UiIcon name="coins" />),
     },
     ...(user.perms?.devApi
       ? [
           {
             text: "Developer API",
             path: "/user/developer",
-            icon: (<i className="fas fa-code"/>),
+            icon: (<UiIcon name="code" />),
           },
         ]
       : []),
     {
       text: "Announcements",
       onClick: openAnnouncements,
-      icon: (<i className="fas fa-bullhorn"/>),
+      icon: (<UiIcon name="info" />),
     },
     { divider: true },
     {
       text: "Log Out",
       onClick: handleLogout,
       icon: (
-        <img
-          src={exitIcon}
-          alt="exit"
-          style={{ width: "16px", height: "16px" }}
-        />
+        <UiIcon name="leave" />
       ),
     },
   ];
 
   return (
-    <Stack direction="row" spacing={0.5} divider={<Divider orientation="vertical" flexItem />} sx={{
+    <Stack className="user-nav" direction="row" spacing={0.5} divider={<Divider orientation="vertical" flexItem />} sx={{
       px: 1,
       alignItems: "center",
       justifyContent: "end",
     }}>
       <DmButton />
-      <Stack>
+      <Stack className="user-nav-balances">
         <Box sx={{
           display: "grid",
           gridTemplateColumns: "1fr 1em",
@@ -152,19 +142,13 @@ export default function UserNavSection({
             {user.redHearts ?? 0}
           </Typography>
           <HeartRefreshTooltip user={user} type="red">
-            <i
-              className="fas fa-heart"
-              style={{ color: "#e23b3b", marginLeft: "auto" }}
-            />
+            <UiIcon name="heartFilled" size={16} label="Red hearts" style={{ color: "#e23b3b", marginLeft: "auto" }} />
           </HeartRefreshTooltip>
           <Typography variant="body2">
             {user.goldHearts ?? 0}
           </Typography>
-          <Link to="/fame/competitive">
-            <i
-              className="fas fa-heart"
-              style={{ color: "var(--gold-heart-color)", marginLeft: "auto" }}
-            />
+          <Link to="/fame/competitive" aria-label="Gold hearts — Competitive">
+            <UiIcon name="heartFilled" size={16} style={{ color: "var(--gold-heart-color)", marginLeft: "auto" }} />
           </Link>
         </Box>
       </Stack>
@@ -173,7 +157,7 @@ export default function UserNavSection({
         triggerAriaLabel="User menu"
         customTrigger={
           <CountBadge count={unreadCount} label="unread notifications">
-            <Avatar id={user.id} name={user.name} hasImage={user.avatar} />
+            <Avatar id={user.id} name={user.name} hasImage={user.avatar} size={isMobile ? 32 : 40} />
           </CountBadge>
         }
       />

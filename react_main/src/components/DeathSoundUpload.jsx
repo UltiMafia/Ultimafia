@@ -1,20 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import WebAudioSound from "../audio/WebAudioSound";
-import {
-  Alert,
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  Slider,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { UiAction, UiDialog } from "./ui";
+import { Alert, Box, FormControlLabel, Stack } from "@mui/material";
+import { confirmAction, UiCheckbox as Checkbox, UiSlider as Slider, UiField as TextField, UiText as Typography } from "components/ui";
 
 const MAX_SECONDS = 5;
 /** Source file may be up to 10 MB; final clip is trimmed client-side to <=5s. */
@@ -640,7 +628,7 @@ export default function DeathSoundUpload({
 
   const handleRemove = async () => {
     if (!hasDeathSound) return;
-    if (!window.confirm("Remove your custom death sound?")) return;
+    if (!await confirmAction("Remove your custom death sound?")) return;
     setBusy(true);
     setError("");
     try {
@@ -675,9 +663,8 @@ export default function DeathSoundUpload({
       {hasDeathSound && existingUrl && (
         <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
           <Typography variant="body2">Current death sound is set.</Typography>
-          <Button
-            size="small"
-            variant="outlined"
+          <UiAction
+            variant="secondary"
             disabled={busy || disabled}
             onClick={async () => {
               try {
@@ -691,27 +678,25 @@ export default function DeathSoundUpload({
             }}
           >
             Preview current
-          </Button>
-          <Button
-            size="small"
-            color="error"
-            variant="text"
+          </UiAction>
+          <UiAction
+            variant="danger-quiet"
             disabled={busy || disabled}
             onClick={handleRemove}
           >
             Remove
-          </Button>
+          </UiAction>
         </Stack>
       )}
 
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-        <Button
-          variant="contained"
+        <UiAction
+          variant="primary"
           disabled={busy || disabled}
           onClick={() => fileInputRef.current?.click()}
         >
           {busy ? "Loading…" : "Choose file"}
-        </Button>
+        </UiAction>
         <input
           ref={fileInputRef}
           type="file"
@@ -727,16 +712,33 @@ export default function DeathSoundUpload({
         </Typography>
       )}
 
-      <Dialog
+      <UiDialog
         open={dialogOpen}
         onClose={() => {
           if (!busy) clearSelection();
         }}
-        fullWidth
-        maxWidth="sm"
+        title="Edit death sound"
+        size="sm"
+        actions={<>
+          <UiAction disabled={busy} onClick={clearSelection}>
+            Cancel
+          </UiAction>
+          <UiAction
+            variant="secondary"
+            disabled={busy || selectionTooLong}
+            onClick={handlePreviewSelection}
+          >
+            Preview
+          </UiAction>
+          <UiAction
+            variant="primary"
+            disabled={busy || selectionTooLong}
+            onClick={handleSaveUpload}
+          >
+            {busy ? "Uploading…" : "Save & upload"}
+          </UiAction>
+        </>}
       >
-        <DialogTitle>Edit death sound</DialogTitle>
-        <DialogContent dividers>
           <Stack spacing={2}>
             <Typography variant="body2" color="text.secondary">
               {file?.name}
@@ -957,27 +959,7 @@ export default function DeathSoundUpload({
               </Typography>
             )}
           </Stack>
-        </DialogContent>
-        <DialogActions sx={{ px: 3, py: 1.5 }}>
-          <Button disabled={busy} onClick={clearSelection}>
-            Cancel
-          </Button>
-          <Button
-            variant="outlined"
-            disabled={busy || selectionTooLong}
-            onClick={handlePreviewSelection}
-          >
-            Preview
-          </Button>
-          <Button
-            variant="contained"
-            disabled={busy || selectionTooLong}
-            onClick={handleSaveUpload}
-          >
-            {busy ? "Uploading…" : "Save & upload"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      </UiDialog>
     </Stack>
   );
 }

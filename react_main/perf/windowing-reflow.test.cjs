@@ -39,11 +39,45 @@ const anchor = () => {
       try {
         const page = await context.newPage();
         const errors = [];
-        page.on('pageerror', e => errors.push(e.message));
+        let phase = 'initial';
+        if (process.env.RESIZE_DIAGNOSTICS === '1') await page.addInitScript(() => {
+          const NativeObserver = ResizeObserver;
+          window.__resizeDeliveries = [];
+          window.ResizeObserver = class extends NativeObserver {
+            constructor(callback) {
+              super((entries, observer) => {
+                const geometry = () => entries.map(entry => {
+                  const box = entry.target.getBoundingClientRect();
+                  return { target: entry.target.className, width: box.width, height: box.height };
+                });
+                const delivery = { time: performance.now(), before: geometry() };
+                window.__resizeDeliveries.push(delivery);
+                window.__resizeDeliveries = window.__resizeDeliveries.slice(-20);
+                callback(entries, observer);
+                delivery.after = geometry();
+              });
+            }
+          };
+        });
+        page.on('pageerror', e => {
+          errors.push(e.message);
+          if (process.env.RESIZE_DIAGNOSTICS === '1') {
+            console.error('pageerror phase:', phase, e.message);
+            page.evaluate(() => window.__resizeDeliveries).then(value => console.error('resize deliveries:', JSON.stringify(value))).catch(() => {});
+          }
+        });
         await page.goto(base + `?count=1000&nameplates=700&cosmetic=mixed&virtual=${virtual}`);
         await page.waitForFunction(() => window.chatPerf && document.querySelector('.speech-display .message'));
         await page.evaluate(() => document.fonts.ready);
         await page.waitForTimeout(900);
+        const composer = await page.locator('.composer-editor').evaluateAll(elements => elements.map(element => {
+          const style = getComputedStyle(element);
+          return { helper: element.getAttribute('aria-hidden') === 'true', minimum: parseFloat(style.minHeight), height: element.getBoundingClientRect().height,
+            oneRow: parseFloat(style.lineHeight) + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom) };
+        }));
+        assert.equal(composer.filter(value => !value.helper).length, 1, 'one actual editor');
+        assert.ok(composer.filter(value => !value.helper).every(value => value.height >= value.oneRow - 1), 'actual editor retains one text row');
+        assert.ok(composer.filter(value => value.helper).every(value => value.minimum === 0), 'autosize helper must not inherit the visible editor minimum');
 
         const pause = () => page.evaluate(() => {
           const display = document.querySelector('.speech-display');
@@ -51,6 +85,7 @@ const anchor = () => {
         });
 
         // 1. Hide the transcript, receive a message, come back.
+        phase = 'hide-and-show';
         await pause();
         await page.waitForTimeout(600);
         const hiddenBefore = await page.evaluate(anchor);
@@ -64,6 +99,7 @@ const anchor = () => {
         const hiddenAfter = await page.evaluate(anchor);
 
         // 2. Change the Appearance font size mid-read, then a message arrives.
+        phase = 'font-size-change';
         await pause();
         await page.waitForTimeout(600);
         const fontBefore = await page.evaluate(anchor);
@@ -74,7 +110,7 @@ const anchor = () => {
         await page.waitForTimeout(900);
         const fontAfter = await page.evaluate(anchor);
 
-        const result = {engine: process.env.ENGINE || 'webkit', virtual, hidden: {before: hiddenBefore, after: hiddenAfter}, font: {before: fontBefore, after: fontAfter}, errors};
+        const result = {engine: process.env.ENGINE || 'webkit', virtual, composer, hidden: {before: hiddenBefore, after: hiddenAfter}, font: {before: fontBefore, after: fontAfter}, errors};
         results.push(result);
         console.log(JSON.stringify(result));
 
@@ -99,6 +135,8 @@ const anchor = () => {
     await browser.close();
     server.close();
   }
-  fs.writeFileSync(path.join(__dirname, 'windowing-results', `reflow-${process.env.ENGINE || 'webkit'}.json`), JSON.stringify(results, null, 2));
+  const output = process.env.REFLOW_OUTPUT_DIR || path.join(__dirname, 'windowing-results');
+  fs.mkdirSync(output, { recursive: true });
+  fs.writeFileSync(path.join(output, `reflow-${process.env.ENGINE || 'webkit'}.json`), JSON.stringify(results, null, 2));
   console.log(`${process.env.ENGINE || 'webkit'}: reflow checks passed`);
 })().catch(e => { console.error(e); server.close(); process.exitCode = 1; });

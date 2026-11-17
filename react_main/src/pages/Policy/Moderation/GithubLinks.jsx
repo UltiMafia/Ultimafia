@@ -1,29 +1,11 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
-import {
-  Box,
-  Card,
-  CardContent,
-  IconButton,
-  Link,
-  Stack,
-  Tab,
-  Tabs,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-
 import { UserContext } from "Contexts";
-import { useErrorAlert } from "components/Alerts";
 import { NameWithAvatar } from "pages/User/UserWidgets";
 import { Time } from "components/Basic";
-import { Loading } from "components/Loading";
-
-const decisionButtons = [
-  { decision: "approved", title: "Approve", icon: "fa-check", color: "success" },
-  { decision: "rejected", title: "Reject", icon: "fa-times", color: "error" },
-];
+import { UiAction, UiDialog, UiPending, UiTab, UiTabs } from "components/ui";
+import { LatestRequest } from "../../../lib/latestRequest";
 
 export default function GithubLinks() {
   const { user } = useOutletContext() || {};
@@ -34,123 +16,56 @@ export default function GithubLinks() {
   const [status, setStatus] = useState("pending");
   const [links, setLinks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState({});
-  const errorAlert = useErrorAlert();
+  const [error, setError] = useState("");
+  const [retry, setRetry] = useState(0);
+  const [confirmation, setConfirmation] = useState(null);
+  const [pending, setPending] = useState(false);
+  const requests = useRef(new LatestRequest());
+  const submitting = useRef(false);
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get(`/api/mod/githubLinks?status=${status}`)
-      .then((res) => setLinks(res.data))
-      .catch(errorAlert)
-      .finally(() => setLoading(false));
-  }, [status]);
+    const owner = requests.current, request = owner.begin();
+    setLoading(true); setError("");
+    axios.get(`/api/mod/githubLinks?status=${status}`, { signal: request.signal })
+      .then(({ data }) => { if (request.isCurrent()) setLinks(Array.isArray(data) ? data : []); })
+      .catch(() => { if (request.isCurrent()) setError("Could not load GitHub links. Please try again."); })
+      .finally(() => { if (request.isCurrent()) setLoading(false); });
+    return () => owner.invalidate();
+  }, [status, retry]);
 
-  function onReview(userId, decision) {
-    setActionLoading((prev) => ({ ...prev, [userId]: decision }));
-    axios
-      .post("/api/mod/githubLinks", { userId, decision })
-      .then(() => setLinks((prev) => prev.filter((l) => l.id !== userId)))
-      .catch(errorAlert)
-      .finally(() =>
-        setActionLoading((prev) => {
-          const next = { ...prev };
-          delete next[userId];
-          return next;
-        })
-      );
+  async function review() {
+    if (!confirmation || submitting.current || !canReview) return;
+    submitting.current = true; setPending(true); setError("");
+    try {
+      await axios.post("/api/mod/githubLinks", { userId: confirmation.link.id, decision: confirmation.decision });
+      setLinks(previous => previous.filter(link => link.id !== confirmation.link.id));
+      setConfirmation(null);
+    } catch (_) { setError("Could not review this GitHub link. Please try again."); }
+    finally { submitting.current = false; setPending(false); }
   }
 
-  const rows = links.map((link) => {
-    const processing = actionLoading[link.id];
-    const decisions = decisionButtons.filter((b) => b.decision !== status);
-
-    return (
-      <Card key={link.id} variant="outlined" sx={{ mb: 1 }}>
-        <CardContent
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            py: 1.5,
-            "&:last-child": { pb: 1.5 },
-          }}
-        >
-          <Stack direction="row" spacing={2} sx={{ alignItems: "center", flexGrow: 1 }}>
-            <Box sx={{ minWidth: 150 }}>
-              <NameWithAvatar id={link.id} name={link.name} avatar={link.avatar} />
-            </Box>
-            <Stack direction="column" spacing={0.5}>
-              <Link
-                href={`https://github.com/${link.github.username}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                @{link.github.username}
-              </Link>
-              {link.github.requestedAt && (
-                <Typography variant="caption" color="textSecondary">
-                  Requested{" "}
-                  <Time minSec millisec={Date.now() - link.github.requestedAt} suffix=" ago" />
-                </Typography>
-              )}
-            </Stack>
-          </Stack>
-
-          {canReview && (
-            <Stack direction="row" spacing={1}>
-              {decisions.map((button) => (
-                <Tooltip title={button.title} key={button.decision}>
-                  <span>
-                    <IconButton
-                      size="small"
-                      color={button.color}
-                      onClick={() => onReview(link.id, button.decision)}
-                      disabled={!!processing}
-                      sx={{
-                        border: "1px solid",
-                        borderColor: `${button.color}.main`,
-                        "&:hover": {
-                          backgroundColor: `${button.color}.main`,
-                          color: "white",
-                        },
-                      }}
-                    >
-                      <i
-                        className={
-                          processing === button.decision
-                            ? "fas fa-spinner fa-spin"
-                            : `fas ${button.icon}`
-                        }
-                      />
-                    </IconButton>
-                  </span>
-                </Tooltip>
-              ))}
-            </Stack>
-          )}
-        </CardContent>
-      </Card>
-    );
-  });
-
-  return (
-    <Box>
-      <Typography variant="h3" gutterBottom>
-        GitHub Links
-      </Typography>
-      <Tabs value={status} onChange={(_, value) => setStatus(value)} sx={{ mb: 2 }}>
-        <Tab label="Pending" value="pending" />
-        <Tab label="Approved" value="approved" />
-        <Tab label="Rejected" value="rejected" />
-      </Tabs>
-      {loading ? (
-        <Loading small />
-      ) : rows.length > 0 ? (
-        rows
-      ) : (
-        <Typography color="textSecondary">No {status} GitHub links.</Typography>
-      )}
-    </Box>
-  );
+  return <section className="moderation-github">
+    <header className="moderation-section-heading"><h2>GitHub links</h2><p>Connect a player's GitHub account after checking the request.</p></header>
+    <UiTabs value={status} onChange={(_, value) => setStatus(value)} variant="scrollable" scrollButtons="auto" aria-label="GitHub link status">
+      <UiTab label="Pending" value="pending" /><UiTab label="Approved" value="approved" /><UiTab label="Rejected" value="rejected" />
+    </UiTabs>
+    {loading && <UiPending label="Loading GitHub links" />}
+    {error && <div role="alert"><p>{error}</p><UiAction onClick={() => setRetry(value => value + 1)}>Retry</UiAction></div>}
+    {!loading && !error && !links.length && <p className="moderation-row-meta">No {status} GitHub links.</p>}
+    <ul className="moderation-list">{links.map(link => <li key={link.id} className="moderation-list-row">
+      <div>
+        <div className="moderation-row-title"><NameWithAvatar id={link.id} name={link.name} avatar={link.avatar} /></div>
+        <p className="moderation-row-meta"><a href={`https://github.com/${link.github.username}`} target="_blank" rel="noopener noreferrer">@{link.github.username}</a>{link.github.requestedAt && <> · requested <Time minSec millisec={Date.now() - link.github.requestedAt} suffix=" ago" /></>}</p>
+      </div>
+      {canReview && <div className="moderation-row-actions">
+        {status !== "approved" && <UiAction variant="primary" disabled={pending} onClick={() => setConfirmation({ link, decision: "approved" })}>Approve link</UiAction>}
+        {status !== "rejected" && <UiAction variant="danger-quiet" disabled={pending} onClick={() => setConfirmation({ link, decision: "rejected" })}>Reject link</UiAction>}
+      </div>}
+    </li>)}</ul>
+    <UiDialog open={!!confirmation} title={confirmation?.decision === "approved" ? "Approve GitHub link?" : "Reject GitHub link?"} onClose={pending ? undefined : () => setConfirmation(null)}
+      actions={<><UiAction disabled={pending} onClick={() => setConfirmation(null)}>Cancel</UiAction><UiAction variant={confirmation?.decision === "approved" ? "primary" : "danger"} busy={pending} onClick={review}>{confirmation?.decision === "approved" ? "Approve link" : "Reject link"}</UiAction></>}>
+      <p>{confirmation?.decision === "approved" ? `Approve @${confirmation?.link.github.username} for ${confirmation?.link.name}?` : `Reject the GitHub link from ${confirmation?.link.name}?`}</p>
+      {error && <p role="alert">{error}</p>}
+    </UiDialog>
+  </section>;
 }

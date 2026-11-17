@@ -1,22 +1,18 @@
 import React from "react";
 
-import "css/modal.css";
-import { Dialog } from "@mui/material";
+import { UiDialog } from "./ui";
 
 export function Modal(props) {
   return (
-    <>
-      {props.show && (
-        <Dialog
-          open={props.show}
-          onClose={props.onBgClick}
-          scroll="body"
-        >
-          <div className="modal-header">{props.header}</div>
-          <div className="modal-content">{props.content}</div>
-          <div className="modal-footer">{props.footer}</div>
-        </Dialog>
-      )}
-    </>
+    <UiDialog
+      open={Boolean(props.show)}
+      onClose={props.onBgClick}
+      title={props.header}
+      actions={props.footer}
+      size={props.maxWidth || "sm"}
+      className={props.className}
+    >
+      {props.content}
+    </UiDialog>
   );
 }

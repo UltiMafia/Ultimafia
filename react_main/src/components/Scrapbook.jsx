@@ -1,22 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import {
-  Box,
-  Tooltip,
-  Typography,
-  Collapse,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Stack,
-} from "@mui/material";
+import { Box, Tooltip, Collapse, Stack } from "@mui/material";
 import { SiteInfoContext, UserContext } from "Contexts";
 import { RoleCount } from "components/Roles";
 import { PageNav } from "components/Nav";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { useErrorAlert } from "components/Alerts";
+import { UiCard } from "./ui";
 import StampTradeModal from "components/StampTradeModal";
 import {
   isCountableScrapbookRole,
@@ -24,6 +14,7 @@ import {
 } from "shared/scrapbook";
 
 import "css/scrapbook.css";
+import { UiText as Typography, UiAction, UiDialog } from "components/ui";
 
 const STAMPS_PER_PAGE_MOBILE = 18;
 const ITEMS_PER_PAGE = 20;
@@ -278,8 +269,11 @@ function RequestTradeDialog({ open, onClose, targetStamp, profileUserId, onTrade
       : `${targetStamp.gameType} - ${targetStamp.role}`;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
+    <UiDialog
+      open={open}
+      onClose={onClose}
+      size="sm"
+      title={
         <Stack direction="row" alignItems="center" spacing={1.5}>
           <Typography variant="body1">Request</Typography>
           <StampItem
@@ -291,8 +285,21 @@ function RequestTradeDialog({ open, onClose, targetStamp, profileUserId, onTrade
             {targetLabel}
           </Typography>
         </Stack>
-      </DialogTitle>
-      <DialogContent dividers>
+      }
+      actions={<>
+        <UiAction  variant="ghost" onClick={onClose} >
+          Cancel
+        </UiAction>
+        <UiAction
+           variant="primary" onClick={handleConfirm}
+          
+          
+          disabled={!selectedStamp || submitting}
+        >
+          Send Trade
+        </UiAction>
+      </>}
+    >
         <Typography variant="subtitle2" sx={{ mb: 1 }}>
           Pick a stamp to offer
         </Typography>
@@ -334,42 +341,28 @@ function RequestTradeDialog({ open, onClose, targetStamp, profileUserId, onTrade
             </Box>
             {myStamps.length > STAMPS_PER_PAGE && (
               <Stack direction="row" justifyContent="center" alignItems="center" spacing={1} sx={{ mt: 1 }}>
-                <Button
-                  size="small"
+                <UiAction
+                   variant="ghost" size="small" 
                   disabled={stampPage === 0}
                   onClick={() => setStampPage(stampPage - 1)}
                 >
                   <i className="fas fa-chevron-left" />
-                </Button>
+                </UiAction>
                 <Typography variant="caption">
                   {stampPage + 1} / {Math.ceil(myStamps.length / STAMPS_PER_PAGE)}
                 </Typography>
-                <Button
-                  size="small"
+                <UiAction
+                   variant="ghost" size="small" 
                   disabled={(stampPage + 1) * STAMPS_PER_PAGE >= myStamps.length}
                   onClick={() => setStampPage(stampPage + 1)}
                 >
                   <i className="fas fa-chevron-right" />
-                </Button>
+                </UiAction>
               </Stack>
             )}
           </>
         )}
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Cancel
-        </Button>
-        <Button
-          onClick={handleConfirm}
-          variant="contained"
-          color="primary"
-          disabled={!selectedStamp || submitting}
-        >
-          Send Trade
-        </Button>
-      </DialogActions>
-    </Dialog>
+    </UiDialog>
   );
 }
 
@@ -381,7 +374,6 @@ export default function Scrapbook({
   onTradeAction,
   profileUserId,
   profileUserName,
-  panelStyle = {},
   headingStyle = {},
 }) {
   const [showHidden, setShowHidden] = useState(false);
@@ -427,7 +419,7 @@ export default function Scrapbook({
   };
 
   return (
-    <div className="box-panel scrapbook-panel" style={panelStyle}>
+    <UiCard className="scrapbook-panel profile-tinted">
       <Typography variant="h3" style={headingStyle}>
         Scrapbook {totalRoles > 0 && `(${uniqueCount}/${totalRoles})`}
       </Typography>
@@ -525,6 +517,6 @@ export default function Scrapbook({
           }}
         />
       )}
-    </div>
+    </UiCard>
   );
 }

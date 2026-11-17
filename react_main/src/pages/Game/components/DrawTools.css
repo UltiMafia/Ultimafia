@@ -37,6 +37,7 @@
 
 .draw-tools-brushes {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
@@ -53,6 +54,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-left: auto;
 }
 
 /* Brush-size buttons: button frame just hugs the dot, so the three dots
@@ -111,14 +113,4 @@
 .draw-tools-erase.active {
   border-color: var(--draw-pick-outline, #ffb74d);
   box-shadow: 0 0 0 2px var(--draw-pick-outline, #ffb74d);
-}
-
-.draw-tools-undo,
-.draw-tools-clear {
-  padding: 6px 12px;
-  border: 1px solid var(--scheme-color-border, #555);
-  background: var(--scheme-color-sec, #222);
-  color: var(--scheme-color-text, #eee);
-  cursor: pointer;
-  border-radius: 4px;
 }

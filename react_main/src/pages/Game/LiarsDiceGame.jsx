@@ -22,6 +22,7 @@ import { liarsDiceAudioConfig } from "../../audio/audioConfigs";
 import "css/game.css";
 import "css/gameLiarsDice.css";
 import { Button, Popover } from "@mui/material";
+import { UiDialog, UiAction, UiField } from "components/ui";
 
 const isKickMeeting = (m) => m && m.name === "Vote Kick";
 const KickActionList = () => (
@@ -173,12 +174,10 @@ export function RoundBetLog({ history, stateViewing }) {
   return <SideMenu title="Bets this round" content={content} />;
 }
 
-function LiarsDiceRulesModal({ options, onClose }) {
+export function LiarsDiceRulesModal({ options, onClose }) {
   return (
-    <div className="ld-modal-backdrop" onClick={onClose}>
-      <div className="ld-modal" onClick={(e) => e.stopPropagation()}>
-        <h2 className="ld-modal-title">Liars Dice — Active Rules</h2>
-        <ul className="ld-modal-list">
+    <UiDialog title="Liars Dice rules" onClose={onClose} actions={<UiAction onClick={onClose}>Close</UiAction>}>
+        <ul className="ui-content-list">
           <li>
             Everyone starts with{" "}
             <b>{options.startingDice ?? 5}</b> dice.
@@ -195,11 +194,7 @@ function LiarsDiceRulesModal({ options, onClose }) {
             </li>
           )}
         </ul>
-        <button className="ld-modal-btn" onClick={onClose}>
-          Got it
-        </button>
-      </div>
-    </div>
+    </UiDialog>
   );
 }
 
@@ -551,24 +546,18 @@ function LiarsDiceBetForm() {
           {isMyTurn && (
             <div className="ld-call-group">
               {callLieMeeting && (
-                <Button
-                  variant="contained"
-                  size="small"
+                <UiAction
                   onClick={submitCallBluff}
-                  className="ld-action-btn ld-bluff-btn"
                 >
-                  CALL BLUFF
-                </Button>
+                  Call bluff
+                </UiAction>
               )}
               {spotOnMeeting && (
-                <Button
-                  variant="contained"
-                  size="small"
+                <UiAction
                   onClick={submitSpotOn}
-                  className="ld-action-btn ld-spoton-btn"
                 >
-                  SPOT ON
-                </Button>
+                  Spot on
+                </UiAction>
               )}
             </div>
           )}
@@ -581,25 +570,22 @@ function LiarsDiceBetForm() {
       )}
       {isMyTurn && (
         <>
-          <div className="ld-bet-header">Up the bet!</div>
+          <div className="ui-section-label">Your bid</div>
           <div className="ld-bet-row">
-            <span className="ld-bet-text">There are at least</span>
-            <input
+            <UiField label="Dice count" sx={{ width: 96 }}
               type="number"
-              className="ld-amount-input"
               value={amount}
               onChange={(e) => {
                 setAmount(e.target.value);
                 if (bidError) setBidError("");
               }}
-              min={minAmount}
-              max={maxAmount}
+              inputProps={{ min: minAmount, max: maxAmount }}
               placeholder={String(minAmount)}
             />
-            <span className="ld-bet-text">die showing the number</span>
             <button
               type="button"
-              className="ld-face-trigger"
+               className="ld-face-trigger"
+               aria-label={face ? `Choose die face (currently ${face})` : "Choose die face"}
               onClick={(e) => setFaceMenuAnchor(e.currentTarget)}
             >
               <span
@@ -619,7 +605,8 @@ function LiarsDiceBetForm() {
                   <button
                     key={f}
                     type="button"
-                    className="ld-face-option"
+                     className="ld-face-option"
+                     aria-label={`Die face ${f}`} aria-pressed={face === f}
                     onClick={() => {
                       setFace(f);
                       if (bidError) setBidError("");
@@ -631,15 +618,12 @@ function LiarsDiceBetForm() {
                 ))}
               </div>
             </Popover>
-            <Button
-              variant="contained"
-              size="small"
+            <UiAction variant="primary"
               onClick={submitBet}
               disabled={!canBet}
-              className="ld-action-btn ld-bet-btn"
             >
-              BET
-            </Button>
+              Bet
+            </UiAction>
           </div>
           {bidError && <div className="ld-bet-error">{bidError}</div>}
         </>
