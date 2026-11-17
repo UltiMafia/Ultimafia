@@ -54,7 +54,6 @@ function playerNameMatches(word, names) {
   return { prefix, matched };
 }
 
-// Cycle full names using the original word and the last completion.
 // Recheck the supplied eligible names on every Tab, including roster changes.
 function cyclePlayerName(word, names, previous) {
   const matches = playerNameMatches(word, names);
