@@ -1,5 +1,6 @@
 const Item = require("../Item");
 const Random = require("../../../../lib/Random");
+const { roleKey, roleEquals } = require("../../../../lib/roleIdentity");
 
 module.exports = class TreasureChest extends Item {
   constructor(Admiral) {
@@ -22,7 +23,7 @@ module.exports = class TreasureChest extends Item {
             `You have received the Admiral's Treasure Chest!`
           );
           this.holder.sendAlert(
-            `Inside are ${this.holder.game.AdmiralGold} Gold Bars and the following roles ${this.holder.game.AdmiralGoodRoles}!`
+            `Inside are ${this.holder.game.AdmiralGold} Gold Bars and the following roles ${this.holder.game.AdmiralGoodRoles.map(roleKey).join(", ")}!`
           );
           this.holder.sendAlert(
             `You may steal Gold and Become Mafia/Cult Or Become a role in the Chest!`
@@ -42,7 +43,7 @@ module.exports = class TreasureChest extends Item {
         this.game.sendAlert(`${this.holder.name} has The Treasure Chest!`);
         this.holder.sendAlert(`You open your Treasure Chest!`);
         this.holder.sendAlert(
-          `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`
+          `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles.map(roleKey).join(", ")}!`
         );
         this.holder.sendAlert(
           `You may take 1 to 5 Gold Bars out, to keep them safe!`
@@ -83,7 +84,7 @@ module.exports = class TreasureChest extends Item {
     let leftIdx =
       (indexOfPlayer - 1 + alivePlayers.length) % alivePlayers.length;
     let rightBIdx = (indexOfPlayer + 1) % alivePlayers.length;
-    this.ExcessAdmiralGoodRoles = this.game.AdmiralGoodRoles.filter((p) => p);
+    this.ExcessAdmiralGoodRoles = this.game.AdmiralGoodRoles.map(roleKey);
     this.ExcessAdmiralGoodRoles.push("None");
 
     if (
@@ -100,10 +101,11 @@ module.exports = class TreasureChest extends Item {
         action: {
           item: this,
           run: function () {
-            this.game.AdmiralGoodRoles.splice(
-              this.game.AdmiralGoodRoles.indexOf(this.target),
-              1
+            if (this.target === "None") return;
+            const roleIndex = this.game.AdmiralGoodRoles.findIndex((role) =>
+              roleEquals(role, this.target)
             );
+            if (roleIndex !== -1) this.game.AdmiralGoodRoles.splice(roleIndex, 1);
           },
         },
       };
@@ -117,16 +119,17 @@ module.exports = class TreasureChest extends Item {
         states: ["Treasure Chest"],
         flags: ["voting", "instant"],
         inputType: "custom",
-        targets: this.game.AdmiralGoodRoles,
+        targets: this.game.AdmiralGoodRoles.map(roleKey),
         canUnvote: false,
         action: {
           item: this,
           run: function () {
-            this.actor.setRole(`${this.target}`);
-            this.game.AdmiralGoodRoles.splice(
-              this.game.AdmiralGoodRoles.indexOf(this.target),
-              1
+            const roleIndex = this.game.AdmiralGoodRoles.findIndex((role) =>
+              roleEquals(role, this.target)
             );
+            if (roleIndex === -1) return;
+            this.actor.setRole(this.game.AdmiralGoodRoles[roleIndex]);
+            this.game.AdmiralGoodRoles.splice(roleIndex, 1);
 
             let players = this.game
               .alivePlayers()
@@ -142,7 +145,7 @@ module.exports = class TreasureChest extends Item {
               this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
               players[rightIdx].sendAlert(
-                `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`
+                `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles.map(roleKey).join(", ")}!`
               );
               players[rightIdx].sendAlert(
                 `Ask players about what they saw in the chest when it got to them to deduce the Mafia or Cult!`
@@ -188,7 +191,7 @@ module.exports = class TreasureChest extends Item {
               this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
               players[rightIdx].sendAlert(
-                `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`
+                `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles.map(roleKey).join(", ")}!`
               );
               players[rightIdx].sendAlert(
                 `Ask players about what they saw in the chest when it got to them to deduce the Mafia or Cult!`
@@ -247,10 +250,10 @@ module.exports = class TreasureChest extends Item {
                 } else {
                   role = Random.randArrayVal(evilRoles);
                 }
-                this.actor.setRole(`${role}`);
+                this.actor.setRole(role);
               } else {
                 let role = Random.randArrayVal(this.game.AdmiralEvilRoles);
-                this.actor.setRole(`${role}`);
+                this.actor.setRole(role);
               }
             }
 
@@ -268,7 +271,7 @@ module.exports = class TreasureChest extends Item {
               this.game.HaveTreasureChestState = false;
               players[rightIdx].sendAlert(`Your Treasure Chest has returned!`);
               players[rightIdx].sendAlert(
-                `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles}!`
+                `Inside are ${this.game.AdmiralGold} Gold Bars and the following roles ${this.game.AdmiralGoodRoles.map(roleKey).join(", ")}!`
               );
               players[rightIdx].sendAlert(
                 `Ask players about what they saw in the chest when it got to them to deduce the Mafia or Cult!`

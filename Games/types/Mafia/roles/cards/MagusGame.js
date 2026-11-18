@@ -6,6 +6,7 @@ const {
   PRIORITY_NIGHT_ROLE_BLOCKER,
   PRIORITY_CLEAN_DEATH,
 } = require("../../const/Priority");
+const { appearanceKey, roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class MagusGame extends Card {
   constructor(role) {
@@ -58,9 +59,7 @@ module.exports = class MagusGame extends Card {
           }
           shuffledPlayers = Random.randomizeArray(alivePlayers);
           if (this.actor.role.data.FakeWordKill) {
-            this.actor.role.cursedWord = Random.randArrayVal(roles, true)
-              .split(":")[0]
-              .toLowerCase();
+            this.actor.role.cursedWord = roleName(Random.randArrayVal(roles, true)).toLowerCase();
             shuffledPlayers[0].giveEffect(
               "Cursed",
               this.actor,
@@ -119,17 +118,17 @@ module.exports = class MagusGame extends Card {
 
           let rolesEvil = roles.filter(
             (r) =>
-              this.game.getRoleAlignment(r) == "Cult" ||
-              this.game.getRoleAlignment(r) == "Mafia"
+              this.game.getRoleAlignment(roleName(r)) == "Cult" ||
+              this.game.getRoleAlignment(roleName(r)) == "Mafia"
           );
           rolesEvil = Random.randomizeArray(rolesEvil);
           shuffledPlayers = Random.randomizeArray(alivePlayers);
           if (shuffledPlayers[0]) {
-            shuffledPlayers[0].role.appearance.reveal = rolesEvil[0].split(":");
+            shuffledPlayers[0].role.appearance.reveal = appearanceKey(rolesEvil[0]);
             shuffledPlayers[0].role.appearance.investigate =
-              rolesEvil[0].split(":");
+              appearanceKey(rolesEvil[0]);
             shuffledPlayers[0].role.appearance.condemn =
-              rolesEvil[0].split(":");
+              appearanceKey(rolesEvil[0]);
             shuffledPlayers[0].role.hideModifier = {
               death: false,
               reveal: true,
@@ -138,11 +137,11 @@ module.exports = class MagusGame extends Card {
             };
           }
           rolesEvil = Random.randomizeArray(rolesEvil);
-          this.actor.role.alignment = this.game.getRoleAlignment(rolesEvil[0]);
-          this.actor.role.appearance.death = rolesEvil[0].split(":");
-          this.actor.role.appearance.reveal = rolesEvil[0].split(":");
-          this.actor.role.appearance.investigate = rolesEvil[0].split(":");
-          this.actor.role.appearance.condemn = rolesEvil[0].split(":");
+          this.actor.role.alignment = this.game.getRoleAlignment(roleName(rolesEvil[0]));
+          this.actor.role.appearance.death = appearanceKey(rolesEvil[0]);
+          this.actor.role.appearance.reveal = appearanceKey(rolesEvil[0]);
+          this.actor.role.appearance.investigate = appearanceKey(rolesEvil[0]);
+          this.actor.role.appearance.condemn = appearanceKey(rolesEvil[0]);
           this.actor.role.hideModifier = {
             death: true,
             reveal: true,
@@ -166,15 +165,15 @@ module.exports = class MagusGame extends Card {
 
         let roles = this.game.PossibleRoles.filter(
           (r) =>
-            this.game.getRoleAlignment(r) == "Cult" ||
-            this.game.getRoleAlignment(r) == "Mafia"
+            this.game.getRoleAlignment(roleName(r)) == "Cult" ||
+            this.game.getRoleAlignment(roleName(r)) == "Mafia"
         );
         let chance = 100;
         if (this.game.setup.closed) {
           chance = 45;
         }
         for (let x = 0; x < roles.length; x++) {
-          let roleTags = this.game.getRoleTags(roles[x]);
+          let roleTags = this.game.getRoleTags(roleName(roles[x]));
           for (let v = 0; v < roleTags.length; v++) {
             if (
               roleTags[v] == "Vote Kills" &&

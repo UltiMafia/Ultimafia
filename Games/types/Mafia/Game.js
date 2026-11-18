@@ -3,6 +3,11 @@ const Utils = require("../../core/Utils");
 const Player = require("./Player");
 const Event = require("./Event");
 const Random = require("../../../lib/Random");
+const {
+  roleKey,
+  roleName: getRoleName,
+  roleModifiers,
+} = require("../../../lib/roleIdentity");
 const Queue = require("../../core/Queue");
 const Winners = require("./Winners");
 const Action = require("./Action");
@@ -213,10 +218,11 @@ module.exports = class MafiaGame extends Game {
       this.setup.closedRoles = this.setup.roles;
       this.setup.roles = [
         Object.values(this.originalRoles).reduce((acc, e) => {
-          if (!acc[e]) {
-            acc[e] = 1;
+          const key = roleKey(e);
+          if (!acc[key]) {
+            acc[key] = 1;
           } else {
-            acc[e]++;
+            acc[key]++;
           }
           return acc;
         }, {}),
@@ -246,9 +252,10 @@ module.exports = class MafiaGame extends Game {
     }
 
     for (let playerId in this.originalRoles) {
-      let roleName = this.originalRoles[playerId].split(":")[0];
-      let modifiers = this.originalRoles[playerId].split(":")[1];
-      let data = roleData[this.type][roleName];
+      const role = this.originalRoles[playerId];
+      let roleNameValue = getRoleName(role);
+      let modifiers = roleModifiers(role);
+      let data = roleData[this.type][roleNameValue];
       if (data.graveyardParticipation === "all") {
         this.graveyardParticipation = true;
         return;
@@ -841,9 +848,10 @@ module.exports = class MafiaGame extends Game {
   }
 
   formatRole(role) {
-    var roleName = role.split(":")[0];
-    var modifiers = role.split(":")[1];
-    return `${roleName}${modifiers ? ` (${modifiers})` : ""}`;
+    const descriptor = typeof role === "string" ? role : roleKey(role);
+    const roleNameValue = getRoleName(descriptor);
+    const modifiers = roleModifiers(descriptor);
+    return `${roleNameValue}${modifiers ? ` (${modifiers})` : ""}`;
   }
 
   formatRoleInternal(role, modifiers) {
@@ -1014,7 +1022,7 @@ module.exports = class MafiaGame extends Game {
     var nightActionValue = [];
     var MAFIA_IN_GAME = false;
     for (let x = 0; x < this.PossibleRoles.length; x++) {
-      roleName = this.PossibleRoles[x].split(":")[0];
+      roleName = getRoleName(this.PossibleRoles[x]);
       if (this.getRoleAlignment(roleName) == "Mafia") {
         MAFIA_IN_GAME = true;
       }

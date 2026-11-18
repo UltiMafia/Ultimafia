@@ -535,10 +535,14 @@ export default function CreateSetup(props) {
 
   function changeRoleModifiers(nextModifiers) {
     if (!selectedRoleExists) return;
-    const nextRole = `${selectedRole.role.split(":")[0]}:${nextModifiers
+    // This remains a legacy wire key; edit only the modifier segment. The
+    // remainder can contain item JSON (including colons inside item arguments).
+    const segments = selectedRole.role.split(":");
+    const inventorySuffix = segments.length > 2 ? `:${segments.slice(2).join(":")}` : "";
+    const nextRole = `${segments[0]}:${nextModifiers
       .map((m) => m.name)
       .sort((a, b) => a.localeCompare(b))
-      .join("/")}`;
+      .join("/")}${inventorySuffix}`;
     if ((roleData.roles[selectedRole.index][nextRole] || 0) >= 99) {
       siteInfo.showAlert("This role variant already has 99 copies.", "error");
       return;

@@ -18,13 +18,12 @@ module.exports = class SwapRoles extends Card {
               return;
             }
 
-            let currRoleName = this.actor.role.name;
-            let currRoleModifier = this.actor.role.modifier;
+            let currRole = this.actor.role.toRoleData();
             let currRoleData = this.actor.role.data;
             let currFaction = this.actor.faction;
 
             this.actor.setRole(
-              `${this.target.getRoleName()}:${this.target.getModifierName()}`,
+              this.target.role.toRoleData(),
               this.target.role.data,
               false,
               false,
@@ -37,7 +36,7 @@ module.exports = class SwapRoles extends Card {
               this.actor.faction = this.target.faction;
             }
             this.target.setRole(
-              `${currRoleName}:${currRoleModifier}`,
+              currRole,
               currRoleData
             );
             if (

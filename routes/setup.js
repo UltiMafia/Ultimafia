@@ -20,6 +20,11 @@ const ObjectID = mongo.ObjectID;
 const Diff = require("diff");
 const errors = require("../lib/errors");
 const { requestUserObjectId } = require("../modules/devApi/requestUser");
+const setupRoleCompatibility = require("../lib/setupRoleCompatibility");
+
+function setupRolesForApi(value) {
+  return setupRoleCompatibility.setupRolesForApi(value);
+}
 
 function canModifySetup(setup) {
   return !setup.ranked && !setup.competitive;
@@ -94,7 +99,9 @@ function generateMafiaSetupManifest(setup, roles) {
       Object.keys(roleGroup).forEach(function (role) {
         const tokens = role.split(":");
         const roleName =
-          tokens.length < 2 || tokens[1] === "" ? tokens[0] : role;
+          tokens.length < 2 || (tokens.length === 2 && tokens[1] === "")
+            ? tokens[0]
+            : role;
         lines.push(`  - ${roleName}: ${roleGroup[role]}`);
       });
     }
@@ -118,6 +125,11 @@ router.get("/id", async function (req, res) {
     var setups = setup ? [setup] : [];
 
     await markFavSetups(userId, setups);
+    setups = setups.map((setup) => {
+      const json = typeof setup.toJSON === "function" ? setup.toJSON() : setup;
+      json.roles = setupRolesForApi(json.roles);
+      return json;
+    });
     res.send({ setups: setups, pages: 0 });
   } catch (e) {
     logger.error(e);
@@ -130,7 +142,10 @@ router.get("/featuredSetup", async function (req, res) {
   try {
     // This is different from the featured search because it only returns one setup for the lobby page
     var featuredCategory = String(req.query.featuredCategory);
-    var setup = await redis.getFeaturedSetup(featuredCategory);
+    const setup = await redis.getFeaturedSetup(featuredCategory);
+    if (setup && setup.roles) {
+      setup.roles = setupRoleCompatibility.setupRolesForApi(setup.roles);
+    }
 
     res.send(setup);
   } catch (e) {
@@ -272,6 +287,11 @@ router.get("/search", async function (req, res) {
     var count = await models.Setup.countDocuments(search);
 
     await markFavSetups(userId, setups);
+    setups = setups.map((setup) => {
+      const json = typeof setup.toJSON === "function" ? setup.toJSON() : setup;
+      json.roles = setupRolesForApi(json.roles);
+      return json;
+    });
     res.send({
       setups: setups,
       pages: Math.ceil(count / pageSize) || 1,
@@ -582,7 +602,7 @@ router.get("/:id/lineage", async function (req, res) {
         .populate("creator", "id name avatar -_id")
         .lean();
       if (parent) {
-        parent.roles = parent.roles && JSON.parse(parent.roles);
+        parent.roles = parent.roles && JSON.parse(setupRolesForApi(parent.roles));
         result.copiedFrom = { setup: parent, copiedAt: setup.copiedAt };
       }
     }
@@ -594,7 +614,7 @@ router.get("/:id/lineage", async function (req, res) {
       .lean();
 
     for (const child of children) {
-      if (child.roles) child.roles = JSON.parse(child.roles);
+      if (child.roles) child.roles = JSON.parse(setupRolesForApi(child.roles));
       result.copiedTo.push({ setup: child, copiedAt: child.copiedAt });
     }
 
@@ -614,6 +634,7 @@ router.get("/:id", async function (req, res) {
 
     if (setup) {
       setup = setup.toJSON();
+      setup.roles = setupRolesForApi(setup.roles);
       setup.voteCount = setup.voteCount ?? 0;
       var userId = await routeUtils.verifyLoggedIn(req, true);
       if (userId) {
@@ -977,7 +998,12 @@ router.post("/create", async function (req, res) {
     var setup = Object(req.body);
     setup.gameType = String(setup.gameType);
     setup.name = String(setup.name || "");
-    setup.roles = Object(setup.roles);
+    try {
+      setup.roles = setupRoleCompatibility.toValidatorRoleMaps(req.body.roles, setup.gameType);
+    } catch (error) {
+      errors.unprocessable(res, "Invalid role data");
+      return;
+    }
     setup.count = Object(setup.count);
     (setup.gameSettings = setup.gameSettings),
       (setup.closed = Boolean(setup.closed));
@@ -1113,11 +1139,13 @@ router.post("/create", async function (req, res) {
     //Verify unique hash and save
     var obj = {
       ...setup,
-      roles: JSON.stringify(setup.roles),
+      roles: setupRoleCompatibility.serializeSetupRoles(setup.roles),
       count: JSON.stringify(setup.count),
     };
 
-    const hash = oHash(obj);
+    // Keep duplicate detection compatible with hashes written before role
+    // descriptors changed the persisted JSON envelope.
+    const hash = oHash({ ...obj, roles: setupRolesForApi(setup.roles) });
     const existingSetup = await models.Setup.findOne({ hash });
 
     if (
@@ -1227,6 +1255,18 @@ function verifyRolesAndCount(setup) {
   var total = 0;
 
   if (!roles || !count) return ["Invalid role data"];
+
+  // Validate before any alignment lookup: an unknown role must be a client
+  // validation error, not a TypeError while counting events or role groups.
+  if (!Array.isArray(roles)) return ["Invalid role data"];
+  if (!roles.length) return ["You must specify some roles"];
+  for (const group of roles) {
+    for (const role of Object.keys(group)) {
+      if (!verifyRole(role, gameType)) {
+        return [`Attempted to add invalid role: ${role}`];
+      }
+    }
+  }
 
   if (closed && !useRoleGroups) {
     /*

@@ -1,3 +1,5 @@
+const roleIdentity = require("../../lib/roleIdentity");
+
 module.exports = class History {
   constructor(game, player) {
     this.game = game;
@@ -160,7 +162,7 @@ module.exports = class History {
       if (player.role)
         this.states[state].roles[
           player.id
-        ] = `${player.role.name}:${player.role.modifier}`;
+        ] = roleIdentity.roleKey(player.role.toRoleData());
   }
 
   recordAllDead() {

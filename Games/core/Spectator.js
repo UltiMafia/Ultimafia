@@ -5,6 +5,7 @@ const Utils = require("./Utils");
 const Spam = require("./Spam");
 const constants = require("../../data/constants");
 const logger = require("../../modules/logging")("games");
+const roleIdentity = require("../../lib/roleIdentity");
 
 module.exports = class Spectator extends Player {
   constructor(user, game) {
@@ -347,7 +348,7 @@ module.exports = class Spectator extends Player {
   sendTrueRoles() {
     const roles = this.game.getTrueRoles();
     for (let playerId in roles)
-      this.send("reveal", { playerId, role: roles[playerId] });
+      this.send("reveal", { playerId, role: roleIdentity.roleKey(roles[playerId]) });
   }
 
   getHistory(targetState) {

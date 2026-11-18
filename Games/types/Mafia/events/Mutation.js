@@ -3,6 +3,7 @@ const Action = require("../Action");
 const Random = require("../../../../lib/Random");
 const modifiers = require("../../../../data/modifiers");
 const { PRIORITY_CONVERT_DEFAULT } = require("../const/Priority");
+const { roleWith } = require("../../../../lib/roleIdentity");
 const modBlacklist = ["Clannish", "Exclusive", "Inclusive"];
 
 module.exports = class Mutation extends Event {
@@ -49,30 +50,19 @@ module.exports = class Mutation extends Event {
             }
 
             let randomModifier = Random.randArrayVal(modifiersToUse);
-            let currRoleName = player.role.name;
-            let currRoleModifier = player.role.modifier;
+            const modifiedRole = roleWith(player.role, {
+              modifiers: [...player.role.toRoleData().modifiers, randomModifier],
+            });
             let currRoleData = player.role.data;
-            if (!currRoleModifier || currRoleModifier.length <= 0) {
-              player.setRole(
-                `${currRoleName}:${randomModifier}`,
-                currRoleData,
-                false,
-                false,
-                false,
-                "No Change",
-                "NoStartingItems"
-              );
-            } else {
-              player.setRole(
-                `${currRoleName}:${currRoleModifier}/${randomModifier}`,
-                currRoleData,
-                false,
-                false,
-                false,
-                "No Change",
-                "NoStartingItems"
-              );
-            }
+            player.setRole(
+              modifiedRole,
+              currRoleData,
+              false,
+              false,
+              false,
+              "No Change",
+              "NoStartingItems"
+            );
           }
         }
       },

@@ -1,5 +1,6 @@
 const Card = require("../../Card");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
+const { roleWith } = require("../../../../../lib/roleIdentity");
 
 module.exports = class RemoveModifers extends Card {
   constructor(role) {
@@ -17,12 +18,13 @@ module.exports = class RemoveModifers extends Card {
               return;
             }
 
-            let currRoleName = this.target.role.name;
-            let currRoleModifier = this.target.role.modifier;
+            const roleWithoutModifiers = roleWith(this.target.role, {
+              modifiers: [],
+            });
             let currRoleData = this.target.role.data;
 
             this.target.setRole(
-              `${currRoleName}`,
+              roleWithoutModifiers,
               currRoleData,
               false,
               false,

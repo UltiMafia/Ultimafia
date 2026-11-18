@@ -3,6 +3,7 @@ const Random = require("../../../../../lib/Random");
 const Action = require("../../Action");
 const { PRIORITY_EFFECT_GIVER_DEFAULT } = require("../../const/Priority");
 const { PRIORITY_OVERTHROW_VOTE } = require("../../const/Priority");
+const { roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class ChoirOfRoles extends Card {
   constructor(role) {
@@ -82,9 +83,7 @@ module.exports = class ChoirOfRoles extends Card {
             .alivePlayers()
             .filter((p) => p.getRoleAlignment() != "Cult");
 
-          let role = Random.randArrayVal(roles, true)
-            .split(":")[0]
-            .toLowerCase();
+          let role = roleName(Random.randArrayVal(roles, true)).toLowerCase();
           let victim = Random.randArrayVal(players, true);
 
           victim.queueAlert(

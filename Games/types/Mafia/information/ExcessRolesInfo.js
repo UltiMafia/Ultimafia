@@ -1,5 +1,6 @@
 const Information = require("../Information");
 const Random = require("../../../../lib/Random");
+const { normalizeRole, roleEquals } = require("../../../../lib/roleIdentity");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -32,19 +33,10 @@ module.exports = class ExcessRolesInfo extends Information {
 
     let roles = this.game.PossibleRoles.filter((r) => r);
     let players = this.game.players.filter((p) => p.role);
-    let currentRoles = [];
-
-    for (let x = 0; x < players.length; x++) {
-      currentRoles.push(
-        `${this.game.formatRoleInternal(
-          players[x].role.name,
-          players[x].role.modifier
-        )}`
-      );
-    }
-    for (let y = 0; y < currentRoles.length; y++) {
-      roles = roles.filter((r) => r != `${currentRoles[y]}`);
-    }
+    const currentRoles = players.map((player) => player.role);
+    roles = roles.filter(
+      (role) => !currentRoles.some((currentRole) => roleEquals(role, currentRole))
+    );
     if (this.goodRolesOnly) {
       roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
     }
@@ -102,29 +94,14 @@ module.exports = class ExcessRolesInfo extends Information {
   isTrue() {
     let roles = this.game.PossibleRoles.filter((r) => r);
     let players = this.game.players.filter((p) => p.role);
-    let currentRoles = [];
-
-    for (let x = 0; x < players.length; x++) {
-      currentRoles.push(
-        `${this.game.formatRoleInternal(
-          players[x].role.name,
-          players[x].role.modifier
-        )}`
-      );
-    }
-    for (let y = 0; y < currentRoles.length; y++) {
-      roles = roles.filter((r) => r != `${currentRoles[y]}`);
-    }
+    const currentRoles = players.map((player) => player.role);
+    roles = roles.filter(
+      (role) => !currentRoles.some((currentRole) => roleEquals(role, currentRole))
+    );
     if (this.goodRolesOnly) {
       roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
     }
-    for (let info of this.mainInfo) {
-      if (currentRoles.includes(info)) {
-        //this.game.queueAlert(`Excess Role False Hit`);
-        return false;
-      }
-    }
-    return true;
+    return this.mainInfo.every((info) => roles.some((role) => roleEquals(role, info)));
   }
   isFalse() {
     if (!this.isTrue()) {
@@ -143,19 +120,10 @@ module.exports = class ExcessRolesInfo extends Information {
   makeTrue() {
     let roles = this.game.PossibleRoles.filter((r) => r);
     let players = this.game.players.filter((p) => p.role);
-    let currentRoles = [];
-
-    for (let x = 0; x < players.length; x++) {
-      currentRoles.push(
-        `${this.game.formatRoleInternal(
-          players[x].role.name,
-          players[x].role.modifier
-        )}`
-      );
-    }
-    for (let y = 0; y < currentRoles.length; y++) {
-      roles = roles.filter((r) => r != `${currentRoles[y]}`);
-    }
+    const currentRoles = players.map((player) => player.role);
+    roles = roles.filter(
+      (role) => !currentRoles.some((currentRole) => roleEquals(role, currentRole))
+    );
     if (this.goodRolesOnly) {
       roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Village");
     }
@@ -178,22 +146,13 @@ module.exports = class ExcessRolesInfo extends Information {
   makeFalse() {
     let roles = this.game.PossibleRoles.filter((r) => r);
     let players = this.game.players.filter((p) => p.role);
-    let currentRoles = [];
-
-    for (let x = 0; x < players.length; x++) {
-      currentRoles.push(
-        `${this.game.formatRoleInternal(
-          players[x].role.name,
-          players[x].role.modifier
-        )}`
-      );
-    }
-    for (let y = 0; y < currentRoles.length; y++) {
-      roles = roles.filter((r) => r != `${currentRoles[y]}`);
-    }
+    let currentRoles = players.map((player) => normalizeRole(player.role));
+    roles = roles.filter(
+      (role) => !currentRoles.some((currentRole) => roleEquals(role, currentRole))
+    );
     if (this.goodRolesOnly) {
       currentRoles = currentRoles.filter(
-        (r) => this.game.getRoleAlignment(r) == "Village"
+        (role) => this.game.getRoleAlignment(role) == "Village"
       );
     }
     let info = [];

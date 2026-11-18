@@ -115,7 +115,7 @@ module.exports = class GoodOrEvilRoleInfo extends Information {
     );
 
     this.mainInfo = roles;
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
   makeFavorable() {}
   makeUnfavorable() {}

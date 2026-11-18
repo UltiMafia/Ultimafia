@@ -45,8 +45,8 @@ module.exports = class KillCultistsOnDeath extends Card {
             p.hasEffect("DevoteeEffect")
           );
           if (backUpTarget.length > 0) {
-            backUpTarget.setRole(
-              `${this.player.role.name}:${this.player.role.modifier}`,
+            backUpTarget[0].setRole(
+              this.player.role.toRoleData(),
               this.player.role.data,
               false,
               false,

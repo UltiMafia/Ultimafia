@@ -37,6 +37,7 @@ const PostgameMeeting = require("./PostgameMeeting");
 const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const { isTestBotPlayer } = require("./botPlayers");
+const roleIdentity = require("../../lib/roleIdentity");
 const devControls = require("./devControls");
 const gameEventLog = require("../../modules/gameEventLog");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
@@ -2454,7 +2455,7 @@ module.exports = class Game {
 
       let alignment = roleFromRoleData.alignment;
       if (!isEvent) {
-        this.PossibleRoles.push(role);
+        this.PossibleRoles.push(roleIdentity.normalizeRole(role));
       }
       if (!isBanished && !isEvent) {
         if (!rolesByAlignment[alignment]) rolesByAlignment[alignment] = [];
@@ -2515,7 +2516,7 @@ module.exports = class Game {
           role.split(":")[1].toLowerCase().includes("banished");
         let isEvent = this.getRoleAlignment(role.split(":")[0]) == "Event";
         if (!isEvent) {
-          this.PossibleRoles.push(role);
+          this.PossibleRoles.push(roleIdentity.normalizeRole(role));
         }
         if (!isBanished && !isEvent) {
           for (let i = 0; i < roleset[role]; i++) {
@@ -2562,27 +2563,25 @@ module.exports = class Game {
       let roleSet = this.setup.roles[j];
       let newRoleSet = {};
       for (let originalRoleName in roleSet) {
-        let [roleName, modifiers] = originalRoleName.split(":");
+        const identity = roleIdentity.normalizeRole(originalRoleName);
+        const roleName = identity.name;
+        const modifiers = identity.modifiers.join("/");
 
-        var newName = "";
-        if (!modifiers || modifiers.length == 0) {
-          newName = mappedRoles[roleName] || roleName;
-        } else {
-          let modifierNames = modifiers.split("/");
-          let newModifierNames = [];
-          for (let originalModifierName of modifierNames) {
-            let newModifierName =
-              mappedRoles[originalModifierName] || originalModifierName;
-            newModifierNames.push(newModifierName);
-          }
-          const newModifierNamesString = newModifierNames.join("/");
-          let newRoleName = mappedRoles[roleName] || roleName;
-          newName = [newRoleName, newModifierNamesString].join(":");
-        }
+        let newName = mappedRoles[roleName] || roleName;
+        const newModifiers = modifiers
+          ? modifiers.split("/").map(
+              (modifier) => mappedRoles[modifier] || modifier
+            )
+          : [];
+        const key = roleIdentity.roleKey({
+          ...identity,
+          name: newName,
+          modifiers: newModifiers,
+        });
 
-        if (!newRoleSet[newName]) newRoleSet[newName] = 0;
+        if (!newRoleSet[key]) newRoleSet[key] = 0;
 
-        newRoleSet[newName] += roleSet[originalRoleName];
+        newRoleSet[key] += roleSet[originalRoleName];
       }
       this.setup.roles[j] = newRoleSet;
     }
@@ -2640,6 +2639,7 @@ module.exports = class Game {
   }
 
   generateRoleset() {
+    this.setup.roles = roleIdentity.toRoleMaps(this.setup.roles);
     this.applyNoEventChanceFromRetiredRole();
     this.patchRenamedRoles();
     var roleset;
@@ -2675,7 +2675,7 @@ module.exports = class Game {
             if (isBanished) {
               this.banishedRoles.push(role);
             }
-            this.PossibleRoles.push(role);
+            this.PossibleRoles.push(roleIdentity.normalizeRole(role));
           }
         }
       }
@@ -2781,11 +2781,7 @@ module.exports = class Game {
       if (this.getRoleAlignment(r) == "Event") {
         continue;
       }
-      if (r.split(":")[1]) {
-        this.StartingRoleset.push(`${r.split(":")[0]}:${r.split(":")[1]}`);
-      } else {
-        this.StartingRoleset.push(`${r.split(":")[0]}:`);
-      }
+      this.StartingRoleset.push(roleIdentity.normalizeRole(r));
     }
     //this.sendAlert(`${this.StartingRoleset.join(", ")}`);
     /*
@@ -2797,7 +2793,9 @@ module.exports = class Game {
       let AllRoles = Object.entries(roleData.Mafia)
         .filter((m) => m[1].alignment != "Event")
         .map((r) => r[0]);
-      this.PossibleRoles = this.PossibleRoles.concat(AllRoles);
+      this.PossibleRoles = this.PossibleRoles.concat(
+        AllRoles.map((role) => roleIdentity.normalizeRole(role))
+      );
     }
     */
     // force assign "Host" role to the current game host
@@ -2827,18 +2825,18 @@ module.exports = class Game {
           if (hostPlayer) {
             hostPlayer.setRole(roleName);
             hostCount += 1;
-            this.originalRoles[hostPlayer.id] = roleName;
+            this.originalRoles[hostPlayer.id] = roleIdentity.normalizeRole(roleName);
           } else {
             // Fallback to first player if host not found
             players[hostCount].setRole(roleName);
             hostCount += 1;
-            this.originalRoles[players[hostCount].id] = roleName;
+            this.originalRoles[players[hostCount].id] = roleIdentity.normalizeRole(roleName);
           }
         } else {
           // Additional Host roles go to subsequent players
           players[hostCount].setRole(roleName);
           hostCount += 1;
-          this.originalRoles[players[hostCount].id] = roleName;
+          this.originalRoles[players[hostCount].id] = roleIdentity.normalizeRole(roleName);
         }
       }
 
@@ -2865,7 +2863,7 @@ module.exports = class Game {
     ) {
       for (let player of randomPlayers) {
         player.setRole("Contestant", undefined, false, true, true);
-        this.originalRoles[player.id] = "Contestant";
+        this.originalRoles[player.id] = roleIdentity.normalizeRole("Contestant");
       }
     } else {
       for (let roleName in roleset) {
@@ -2874,7 +2872,7 @@ module.exports = class Game {
           //player.setRole(roleName);
           if (!player) continue;
           player.setRole(roleName, undefined, false, true, true);
-          this.originalRoles[player.id] = roleName;
+          this.originalRoles[player.id] = roleIdentity.normalizeRole(roleName);
           i++;
         }
       }
@@ -2884,11 +2882,11 @@ module.exports = class Game {
     this.AddedEvents = [];
     let tempSInteraction;
     for (let z = 0; z < this.PossibleRoles.length; z++) {
-      if (this.PossibleRoles[z].split(":")[0] == "Magus") {
+      if (roleIdentity.roleName(this.PossibleRoles[z]) == "Magus") {
         this.MagusPossible = true;
       }
       if (
-        this.getRoleTags(this.PossibleRoles[z].split(":")[0]).includes(
+        this.getRoleTags(this.PossibleRoles[z]).includes(
           "Exorcise Village Meeting"
         )
       ) {
@@ -3016,7 +3014,7 @@ module.exports = class Game {
     }
 
     this.PossibleRoles = this.PossibleRoles.filter(
-      (r) => !r.split(":")[0].includes("Banished")
+      (r) => !roleIdentity.roleName(r).includes("Banished")
     );
     if (this.banishedRoles) {
       this.banishedRoles = this.banishedRoles.filter(
@@ -3174,43 +3172,27 @@ module.exports = class Game {
   }
 
   getRoleAlignment(role) {
-    return roleData[this.type][role.split(":")[0]].alignment;
+    return roleData[this.type][roleIdentity.roleName(role)].alignment;
   }
 
   getSpecialInteractions(role) {
-    if (roleData[this.type][role.split(":")[0]].SpecialInteractions) {
-      return roleData[this.type][role.split(":")[0]].SpecialInteractions;
-    } else {
-      return null;
-    }
+    return roleData[this.type][roleIdentity.roleName(role)].SpecialInteractions || null;
   }
 
   getAddOtherRoles(role) {
-    if (roleData[this.type][role.split(":")[0]].RolesMadeBy) {
-      return roleData[this.type][role.split(":")[0]].RolesMadeBy;
-    } else {
-      return null;
-    }
+    return roleData[this.type][roleIdentity.roleName(role)].RolesMadeBy || null;
   }
 
   getRoleTags(role) {
-    let roleFull = role;
-    let modifiers = roleFull.split(":")[1];
-    if (modifiers) {
-      //this.sendAlert(`Modifiers ${modifiers}`,undefined);
-      modifiers = modifiers.split("/");
-      if (!Array.isArray(modifiers)) {
-        modifiers = [modifiers];
-      }
-      //this.sendAlert(`Modifiers ${modifiers}`,undefined);
-    }
+    const identity = roleIdentity.normalizeRole(role);
+    const modifiers = identity.modifiers;
     let modTags;
     let roleTags = [];
-    for (let tag of roleData[this.type][roleFull.split(":")[0]].tags) {
+    for (let tag of roleData[this.type][identity.name].tags) {
       roleTags.push(tag);
     }
-    if (roleData[this.type][roleFull.split(":")[0]].tagsHidden) {
-      for (let tag of roleData[this.type][roleFull.split(":")[0]].tagsHidden) {
+    if (roleData[this.type][identity.name].tagsHidden) {
+      for (let tag of roleData[this.type][identity.name].tagsHidden) {
         roleTags.push(tag);
       }
     }
@@ -3985,7 +3967,7 @@ module.exports = class Game {
     const roles = {};
     for (let player of this.players)
       if (player.role)
-        roles[player.id] = `${player.role.name}:${player.role.modifier}`;
+        roles[player.id] = roleIdentity.normalizeRole(player.role);
     return roles;
   }
 
@@ -4056,11 +4038,18 @@ module.exports = class Game {
         if (alert) alerts.push(alert);
       }
 
-      const roles = {
+      const roleDescriptors = {
         ...(spec.roles || {}),
         ...(this.omniscientRoles[state] || {}),
       };
-      if (state == this.currentState) Object.assign(roles, this.getTrueRoles());
+      if (state == this.currentState) {
+        const trueRoles = this.getTrueRoles();
+        for (const playerId in trueRoles)
+          roleDescriptors[playerId] = trueRoles[playerId];
+      }
+      const roles = {};
+      for (const playerId in roleDescriptors)
+        roles[playerId] = roleIdentity.roleKey(roleDescriptors[playerId]);
 
       res[state] = {
         name: master.name,
@@ -5108,10 +5097,10 @@ module.exports = class Game {
    * (Misfortune has been scrapped; losers earn 0 fortune.)
    */
   computeFortuneMemberFaction(playerId) {
-    const roleKey = this.originalRoles[playerId];
-    if (!roleKey) return null;
-    const roleName = roleKey.split(":")[0];
-    const alignment = this.getRoleAlignment(roleName);
+    const role = this.originalRoles[playerId];
+    if (!role) return null;
+    const roleName = roleIdentity.roleName(role);
+    const alignment = this.getRoleAlignment(role);
     const alignmentIsFaction =
       alignment === "Village" ||
       alignment === "Mafia" ||
@@ -5316,17 +5305,22 @@ module.exports = class Game {
       const finalRoleByPlayer = {};
       for (const playerId in this.originalRoles) {
         const player = this.players[playerId];
-        let roleName, modifier, alignment;
+        let role, alignment;
         if (player && player.role) {
-          roleName = player.role.name;
-          modifier = player.role.modifier;
+          role = roleIdentity.normalizeRole(
+            player.role.toRoleData ? player.role.toRoleData() : player.role
+          );
           alignment = player.role.alignment;
         } else {
-          const original = this.originalRoles[playerId];
-          [roleName, modifier] = original.split(":");
-          alignment = this.getRoleAlignment(roleName);
+          role = roleIdentity.normalizeRole(this.originalRoles[playerId]);
+          alignment = this.getRoleAlignment(this.originalRoles[playerId]);
         }
-        finalRoleByPlayer[playerId] = { roleName, modifier, alignment };
+        finalRoleByPlayer[playerId] = {
+          role,
+          roleName: role.name,
+          modifier: roleIdentity.roleModifiers(role),
+          alignment,
+        };
       }
 
       const factionToPlayers = {};
@@ -5406,10 +5400,8 @@ module.exports = class Game {
       }
 
       for (const playerId in finalRoleByPlayer) {
-        const { roleName, modifier } = finalRoleByPlayer[playerId];
-        const roleKey = sanitizeStatKey(
-          modifier ? `${roleName}:${modifier}` : roleName
-        );
+        const { role } = finalRoleByPlayer[playerId];
+        const roleKey = roleIdentity.roleStatsKey(role);
         const won = winners.has(playerId);
         const base = `setupStats.roleAgg.${roleKey}.${gameTypeTag}`;
         increments[`${base}.games`] = (increments[`${base}.games`] || 0) + 1;
@@ -5629,7 +5621,7 @@ module.exports = class Game {
         let playerAlignmentMap = {};
         let playerRoleMap = {};
         for (let player of players) {
-          const roleName = this.originalRoles[player.id].split(":")[0];
+          const roleName = roleIdentity.roleName(this.originalRoles[player.id]);
           const alignment = this.getRoleAlignment(roleName);
 
           let userId = player.userId || player.user.id;

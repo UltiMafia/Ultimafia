@@ -5,6 +5,7 @@ const {
   PRIORITY_FULL_DISABLE,
   PRIORITY_ITEM_TAKER_DEFAULT,
 } = require("../../const/Priority");
+const { roleEquals, appearanceKey, roleName, roleModifiers } = require("../../../../../lib/roleIdentity");
 
 module.exports = class BecomeDeliriousRole extends Card {
   constructor(role) {
@@ -141,22 +142,26 @@ function switchRoleBefore(role) {
   let playersAll = role.game.players.filter((p) => p.role);
   for (let x = 0; x < playersAll.length; x++) {
     //currentRoles.push(playersAll[x].role);
-    let tempName = playersAll[x].role.name;
-    let tempModifier = playersAll[x].role.modifier;
-    currentRoles.push(`${tempName}:${tempModifier}`);
+    currentRoles.push(playersAll[x].role.toRoleData());
   }
   for (let y = 0; y < currentRoles.length; y++) {
     roles = roles.filter(
-      (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+      (r) => !currentRoles.some((current) => roleEquals(r, current))
     );
   }
-  roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
-  roles = roles.filter((r) => role.game.getRoleAlignment(r) == "Village");
-  roles = roles.filter((r) => !r.toLowerCase().includes("humble"));
+  roles = roles.filter(
+    (r) => !roleModifiers(r).toLowerCase().includes("banished")
+  );
+  roles = roles.filter((r) => role.game.getRoleAlignment(roleName(r)) == "Village");
+  roles = roles.filter(
+    (r) =>
+      !roleName(r).toLowerCase().includes("humble") &&
+      !roleModifiers(r).toLowerCase().includes("humble")
+  );
   if (roles.length <= 0) {
     roles = currentRoles;
-    roles = roles.filter((r) => role.game.getRoleAlignment(r) == "Village");
-    roles = roles.filter((r) => r.split(":")[0] != "Braggart");
+    roles = roles.filter((r) => role.game.getRoleAlignment(roleName(r)) == "Village");
+    roles = roles.filter((r) => roleName(r) != "Braggart");
   }
   if (roles.length <= 0) {
     roles = ["Cop"];
@@ -164,8 +169,8 @@ function switchRoleBefore(role) {
   role.newRole = Random.randArrayVal(roles);
 
   let tempApp = {
-    self: role.newRole,
-    reveal: role.newRole,
+    self: appearanceKey(role.newRole),
+    reveal: appearanceKey(role.newRole),
   };
   role.editAppearance(tempApp);
 }

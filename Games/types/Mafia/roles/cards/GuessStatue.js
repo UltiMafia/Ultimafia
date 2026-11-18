@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const Random = require("../../../../../lib/Random");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
+const { roleName, roleModifiers } = require("../../../../../lib/roleIdentity");
 module.exports = class GuessStatue extends Card {
   constructor(role) {
     super(role);
@@ -34,9 +35,9 @@ module.exports = class GuessStatue extends Card {
                       .getAllRoles()
                       .filter(
                         (r) =>
-                          this.game.getRoleAlignment(r) == "Village" &&
-                          !r.split(":")[1]?.includes("Banished") &&
-                          r.split(":")[0] != "Damsal"
+                          this.game.getRoleAlignment(roleName(r)) == "Village" &&
+                          !roleModifiers(r).includes("Banished") &&
+                          roleName(r) != "Damsal"
                       )
                   );
                   if (!randomVillageRole) {

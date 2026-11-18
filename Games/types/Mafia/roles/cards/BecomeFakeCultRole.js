@@ -3,6 +3,7 @@ const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
 const { CULT_FACTIONS } = require("../../const/FactionList");
 const { PRIORITY_FULL_DISABLE } = require("../../const/Priority");
+const { roleEquals, appearanceKey, roleName, roleModifiers, normalizeRole } = require("../../../../../lib/roleIdentity");
 
 module.exports = class BecomeFakeCultRole extends Card {
   constructor(role) {
@@ -15,16 +16,14 @@ module.exports = class BecomeFakeCultRole extends Card {
     let playersAll = this.game.players.filter((p) => p.role);
     for (let x = 0; x < playersAll.length; x++) {
       //currentRoles.push(playersAll[x].role);
-      let tempName = playersAll[x].role.name;
-      let tempModifier = playersAll[x].role.modifier;
-      currentRoles.push(`${tempName}:${tempModifier}`);
+      currentRoles.push(playersAll[x].role.toRoleData());
     }
     for (let y = 0; y < currentRoles.length; y++) {
       roles = roles.filter(
-        (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+        (r) => !currentRoles.some((current) => roleEquals(r, current))
       );
     }
-    roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
+    roles = roles.filter((r) => !roleModifiers(r).toLowerCase().includes("banished"));
     roles = roles.filter((r) => this.game.getRoleAlignment(r) == "Cult");
     roles = roles.filter(
       (r) =>
@@ -42,7 +41,7 @@ module.exports = class BecomeFakeCultRole extends Card {
         this.game.getRoleTags(r).includes("Kills Cultist") ||
         this.game.getRoleTags(r).includes("Demonic")
     );
-    roles = roles.filter((r) => r.split(":")[0] != "Televangelist");
+    roles = roles.filter((r) => roleName(r) != "Televangelist");
 
     if (roles.length <= 0) {
       roles = excessEndangered;
@@ -53,18 +52,18 @@ module.exports = class BecomeFakeCultRole extends Card {
           this.game.getRoleTags(r).includes("Kills Cultist") ||
           this.game.getRoleTags(r).includes("Demonic")
       );
-      roles = roles.filter((r) => r.split(":")[0] != "Televangelist");
+      roles = roles.filter((r) => roleName(r) != "Televangelist");
     }
     if (roles.length <= 0) {
-      roles = [`Imp:Demonic`];
+      roles = [normalizeRole("Imp:Demonic")];
     }
 
     role.player.factionFake = "Cult";
 
     role.newRole = Random.randArrayVal(roles);
     let tempApp = {
-      self: role.newRole,
-      reveal: role.newRole,
+      self: appearanceKey(role.newRole),
+      reveal: appearanceKey(role.newRole),
     };
     this.editAppearance(tempApp);
 
@@ -309,16 +308,14 @@ function switchRoleBefore(role) {
   let playersAll = role.game.players.filter((p) => p.role);
   for (let x = 0; x < playersAll.length; x++) {
     //currentRoles.push(playersAll[x].role);
-    let tempName = playersAll[x].role.name;
-    let tempModifier = playersAll[x].role.modifier;
-    currentRoles.push(`${tempName}:${tempModifier}`);
+    currentRoles.push(playersAll[x].role.toRoleData());
   }
   for (let y = 0; y < currentRoles.length; y++) {
     roles = roles.filter(
-      (r) => r != currentRoles[y] && !currentRoles[y].includes(r)
+      (r) => !currentRoles.some((current) => roleEquals(r, current))
     );
   }
-  roles = roles.filter((r) => !r.toLowerCase().includes("banished"));
+  roles = roles.filter((r) => !roleModifiers(r).toLowerCase().includes("banished"));
   roles = roles.filter((r) => role.game.getRoleAlignment(r) == "Cult");
   roles = roles.filter(
     (r) =>
@@ -336,7 +333,7 @@ function switchRoleBefore(role) {
       role.game.getRoleTags(r).includes("Kills Cultist") ||
       role.game.getRoleTags(r).includes("Demonic")
   );
-  roles = roles.filter((r) => r.split(":")[0] != "Televangelist");
+  roles = roles.filter((r) => roleName(r) != "Televangelist");
 
   if (roles.length <= 0) {
     roles = excessEndangered;
@@ -347,18 +344,18 @@ function switchRoleBefore(role) {
         role.game.getRoleTags(r).includes("Kills Cultist") ||
         role.game.getRoleTags(r).includes("Demonic")
     );
-    roles = roles.filter((r) => r.split(":")[0] != "Televangelist");
+    roles = roles.filter((r) => roleName(r) != "Televangelist");
   }
   if (roles.length <= 0) {
-    roles = [`Imp:Demonic`];
+    roles = [normalizeRole("Imp:Demonic")];
   }
 
   role.player.factionFake = "Cult";
 
   role.newRole = Random.randArrayVal(roles);
   let tempApp = {
-    self: role.newRole,
-    reveal: role.newRole,
+    self: appearanceKey(role.newRole),
+    reveal: appearanceKey(role.newRole),
   };
   role.editAppearance(tempApp);
 }

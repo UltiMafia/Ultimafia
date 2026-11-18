@@ -53,7 +53,7 @@ module.exports = class Demonic extends Card {
           );
           if (backUpTarget.length > 0) {
             backUpTarget[0].setRole(
-              `${this.player.role.name}:${this.player.role.modifier}`,
+              this.player.role.toRoleData(),
               this.player.role.data,
               false,
               false,
@@ -108,7 +108,7 @@ module.exports = class Demonic extends Card {
           );
           if (backUpTarget.length > 0) {
             backUpTarget[0].setRole(
-              `${this.player.role.name}:${this.player.role.modifier}`,
+              this.player.role.toRoleData(),
               this.player.role.data,
               false,
               false,

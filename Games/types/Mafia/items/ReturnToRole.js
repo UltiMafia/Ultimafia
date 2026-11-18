@@ -1,5 +1,6 @@
 const Item = require("../Item");
 const Action = require("../Action");
+const { normalizeRole, roleName, roleWith } = require("../../../../lib/roleIdentity");
 
 module.exports = class ReturnToRole extends Item {
   constructor(currRole, currModifier, currData, newRole) {
@@ -7,8 +8,12 @@ module.exports = class ReturnToRole extends Item {
 
     this.cannotBeStolen = true;
     this.cannotBeSnooped = true;
-    this.currRole = currRole;
-    this.currModifier = currModifier;
+    this.roleData =
+      currRole && typeof currRole === "object"
+        ? normalizeRole(currRole)
+        : roleWith(`${currRole}:${currModifier || ""}`, {});
+    this.currRole = roleName(this.roleData);
+    this.currModifier = this.roleData.modifiers.join("/");
     this.currData = currData;
     this.newRole = newRole;
 
@@ -20,7 +25,7 @@ module.exports = class ReturnToRole extends Item {
           return;
         }
         this.holder.setRole(
-          `${currRole}:${currModifier}`,
+          this.roleData,
           this.currData,
           true,
           true,
@@ -40,7 +45,7 @@ module.exports = class ReturnToRole extends Item {
 
         /*
         this.holder.setRole(
-          `${currRole}:${currModifier}`,
+          this.roleData,
           this.currData,
           true,
           true,

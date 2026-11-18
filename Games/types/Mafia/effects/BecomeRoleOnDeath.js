@@ -1,6 +1,7 @@
 const Effect = require("../Effect");
 const Action = require("../Action");
 const modifiers = require("../../../../data/modifiers");
+const { roleWith } = require("../../../../lib/roleIdentity");
 
 module.exports = class BecomeRoleOnDeath extends Effect {
   constructor(infector, role) {
@@ -25,27 +26,18 @@ module.exports = class BecomeRoleOnDeath extends Effect {
           effect: this,
           run: function () {
             if (this.dominates()) {
-              let roleName = this.effect.role.split(":")[0];
-              let modifiers = this.effect.role.split(":")[1];
-              if (!modifiers || modifiers.length <= 0) {
-                this.target.setRole(
-                  `${roleName}:Transcendent`,
-                  null,
-                  false,
-                  false,
-                  false,
-                  this.actor.faction
-                );
-              } else {
-                this.target.setRole(
-                  `${this.effect.role}/Transcendent`,
-                  null,
-                  false,
-                  false,
-                  false,
-                  this.actor.faction
-                );
-              }
+              const role = roleWith(this.effect.role, {});
+              const convertedRole = roleWith(role, {
+                modifiers: [...role.modifiers, "Transcendent"],
+              });
+              this.target.setRole(
+                convertedRole,
+                null,
+                false,
+                false,
+                false,
+                this.actor.faction
+              );
             }
           },
         });

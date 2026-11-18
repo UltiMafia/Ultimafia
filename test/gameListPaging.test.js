@@ -27,6 +27,7 @@ const redis = require("../modules/redis");
 const routeUtils = require("../routes/utils");
 const { finishedSkip, dedupeById } = require("../routes/gameListPaging");
 const router = require("../routes/game");
+const { serializeRoleGroups, toRoleMaps } = require("../lib/roleIdentity");
 
 const PAGE = constants.lobbyPageSize;
 
@@ -192,5 +193,16 @@ describe("GET /api/game/list paging", function () {
 
     ids[0].should.equal("f6");
     should.equal(calls[0]._skip, 0);
+  });
+
+  it("keeps finished-game setup inventories in the legacy map wire format", async function () {
+    const roles = [[
+      { role: { name: "Villager", items: ["Gun"] }, count: 2 },
+      { role: { name: "Mafioso" }, count: 1 },
+    ]];
+    finishedDocs[0].setup = { id: "object-setup", roles: serializeRoleGroups(roles) };
+    const res = { setHeader() {}, send(body) { this.body = body; } };
+    await handler({ query: { list: "finished", lobby: "Main", page: "1" } }, res);
+    JSON.parse(res.body[0].setup.roles).should.deep.equal(toRoleMaps(roles));
   });
 });

@@ -1,5 +1,6 @@
 const Information = require("../Information");
 const Random = require("../../../../lib/Random");
+const { roleModifiers } = require("../../../../lib/roleIdentity");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -99,8 +100,8 @@ module.exports = class ModifierInfo extends Information {
       .getAllRoles()
       .filter(
         (r) =>
-          r.split(":")[1] &&
-          r.split(":")[1] != this.mainInfo &&
+          roleModifiers(r) &&
+          roleModifiers(r) != this.mainInfo &&
           this.game.getRoleTags(r).includes("No Investigate")
       );
 
@@ -112,7 +113,7 @@ module.exports = class ModifierInfo extends Information {
       return;
     }
 
-    this.mainInfo = Random.randArrayVal(roleOptions).split(":")[1];
+    this.mainInfo = roleModifiers(Random.randArrayVal(roleOptions));
   }
   makeFavorable() {
     this.mainInfo = "";
@@ -122,8 +123,8 @@ module.exports = class ModifierInfo extends Information {
       .getAllRoles()
       .filter(
         (r) =>
-          r.split(":")[1] &&
-          r.split(":")[1] != this.mainInfo &&
+          roleModifiers(r) &&
+          roleModifiers(r) != this.mainInfo &&
           this.game.getRoleTags(r).includes("No Investigate")
       );
 
@@ -132,6 +133,6 @@ module.exports = class ModifierInfo extends Information {
       return;
     }
 
-    this.mainInfo = Random.randArrayVal(roleOptions).split(":")[1];
+    this.mainInfo = roleModifiers(Random.randArrayVal(roleOptions));
   }
 };

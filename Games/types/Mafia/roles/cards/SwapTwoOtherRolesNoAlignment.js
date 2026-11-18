@@ -33,7 +33,7 @@ module.exports = class SwapTwoOtherRolesNoAlignment extends Card {
             if(this.dominates(this.role.data.targetA) && this.dominates(this.target)){
             var targetA = this.role.data.targetA;
             var targetB = this.target;
-            var oldARole = `${targetA.getRoleName()}:${targetA.getModifierName()}`;
+            var oldARole = targetA.role.toRoleData();
             let oldFaction = targetA.faction;
 
             if (
@@ -44,7 +44,7 @@ module.exports = class SwapTwoOtherRolesNoAlignment extends Card {
             }
 
             targetA.setRole(
-              `${targetB.getRoleName()}:${targetB.getModifierName()}`,
+              targetB.role.toRoleData(),
               null,
               false,
               false,

@@ -193,9 +193,32 @@ describe("Omniscient spectating (Developer, Testing lobby)", function () {
       game.alice.role = { name: "Mafioso", modifier: "" };
       game.carl.role = { name: "Cop", modifier: "Humble" };
       game.getTrueRoles().should.deep.equal({
-        a: "Mafioso:",
-        c: "Cop:Humble",
+        a: { name: "Mafioso", modifiers: [], items: [] },
+        c: { name: "Cop", modifiers: ["Humble"], items: [] },
       });
+    });
+
+    it("serializes role descriptors in every omniscient history state", function () {
+      const game = makeGame({
+        history: {
+          states: {
+            past: { name: "Past", meetings: {}, alerts: [], stateEvents: {}, obituaries: [], dead: {}, exorcised: {} },
+            current: { name: "Current", meetings: {}, alerts: [], stateEvents: {}, obituaries: [], dead: {}, exorcised: {} },
+          },
+        },
+        spectatorHistory: { states: { past: {}, current: {} } },
+        omniscientRoles: {
+          past: { a: { name: "Cop", modifiers: [], items: ["Magnifying Glass"] } },
+        },
+        currentState: "current",
+      });
+      game.alice.role = { name: "Doctor", modifier: "", toRoleData: () => ({ name: "Doctor", modifiers: [], items: ["Medkit"] }) };
+      const result = game.getOmniscientHistoryInfo(makeSpectator(true));
+      expect(result.past.roles).to.deep.equal({ a: 'Cop::["Magnifying Glass"]' });
+      expect(result.current.roles).to.deep.equal({ a: 'Doctor::["Medkit"]' });
+      for (const state of Object.values(result)) {
+        for (const role of Object.values(state.roles)) expect(role).to.be.a("string");
+      }
     });
   });
 

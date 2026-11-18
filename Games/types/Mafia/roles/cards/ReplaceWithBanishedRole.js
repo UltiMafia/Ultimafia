@@ -1,6 +1,7 @@
 const Card = require("../../Card");
 const Action = require("../../Action");
 const Random = require("../../../../../lib/Random");
+const { roleEquals, roleName, roleModifiers, normalizeRole } = require("../../../../../lib/roleIdentity");
 
 module.exports = class ReplaceWithBanishedRole extends Card {
   constructor(role) {
@@ -9,14 +10,12 @@ module.exports = class ReplaceWithBanishedRole extends Card {
     this.listeners = {
       replaceWithBanished: function (player) {
         let banishedRoles = this.game.banishedRoles;
-        let currentRoles = this.game.players.map(
-          (p) => `${p.role.name}:${p.role.modifier}`
-        );
+        let currentRoles = this.game.players.map((p) => p.role.toRoleData());
         let currentBanished = currentRoles.filter(
-          (r) => r.split(":")[1] && r.split(":")[1].includes("Banished")
+          (r) => roleModifiers(r).split("/").includes("Banished")
         );
         let tempBanished = banishedRoles.filter(
-          (b) => !currentBanished.includes(b)
+          (b) => !currentBanished.some((current) => roleEquals(current, b))
         );
         if (tempBanished.length <= 0) {
           if (banishedRoles.length <= 0) {
@@ -31,7 +30,7 @@ module.exports = class ReplaceWithBanishedRole extends Card {
         }
         if (this.name != "Banished Any") {
           tempBanished = tempBanished.filter(
-            (r) => this.game.getRoleAlignment(r.split(":")[0]) == this.alignment
+            (r) => this.game.getRoleAlignment(roleName(r)) == this.alignment
           );
           if (tempBanished.length <= 0) {
             tempBanished = [
@@ -41,11 +40,11 @@ module.exports = class ReplaceWithBanishedRole extends Card {
               "Grouch:Banished",
             ].filter(
               (r) =>
-                this.game.getRoleAlignment(r.split(":")[0]) == this.alignment
+                this.game.getRoleAlignment(roleName(r)) == this.alignment
             );
           }
         }
-        let newRole = Random.randArrayVal(tempBanished);
+        let newRole = normalizeRole(Random.randArrayVal(tempBanished));
         this.player.setRole(
           newRole,
           undefined,

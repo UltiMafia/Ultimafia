@@ -29,7 +29,7 @@ module.exports = class AddRottenCopy extends Card {
             item.drop();
           }
           shuffledPlayers[x].setRole(
-            `${this.player.role.name}:${this.player.role.modifier}`,
+            this.player.role.toRoleData(),
             this.player.role.data,
             false,
             true,

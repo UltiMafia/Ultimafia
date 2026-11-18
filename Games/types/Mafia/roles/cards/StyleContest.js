@@ -5,6 +5,7 @@ const {
   PRIORITY_EFFECT_GIVER_DEFAULT,
   PRIORITY_EFFECT_GIVER_EARLY,
 } = require("../../const/Priority");
+const { roleName } = require("../../../../../lib/roleIdentity");
 
 module.exports = class StyleContest extends Card {
   constructor(role) {
@@ -16,7 +17,7 @@ module.exports = class StyleContest extends Card {
       "Gain an extra mafia role ability",
     ];
     let roles = role.getAllRoles();
-    roles = roles.map((r) => r.split(":")[0]);
+    roles = roles.map((r) => roleName(r));
     if (roles.includes("Butterfly") && role.canDoSpecialInteractions()) {
       targets.push("Revive all dead players as random independent roles");
     }

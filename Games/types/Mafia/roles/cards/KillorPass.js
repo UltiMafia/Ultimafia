@@ -45,7 +45,7 @@ module.exports = class KillorPass extends Card {
                   });
                   if (action.dominates(randomTarget)) {
                     randomTarget.setRole(
-                      `${this.role.name}:${this.role.modifier}`,
+                      this.role.toRoleData(),
                       this.role.data,
                       null,
                       null,

@@ -52,7 +52,7 @@ module.exports = class ClownAround extends Card {
           if (mafiaTargets.length <= 0) return;
           const randomTarget = Random.randArrayVal(mafiaTargets);
           randomTarget.setRole(
-            `${this.player.role.name}:${this.player.role.modifier}`,
+            this.player.role.toRoleData(),
             this.player.role.data
           );
           this.clownCondemned = true;

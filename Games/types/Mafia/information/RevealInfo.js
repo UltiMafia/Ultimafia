@@ -1,5 +1,6 @@
 const Information = require("../Information");
 const Random = require("../../../../lib/Random");
+const { roleName, roleEquals, roleWith } = require("../../../../lib/roleIdentity");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -46,11 +47,12 @@ module.exports = class RevealInfo extends Information {
     let tempTempAppearance = this.target.tempAppearance[this.investType];
     let OtherRoles = this.game.PossibleRoles.filter(
       (r) =>
-        r !=
-          this.game.formatRoleInternal(
-            this.target.role.name,
-            this.target.role.modifier
-          ) &&
+        // Appearances carry no items, so a same-role entry with other items
+        // would still show the target's true appearance.
+        !roleEquals(
+          roleWith(r, { items: [] }),
+          roleWith(this.target.role.toRoleData(), { items: [] })
+        ) &&
         !this.game.getRoleTags(r).includes("No Investigate") &&
         !this.game.getRoleTags(r).includes("Exposed")
     );
@@ -76,9 +78,9 @@ module.exports = class RevealInfo extends Information {
     } else if (this.truthValue == "Favorable") {
       OtherRoles = OtherRoles.filter(
         (r) =>
-          this.game.getRoleAlignment(r.split(":")[0]) == "Village" ||
-          (this.game.getRoleAlignment(r.split(":")[0]) == "Independent" &&
-            !this.game.getRoleTags(r.split(":")[0]).includes("Hostile"))
+          this.game.getRoleAlignment(roleName(r)) == "Village" ||
+          (this.game.getRoleAlignment(roleName(r)) == "Independent" &&
+            !this.game.getRoleTags(r).includes("Hostile"))
       );
       if (OtherRoles.length <= 0) {
         OtherRoles.push("Villager");
@@ -89,10 +91,10 @@ module.exports = class RevealInfo extends Information {
     } else if (this.truthValue == "Unfavorable") {
       OtherRoles = OtherRoles.filter(
         (r) =>
-          this.game.getRoleAlignment(r.split(":")[0]) != "Village" &&
+          this.game.getRoleAlignment(roleName(r)) != "Village" &&
           !(
-            this.game.getRoleAlignment(r.split(":")[0]) == "Independent" &&
-            !this.game.getRoleTags(r.split(":")[0]).includes("Hostile")
+            this.game.getRoleAlignment(roleName(r)) == "Independent" &&
+            !this.game.getRoleTags(r).includes("Hostile")
           )
       );
       if (OtherRoles.length <= 0) {

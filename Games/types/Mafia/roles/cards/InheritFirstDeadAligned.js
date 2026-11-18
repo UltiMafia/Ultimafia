@@ -26,7 +26,7 @@ module.exports = class InheritFirstDeadAligned extends Card {
                   )}, filling up the gap that ${this.target.name} left.`
                 );
                 this.actor.setRole(
-                  `${this.target.getRoleName()}:${this.target.role.modifier}`,
+                  this.target.role.toRoleData(),
                   this.target.role.data,
                   false,
                   false,

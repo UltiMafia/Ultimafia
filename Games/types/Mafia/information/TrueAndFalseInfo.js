@@ -1,5 +1,6 @@
 const Information = require("../Information");
 const Random = require("../../../../lib/Random");
+const { roleEquals } = require("../../../../lib/roleIdentity");
 const {
   EVIL_FACTIONS,
   NOT_EVIL_FACTIONS,
@@ -57,19 +58,10 @@ module.exports = class TrueAndFalseInfo extends Information {
     }
     let roles = this.game.PossibleRoles.filter((r) => r);
     let players = this.game.players.filter((p) => p.role);
-    let currentRoles = [];
-
-    for (let x = 0; x < players.length; x++) {
-      currentRoles.push(
-        `${this.game.formatRoleInternal(
-          players[x].role.name,
-          players[x].role.modifier
-        )}`
-      );
-    }
-    for (let y = 0; y < currentRoles.length; y++) {
-      roles = roles.filter((r) => r != `${currentRoles[y]}`);
-    }
+    const currentRoles = players.map((player) => player.role);
+    roles = roles.filter(
+      (role) => !currentRoles.some((currentRole) => roleEquals(role, currentRole))
+    );
     if (roles.length >= 1) {
       possibleInfo.push("ExcessRolesInfo");
     }

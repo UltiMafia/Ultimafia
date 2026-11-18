@@ -106,7 +106,7 @@ module.exports = class OneOf3RolesInfo extends Information {
     );
 
     this.mainInfo = roles;
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
   makeFavorable() {
     let roles = this.getFakeRole(
@@ -118,7 +118,7 @@ module.exports = class OneOf3RolesInfo extends Information {
     );
 
     this.mainInfo = roles;
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
   makeUnfavorable() {
     let roles = this.getFakeRole(
@@ -130,6 +130,6 @@ module.exports = class OneOf3RolesInfo extends Information {
     );
 
     this.mainInfo = roles;
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
 };

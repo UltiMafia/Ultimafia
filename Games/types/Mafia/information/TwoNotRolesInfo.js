@@ -95,7 +95,7 @@ module.exports = class TwoNotRolesInfo extends Information {
     let roles = this.getNotRoles(this.target, 2, this.investType, true);
 
     this.mainInfo = roles;
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
   makeFalse() {
     let info = this.getNotRoles(this.target, 1, this.investType);
@@ -107,12 +107,12 @@ module.exports = class TwoNotRolesInfo extends Information {
     let roles = this.getNotRoles(this.target, 2, this.investType, null, "Evil");
 
     this.mainInfo = roles;
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
   makeUnfavorable() {
     let roles = this.getNotRoles(this.target, 2, this.investType, null, "Good");
 
     this.mainInfo = roles;
-    this.targetRole = roles[0].split(":")[0];
+    this.targetRole = roles[0].split(" (")[0];
   }
 };

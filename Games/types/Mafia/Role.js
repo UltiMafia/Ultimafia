@@ -2,6 +2,7 @@ const Role = require("../../core/Role");
 const MafiaAction = require("./Action");
 const Random = require("../../../lib/Random");
 const roleData = require("../../../data/roles");
+const { normalizeRole } = require("../../../lib/roleIdentity");
 
 module.exports = class MafiaRole extends Role {
   constructor(name, player, data) {
@@ -34,7 +35,7 @@ module.exports = class MafiaRole extends Role {
       let AllRoles = Object.entries(roleData.Mafia)
         .filter((m) => m[1].alignment != "Event" && !m[0].includes("Banished"))
         .map((r) => r[0]);
-      return AllRoles.concat(this.game.PossibleRoles);
+      return AllRoles.map((role) => normalizeRole(role)).concat(this.game.PossibleRoles);
     } else if (
       this.modifier &&
       this.modifier.split("/").includes("Austere") &&
@@ -43,11 +44,7 @@ module.exports = class MafiaRole extends Role {
       let AllRoles = [];
       for (let player of Random.randomizeArray(this.game.players.array())) {
         if (player.role != null && player.role.name != null) {
-          if (player.role.modifier) {
-            AllRoles.push(`${player.role.name}:${player.role.modifier}`);
-          } else {
-            AllRoles.push(`${player.role.name}:`);
-          }
+          AllRoles.push(player.role.toRoleData());
         }
       }
       if (AllRoles.length < this.game.players.length) {
@@ -59,7 +56,7 @@ module.exports = class MafiaRole extends Role {
       if (AllRoles.length <= 0) {
         return this.game.PossibleRoles;
       }
-      return AllRoles;
+      return AllRoles.map((role) => normalizeRole(role));
     } else {
       return this.game.PossibleRoles;
     }

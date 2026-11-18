@@ -3,6 +3,7 @@ const modifiers = require("../../../../../data/modifiers");
 const { PRIORITY_CONVERT_DEFAULT } = require("../../const/Priority");
 const Random = require("../../../../../lib/Random");
 const modBlacklist = ["Clannish", "Exclusive", "Inclusive"];
+const { roleWith } = require("../../../../../lib/roleIdentity");
 
 module.exports = class AddRandomModifier extends Card {
   constructor(role) {
@@ -27,8 +28,9 @@ module.exports = class AddRandomModifier extends Card {
                   !modBlacklist.includes(modifierData[0])
               )
               .map((modifierData) => modifierData[0]);
+            const roleIdentity = this.target.role.toRoleData();
             modifiersToUse = modifiersToUse.filter(
-              (m) => !this.target.role.modifier.split("/").includes(m)
+              (m) => !roleIdentity.modifiers.includes(m)
             );
             modifiersToUse = modifiersToUse.filter((m) => {
               const allowed = modifiers.Mafia[m].roles;
@@ -38,30 +40,19 @@ module.exports = class AddRandomModifier extends Card {
               return;
             }
             let randomModifier = Random.randArrayVal(modifiersToUse);
-            let currRoleName = this.target.role.name;
-            let currRoleModifier = this.target.role.modifier;
+            const modifiedRole = roleWith(roleIdentity, {
+              modifiers: [...roleIdentity.modifiers, randomModifier],
+            });
             let currRoleData = this.target.role.data;
-            if (!currRoleModifier || currRoleModifier.length <= 0) {
-              this.target.setRole(
-                `${currRoleName}:${randomModifier}`,
-                currRoleData,
-                false,
-                false,
-                false,
-                "No Change",
-                "NoStartingItems"
-              );
-            } else {
-              this.target.setRole(
-                `${currRoleName}:${currRoleModifier}/${randomModifier}`,
-                currRoleData,
-                false,
-                false,
-                false,
-                "No Change",
-                "NoStartingItems"
-              );
-            }
+            this.target.setRole(
+              modifiedRole,
+              currRoleData,
+              false,
+              false,
+              false,
+              "No Change",
+              "NoStartingItems"
+            );
           },
         },
       },

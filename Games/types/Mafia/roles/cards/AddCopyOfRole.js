@@ -106,7 +106,7 @@ module.exports = class AddCopyOfRole extends Card {
             item.drop();
           }
           shuffledPlayers[0].setRole(
-            `${this.player.role.name}:${this.player.role.modifier}`,
+            this.player.role.toRoleData(),
             this.player.role.data,
             false,
             true,

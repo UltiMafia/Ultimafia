@@ -1,4 +1,5 @@
 const Information = require("../Information");
+const { roleName } = require("../../../../lib/roleIdentity");
 const { addArticle } = require("../../../core/Utils");
 const Random = require("../../../../lib/Random");
 const {
@@ -35,7 +36,7 @@ module.exports = class GuessRoleInfo extends Information {
       } else if (
         this.noMods &&
         this.target[x].getRoleAppearance().split(" (")[0] ==
-          this.game.formatRole(this.roles[x].split(":")[0])
+          this.game.formatRole(roleName(this.roles[x]))
       ) {
         correctCount++;
       }
@@ -94,7 +95,7 @@ module.exports = class GuessRoleInfo extends Information {
         correctCount++;
       } else if (
         this.noMods &&
-        this.target[x].role.name == this.roles[x].split(":")[0]
+        this.target[x].role.name == roleName(this.roles[x])
       ) {
         correctCount++;
       }

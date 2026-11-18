@@ -1,4 +1,5 @@
 const Information = require("../Information");
+const { roleName } = require("../../../../lib/roleIdentity");
 const { addArticle } = require("../../../core/Utils");
 const Random = require("../../../../lib/Random");
 const {
@@ -36,7 +37,7 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
       } else if (
         this.noMods &&
         visits[x].getRoleAppearance().split(" (")[0] ==
-          this.game.formatRole(this.role.split(":")[0])
+          this.game.formatRole(roleName(this.role))
       ) {
         correctCount++;
       }
@@ -101,7 +102,7 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
         this.game.formatRoleInternal(
           visits[x].role.name,
           visits[x].role.modifier
-        ) == this.role.split(":")[0]
+        ) == roleName(this.role)
       ) {
         correctCount = true;
       }
@@ -175,7 +176,7 @@ module.exports = class GuessPlayerVisitRoleInfo extends Information {
         correctCount++;
       } else if (
         this.noMods &&
-        visits.target.role.name == this.role.split(":")[0]
+        visits.target.role.name == roleName(this.role)
       ) {
         correctCount++;
       }
