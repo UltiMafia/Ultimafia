@@ -33,6 +33,8 @@ async function main(){
       if(v)break;
     }
     if(!v)throw Error('virtualizer instance not found');
+    // Exclude the intentional phase-control gutter from invented-gap checks.
+    const inset=v.options.paddingStart||0;
     for(let i=0;i<80;i++)v.resizeItem(i,160);
     v.scrollToEnd();await new Promise(r=>setTimeout(r,500));
     const frame=()=>new Promise(r=>requestAnimationFrame(r));
@@ -41,7 +43,7 @@ async function main(){
     for(let i=0;i<450;i++){
       s.scrollTop=Math.max(0,s.scrollTop-32);await frame();await frame();
       const first=s.querySelector('[data-index="0"]');
-      const gap=first?first.getBoundingClientRect().top-s.getBoundingClientRect().top:null;
+      const gap=first?first.getBoundingClientRect().top-s.getBoundingClientRect().top-inset:null;
       maxMounted=Math.max(maxMounted,s.querySelectorAll('.message').length);
       if(gap!==null)maxGap=Math.max(maxGap,gap);
       if(i%40===0||gap>1||s.scrollTop===0)samples.push({step:i,top:s.scrollTop,gap,logical:v.scrollOffset});
@@ -51,7 +53,7 @@ async function main(){
     const during={maxGap,maxMounted,firstMounted:!!s.querySelector('[data-index="0"]'),top:s.scrollTop,group:group?{position:getComputedStyle(group).position,bottom:getComputedStyle(group).bottom,marginTop:getComputedStyle(group).marginTop,height:group.getBoundingClientRect().height,top:group.getBoundingClientRect().top-s.getBoundingClientRect().top}:null};
     s.dispatchEvent(new Event('touchend',{bubbles:true}));await new Promise(r=>setTimeout(r,400));
     const first=s.querySelector('[data-index="0"]');
-    const after={top:s.scrollTop,firstGap:first?first.getBoundingClientRect().top-s.getBoundingClientRect().top:null};
+    const after={top:s.scrollTop,firstGap:first?first.getBoundingClientRect().top-s.getBoundingClientRect().top-inset:null};
     return{during,after,samples};
   },process.env.EDGE_RELEASE_EARLY==='1');
   console.log(JSON.stringify({engine:await browser.version(),version,...result}));
