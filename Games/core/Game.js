@@ -40,6 +40,9 @@ const { isTestBotPlayer } = require("./botPlayers");
 const devControls = require("./devControls");
 const gameEventLog = require("../../modules/gameEventLog");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
+const PREGAME_EXTENSION_MS = 60 * 60 * 1000;
+const PREGAME_EXTENSION_WINDOW_MS = 60 * 1000;
+const MAX_PREGAME_WAIT_HOURS = 6;
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
@@ -127,6 +130,7 @@ module.exports = class Game {
       options.settings.pregameWaitLength != null
         ? options.settings.pregameWaitLength
         : 1;
+    this.pregameExtensions = 0;
     this.pregameCountdownLength =
       options.settings.pregameCountdownLength != null
         ? options.settings.pregameCountdownLength
@@ -398,10 +402,10 @@ module.exports = class Game {
     await redis.deleteGame(this.id);
   }
 
-  startHostingTimer() {
+  startHostingTimer(delay = this.pregameWaitLength * 60 * 60 * 1000) {
     this.createTimer(
       "pregameWait",
-      this.pregameWaitLength * 60 * 60 * 1000,
+      delay,
       () => {
         this.sendAlert(
           "Waited too long to start…This game will be closed in the next 30 seconds."
@@ -414,6 +418,38 @@ module.exports = class Game {
         });
       }
     );
+  }
+
+  getPregameExtensionsLeft() {
+    return Math.max(
+      0,
+      Math.floor(
+        MAX_PREGAME_WAIT_HOURS - this.pregameWaitLength - this.pregameExtensions
+      )
+    );
+  }
+
+  canExtendPregameWait() {
+    const timer = this.timers["pregameWait"];
+
+    return (
+      !this.started &&
+      !!timer &&
+      !timer.done &&
+      timer.timeLeft() > 0 &&
+      timer.timeLeft() <= PREGAME_EXTENSION_WINDOW_MS &&
+      this.getPregameExtensionsLeft() > 0
+    );
+  }
+
+  extendPregameWait() {
+    const timeLeft = this.getTimeLeft("pregameWait");
+
+    this.clearTimer("pregameWait");
+    this.pregameExtensions++;
+    this.startHostingTimer(timeLeft + PREGAME_EXTENSION_MS);
+    this.sendAlert("The lobby was extended by 60 minutes.");
+    this.broadcast("options", this.getOptionsPayload());
   }
 
   broadcast(eventName, data) {
@@ -1951,6 +1987,7 @@ module.exports = class Game {
       originalCompetitive: this.originalCompetitive,
       readyCheck: this.readyCheck,
       noVeg: this.noVeg,
+      pregameExtensionsLeft: this.getPregameExtensionsLeft(),
     };
   }
 
