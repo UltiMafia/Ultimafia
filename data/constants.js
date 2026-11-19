@@ -483,8 +483,13 @@ module.exports = {
   // X days of open play -> Y days of review -> (14 - X - Y) days of nothing
   openDaysPerCompetitiveRound: 8,
   reviewDaysPerCompetitiveRound: 4,
-  /** Round open phase ends when any player reaches this many fortune points in the round. */
+  /**
+   * Default finish line: once any player reaches this many fortune points in a
+   * round, that day is the last with new hearts. New seasons can set their own.
+   */
   competitiveRoundFortuneHammer: 1500,
+  /** Default round points needed to place (and earn prestige) in new seasons. */
+  competitiveMinimumPointsToPlace: 500,
   /** After open phase ends, players have this long to spend remaining gold hearts before they reset. */
   competitiveHeartGracePeriodMillis: 24 * 60 * 60 * 1000,
   goldHeartsPerCompetitiveDay: 4,

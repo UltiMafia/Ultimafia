@@ -1511,6 +1511,18 @@ export function useModCommands(argValues, commandRan, setResults) {
           type: "number",
           optional: true,
         },
+        {
+          label: "Finish line points (default 1500)",
+          name: "finishLinePoints",
+          type: "number",
+          optional: true,
+        },
+        {
+          label: "Points needed to place (default 500)",
+          name: "minimumPointsToPlace",
+          type: "number",
+          optional: true,
+        },
       ],
       run: function () {
         axios

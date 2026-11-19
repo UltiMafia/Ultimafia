@@ -5488,10 +5488,7 @@ module.exports = class Game {
         }
       }
 
-      await competitive.checkFortuneHammerAndEndOpenPhase(
-        seasonNumber,
-        currentRound
-      );
+      await competitive.checkFinishLine(currentSeason, currentRound);
     } catch (e) {
       logger.error("Error recording competitive completion: ", e);
     }

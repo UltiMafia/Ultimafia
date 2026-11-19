@@ -4,6 +4,7 @@ const shortid = require("shortid");
 const sha1 = require("sha1");
 const models = require("../db/models");
 const constants = require("../data/constants");
+const competitiveRules = require("./competitiveRules");
 const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
@@ -721,6 +722,8 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
     standings: [],
     users: {},
     nextEvent: null,
+    finishLinePoints: null,
+    minimumPointsToPlace: 0,
   };
 
   let seasonQuery = { completed: false };
@@ -729,7 +732,9 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
   }
 
   const season = await models.CompetitiveSeason.findOne(seasonQuery)
-    .select("-_id setups setupOrder number paused")
+    .select(
+      "-_id setups setupOrder number paused finishLinePoints minimumPointsToPlace"
+    )
     .populate([
       {
         path: "setups",
@@ -745,6 +750,9 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
 
   roundInfo.seasonNumber = season.number;
   roundInfo.seasonPaused = season.paused;
+  const seasonRules = competitiveRules.getSeasonRules(season);
+  roundInfo.finishLinePoints = seasonRules.finishLinePoints;
+  roundInfo.minimumPointsToPlace = seasonRules.minimumPointsToPlace;
 
   let roundQuery = {
     season: roundInfo.seasonNumber,
@@ -882,29 +890,12 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
     roundInfo.users[userId].user = usersBulk[userId];
   });
 
-  // Sort scores in descending order, then convert to map to determine ranking. This accounts for ties
-  let scores = [];
-  let rankings = {};
-  for (let userId of Object.keys(roundInfo.users)) {
-    scores.push(roundInfo.users[userId].points);
-  }
-  scores.sort((a, b) => b - a);
-  scores.forEach((score, i) => {
-    if (rankings[score] === undefined) {
-      rankings[score] = i;
-    }
-  });
-
-  // Finally, create a points sorted array of user standings
-  roundInfo.standings = Object.keys(roundInfo.users).map((userId) => {
-    const userStanding = roundInfo.users[userId];
-    return {
-      userId: userId,
-      ranking: rankings[userStanding.points],
-      points: userStanding.points,
-    };
-  });
-  roundInfo.standings.sort((a, b) => a.ranking - b.ranking);
+  // Rank players by points (ties share a ranking); players below the season's
+  // point minimum are listed after everyone ranked, without a ranking.
+  roundInfo.standings = competitiveRules.computeStandings(
+    roundInfo.users,
+    roundInfo.minimumPointsToPlace
+  );
 
   // Help clients know when the next thing is going to happen
   if (roundInfo.round) {
@@ -927,10 +918,13 @@ async function _getCompRoundInfo(seasonNumber = null, roundNumber = null) {
           ),
         };
       } else {
+        // Open days end at the boundary after the last open day, or after
+        // today once someone has reached the finish line.
+        const daysLeft = roundInfo.round.finishLineReachedAt
+          ? 0
+          : roundInfo.round.remainingOpenDays;
         endOfRoundDay.setUTCDate(
-          startDate.getUTCDate() +
-            roundInfo.round.currentDay +
-            roundInfo.round.remainingOpenDays
+          startDate.getUTCDate() + roundInfo.round.currentDay + daysLeft
         );
         roundInfo.nextEvent = {
           type: "complete",

@@ -9,8 +9,22 @@ const ObjectID = mongo.ObjectID;
 const routeUtils = require("./utils");
 const logger = require("../modules/logging")("(competitive)");
 const errors = require("../lib/errors");
+const constants = require("../data/constants");
 
 const iso8601DateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+// Blank means "use the default"; anything else must be a whole number >= 0.
+// Returns null for an invalid value.
+function parseOptionalPoints(value, defaultValue) {
+  if (value === undefined || value === null || String(value).trim() === "") {
+    return defaultValue;
+  }
+  const text = String(value).trim();
+  if (!/^\d+$/.test(text)) {
+    return null;
+  }
+  return Number.parseInt(text, 10);
+}
 
 // Create a new season
 router.post("/create", async function (req, res) {
@@ -23,6 +37,30 @@ router.post("/create", async function (req, res) {
     const startDate = req.body.startDate;
     const numRounds = Number.parseInt(req.body.numRounds || "12");
     const setupsPerRound = Number.parseInt(req.body.setupsPerRound || "2");
+    const finishLinePoints = parseOptionalPoints(
+      req.body.finishLinePoints,
+      constants.competitiveRoundFortuneHammer
+    );
+    const minimumPointsToPlace = parseOptionalPoints(
+      req.body.minimumPointsToPlace,
+      constants.competitiveMinimumPointsToPlace
+    );
+
+    if (finishLinePoints === null || finishLinePoints < 1) {
+      res.status(400);
+      res.send("The finish line must be a whole number of points above 0.");
+      return;
+    }
+    if (minimumPointsToPlace === null) {
+      res.status(400);
+      res.send("The point minimum must be a whole number of points, 0 or more.");
+      return;
+    }
+    if (minimumPointsToPlace > finishLinePoints) {
+      res.status(400);
+      res.send("The point minimum can't be higher than the finish line.");
+      return;
+    }
 
     const latestSeason = await models.CompetitiveSeason.findOne({})
       .sort({ number: -1 })
@@ -93,6 +131,8 @@ router.post("/create", async function (req, res) {
       setups: setupIds,
       setupOrder: setupOrder,
       numRounds: numRounds,
+      finishLinePoints: finishLinePoints,
+      minimumPointsToPlace: minimumPointsToPlace,
     });
 
     await season.save();
@@ -102,6 +142,8 @@ router.post("/create", async function (req, res) {
       startDate,
       numRounds,
       setupsPerRound,
+      finishLinePoints,
+      minimumPointsToPlace,
     ]);
 
     res.sendStatus(200);
