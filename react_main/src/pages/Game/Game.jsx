@@ -598,7 +598,12 @@ export default function Game(props) {
       handleGameEscape(e, {
         replyPending: Boolean(replyTargetRef.current),
         cancelReply: () => setReplyTarget(null),
-        leave: onLeaveGameClick,
+        // Escape is easy to press accidentally: always ask, including in
+        // pregame. Do not capture onLeaveGameClick here: this effect only
+        // rebinds on visibility changes, so its phase/socket can be stale
+        // after joining or returning from a profile. The dialog's Confirm
+        // button uses the current leaveGame callback.
+        leave: () => setLeaveDialogOpen(true),
       });
     }
 
