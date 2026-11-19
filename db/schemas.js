@@ -98,6 +98,7 @@ var schemas = {
         },
       },
       backgroundColor: String,
+      profilePanelOpacity: { type: String, default: "100" },
       bannerFormat: String,
       avatarShape: { type: String, default: "circle" },
       // In-game avatar shape, independent of the profile avatarShape.

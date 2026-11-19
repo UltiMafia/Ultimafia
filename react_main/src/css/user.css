@@ -764,6 +764,18 @@ iframe {
   color: var(--scheme-color-text);
 }
 
+/* A single translucent panel surface avoids stacking two alpha backgrounds.
+ * Keep text, images, buttons and nested control surfaces fully opaque. */
+.profile--transparent-panels .box-panel {
+  background-color: color-mix(in srgb, var(--profile-panel-background) var(--profile-panel-opacity), transparent);
+}
+
+.profile--transparent-panels .box-panel .content,
+.profile--transparent-panels .box-panel > .bio {
+  background-color: transparent;
+  color: var(--profile-panel-text);
+}
+
 .profile .box-panel .row {
   padding: 0px 0px 5px 0px;
 }
