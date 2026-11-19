@@ -52,16 +52,21 @@ router.post("/send", async function (req, res) {
         return res.status(400).send("Invalid rule selected.");
       }
     } catch (e) {
-      // If rules file doesn't exist, skip validation
       logger.warn("Could not validate rule:", e);
+      return res.status(503).send(
+        "Report rules are temporarily unavailable. Nothing was submitted; your draft is preserved. Please try again later."
+      );
     }
 
     // Rate limiting
     if (!(await routeUtils.rateLimit(userId, "fileReport", res))) return;
 
-    const trimmedDescription = description
-      ? String(description).trim().slice(0, 5000)
-      : "";
+    const trimmedDescription = description ? String(description).trim() : "";
+    if (trimmedDescription.length > 5000) {
+      return res.status(400).send(
+        "Report evidence must fit within 5000 characters. Your draft has not been submitted."
+      );
+    }
     const now = Date.now();
 
     // Only merge when game is present - never merge non-game reports
@@ -69,54 +74,91 @@ router.post("/send", async function (req, res) {
     let merged = false;
 
     if (game) {
+      // Read raw fields so a missing legacy array remains distinguishable from [].
       const existingReport = await models.Report.findOne({
         reportedUserId: reportedUser,
         gameId: game,
         status: { $in: ["open", "in-progress"] },
-      });
+      }).lean();
 
       if (existingReport) {
-        report = existingReport;
+        const hasReporters =
+          Array.isArray(existingReport.reporters) &&
+          existingReport.reporters.length > 0;
+        const reporters = hasReporters
+          ? existingReport.reporters.map((reporter) => ({ ...reporter }))
+          : routeUtils.getReportReporters(existingReport);
+        const reporter = reporters.find((entry) => entry.userId === userId);
+        let action = "reporter_added";
 
-        // Migrate legacy report to reporters array if needed
-        if (!report.reporters || !Array.isArray(report.reporters)) {
-          report.reporters = [
-            {
-              userId: report.reporterId,
-              rule: report.rule || "",
-              description: report.description || "",
-              submittedAt: report.createdAt || now,
-            },
-          ];
-        }
-
-        // Avoid duplicate reporter - only add if this user hasn't already reported
-        const alreadyReported = report.reporters.some(
-          (r) => r.userId === userId
-        );
-        if (!alreadyReported) {
-          report.reporters.push({
+        if (reporter) {
+          const previousDescription = reporter.description || "";
+          if (reporter.rule === rule && previousDescription === trimmedDescription) {
+            return res.status(200).send("This evidence is already stored in the case.");
+          }
+          const supplement =
+            `\n\n--- Additional evidence (${new Date(now).toISOString()}) ---\n` +
+            `Rule: ${rule}\n${trimmedDescription}`;
+          if (previousDescription.length + supplement.length > 5000) {
+            return res.status(409).send(
+              "This case already contains evidence from you. The combined evidence would exceed 5000 characters. Nothing was added; keep your draft and shorten the additional evidence."
+            );
+          }
+          reporter.description = previousDescription + supplement;
+          action = "evidence_added";
+        } else {
+          reporters.push({
             userId,
             rule,
             description: trimmedDescription,
             submittedAt: now,
           });
-          report.updatedAt = now;
-          report.history = report.history || [];
-          report.history.push({
-            status: report.status,
-            changedBy: userId,
-            timestamp: now,
-            action: "reporter_added",
-            note: `Additional report added by ${user.name}`,
-          });
         }
 
-        await report.save();
-        merged = true;
-        logger.info(
-          `Report ${report.id} updated: user ${userId} added as reporter for reported user ${reportedUser} in game ${game}`
+        // Compare the whole observed array to prevent lost additions by other
+        // reporters, as well as lost same-reporter evidence. Never auto-replay.
+        const filter = {
+          _id: existingReport._id,
+          status: existingReport.status,
+          reporters: existingReport.reporters === undefined
+            ? { $exists: false }
+            : existingReport.reporters,
+        };
+        if (!hasReporters) {
+          for (const field of ["reporterId", "rule", "description", "createdAt"]) {
+            filter[field] = existingReport[field] === undefined
+              ? { $exists: false }
+              : existingReport[field];
+          }
+        }
+        // Use the native collection for a literal BSON snapshot comparison.
+        // Mongoose subdocument query casting can add absent legacy defaults or
+        // _ids to the filter, making an unchanged stored array fail every CAS.
+        const updateResult = await models.Report.collection.updateOne(
+          filter,
+          {
+            $set: { reporters, updatedAt: now },
+            $push: {
+              history: {
+                status: existingReport.status,
+                changedBy: userId,
+                timestamp: now,
+                action,
+                note: action === "evidence_added"
+                  ? "Additional evidence added by an existing reporter"
+                  : `Additional report added by ${user.name}`,
+              },
+            },
+          }
         );
+        if (updateResult.matchedCount !== 1) {
+          return res.status(409).send(
+            "The case changed while you were submitting. Nothing was added by this submission. Your draft is preserved; review it before submitting again."
+          );
+        }
+        report = existingReport;
+        merged = true;
+        logger.info(`Report ${report.id} updated: ${action} by user ${userId}`);
       }
     }
 

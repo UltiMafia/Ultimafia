@@ -10,6 +10,7 @@ export function bindMessageTouch(row, {
   canReply,
   onReply,
   onPin,
+  cancelOnContextMenu = false,
   getSelection = () => window.getSelection(),
   getStyle = (el) => window.getComputedStyle(el),
   setTimer = setTimeout,
@@ -92,12 +93,15 @@ export function bindMessageTouch(row, {
     // Keep this synchronous in the release event so iOS can open its keyboard.
     if (reply) onReply();
   }
+  // A row action menu claims a native hold before the pin timer can fire.
+  if (cancelOnContextMenu) row.addEventListener("contextmenu", reset);
   row.addEventListener("touchstart", start, { passive: true });
   row.addEventListener("touchmove", move, { passive: false });
   row.addEventListener("touchend", end);
   row.addEventListener("touchcancel", reset);
   return () => {
     reset();
+    if (cancelOnContextMenu) row.removeEventListener("contextmenu", reset);
     row.removeEventListener("touchstart", start);
     row.removeEventListener("touchmove", move);
     row.removeEventListener("touchend", end);
