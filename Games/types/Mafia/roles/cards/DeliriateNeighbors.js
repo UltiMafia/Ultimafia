@@ -17,7 +17,7 @@ module.exports = class DeliriateNeighbors extends Card {
         labels: ["block", "delirium"],
         role: role,
         run: function () {
-          for (let player of this.role.startingNeighbors) {
+          for (let player of this.role.startingNeighbors || []) {
             if (
               player.effects.filter(
                 (e) => e.name == "Delirious" && e.source == this.role
@@ -42,12 +42,15 @@ module.exports = class DeliriateNeighbors extends Card {
 
     this.listeners = {
       AbilityToggle: function (player) {
+        // Initial role assignment emits before every player has a role.
+        if (!this.game.started) return;
         if (this.startingNeighbors) {
           return;
         }
         if (this.hasAbility(["Deception"])) {
           if (this.startingNeighbors == null) {
             let players = this.game.alivePlayers();
+            if (players.some((player) => !player.role)) return;
             var indexOfActor = players.indexOf(this.player);
             var rightIdx;
             var leftIdx;
@@ -85,7 +88,7 @@ module.exports = class DeliriateNeighbors extends Card {
               }
             }
 
-            let victims = [foundUp, foundDown];
+            let victims = [foundUp, foundDown].filter(Boolean);
             this.startingNeighbors = victims;
           }
           for (let player of this.startingNeighbors) {
@@ -101,5 +104,7 @@ module.exports = class DeliriateNeighbors extends Card {
         }
       },
     };
+    // start fires after assignment and its replacement/conversion passes.
+    this.listeners.start = this.listeners.AbilityToggle;
   }
 };
