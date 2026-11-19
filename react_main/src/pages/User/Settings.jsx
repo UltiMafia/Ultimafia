@@ -361,6 +361,14 @@ export default function Settings() {
       showIf: (deps) => deps.user.perms.disableAllCensors,
     },
     {
+      label: "Skip External Link Warnings",
+      ref: "hideExternalLinkWarning",
+      type: "boolean",
+      default: false,
+      extraInfo:
+        "Skip warnings for posted links on this account. Turn this off to show the warning again. Links still open in a new tab.",
+    },
+    {
       label: "Hide Deleted Posts",
       ref: "hideDeleted",
       type: "boolean",
