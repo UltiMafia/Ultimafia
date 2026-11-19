@@ -209,9 +209,13 @@ function GameSessionFixture({ delayed = false, loggedIn = true }) {
   const session = useHostedGameSession();
   const navigate = useNavigate();
   const [gameMounted, setGameMounted] = useState(!delayed);
+  const [inGame, setInGame] = useState(null);
   useEffect(() => { api = { ...session, navigate, setGameMounted }; });
   return <UserContext.Provider value={{ ...user, loggedIn, id: loggedIn ? "fixture-member" : null,
-    refreshGameMembership: ignore, setInGame: ignore }}><SiteInfoContext.Provider value={siteInfo}>
+    refreshHearts: ignore, refreshGameMembership: () => setInGame("fixture-game"), inGame, setInGame }}><SiteInfoContext.Provider value={siteInfo}>
+    <span id="fixture-membership">{inGame || "none"}</span>
+    <Link id="fixture-profile" to="/user/fixture-player">Player profile</Link>
+    {!session.inGame && <Link id="fixture-return" to="/game/fixture-game">Return</Link>}
     {!session.inGame && <GameRow small game={{ ...publicGame }} />}
     {session.hostedGameId && gameMounted && <ViewActivityContext.Provider value={session.inGame}>
       <Game key={session.hostedGameId} gameId={session.hostedGameId}
@@ -367,7 +371,103 @@ function ObituaryFixture({ review = false, singleState = false }) {
   </UserContext.Provider></ThemeProvider>;
 }
 
+async function joinedEscapeGame() {
+  mountGameSession("/play");
+  await until(() => api, "initial Play route");
+  api.navigate("/game/fixture-game");
+  const { native } = await authenticateGame(await nextGameRequest(false));
+  native.message('options:object:' + JSON.stringify({ ranked: false, competitive: false }));
+  native.message('players:object:{}');
+  native.message('spectators:object:{}');
+  native.message('history:object:' + JSON.stringify({ '-1': { name: 'Pregame', meetings: {}, alerts: [], roles: {}, dead: {}, exorcised: {} } }));
+  native.message('loaded');
+  await until(() => document.querySelector('#fixture-membership').textContent === 'fixture-game'
+    && root.querySelector('.game.no-highlight'), "loaded game membership");
+  await wait();
+  return native;
+}
+const escapeGame = () => window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+const leavePackets = native => native.sent.map(parseMessage).filter(([event]) => event === 'leave').length;
+const leaveDialog = () => document.querySelector('[role="dialog"]');
+async function expectLeaveConfirmation(native) {
+  escapeGame();
+  await until(() => leaveDialog() || !api.hostedGameId, "Escape response");
+  assert(leaveDialog()?.textContent.includes('Are you sure you want to leave?'), "Escape bypassed confirmation");
+  assert(leavePackets(native) === 0, "Escape sent leave before confirmation");
+  assert(window.location.pathname === '/game/fixture-game', "Escape navigated away");
+}
+async function cancelEscapeLeave(native) {
+  [...leaveDialog().querySelectorAll('button')].find(button => button.textContent === 'Stay').click();
+  await until(() => !leaveDialog(), "Stay closes dialog");
+  await wait(150); // let the dialog marker's actual browser Back land
+  assert(leavePackets(native) === 0 && native.readyState === 1, "Stay left or disconnected game");
+  assert(api.hostedGameId === 'fixture-game' && window.location.pathname === '/game/fixture-game', "Stay discarded session or route");
+  assert(document.querySelector('#fixture-membership').textContent === 'fixture-game', "Stay cleared client membership");
+}
+async function escapeLeaveTests() {
+  await run("Escape immediately after joining asks and Stay retains membership", async () => {
+    const native = await joinedEscapeGame();
+    await expectLeaveConfirmation(native);
+    await cancelEscapeLeave(native);
+  });
+  await run("profile Return then Escape always asks, repeated Stay keeps the same session", async () => {
+    const native = await joinedEscapeGame();
+    for (let cycle = 0; cycle < 2; cycle++) {
+      document.querySelector('#fixture-profile').click();
+      await until(() => window.location.pathname === "/user/fixture-player", "open player profile");
+      escapeGame(); await wait();
+      assert(!leaveDialog() && leavePackets(native) === 0, "hidden game handled profile Escape");
+      document.querySelector('#fixture-return').click();
+      await until(() => window.location.pathname === "/game/fixture-game", "Return to game");
+      await wait();
+      await expectLeaveConfirmation(native);
+      await cancelEscapeLeave(native);
+      assert(FakeSocket.all.length === 1, "profile round trip reconnected game");
+    }
+  });
+  await run("a game starting after Return cannot use a captured pregame leave shortcut", async () => {
+    const native = await joinedEscapeGame();
+    document.querySelector('#fixture-profile').click();
+    await until(() => !api.inGame, "profile before start");
+    document.querySelector('#fixture-return').click();
+    await until(() => api.inGame, "Return before start"); await wait();
+    native.message('state:object:' + JSON.stringify({ id: 0, name: 'Day 1' }));
+    await wait();
+    await expectLeaveConfirmation(native);
+    // MUI owns Escape while its modal is open; dispatch at that modal rather
+    // than directly at window, which would skip MUI's normal close handler.
+    leaveDialog().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await until(() => !leaveDialog(), "dialog Escape cancels");
+    await wait(150);
+    assert(leavePackets(native) === 0 && native.readyState === 1, "dialog Escape left game");
+    assert(api.inGame && api.hostedGameId === 'fixture-game', "dialog Escape discarded session");
+    assert(document.querySelector('#fixture-membership').textContent === 'fixture-game', "dialog Escape cleared membership");
+    await expectLeaveConfirmation(native);
+    window.history.back();
+    await until(() => !leaveDialog(), "browser Back cancels dialog");
+    await wait(150);
+    assert(leavePackets(native) === 0 && native.readyState === 1 && api.inGame,
+      "dialog Back left or disconnected game");
+  });
+  await run("returned game confirmation intentionally leaves once and restores profile", async () => {
+    const native = await joinedEscapeGame();
+    document.querySelector('#fixture-profile').click();
+    await until(() => !api.inGame, "profile");
+    document.querySelector('#fixture-return').click();
+    await until(() => api.inGame, "Return"); await wait();
+    await expectLeaveConfirmation(native);
+    [...leaveDialog().querySelectorAll('button')].find(button => button.textContent === 'Leave').click();
+    await until(() => !api.hostedGameId, "confirmed leave teardown");
+    await wait(150);
+    assert(leavePackets(native) === 1, "confirmation must send exactly one leave");
+    assert(native.readyState === 3, "confirmed leave did not close socket");
+    assert(document.querySelector('#fixture-membership').textContent === 'none', "confirmed leave kept client membership");
+    assert(window.location.pathname === '/user/fixture-player', "confirmed leave lost profile return destination");
+  });
+}
+
 async function tests() {
+  await escapeLeaveTests();
   await run("compact obituaries use real chat rows and saved in-game settings", async () => {
     const saved = localStorage.getItem("gameSettings");
     localStorage.setItem("gameSettings", JSON.stringify({ timestamps: true }));
@@ -573,7 +673,7 @@ async function tests() {
     await until(() => api, "session fixture mount");
     document.querySelector('#site-increment').click();
     document.querySelector('#enter-game').click();
-    await until(() => api.inGame && document.querySelector('#session-value'), "game mount");
+    await until(() => api.inGame && document.querySelector('#session-value') && FakeSocket.all.length === 1, "game mount and socket effect");
     assert(document.querySelector('#site-value').textContent === '1', 'site state remounted');
     assert(document.querySelector('#view-route').textContent === '/play', 'saved matching changed');
     assert(document.querySelector('#actual-route').textContent === '/game/one', 'real navigation was hidden');
@@ -912,7 +1012,7 @@ async function tests() {
 // Manual visual check of the same real chat/settings fixture used above.
 if (new URLSearchParams(window.location.search).has("obituaries")) {
   mount(<MemoryRouter><ObituaryFixture /></MemoryRouter>);
-} else tests().catch(error => { failures.push({name:'runner',message:error.message}); }).finally(() => {
+} else (new URLSearchParams(window.location.search).has("escapeLeave") ? escapeLeaveTests() : tests()).catch(error => { failures.push({name:'runner',message:error.message}); }).finally(() => {
   window.WebSocket = originalWebSocket;
   axios.defaults.adapter = originalAdapter;
   window.__lifecycleResults = { failures, passed: results.textContent.split('\n').filter(s => s.startsWith('PASS')).length };

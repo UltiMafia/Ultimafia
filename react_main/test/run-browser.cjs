@@ -8,7 +8,7 @@ async function main() {
   if (process.platform === "win32") throw new Error("Use Linux/macOS; do not launch a fresh-profile Windows browser for this runner.");
   if (!process.env.PLAYWRIGHT_MODULE) throw new Error("Set PLAYWRIGHT_MODULE to an isolated Playwright installation.");
   const { chromium } = require(process.env.PLAYWRIGHT_MODULE);
-  const directory = path.resolve(process.argv[2] || "/tmp/opencode/ultimafia-lifecycle-browser");
+  const directory = path.resolve(process.argv.slice(2).find(arg => !arg.startsWith("--")) || "/tmp/opencode/ultimafia-lifecycle-browser");
   if (!fs.existsSync(path.join(directory, "index.html"))) throw new Error("Build the lifecycle fixture first.");
   const mime = { ".html":"text/html", ".js":"application/javascript", ".css":"text/css", ".png":"image/png", ".webp":"image/webp", ".woff2":"font/woff2", ".ttf":"font/ttf" };
   const server = http.createServer((req, res) => {
@@ -47,7 +47,7 @@ async function main() {
       blocked.push(url.origin);
       return route.abort();
     });
-    await page.goto(`http://127.0.0.1:${server.address().port}/`);
+    await page.goto(`http://127.0.0.1:${server.address().port}/${process.argv.includes("--escape-leave") ? "?escapeLeave" : ""}`);
     await page.waitForFunction(() => window.__lifecycleResults, null, {timeout:45000});
     const result = await page.evaluate(() => window.__lifecycleResults);
     console.log(JSON.stringify({ browser:browser.version(), viewport:"390x844", ...result, errors, blocked }, null, 2));
