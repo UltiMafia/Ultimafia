@@ -592,12 +592,17 @@ module.exports = class Player {
         if (typeof info != "object") return;
 
         const meetingId = String(info.meetingId);
-        const target = String(info.selection);
 
         if (!Utils.validProp(meetingId)) return;
 
         var meeting = this.game.getMeeting(meetingId);
         if (!meeting) return;
+
+        // A single-target unvote removes this player's stored vote. It must not
+        // require the client to recover an anonymous voter ID or hidden target.
+        const target = meeting.multi
+          ? String(info.selection)
+          : meeting.votes[this.id];
 
         // Tutorial votes are scripted steps; they can't be taken back.
         if (this.game.tutorial && !this.isBot) {
