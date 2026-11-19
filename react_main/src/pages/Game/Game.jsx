@@ -3552,11 +3552,12 @@ const MessageRow = React.memo(function MessageRow(props) {
   }
 
   // if right aligned, use flex direction row-reverse to put timestamp on right hand side
-  // otherwise if in compact mode AKA denseMessages, use inline display to keep everyone on one line if possible
   // otherwise, use flex direction column when in non-compact mode so that nameplate can appear above content
   // otherwise if there is no nameplate, use row to always keep everything on the same line
   const innerClassName = isRightAligned
     ? "message-inner-rightaligned"
+    : alignedNameplate
+    ? "message-inner-aligned"
     : hasNameplate && denseMessages
     ? "message-inner-inline"
     : hasNameplate
