@@ -1012,6 +1012,17 @@ async function tests() {
 // Manual visual check of the same real chat/settings fixture used above.
 if (new URLSearchParams(window.location.search).has("obituaries")) {
   mount(<MemoryRouter><ObituaryFixture /></MemoryRouter>);
+} else if (new URLSearchParams(window.location.search).has("nativeEscape")) {
+  // Browser input is driven by run-browser.cjs; HTTP, sockets, membership
+  // and profile/Return links remain controlled fixtures, not a full app.
+  joinedEscapeGame().then(native => {
+    window.__escapeFixture = {
+      snapshot: () => ({ leavePackets: leavePackets(native), socketState: native.readyState,
+        hostedGameId: api.hostedGameId, inGame: api.inGame, socketCount: FakeSocket.all.length,
+        membership: document.querySelector('#fixture-membership').textContent }),
+      start: () => native.message('state:object:' + JSON.stringify({ id: 0, name: 'Day 1' })),
+    };
+  }).catch(error => { window.__escapeFixtureError = error.message; });
 } else (new URLSearchParams(window.location.search).has("escapeLeave") ? escapeLeaveTests() : tests()).catch(error => { failures.push({name:'runner',message:error.message}); }).finally(() => {
   window.WebSocket = originalWebSocket;
   axios.defaults.adapter = originalAdapter;
