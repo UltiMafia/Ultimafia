@@ -4,7 +4,8 @@ const mongo = require("mongodb");
 const ObjectID = mongo.ObjectID;
 const shortid = require("shortid");
 const routeUtils = require("../routes/utils");
-const constants = require("../data/constants");
+const competitiveSettings = require("./competitiveSettings");
+const { DAY, competitiveDayDeadline } = require("./competitiveClock");
 
 // SEE: https://docs.google.com/document/d/1amLZWVBKyalKh7KalYpCDgZSmmNmBy1-BIASOj9GnFA
 // v1: [25, 18, 15, 12, 10, 8, 6, 4, 2, 1], used in seasons 1 and 2
@@ -37,9 +38,16 @@ async function getMaxRoundFortune(seasonNumber, roundNumber) {
   return result[0]?.maxFortune ?? 0;
 }
 
-async function hasRoundFortuneHammer(seasonNumber, roundNumber) {
+async function getSeasonSettings(seasonNumber) {
+  const season = await models.CompetitiveSeason.findOne({ number: seasonNumber }).lean();
+  return competitiveSettings(season || {});
+}
+
+async function hasRoundFortuneHammer(seasonNumber, roundNumber, settings) {
+  const { finishLinePoints } = settings || (await getSeasonSettings(seasonNumber));
+  if (finishLinePoints === null) return false;
   const maxFortune = await getMaxRoundFortune(seasonNumber, roundNumber);
-  return maxFortune >= constants.competitiveRoundFortuneHammer;
+  return maxFortune >= finishLinePoints;
 }
 
 async function endOpenPhase(roundId, seasonNumber, roundNumber) {
@@ -73,17 +81,37 @@ async function endGracePeriod(roundId, seasonNumber, roundNumber) {
   await redis.invalidateCompRoundCache(seasonNumber, roundNumber);
 }
 
-async function checkFortuneHammerAndEndOpenPhase(seasonNumber, round) {
-  if (round.completed || round.openPhaseEndedAt || round.currentDay < 1) {
+// Returns true when the open phase ended now. With finishAtNextDay the
+// crossing is only recorded; the open phase ends at the next day boundary.
+async function checkFortuneHammerAndEndOpenPhase(seasonNumber, staleRound) {
+  // Game completion passes a cached round; reread it.
+  const round = await models.CompetitiveRound.findOne({ _id: ObjectID(staleRound._id) }).lean();
+  if (!round || round.completed || round.openPhaseEndedAt || round.currentDay < 1) {
     return false;
   }
 
-  if (!(await hasRoundFortuneHammer(seasonNumber, round.number))) {
+  const settings = await getSeasonSettings(seasonNumber);
+  if (settings.finishAtNextDay && round.finishLineReachedAt) {
+    return false;
+  }
+  if (!(await hasRoundFortuneHammer(seasonNumber, round.number, settings))) {
+    return false;
+  }
+
+  if (settings.finishAtNextDay) {
+    console.log(
+      `[progressCompetitive]: Finish line reached in season ${seasonNumber} round ${round.number}; open phase ends at the next day boundary`
+    );
+    await models.CompetitiveRound.updateOne(
+      { _id: ObjectID(round._id), finishLineReachedAt: null },
+      { $set: { finishLineReachedAt: Date.now() } }
+    ).exec();
+    await redis.invalidateCompRoundCache(seasonNumber, round.number);
     return false;
   }
 
   console.log(
-    `[progressCompetitive]: Fortune hammer (${constants.competitiveRoundFortuneHammer}) reached in season ${seasonNumber} round ${round.number}`
+    `[progressCompetitive]: Finish line reached in season ${seasonNumber} round ${round.number}`
   );
   await endOpenPhase(round._id, seasonNumber, round.number);
   return true;
@@ -103,6 +131,7 @@ async function progressCompetitive() {
   }
 
   const seasonNumber = currentSeason.number;
+  const settings = competitiveSettings(currentSeason);
   console.log(`[progressCompetitive]: Checking season ${seasonNumber}`);
 
   // Get the current round, if any
@@ -121,7 +150,26 @@ async function progressCompetitive() {
 
     const now = new Date();
     let startDateNew = new Date();
-    if (currentSeason.currentRound !== 1) {
+    if (
+      currentSeason.currentRound !== 1 &&
+      (settings.breakDays !== null || settings.roundIntervalDays !== null)
+    ) {
+      let earliest = now.getTime() + (settings.breakDays || 0) * DAY;
+      const previousRound = await models.CompetitiveRound.findOne({
+        season: seasonNumber,
+        number: currentSeason.currentRound - 1,
+      })
+        .select("startDate")
+        .lean();
+      if (settings.roundIntervalDays !== null && previousRound) {
+        earliest = Math.max(
+          earliest,
+          new Date(previousRound.startDate).getTime() +
+            settings.roundIntervalDays * DAY
+        );
+      }
+      startDateNew = new Date(earliest);
+    } else if (currentSeason.currentRound !== 1) {
       const startDayOfWeek = new Date(currentSeason.startDate).getUTCDay();
       const endDayOfWeek = now.getUTCDay();
 
@@ -143,8 +191,8 @@ async function progressCompetitive() {
       season: seasonNumber,
       number: currentSeason.currentRound,
       startDate: startDateNew.toISOString().split("T")[0],
-      remainingOpenDays: constants.openDaysPerCompetitiveRound,
-      remainingReviewDays: constants.reviewDaysPerCompetitiveRound,
+      remainingOpenDays: settings.openDays,
+      remainingReviewDays: settings.reviewDays,
     });
     const newDocument = await round.save();
 
@@ -168,7 +216,7 @@ async function progressCompetitive() {
       if (!currentSeason.paused) {
         const graceEndsAt =
           currentRound.openPhaseEndedAt +
-          constants.competitiveHeartGracePeriodMillis;
+          settings.graceHours * 3600000;
         if (nowMillis >= graceEndsAt) {
           await endGracePeriod(
             currentRound._id,
@@ -188,11 +236,7 @@ async function progressCompetitive() {
       }
     }
 
-    const startDate = new Date(currentRound.startDate);
-    let endOfRoundDay = new Date(startDate);
-
-    // Check to see if the round's current day has ended
-    endOfRoundDay.setUTCDate(startDate.getUTCDate() + currentRound.currentDay);
+    const endOfRoundDay = competitiveDayDeadline(currentRound);
     if (now > endOfRoundDay) {
       if (currentSeason.paused) {
         // Progress the day only if the round is paused
@@ -209,6 +253,22 @@ async function progressCompetitive() {
             },
           }
         ).exec();
+      } else if (
+        settings.finishAtNextDay &&
+        currentRound.remainingOpenDays > 0 &&
+        (await models.CompetitiveRound.exists({
+          _id: ObjectID(currentRound._id),
+          finishLineReachedAt: { $ne: null },
+        }))
+      ) {
+        console.log(
+          `[progressCompetitive]: Open phase ended for season ${seasonNumber} round ${currentRound.number} (finish line reached the previous day)`
+        );
+        await endOpenPhase(
+          currentRound._id,
+          seasonNumber,
+          currentRound.number
+        );
       } else if (currentRound.remainingOpenDays > 0) {
         // Check to see if the round is still open. If so, progress the day by one and give everyone their gold hearts
         console.log(
@@ -219,15 +279,14 @@ async function progressCompetitive() {
 
         // Only give out gold hearts on the open days of a round
         if (
-          constants.openDaysPerCompetitiveRound - currentRound.remainingOpenDays <
-          constants.openDaysPerCompetitiveRound
+          currentRound.remainingOpenDays > 0
         ) {
           console.log(
-            `[progressCompetitive]: Giving everyone ${constants.goldHeartsPerCompetitiveDay} gold hearts`
+            `[progressCompetitive]: Giving everyone ${settings.dailyHearts} gold hearts`
           );
           await models.User.updateMany(
             {},
-            { $inc: { goldHearts: constants.goldHeartsPerCompetitiveDay } }
+            { $inc: { goldHearts: settings.dailyHearts } }
           ).exec();
           await redis.invalidateAllCachedUsers();
         }
@@ -254,10 +313,11 @@ async function progressCompetitive() {
             currentRound.number
           );
         } else if (
-          await hasRoundFortuneHammer(seasonNumber, currentRound.number)
+          !settings.finishAtNextDay &&
+          (await hasRoundFortuneHammer(seasonNumber, currentRound.number, settings))
         ) {
           console.log(
-            `[progressCompetitive]: Fortune hammer (${constants.competitiveRoundFortuneHammer}) reached after day progression`
+            `[progressCompetitive]: Fortune limit reached after day progression`
           );
           await endOpenPhase(
             currentRound._id,
@@ -588,11 +648,7 @@ async function accountCompetitiveRounds() {
 
   if (!currentSeason.paused) {
     const now = Date.now();
-    const startDate = new Date(currentRound.startDate);
-    let endOfRoundDay = new Date(startDate);
-
-    // Check to see if the round's current day has ended
-    endOfRoundDay.setUTCDate(startDate.getUTCDate() + currentRound.currentDay);
+    const endOfRoundDay = competitiveDayDeadline(currentRound);
     if (now > endOfRoundDay) {
       // Check to see if the round is still in review
       if (currentRound.remainingReviewDays > 0) {

@@ -10,6 +10,8 @@ import {
   Box,
   Button,
   IconButton,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
@@ -21,6 +23,7 @@ import { COMMAND_COLOR } from "./commands";
 
 export default function CompetitiveManagement() {
   const [seasonData, setSeasonData] = useState(null);
+  const [controlsSaving, setControlsSaving] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [addSetupDialogOpen, setAddSetupDialogOpen] = useState(false);
@@ -78,6 +81,48 @@ export default function CompetitiveManagement() {
       cancelled = true;
     };
   }, []);
+
+  const saveControls = async (changes) => {
+    if (!seasonData || controlsSaving) return;
+    setControlsSaving(true);
+    try {
+      const response = await axios.post("/api/competitive/controls", {
+        seasonNumber: seasonData.seasonNumber, ...changes,
+      });
+      setSeasonData((current) => ({ ...current, paused: response.data.paused,
+        settings: changes.settings ? response.data.settings : current.settings }));
+      siteInfo.showAlert("Competitive controls saved.", "success");
+    } catch (error) {
+      errorAlert(error.response?.data || "Could not save competitive controls.");
+    } finally {
+      setControlsSaving(false);
+    }
+  };
+
+  const restartClock = async () => {
+    if (!seasonData || controlsSaving) return;
+    const key = `competitive-clock-restart:${seasonData.seasonNumber}:${seasonData.currentRound}`;
+    setControlsSaving(true);
+    try {
+      let requestId = sessionStorage.getItem(key);
+      if (!requestId) {
+        if (!window.confirm("Restart this open round's countdown using the saved open-days setting? Scores, existing hearts and history stay unchanged. No hearts are granted now. The saved finish line still applies.")) return;
+        requestId = crypto.randomUUID();
+        sessionStorage.setItem(key, requestId);
+      }
+      await axios.post("/api/competitive/restartClock", {
+        seasonNumber: seasonData.seasonNumber,
+        roundNumber: seasonData.currentRound,
+        requestId,
+      });
+      sessionStorage.removeItem(key);
+      siteInfo.showAlert("Open-round clock restarted. Scores, hearts and history preserved.", "success");
+    } catch (error) {
+      errorAlert(error.response?.data || "Restart not confirmed. Retrying this button reuses the same request, without extending the clock twice.");
+    } finally {
+      setControlsSaving(false);
+    }
+  };
 
   const moveSetup = (roundIndex, setupIndex, direction) => {
     if (!seasonData) return;
@@ -202,6 +247,56 @@ export default function CompetitiveManagement() {
           <Loading />
         ) : seasonData ? (
           <>
+            {seasonData.settings && (
+              <Stack spacing={2}>
+                <Typography>Season {seasonData.paused ? "paused" : "playing"}</Typography>
+                <Stack direction="row" spacing={1}>
+                  <Button disabled={controlsSaving || !seasonData.paused} onClick={() => saveControls({ paused: false })}>Play</Button>
+                  <Button disabled={controlsSaving || seasonData.paused} onClick={() => saveControls({ paused: true })}>Pause</Button>
+                  <Button disabled={controlsSaving} onClick={restartClock}>Restart open clock</Button>
+                </Stack>
+                <Typography variant="body2">
+                  Open and review days, the break and the round interval apply to
+                  rounds that haven't started yet. Daily hearts apply from the next
+                  day; 0 stops new hearts without removing any. The finish line and
+                  grace hours also apply to the current round. Leave the break and
+                  interval empty to keep the weekly start day. Saving never resets
+                  scores or hearts.
+                </Typography>
+                {[
+                  ["openDays", "Open days per round"],
+                  ["reviewDays", "Review days per round"],
+                  ["dailyHearts", "Gold hearts per day"],
+                  ["finishLinePoints", "Finish line (points)"],
+                  ["graceHours", "Hours to spend remaining hearts"],
+                  ["breakDays", "Break between rounds (days)"],
+                  ["roundIntervalDays", "Minimum days between round starts"],
+                  ["entryMinimumPoints", "Points needed to join (0 = none)"],
+                ].map(([name, label]) => (
+                  <TextField key={name} label={label} type="number"
+                    disabled={controlsSaving || (name === "finishLinePoints" && seasonData.settings.finishLinePoints === null)}
+                    value={seasonData.settings[name] ?? ""}
+                    onChange={(event) => {
+                      const value = event.target.value === "" ? "" : Number(event.target.value);
+                      setSeasonData((current) => ({ ...current, settings: { ...current.settings, [name]: value } }));
+                    }} />
+                ))}
+                <FormControlLabel label="No finish line"
+                  control={<Checkbox disabled={controlsSaving} checked={seasonData.settings.finishLinePoints === null}
+                    onChange={(event) => setSeasonData((current) => ({ ...current,
+                      settings: { ...current.settings, finishLinePoints: event.target.checked ? null : "" },
+                    }))} />} />
+                <FormControlLabel label="Finish line ends the round the next day"
+                  control={<Checkbox disabled={controlsSaving} checked={Boolean(seasonData.settings.finishAtNextDay)}
+                    onChange={(event) => setSeasonData((current) => ({ ...current,
+                      settings: { ...current.settings, finishAtNextDay: event.target.checked },
+                    }))} />} />
+                <Button disabled={controlsSaving} onClick={() => saveControls({
+                  settings: Object.fromEntries(Object.entries(seasonData.settings).map(([name, value]) =>
+                    [name, value === "" && ["breakDays", "roundIntervalDays"].includes(name) ? null : value])),
+                })}>Save settings</Button>
+              </Stack>
+            )}
             <Box
               sx={{
                 border: "1px solid var(--scheme-color-border)",
