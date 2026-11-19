@@ -65,32 +65,39 @@ function graphemes(text) {
 // or link) of already-processed UserText content in a span carrying its
 // position, so per-letter effects can stagger. Whitespace stays plain text.
 export function splitIntoLetters(content) {
-  const segments = Array.isArray(content) ? content.flat(Infinity) : [content];
-  const out = [];
   let index = 0;
-  segments.forEach((segment, k) => {
-    if (segment == null || segment === false || segment === "") return;
-    if (typeof segment === "string" || typeof segment === "number") {
-      for (const ch of graphemes(String(segment))) {
-        if (/^\s+$/.test(ch)) out.push(ch);
-        else
-          out.push(
-            <span className="te-ch" style={{ "--te-i": index }} key={`c${k}-${index}`}>
-              {ch}
-            </span>
-          );
+  function split(value) {
+    const segments = Array.isArray(value) ? value.flat(Infinity) : [value];
+    const out = [];
+    segments.forEach((segment, k) => {
+      if (segment == null || segment === false || segment === "") return;
+      if (typeof segment === "string" || typeof segment === "number") {
+        for (const ch of graphemes(String(segment))) {
+          if (/^\s+$/.test(ch)) out.push(ch);
+          else
+            out.push(
+              <span className="te-ch" style={{ "--te-i": index }} key={`c${k}-${index}`}>
+                {ch}
+              </span>
+            );
+          index++;
+        }
+      } else if (React.isValidElement(segment) && segment.props["data-game-inline-format"]) {
+        // Inline formatting is a wrapper, not one animated glyph. Keep the
+        // same running character index through nested formatting.
+        out.push(React.cloneElement(segment, {}, split(segment.props.children)));
+      } else {
+        out.push(
+          <span className="te-ch" style={{ "--te-i": index }} key={`e${k}-${index}`}>
+            {segment}
+          </span>
+        );
         index++;
       }
-    } else {
-      out.push(
-        <span className="te-ch" style={{ "--te-i": index }} key={`e${k}-${index}`}>
-          {segment}
-        </span>
-      );
-      index++;
-    }
-  });
-  return out;
+    });
+    return out;
+  }
+  return split(content);
 }
 
 export function TextEffect({ effect, children }) {
