@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-export const PieChart = ({ wins, losses, abandons, showTotal }) => {
+export const PieChart = ({ wins, losses, abandons, showTotal, onClick, expanded }) => {
   const svgRef = useRef();
   const totalGames = wins + losses + abandons;
 
@@ -103,6 +103,11 @@ export const PieChart = ({ wins, losses, abandons, showTotal }) => {
         this._current = { startAngle: d.startAngle, endAngle: d.startAngle };
       });
 
+    slices.append("title").text((d) => {
+      const names = { W: "Wins", L: "Losses", A: "Abandons" };
+      return `${names[d.data[0]]}: ${d.data[1]} (${((d.data[1] / totalGames) * 100).toFixed(1)}%)`;
+    });
+
     // animate slices drawing in
     slices
       .transition()
@@ -169,7 +174,20 @@ export const PieChart = ({ wins, losses, abandons, showTotal }) => {
   return (
     <div className="pie-chart">
       <div style={{ display: displayPieChart ? "block" : "none" }}>
-        <svg ref={svgRef} />
+        <svg
+          ref={svgRef}
+          role={onClick ? "button" : "img"}
+          aria-label={`${wins} wins, ${losses} losses, ${abandons} abandons${onClick ? ". Toggle Town and Mafia win rates" : ""}`}
+          aria-expanded={onClick ? expanded : undefined}
+          tabIndex={onClick ? 0 : undefined}
+          onClick={onClick}
+          onKeyDown={onClick ? (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              onClick();
+            }
+          } : undefined}
+        />
         {showTotal && (
           <div style={{ textAlign: "right", fontSize: "12px", opacity: 0.5 }}>
             {totalGames} games
