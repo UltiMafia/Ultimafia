@@ -7,6 +7,12 @@ module.exports = class SpeedUpMeeting extends Meeting {
     this.group = true;
     this.voting = true;
     this.noVeg = true;
+    // The ballot is a shortcut for the current phase, not an action the game is
+    // waiting on, so it must not gate all-ready advancement. Ballots accumulate
+    // while enableVote() leaves totalVoters at 0, and Meeting.ready compares the
+    // two counts: without this flag one ballot makes the meeting permanently
+    // unready, and checkAllMeetingsReady() can no longer end the phase early.
+    this.optional = true;
     this.inputType = "button";
     this.targets = ["Speed Up"];
     this.votesInvisible = false;
