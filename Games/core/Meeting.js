@@ -191,9 +191,11 @@ module.exports = class Meeting {
     delete this.members[player.id];
     delete this.voteVersions[player.id];
 
-    this.generateTargets();
+    if (this.members.length > 0) {
+      this.generateTargets();
 
-    for (let member of this.members) member.player.sendMeeting(this);
+      for (let member of this.members) member.player.sendMeeting(this);
+    }
 
     if (this.members.length <= 0) this.game.removeMeeting(this);
 
