@@ -137,6 +137,7 @@ describe("Games/SpectateJoin", function () {
     const watcher = makeUser(null, "spec");
 
     await game.userJoin(host);
+    await game.userJoin(makeUser(null, "other"));
     await game.userJoin(watcher, { spectate: true });
 
     const player = game.players.array()[0];
@@ -170,26 +171,16 @@ describe("Games/SpectateJoin", function () {
     // town-visible typing event from the spectator broadcast.
     host.socket.flushMessages();
     watcher.socket.flushMessages();
-    Meeting.prototype.typing.call(
-      {
-        id: "village-meet",
-        name: "Village",
-        speech: true,
-        anonymous: false,
-        members: {
-          [player.id]: { player, canTalk: true },
-        },
-        game,
-      },
-      player.id,
-      true
-    );
+    const village = new Meeting(game, "Village");
+    village.speech = true;
+    for (const participant of game.players) village.join(participant);
+    village.typing(player.id, true);
 
     events(host.socket, "typing").should.have.lengthOf(1);
     events(watcher.socket, "typing").should.deep.equal([
       {
         eventName: "typing",
-        data: { playerId: player.id, meetingId: "village-meet" },
+        data: { playerId: player.id, meetingId: village.id },
       },
     ]);
   });

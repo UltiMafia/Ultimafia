@@ -32,12 +32,13 @@ module.exports = class Quote extends Message {
       this.versions["*"] = newVersion;
     }
 
+    this.setMeetingAudience();
     this.meeting.messages.push(this);
 
     for (let player of this.versions["*"].recipients)
       player.hearQuote(this.versions["*"], this);
 
-    if (this.game.isSpectatorMeeting(this.meeting))
+    if (this.visibleToSpectators)
       this.game.spectatorsHearQuote(this.versions["*"]);
 
     this.game.omniscientSpectatorsHear?.(this);

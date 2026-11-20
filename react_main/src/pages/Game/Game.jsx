@@ -1502,7 +1502,6 @@ export default function Game(props) {
     setLeave(true);
   }
 
-  const quoteMeetingId = history.states[history.currentState]?.selTab;
   const onMessageReply = useCallback((message, deliveryMeetingId) => {
     if (!canReplyTo(message, { review, stateViewing })) return;
     setReplyTarget({
@@ -1520,15 +1519,23 @@ export default function Game(props) {
   }, [review, stateViewing, history, gameType, isSpectator]);
   // Pinned rows show a stored copy while the current state is on screen, so
   // the quote has to find the state the original was sent in.
-  const onMessageQuote = useCallback((message) => {
+  const onMessageQuote = useCallback((message, deliveryMeetingId) => {
+    const current = historyRef.current;
+    const meetings = current.states[current.currentState]?.meetings;
+    const quoteMeetingId = deliveryMeetingId || pickSpeechTarget({
+      activeMeeting: meetings?.[current.states[current.currentState]?.selTab],
+      spectatorMeeting: findSpectatorChatMeeting(meetings, isSpectator),
+      isPregame: current.currentState === -1,
+    }).meetingId;
+    if (!quoteMeetingId) return;
     const quote = buildQuotePayload(message, {
       review,
       toMeetingId: quoteMeetingId,
-      history: historyRef.current,
+      history: current,
       stateViewing,
     });
     if (quote) socket.send("quote", quote);
-  }, [review, socket, quoteMeetingId, stateViewing]);
+  }, [review, socket, isSpectator, stateViewing]);
 
   function getSetupGameSetting(gameSetting) {
     if (setup && setup.gameSettings && gameSetting in setup.gameSettings) {
@@ -2544,7 +2551,8 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           sourceState={singleState ? message.fromState : stateViewing}
           onQuoteJump={onQuoteJump}
           key={message.id || message.messageId + message.time || i}
-          onMessageQuote={game.onMessageQuote}
+          onMessageQuote={game.onMessageQuote && ((message) =>
+            game.onMessageQuote(message, canSpeak ? speechTarget.meetingId : undefined))}
           onMessageReply={canSpeak && typeof game.onMessageReply === "function"
             ? (message) => game.onMessageReply(message, speechTarget.meetingId)
             : undefined}
@@ -3099,6 +3107,7 @@ function Message(props) {
       iWasPinged={iWasPinged}
       pinned={isMessagePinned(message)}
       replyPreview={replyPreview || undefined}
+      replyReferenceQuote={replyPreview ? replyQuote : undefined}
       replyMerged={!!replyPreview && !!replyMerged}
       meetingName={history.states[nameState]?.meetings?.[message.meetingId]?.name}
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
@@ -3196,7 +3205,8 @@ function ReplyReference(props) {
     e.stopPropagation();
     const row = findMessageRow(e.currentTarget.closest(".message"), reply.messageId);
     if (!row) {
-      e.currentTarget.closest(".speech-display")?.dispatchEvent(
+      if (props.onJump) props.onJump();
+      else e.currentTarget.closest(".speech-display")?.dispatchEvent(
         new CustomEvent("transcript-jump", { detail: { messageId: reply.messageId } })
       );
       return;
@@ -3401,35 +3411,10 @@ const MessageRow = React.memo(function MessageRow(props) {
     message.customStickers || (player && player.customStickers) || null;
 
   if (message.isQuote) {
-    var state = props.quoteState;
-
-    if (!state) return <></>;
-
-    var meeting = state.meetings[message.fromMeetingId];
-
-    if (!meeting) return <></>;
-
-    for (let msg of meeting.messages) {
-      if (msg.id === message.messageId) {
-        const senderPlayer = players[msg.senderId] || spectators[msg.senderId];
-
-        let senderName = "Anonymous";
-        if (senderPlayer && msg.senderId !== "anonymous") {
-          senderName = senderPlayer.name;
-        }
-
-        quotedMessage = { ...msg };
-        quotedMessage.senderName = senderName;
-        quotedMessage.meetingName = meeting.name;
-        quotedMessage.fromStateName = state.name;
-        customEmotes = msg.customEmotes; // allow players to use other players' custom emotes if they quote them
-        customStickers = msg.customStickers;
-        break;
-      }
-    }
+    quotedMessage = describeQuotedMessage(message, props.quoteState, players, spectators);
+    customEmotes = quotedMessage?.customEmotes;
+    customStickers = quotedMessage?.customStickers;
   }
-
-  if (message.isQuote && !quotedMessage) return <></>;
 
   if (!message.isQuote && message.content?.indexOf("/me ") === 0) {
     message = { ...message };
@@ -3634,7 +3619,7 @@ const MessageRow = React.memo(function MessageRow(props) {
       aria-keyshortcuts={clickToReply ? "Enter" : undefined}
       onDoubleClick={() => {
         cancelReplyClick();
-        props.onMessageQuote(message);
+        props.onMessageQuote?.(message);
       }}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
@@ -3650,6 +3635,7 @@ const MessageRow = React.memo(function MessageRow(props) {
             players={players}
             spectators={spectators}
             roleMentions={props.settings.roleMentions}
+            onJump={props.onQuoteJump && (() => props.onQuoteJump(props.replyReferenceQuote))}
           />
         )}
         {(!chainToPrevious || denseMessages || isRightAligned) && (
@@ -3718,7 +3704,7 @@ const MessageRow = React.memo(function MessageRow(props) {
               {message.replyTo && !props.replyPreview && (
                 <i
                   className="fas fa-reply fa-rotate-180 reply-marker"
-                  title="Reply to the quote above"
+                  title="The original message is not available in your history."
                 />
               )}
               {message.spectatorChat && (
@@ -3761,7 +3747,10 @@ const MessageRow = React.memo(function MessageRow(props) {
               </TextEffect>
             </>
           )}
-          {message.isQuote && (
+          {message.isQuote && !quotedMessage && (
+            <span className="quote-info">The original message is not available in your history.</span>
+          )}
+          {message.isQuote && quotedMessage && (
             <QuoteJumpTarget message={message} onJump={props.onQuoteJump}>
               {message.spectatorChat && (
                 <span
@@ -4621,9 +4610,6 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
       ? rolePrediction
       : stateViewingInfo.roles[player.id];
 
-    var showBubbles =
-      (Object.keys(history.states[history.currentState].dead).includes(self) && Object.keys(history.states[history.currentState].dead)[self] == true) ||
-      players.find((x) => x.id === self) !== undefined;
     var colorAutoScheme = false;
     var bubbleColor = "black";
     if (document.documentElement.classList.length === 0) {
@@ -4726,7 +4712,9 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
             </Box>
           );
         })()}
-        {selTab && showBubbles && visibleTyping[player.id] === selTab && (
+        {selTab && stateViewing === history.currentState &&
+          !history.states[history.currentState].dead?.[player.id] &&
+          visibleTyping[player.id] === selTab && (
           <ReactLoading
             className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
             type="bubbles"

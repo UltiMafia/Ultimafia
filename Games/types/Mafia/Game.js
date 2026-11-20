@@ -954,8 +954,6 @@ module.exports = class MafiaGame extends Game {
 
     for (let swap of this.swaps) {
       swap[0].swapIdentity(swap[1], winners);
-      delete swap[1].swapped;
-      delete swap[0].swapped;
     }
 
     delete this.swaps;

@@ -107,6 +107,70 @@ describe("Games/SpectateCommands", function () {
     return game;
   }
 
+  describe("Disguiser membership", function () {
+    async function disguise(game) {
+      const users = [makeUser(game.hostId, "disguiser"), makeUser(null, "target"), makeUser(null, "other")];
+      await game.userJoin(users[0]);
+      await game.userJoin(users[1]);
+      await game.userJoin(users[2]);
+      await startBare(game);
+      const [disguiser, target, other] = users.map((user) => playerFor(game, user));
+      for (const player of [disguiser, target, other]) {
+        player.role = { player, name: "Test", modifier: "", revealToSelf() {}, revealToPlayer() {}, hear() {} };
+      }
+      const [disguiserSocket, targetSocket] = users.map((user) => user.socket);
+      const [disguiserId, targetId] = users.map((user) => user.id);
+      game.swaps = [[disguiser, target]];
+      disguiser.swapIdentity(target);
+      return { disguiser, target, other, disguiserId, targetId, disguiserSocket, targetSocket };
+    }
+
+    it("leaves by account during a disguise and keeps that connection left when it is undone", async function () {
+      const game = await openGame.call(this);
+      const { disguiser, target, disguiserId, targetId, disguiserSocket, targetSocket } = await disguise(game);
+      game.finished = true;
+      await game.userLeave(targetId);
+      expect(await redis.inGame(targetId)).to.equal(false);
+      expect(await redis.inGame(disguiserId)).to.equal(game.id);
+      expect(events(targetSocket, "left")).to.have.lengthOf(1);
+      expect(events(disguiserSocket, "left")).to.have.lengthOf(0);
+
+      require("../../Games/types/Mafia/Game").prototype.resetIdentities.call(game);
+      expect(target.left).to.equal(true);
+      expect(disguiser.left).not.to.equal(true);
+      await new Promise((resolve) => setTimeout(resolve, 125));
+      expect(events(targetSocket, "terminate")).to.have.lengthOf(1);
+      expect(events(disguiserSocket, "terminate")).to.have.lengthOf(0);
+    });
+
+    it("reconnects to the current disguise, restores the sockets, and clears the final account on leave", async function () {
+      const game = await openGame.call(this);
+      const { disguiser, target, other, targetId } = await disguise(game);
+      const whileDisguised = makeUser(targetId, "target");
+      await game.userJoin(whileDisguised);
+      expect(disguiser.socket === whileDisguised.socket).to.equal(true);
+      require("../../Games/types/Mafia/Game").prototype.resetIdentities.call(game);
+      const reconnected = makeUser(targetId, "target");
+      await game.userJoin(reconnected);
+      expect(target.socket === reconnected.socket).to.equal(true);
+      expect(disguiser.socket === reconnected.socket).to.equal(false);
+
+      game.finished = true;
+      disguiser.left = other.left = true;
+      // This fixture has no real winners or setup record. Verify membership
+      // before and independently of the asynchronous postgame persistence.
+      let cleanupStarted = false;
+      game.endPostgame = () => { cleanupStarted = true; };
+      await game.playerLeave(target);
+      expect(cleanupStarted).to.equal(true);
+      expect(await redis.inGame(targetId)).to.equal(false);
+
+      await redis.joinGame(targetId, "next-game", false, false);
+      await redis.leaveGame(targetId, game.id);
+      expect(await redis.inGame(targetId)).to.equal("next-game");
+    });
+  });
+
   describe("parsing", function () {
     it("/join and /spectate are commands, not text effects", function () {
       expect(parseTextEffect("/join")).to.equal(null);
@@ -1103,6 +1167,98 @@ describe("Games/SpectateCommands", function () {
       chatTexts(host.socket).should.include("pregame hello");
       chatTexts(watcher.socket).should.include("host hello");
       should.not.exist(game.spectatorMeeting);
+    });
+
+    it("delivers only living-player typing, without bypassing meeting visibility", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this);
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const watch = makeUser(null, "watch");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+      const live = playerFor(game, host);
+      const dead = playerFor(game, other);
+      dead.alive = false;
+      const watcher = game.spectators[0];
+      const room = game.createMeeting(Meeting, "Village");
+      room.speech = true;
+      room.join(live);
+      room.join(dead, { speakDead: true });
+      for (const user of [host, other, watch]) user.socket.flushMessages();
+
+      const type = (person, meeting, isTyping = true) => person.socket.sendToServer("typing", {
+        meetingId: meeting.id, isTyping,
+      });
+      type(live, room);
+      type(dead, room);
+      type(watcher, game.spectatorMeeting);
+      type(live, room, false);
+      for (const user of [host, other, watch]) {
+        expect(events(user.socket, "typing").map((e) => e.data)).to.deep.equal([
+          { playerId: live.id, meetingId: room.id },
+          { playerId: live.id, meetingId: null },
+        ]);
+      }
+      watch.socket.flushMessages();
+      game.spectatorMeetFilter[room.name] = false;
+      type(live, room);
+      expect(events(watch.socket, "typing")).to.have.lengthOf(0);
+    });
+
+    it("keeps dead and spectator communication in its audience, and shares postgame", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this);
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const watch = makeUser(null, "watch");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+      const live = playerFor(game, host);
+      const dead = playerFor(game, other);
+      const watcher = game.spectators[0];
+      const room = game.createMeeting(Meeting, "Village");
+      room.speech = true;
+      room.join(live);
+      room.join(dead); // Joined while alive; the old canTalk bit is still set.
+      dead.alive = false;
+      for (const user of [host, other, watch]) user.socket.flushMessages();
+
+      room.speak({ sender: live, content: "public original" });
+      const original = room.messages[0];
+      const payload = {
+        messageId: original.id, fromMeetingId: room.id, fromState: game.currentState,
+        toMeetingId: room.id, messageContent: "not the original",
+      };
+      room.speak({ sender: dead, content: "dead chat" });
+      dead.socket.sendToServer("reply", { quote: payload, message: { content: "dead reply", meetingId: room.id } });
+      say(watcher, "/diceroll 1", room.id);
+      watcher.socket.sendToServer("reply", {
+        quote: { ...payload, toMeetingId: game.spectatorMeeting.id },
+        message: { content: "spectator reply", meetingId: game.spectatorMeeting.id },
+      });
+      expect(heard(host.socket)).to.deep.equal(["public original"]);
+      expect(heard(other.socket)).to.include.members(["dead chat", "dead reply", `quote:${original.id}`]);
+      expect(heard(watch.socket)).to.include.members(["spectator reply", `quote:${original.id}`]);
+      expect(room.messages.find((message) => message.isQuote).messageContent).to.equal("public original");
+      expect(room.getPlayerMessages("spectator").map((message) => message.content)).to.deep.equal(["public original"]);
+
+      room.members[dead.id].originalOptions.speakDead = true;
+      room.speak({ sender: dead, content: "allowed by the meeting mechanic" });
+      expect(chatTexts(host.socket)).to.include("allowed by the meeting mechanic");
+
+      game.finished = true;
+      game.currentState = -2;
+      game.addStateToHistories("Postgame");
+      game.openPostgameMeeting();
+      game.postgame.speak({ sender: dead, content: "dead in postgame" });
+      game.postgame.speak({ sender: watcher, content: "spectator in postgame" });
+      expect(chatTexts(host.socket)).to.include.members(["dead in postgame", "spectator in postgame"]);
+      expect(chatTexts(watch.socket)).to.include("dead in postgame");
     });
   });
 

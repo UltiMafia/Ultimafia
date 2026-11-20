@@ -188,7 +188,6 @@ module.exports = class Game {
     this.anonymousGame = options.settings.anonymousGame;
     this.anonymousDeck = options.settings.anonymousDeck;
     this.beforeAnonPlayerInfo = [];
-    this.anonPlayerMapping = {};
     this.pointsEarnedByPlayers = {};
     /** @type {Record<string, string>} playerId -> starting faction key for stats/payouts */
     this.startingFactions = {};
@@ -768,18 +767,9 @@ module.exports = class Game {
   }
 
   findJoinedPlayer(user, isBot) {
-    if (!isBot && (!this.started || !this.anonymousGame)) {
-      for (let p of this.players) {
-        if (p.user.id == user.id) return p;
-      }
-    } else if (!isBot && this.started && this.anonymousGame) {
-      if (this.anonPlayerMapping[user.id]) return this.anonPlayerMapping[user.id];
-    } else {
-      for (let p of this.players) {
-        if (user.guestId && p.user.guestId && p.user.guestId == user.guestId) {
-          return p;
-        }
-      }
+    for (const player of this.players) {
+      if (!isBot && user.id && player.connectionAccountId === user.id) return player;
+      if (isBot && user.guestId && player.connectionGuestId === user.guestId) return player;
     }
 
     return null;
@@ -997,8 +987,7 @@ module.exports = class Game {
 
     // Pregame spectators can speak and read in Pregame. The spectator meeting
     // does not exist until the game starts.
-    if (!this.started && this.pregame) this.pregame.join(spectator);
-    if (this.spectatorMeeting) this.spectatorMeeting.join(spectator);
+    this.restoreSpectatorMeetings(spectator);
 
     this.sendAllGameInfo(spectator);
     spectator.sendMeetings();
@@ -1013,8 +1002,14 @@ module.exports = class Game {
   // A reconnecting spectator talks where a new one would: Pregame before the
   // start, the spectator meeting after it.
   restoreSpectatorMeetings(spectator) {
+    if (this.finished) {
+      if (this.postgame && !this.postgame.finished && !this.postgame.members[spectator.id])
+        this.postgame.join(spectator, this.postgame);
+      return;
+    }
     if (
       !this.started &&
+      !this.starting &&
       this.pregame &&
       !this.pregame.finished &&
       !this.pregame.members[spectator.id]
@@ -1359,14 +1354,7 @@ module.exports = class Game {
   }
 
   async userLeave(userId) {
-    var player;
-
-    for (let p of this.players) {
-      if (p.user.id == userId) {
-        player = p;
-        break;
-      }
-    }
+    const player = this.findJoinedPlayer({ id: userId }, false);
 
     if (this.tutorial && player && userId == this.hostId) {
       await this.endTutorialEarly(player);
@@ -1375,7 +1363,7 @@ module.exports = class Game {
 
     if (!player && userId != this.hostId) return;
     else if (!player) {
-      await redis.leaveGame(userId);
+      await redis.leaveGame(userId, this.id);
 
       if (this.players.length == 0) {
         gameEventLog.close(this);
@@ -1385,13 +1373,19 @@ module.exports = class Game {
 
       return;
     }
-    //this.sendAlert(`Alive ${player.alive} Grave Part ${this.graveyardParticipation} Exorcised ${player.exorcised} Player Grave Part ${player.requiresGraveyardParticipation()}`);
-    if (player.alive || (this.graveyardParticipation == true && player.exorcised == false) || (this.type == "Mafia" && player.requiresGraveyardParticipation())){
-      this.sendAlert(`${player.name} has left.`, undefined, undefined, [
-        "info",
-      ]);
+    this.announcePlayerLeave(player);
+    await this.playerLeave(player);
+  }
+
+  announcePlayerLeave(player) {
+    if (player.spectator || player.exorcised) return;
+    if (!this.started || this.finished || player.alive) {
+      this.sendAlert(`${player.name} has left.`, undefined, undefined, ["info"]);
+    } else if (this.graveyardParticipation ||
+        (this.type === "Mafia" && player.requiresGraveyardParticipation())) {
+      const dead = this.players.filter((recipient) => !recipient.alive && !recipient.exorcised);
+      this.sendAlert(`${player.name} has left.`, dead, undefined, ["info"]);
     }
-    this.playerLeave(player);
   }
 
   async playerLeave(player) {
@@ -1411,19 +1405,27 @@ module.exports = class Game {
 
     // player.leaveReason: why the server removed them, shown on their page.
     const reason = player.leaveReason;
-    player.send("left", reason ? { reason } : undefined);
+    const socket = player.socket;
+    const userId = player.connectionAccountId;
     player.left = true;
 
     this.kudosVoterLeft(player);
-    // Delay disconnect so "left" can flush before the socket is torn down.
-    // Immediate terminate() races the client receive path (esp. iOS Safari).
-    setTimeout(() => {
+    const releaseConnection = async () => {
       try {
-        if (player.user) player.user.disconnect();
-      } catch (e) {
-        // Socket may already be closed by the client navigating away
+        if (userId) await redis.leaveGame(userId, this.id);
+      } finally {
+        socket.send("left", reason ? { reason } : undefined);
+        // Let "left" flush before closing the captured socket; the disguise may
+        // be undone before this callback runs.
+        setTimeout(() => {
+          try {
+            socket.terminate();
+          } catch (e) {
+            // Socket may already be closed by the client navigating away.
+          }
+        }, 100);
       }
-    }, 100);
+    };
 
     if (!this.started && this.players[player.id]) {
       this.cancelReadyCheck();
@@ -1434,6 +1436,7 @@ module.exports = class Game {
 
       delete this.players[player.id];
       this.playersGone[player.user.id] = this.createPlayerGoneObj(player);
+      await releaseConnection();
 
       if (this.players.length == 0) {
         await this.cancel();
@@ -1455,7 +1458,6 @@ module.exports = class Game {
         if (this.breakIntegrity(player)) {
           this.queueIntegrityRefund(wasRanked, wasCompetitive);
           if (!player.isBot) {
-            const userId = player.userId || player.user.id;
             this.penalizePlayerForLeaving(userId);
           }
         } else {
@@ -1465,6 +1467,9 @@ module.exports = class Game {
         await this.settleIntegrityBreak();
       }
 
+      // Release even the last player, whose path starts postgame cleanup and
+      // returns before that asynchronous work finishes.
+      await releaseConnection();
       if (!this.postgameOver && this.players[player.id]) {
         var remainingPlayer = false;
 
@@ -1481,15 +1486,6 @@ module.exports = class Game {
         }
       }
     }
-
-    // In the event of a guiser swap, the userId that is needed to leave is
-    // the target. However, the `player` in this game is the still alive disguiser
-    // Therefore, if the swapped user is not null, then we need to use that person's ID
-    let userIdToLeave = player.user.id;
-    if (player.user.swapped) {
-      userIdToLeave = player.user.swapped.id;
-    }
-    await redis.leaveGame(userIdToLeave);
   }
 
   async onAllPlayersLeft() {
@@ -1761,6 +1757,11 @@ module.exports = class Game {
 
     this.spectators.splice(index, 1);
     this.dropPregameMember(spectator);
+    for (const meeting of [this.spectatorMeeting, this.postgame]) {
+      if (!meeting?.members[spectator.id]) continue;
+      delete meeting.members[spectator.id];
+      for (const member of meeting.getPlayers()) member.sendMeetingMembers(meeting);
+    }
 
     if (options.forget !== false && spectator.user && spectator.user.id) {
       this.pregameSpectatorUserIds.delete(spectator.user.id);
@@ -2742,7 +2743,6 @@ module.exports = class Game {
 
       p.makeAnonymous(chosen);
       this.players[p.id] = p;
-      this.anonPlayerMapping[p.originalProfile.userId] = p;
     }
 
     // shuffle player order
@@ -4090,13 +4090,6 @@ module.exports = class Game {
   }
 
   spectatorsHear(message) {
-    if (
-      message.meeting &&
-      message.meeting.members &&
-      message.recipients.length < message.meeting.members.length
-    ) {
-      return;
-    }
     if (message.abilityName != "Whisper") {
       for (let spectator of this.spectators) {
         // Omniscient spectators get every message via omniscientSpectatorsHear.
@@ -4112,13 +4105,6 @@ module.exports = class Game {
   }
 
   spectatorsHearQuote(quote) {
-    if (
-      quote.meeting &&
-      quote.meeting.members &&
-      quote.recipients.length < quote.meeting.members.length
-    ) {
-      return;
-    }
     for (let spectator of this.spectators) {
       // Omniscient spectators get every message via omniscientSpectatorsHear.
       if (spectator.omniscient) continue;
@@ -4144,11 +4130,6 @@ module.exports = class Game {
   spectatorsSeeUnvote(info) {
     for (let spectator of this.spectators)
         if (!spectator.omniscient) spectator.seeUnvote(info);
-  }
-
-  spectatorsSeeTyping(info) {
-    for (let spectator of this.spectators)
-        if (!spectator.omniscient) spectator.seeTyping(info);
   }
 
   queueAction(action, instant) {
@@ -4990,15 +4971,7 @@ module.exports = class Game {
       }
 
       // Start postgame meeting
-      this.postgame = this.createMeeting(PostgameMeeting);
-
-      for (let player of this.players)
-        if (!player.left) this.postgame.join(player, this.postgame);
-
-      this.postgame.init();
-
-      for (let player of this.players)
-        if (!player.left) player.sendMeeting(this.postgame);
+      this.openPostgameMeeting();
 
       this.startKudosVote();
 
@@ -5019,16 +4992,7 @@ module.exports = class Game {
 
     try {
       if (!this.postgame) {
-        this.postgame = this.createMeeting(PostgameMeeting);
-
-        for (let player of this.players)
-          if (!player.left) this.postgame.join(player, this.postgame);
-
-        this.postgame.init();
-
-        for (let player of this.players)
-          if (!player.left) player.sendMeeting(this.postgame);
-
+        this.openPostgameMeeting();
         this.startKudosVote();
       }
 
@@ -5040,6 +5004,16 @@ module.exports = class Game {
         `ensurePostgameTimer failed for game ${this.id}: ${e.message}`
       );
     }
+  }
+
+  openPostgameMeeting() {
+    this.postgame = this.createMeeting(PostgameMeeting);
+    for (const player of this.players)
+      if (!player.left) this.postgame.join(player, this.postgame);
+    for (const spectator of this.spectators) this.restoreSpectatorMeetings(spectator);
+    this.postgame.init();
+    for (const player of this.postgame.getPlayers()) player.sendMeeting(this.postgame);
+    this.broadcastSpectators();
   }
 
   async penalizePlayerForLeaving(userId) {

@@ -351,10 +351,7 @@ module.exports = class Meeting {
 
   getPlayerMessages(player) {
     if (player == "spectator") {
-      let messageTemp = this.messages.filter(
-        (m) => m.recipients.length >= this.members.length
-      );
-      return messageTemp.reduce((msgs, m) => {
+      return this.messages.filter((m) => m.visibleToSpectators).reduce((msgs, m) => {
         m = m.getMessageInfo(player);
         if (m) msgs.push(m);
         return msgs;
@@ -1135,17 +1132,31 @@ module.exports = class Meeting {
     actor.act(finalTarget, this, actors);
   }
 
-  speak(message) {
-    var member = this.members[message.sender.id];
+  canSendChat(sender) {
+    // `finished` is also used for voting, which can end while speech is open.
+    return this.speech && this.members[sender.id]?.canTalk && !sender.exorcised && !sender.left &&
+      (!sender.spectator || sender.canSpeakIn(this)) &&
+      (this.members.length > 1 || this.name === "Pregame" || this.name === "Spectator Meeting");
+  }
 
-    if (
-      !member ||
-      !this.speech ||
-      !member.canTalk ||
-      (!(this.members.length > 1) && (this.name != "Pregame" && this.name != "Spectator Meeting"))
-    ) {
-      return;
-    }
+  restrictChatRecipients(sender, recipients) {
+    if (!this.game.started || this.game.finished) return recipients;
+    if (sender.spectator) return recipients.filter((player) => player.spectator);
+    if (sender.alive && !sender.exorcised) return recipients;
+    if (!sender.exorcised && sender.canSpeakToLivingIn(this)) return recipients;
+    return recipients.filter((player) => player.spectator || !player.alive || player.hasEffect("CanSeeDead"));
+  }
+
+  // Visibility is fixed at send time; a join/leave must not change what was public.
+  isVisibleToSpectators(message) {
+    if (!this.game.isSpectatorMeeting(this) || message.abilityName === "Whisper") return false;
+    const recipients = new Set(message.recipients);
+    return this.getPlayers().every((player) => recipients.has(player));
+  }
+
+  speak(message) {
+    if (!this.canSendChat(message.sender)) return;
+    if (message.sender.spectator && message.abilityName) return;
 
     if (
       message.abilityName == "Whisper" &&
@@ -1206,19 +1217,30 @@ module.exports = class Meeting {
   }
 
   quote(sender, quote) {
-    var member = this.members[sender.id];
-
     if (
-      !member ||
+      !this.canSendChat(sender) ||
       constants.noQuotes[this.game.type] ||
-      !this.speech ||
-      !member.canTalk ||
-      (!(this.members.length > 1) && this.name != "Pregame") ||
       quote.messageId.length < 7 ||
       quote.messageId.length > 14
     ) {
       return null;
     }
+
+    const sourceMeeting = this.game.getMeeting(quote.fromMeetingId, quote.fromState);
+    const source = sourceMeeting?.messages.find((message) => message.id === quote.messageId);
+    if (!source || source.isQuote || source.isServer || !source.quotable) return null;
+
+    let visibleSource;
+    if (sourceMeeting === this.game.pregame ||
+        (sender.spectator && this.game.isSpectatorOnlyMeeting(sourceMeeting))) {
+      visibleSource = source.getMessageInfo();
+    } else if (sender.spectator) {
+      if (sender.omniscient || source.visibleToSpectators)
+        visibleSource = source.getMessageInfo("spectator");
+    } else {
+      visibleSource = source.getMessageInfo(sender);
+    }
+    if (!visibleSource) return null;
 
     var quote = new Quote({
       game: this.game,
@@ -1228,7 +1250,7 @@ module.exports = class Meeting {
       fromMeetingId: quote.fromMeetingId,
       fromState: quote.fromState,
       anonymous: this.anonymous,
-      messageContent: quote.messageContent,
+      messageContent: visibleSource.content,
     });
 
     // The posted quote, or null when the sender's effects cancelled it.
@@ -1236,34 +1258,21 @@ module.exports = class Meeting {
   }
 
   typing(playerId, isTyping) {
-    var member = this.members[playerId];
-    if (!member) return;
-    const isSilenced = member.player.hasEffect("Silenced");
+    const sender = this.members[playerId]?.player;
+    if (!sender || !this.canSendChat(sender) || this.anonymous) return;
+    if (sender.spectator || !sender.alive || sender.exorcised) return;
 
-    if (member && this.speech && !this.anonymous && member.canTalk) {
-      const info = {
-        playerId,
-        meetingId: isTyping ? this.id : null,
-      };
-      // Town-visible meetings (including Pregame) also notify spectators
-      // via spectatorsSeeTyping. Pregame spectators are meeting members so
-      // they can talk; sending to them here as well delivers the event twice.
-      const spectatorsAlsoNotified =
-        !isSilenced && this.game.isSpectatorMeeting(this);
-
-      for (let _playerId in this.members) {
-        // Let silenced players see their own typing activity, but prevent others from seeing it
-        if (isSilenced && _playerId !== playerId) continue;
-
-        const recipient = this.members[_playerId].player;
-        if (spectatorsAlsoNotified && recipient && recipient.spectator)
-          continue;
-
-        recipient.seeTyping(info);
-      }
-      if (spectatorsAlsoNotified) this.game.spectatorsSeeTyping(info);
-      this.game.omniscientSpectatorsSee?.("seeTyping", info);
+    const isSilenced = sender.hasEffect("Silenced");
+    const info = { playerId, meetingId: isTyping ? this.id : null };
+    if (isSilenced) {
+      sender.seeTyping(info);
+      return;
     }
+    const recipients = new Set(this.getPlayers());
+    for (const spectator of this.game.spectators)
+      if (spectator.omniscient || this.game.isSpectatorMeeting(this)) recipients.add(spectator);
+    // Recipient-specific effects may mutate the event (e.g. Blind).
+    for (const recipient of recipients) recipient.seeTyping({ ...info });
   }
 
   sendAlert(message) {

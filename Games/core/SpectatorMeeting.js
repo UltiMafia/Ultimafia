@@ -17,6 +17,7 @@ module.exports = class SpectatorMeeting extends Meeting {
   }
 
   getPlayerMessages(player) {
+    if (player && player !== "spectator" && !player.spectator) return [];
     return this.messages.reduce((msgs, m) => {
       m = m.getMessageInfo();
       if (m) msgs.push(m);

@@ -96,6 +96,39 @@ async function main() {
       route.request().url().startsWith(url) ? route.continue() : route.abort(),
     );
 
+    if (process.env.CHAT_MEMBERSHIP_ONLY) {
+      await page.goto(url + "?membership=1&st=0");
+      const row = page.locator('[data-message-id="m1aaaaaa"]');
+      await row.waitFor();
+      await page.waitForFunction(() => typeof window.__receiveTyping === "function");
+      await page.evaluate(() => {
+        window.__receiveTyping({ playerId: "pB", meetingId: "v1" });
+        window.__receiveTyping({ playerId: "pC", meetingId: "v1" });
+      });
+      check(await page.locator('[data-player-name="Vinman"] .typing-icon').isVisible(), "spectators see living-player typing");
+      check(await page.locator('[data-player-name="Bob"] .typing-icon').count() === 0, "dead-player typing stays hidden");
+      check(await row.locator('.inline[title="FormerWatcher"]').count() === 1, "departed spectator avatar");
+      check(await row.locator('.inline[title="FormerPlayer"]').count() === 1, "departed player avatar");
+      if (shots) {
+        fs.mkdirSync(shots, { recursive: true });
+        await page.locator(".speech-display").evaluate((element) => element.scrollTo(0, 0));
+        await page.evaluate(() => document.fonts.ready);
+        await page.screenshot({ path: path.join(shots, "membership.png"), animations: "disabled" });
+      }
+      await row.locator(".content").dblclick();
+      check(await page.evaluate(() => window.__quotes[0]?.destination) === "s1", "quote uses spectator chat destination");
+      await row.locator(".content").click();
+      await page.locator(".reply-preview").waitFor();
+      await page.locator("#speechInput").fill("Reply in spectator chat");
+      await page.locator("#speechInput").press("Enter");
+      check(await page.evaluate(() => window.__sent.some(({ type, payload }) =>
+        type === "reply" && payload.quote.fromMeetingId === "v1" && payload.message.meetingId === "s1"
+      )), "reply uses spectator chat destination");
+      if (failures.length) throw new Error(failures.join("\n"));
+      console.log(`${passes} chat membership browser checks passed`);
+      return;
+    }
+
     // Pin box per row, hovered, with the reply feature off.
     async function hoverRows(query) {
       await page.goto(url + "?" + query);

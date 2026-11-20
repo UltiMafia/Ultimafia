@@ -39,6 +39,10 @@ module.exports = class Player {
     this.user = user;
     this.user.player = this;
     this.socket = user.socket;
+    // The authenticated account belongs to the connection, not the displayed
+    // identity (which can be anonymous or controlled by another player).
+    this.connectionAccountId = user.id;
+    this.connectionGuestId = user.guestId;
     this.name = user.name || nameGen();
     this.game = game;
     this.isBot = isBot;
@@ -367,7 +371,6 @@ module.exports = class Player {
       quote.toMeetingId = String(quote.toMeetingId);
       quote.fromMeetingId = String(quote.fromMeetingId);
       quote.fromState = String(quote.fromState);
-      quote.messageContent = String(quote.messageContent);
 
       return (
         Utils.validProp(quote.messageId) &&
@@ -470,9 +473,6 @@ module.exports = class Player {
         var meeting = this.game.getMeeting(quote.toMeetingId);
         if (!meeting) return;
 
-        const sourceMeeting = this.game.getMeeting(quote.fromMeetingId, quote.fromState);
-        if (!sourceMeeting || !sourceMeeting.messages.some((target) => target.id === quote.messageId)) return;
-
         const posted = postQuote(meeting, quote);
         if (!posted) return;
 
@@ -544,7 +544,7 @@ module.exports = class Player {
         if (!Utils.validProp(vote.meetingId)) return;
 
         var meeting = this.game.getMeeting(vote.meetingId);
-        if (!meeting) return;
+        if (!meeting?.voting || !meeting.hasJoined(this)) return;
 
         // Ratscrew slaps are intentionally fast and spammy — exempt them
         // from the vote rate-limit (and don't pollute votePast with them,
@@ -597,7 +597,7 @@ module.exports = class Player {
         if (!Utils.validProp(meetingId)) return;
 
         var meeting = this.game.getMeeting(meetingId);
-        if (!meeting) return;
+        if (!meeting?.voting || !meeting.hasJoined(this)) return;
 
         // Tutorial votes are scripted steps; they can't be taken back.
         if (this.game.tutorial && !this.isBot) {
@@ -726,13 +726,10 @@ module.exports = class Player {
       }
     });
 
-    socket.on("leave", () => {
+    socket.on("leave", async () => {
       try {
-        this.game.playerLeave(this);
-
-        if (this.alive || (this.game.graveyardParticipation == true && this.exorcised == false) || (this.game.type == "Mafia" && this.requiresGraveyardParticipation())){
-           this.game.sendAlert(`${this.name} has left.`);
-        }
+        this.game.announcePlayerLeave(this);
+        await this.game.playerLeave(this);
       } catch (e) {
         logger.error(e);
         // this.handleError(e);
@@ -1000,7 +997,7 @@ module.exports = class Player {
       case "ban":
       case "kick":
         // Allow /kick to be used to kick players during veg votekick.
-        if (cmd.name == "kick") {
+        if (cmd.name == "kick" && this.alive && !this.spectator && !this.exorcised) {
           var vegKickMeeting = this.getVegKickMeeting();
           if (vegKickMeeting !== undefined) {
             vegKickMeeting.vote(this, "Kick");
@@ -1118,13 +1115,15 @@ module.exports = class Player {
         const meeting = this.game.getMeeting(cmd.raw.meetingId);
         let recipients;
 
-        if (!this.alive) {
+        if (!this.alive && !this.game.finished) {
           // Dead players' /diceroll results should only be visible in the graveyard
           recipients = this.game.players.filter(
             (p) => !p.alive && !p.exorcised
           );
         } else {
-          recipients = meeting ? meeting.getPlayers() : [this];
+          recipients = meeting?.canSendChat(this)
+            ? meeting.restrictChatRecipients(this, meeting.getPlayers())
+            : [this];
         }
 
         this.game.sendAlert(rollsOutput, recipients);
@@ -1178,8 +1177,8 @@ module.exports = class Player {
     this.socket.send(eventName, data);
   }
 
-  setUser(user, ignoreSwap) {
-    if (!this.user.swapped || ignoreSwap) {
+  setUser(user) {
+    if (this.socket !== user.socket) {
       this.socket.send("left");
       this.socket.terminate();
 
@@ -1189,8 +1188,8 @@ module.exports = class Player {
       this.socket = user.socket;
 
       this.socketListeners();
-      return this;
-    } else return this.user.swapped.player.setUser(user, true);
+    }
+    return this;
   }
 
   /**
@@ -1692,6 +1691,11 @@ module.exports = class Player {
     });
   }
 
+  canSpeakToLivingIn(meeting) {
+    return meeting.talkingDead || meeting.members[this.id]?.originalOptions?.speakDead ||
+      this.hasEffect("CanSpeakToLiving");
+  }
+
   sendAlert(message, extraStyle) {
     this.game.sendAlert(message, [this], extraStyle);
   }
@@ -1975,6 +1979,7 @@ module.exports = class Player {
   }
 
   sendMeeting(meeting) {
+    if (this.game.isSpectatorOnlyMeeting(meeting)) return;
     this.send("meeting", meeting.getMeetingInfo(this));
   }
 
@@ -2387,10 +2392,14 @@ module.exports = class Player {
     player.user.socket = tempSocket;
     player.socket = tempSocket;
 
-    player.user.swapped = this.user;
+    [this.connectionAccountId, player.connectionAccountId] =
+      [player.connectionAccountId, this.connectionAccountId];
+    [this.connectionGuestId, player.connectionGuestId] =
+      [player.connectionGuestId, this.connectionGuestId];
+    [this.left, player.left] = [player.left, this.left];
 
-    this.socketListeners();
-    player.socketListeners();
+    if (!this.left) this.socketListeners();
+    if (!player.left) player.socketListeners();
 
     this.sendSelf();
     this.sendSelfWill();

@@ -1382,12 +1382,22 @@ async function joinGame(userId, gameId, ranked, competitive) {
   await cacheUserPermissions(userId);
 }
 
-async function leaveGame(userId) {
-  const gameId = await client.getAsync(`user:${userId}:game`);
+async function leaveGame(userId, expectedGameId) {
+  const membershipKey = `user:${userId}:game`;
+  if (expectedGameId != null) {
+    const removed = await client.evalAsync(
+      "if redis.call('get', KEYS[1]) ~= ARGV[1] then return 0 end " +
+      "redis.call('del', KEYS[1]); redis.call('srem', KEYS[2], ARGV[2]); return 1",
+      2, membershipKey, `game:${expectedGameId}:players`, expectedGameId, userId
+    );
+    if (!removed) return;
+  } else {
+    const gameId = await client.getAsync(membershipKey);
 
-  if (gameId) {
-    await client.delAsync(`user:${userId}:game`);
-    await client.sremAsync(`game:${gameId}:players`, userId);
+    if (gameId) {
+      await client.delAsync(membershipKey);
+      await client.sremAsync(`game:${gameId}:players`, userId);
+    }
   }
 
   await models.Ban.deleteMany({ userId, type: "gameAuto" }).exec();
@@ -1418,7 +1428,7 @@ async function deleteGame(gameId, game) {
   game = game || (await getGameInfo(gameId, true));
 
   for (let playerId of game.players) {
-    if ((await inGame(playerId)) === gameId) await leaveGame(playerId);
+    await leaveGame(playerId, gameId);
   }
 
   if (game.settings.scheduled) {
