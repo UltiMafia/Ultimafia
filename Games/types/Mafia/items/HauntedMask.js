@@ -135,11 +135,7 @@ module.exports = class HauntedMask extends Item {
 function stealIdentity(target) {
   if (!this.game.swaps) this.game.swaps = [];
 
-  if (!this.data.originalUser) this.data.originalUser = this.player.user;
-  if (!this.data.originalPlayer) this.data.originalPlayer = this.player;
-
   target.queueAlert(":anon: Someone has stolen your identity!");
   this.game.swaps.unshift([this.player, target]);
   this.player.swapIdentity(target);
-  this.data.originalUser.swapped = target.user;
 }

@@ -12,7 +12,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
-import { GameTypeContext, IsPhoneDeviceContext, TextMeetingLayout } from "../src/pages/Game/Game";
+import { GameTypeContext, IsPhoneDeviceContext, PlayerRows, TextMeetingLayout } from "../src/pages/Game/Game";
 import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
 import { makeReplyTarget, redirectTypingToChat } from "../src/utils/messageReply";
 import "../src/css/main.css";
@@ -38,6 +38,7 @@ const user = {
 };
 const S = (id) => (anon ? "anonymous" : id);
 const spec = params.get("spec") === "1";
+const membership = params.get("membership") === "1";
 const dead = params.get("dead") === "1";
 // Extra flags for the reply lines (spectator chat, dead sender).
 const R = { ...(spec ? { spectatorChat: true } : {}), ...(dead ? { alive: false } : {}) };
@@ -336,6 +337,28 @@ if (mobile) {
 window.__sent = [];
 // Stub transport only: the real SpeechInput builds and sends the reply payload.
 game.socket.send = (type, payload) => window.__sent.push({ type, payload });
+if (membership) {
+  game.isSpectator = true;
+  game.self = "watcher";
+  game.spectators = {
+    watcher: { id: "watcher", name: "Watcher", watching: true },
+    former: { id: "former", name: "FormerWatcher", watching: false },
+  };
+  players.departed = { id: "departed", name: "FormerPlayer", left: true };
+  meeting.canTalk = meeting.amMember = false;
+  msgs[0].content = "Hello %formerwatcher, and %FormerPlayer!";
+  game.history.states[st].meetings.s1 = {
+    id: "s1", name: "Spectator Meeting", speech: true, canTalk: true, amMember: true,
+    members: [{ id: "watcher" }], messages: [],
+  };
+  game.rolePredictions = {};
+  game.history.states[st].roles = {};
+  game.history.states[st].dead = { pB: true };
+  game.socket.on = (type, callback) => {
+    if (type === "typing") window.__receiveTyping = callback;
+  };
+  game.onMessageQuote = (message, destination) => window.__quotes.push({ message, destination });
+}
 function FixtureGame({ children }) {
   const [replyTarget, setReplyTarget] = React.useState(null);
   window.__setReplyTarget = setReplyTarget;
@@ -376,6 +399,7 @@ ReactDOM.render(
                   flexDirection: "column",
                 }}
               >
+                {membership && <PlayerRows players={[players.pB, players.pC]} renderMarker={() => null} />}
                 <TextMeetingLayout seatActions={false} />
               </Box>
             </GameTypeContext.Provider>

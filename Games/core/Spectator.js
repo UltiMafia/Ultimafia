@@ -200,7 +200,6 @@ module.exports = class Spectator extends Player {
       quote.toMeetingId = String(quote.toMeetingId);
       quote.fromMeetingId = String(quote.fromMeetingId);
       quote.fromState = String(quote.fromState);
-      quote.messageContent = String(quote.messageContent);
 
       return (
         Utils.validProp(quote.messageId) &&
@@ -280,9 +279,6 @@ module.exports = class Spectator extends Player {
         var meeting = this.game.getMeeting(quote.toMeetingId);
         if (!this.canSpeakIn(meeting)) return;
 
-        const sourceMeeting = this.game.getMeeting(quote.fromMeetingId, quote.fromState);
-        if (!sourceMeeting || !sourceMeeting.messages.some((target) => target.id === quote.messageId)) return;
-
         speechPast.push(Date.now());
         const posted = meeting.quote(this, quote);
         if (!posted) return;
@@ -309,12 +305,11 @@ module.exports = class Spectator extends Player {
     });
   }
 
-  // Spectators talk only in Pregame (before the start) and in the
-  // spectator meeting, always under their own name. Any other meeting id
-  // from a spectator's socket is ignored.
+  // Shared chat outside live play; a separate channel during live play.
   canSpeakIn(meeting) {
     if (!meeting) return false;
     if (meeting === this.game.spectatorMeeting) return true;
+    if (meeting === this.game.postgame && this.game.finished) return true;
     return (
       meeting === this.game.pregame &&
       !this.game.started &&
@@ -369,7 +364,7 @@ module.exports = class Spectator extends Player {
 
       // Member versions are per player id. Pregame chat is public, so use
       // the spectator transcript while still advertising canTalk.
-      if (meeting.name == "Pregame") {
+      if (meeting.name == "Pregame" || meeting === this.game.postgame) {
         info.messages = meeting.getPlayerMessages("spectator");
       }
 

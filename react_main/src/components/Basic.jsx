@@ -11,6 +11,7 @@ import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
 import { splitIntoLetters } from "./TextEffects";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
+import { findChatIdentity } from "shared/chatIdentity";
 
 export function ItemList(props) {
   const itemRows = props.items.map(props.map);
@@ -176,6 +177,8 @@ function roleifySegments(text, siteInfo) {
 export function UserText(props) {
   const siteInfo = useContext(SiteInfoContext);
   const [content, setContent] = useState(props.text);
+  const avatarPlayers = props.iconUsername ? props.players : undefined;
+  const avatarSpectators = props.iconUsername ? props.spectators : undefined;
 
   useEffect(() => {
     if (props.text == null) return;
@@ -216,7 +219,8 @@ export function UserText(props) {
         displayEmoji: props.terminologyEmoticons,
       });
     if (props.iconUsername)
-      text = iconUsername(text, props.players, {
+      text = iconUsername(text, avatarPlayers, {
+        spectators: avatarSpectators,
         compact: props.compactAvatars,
       });
 
@@ -226,7 +230,7 @@ export function UserText(props) {
     if (props.splitLetters) text = splitIntoLetters(text);
 
     setContent(text);
-  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage, props.splitLetters]);
+  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage, props.splitLetters, props.iconUsername, props.compactAvatars, avatarPlayers, avatarSpectators]);
 
   return content ?? "";
 }
@@ -366,35 +370,26 @@ export function iconUsername(text, players, options) {
       let replaced = false;
 
       if (word.length > 1 && word.charAt(0) === "%") {
-        const checkName = word.substring(1);
+        const name = word.slice(1);
+        let person = findChatIdentity(name, players, options?.spectators);
+        const bareName = name.replace(/[.,!?;:)]+$/, "");
+        if (!person && bareName !== name)
+          person = findChatIdentity(bareName, players, options?.spectators);
 
-        const matchedPlayer = Object.values(players).find((curPlayer) => {
-          return curPlayer.name === checkName;
-        });
-
-        if (matchedPlayer) {
-          if (matchedPlayer.avatar) {
-            replaced = true;
-
-            words[j] = (
+        if (person) {
+          replaced = true;
+          const suffix = person.name.toLowerCase() === name.toLowerCase() ? "" : name.slice(bareName.length);
+          words[j] = (
+            <React.Fragment key={j}>
               <InlineAvatar
-                key={matchedPlayer.userId || matchedPlayer.name}
-                userId={matchedPlayer.userId}
-                username={matchedPlayer.name}
-                compact={Boolean(options && options.compact)}
+                userId={person.avatar && person.anonId == null ? person.userId : undefined}
+                avatar={person.avatar}
+                username={person.name}
+                compact={Boolean(options?.compact)}
               />
-            );
-          } else {
-            // no avatar
-            replaced = true;
-
-            words[j] = (
-              <InlineAvatar
-              username={matchedPlayer.name}
-              compact={Boolean(options && options.compact)}
-              />
-            );
-          }
+              {suffix}{" "}
+            </React.Fragment>
+          );
         }
       }
 
@@ -412,9 +407,14 @@ export function iconUsername(text, players, options) {
 
 function InlineAvatar(props) {
   const siteInfo = useContext(SiteInfoContext);
-  const photoSrc = useAvatarImageUrl(props.userId, {
+  const avatar = typeof props.avatar === "string" ? props.avatar : "";
+  const staticAvatar = avatar.startsWith("/decks/")
+    ? `/uploads${avatar}?t=${siteInfo?.cacheVal}`
+    : avatar.startsWith("/images/") ? avatar : undefined;
+  const userPhoto = useAvatarImageUrl(staticAvatar ? undefined : props.userId, {
     cacheVal: siteInfo?.cacheVal,
   });
+  const photoSrc = staticAvatar || userPhoto;
   let style = {
     position: "relative",
   };
@@ -430,7 +430,7 @@ function InlineAvatar(props) {
     style.verticalAlign = "-0.2em";
   }
   let src = photoSrc;
-  if (props.userId && photoSrc) {
+  if (photoSrc) {
     style.backgroundImage = "none";
   } else if (props.url) {
     src = null;
