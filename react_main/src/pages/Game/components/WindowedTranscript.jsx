@@ -55,7 +55,11 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   // from the rendered transcript. Measured heights are only valid for the
   // layout they were taken in: a font-size or width change invalidates them.
   const layoutRef = useRef(null);
-  useLayoutEffect(() => {
+  const reflowFrame = useRef(null);
+  const layoutFrame = useRef(null);
+  const fontLayoutPending = useRef(false);
+  const invalidateLayout = useCallback(function remeasureLayout(force = false) {
+    if (force) fontLayoutPending.current = true;
     // Null for a hidden or zero-size transcript: no reader is looking at it,
     // and treating invisibility as a width change destroys their position.
     const layout = transcriptLayoutMetrics(speechDisplayRef.current);
@@ -66,14 +70,23 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
       layoutRef.current = layout;
       return;
     }
-    if (previous.signature === layout.signature) return;
+    if (!fontLayoutPending.current && previous.signature === layout.signature) return;
+    // measureElement deliberately skips rows during native scrolling. Do not
+    // empty their cache until that guard opens; existing row observers continue
+    // handling reflow in the meantime. Coalesce rapid resizes/font completion.
+    const instance = virtualizerRef.current;
+    cancelAnimationFrame(layoutFrame.current);
+    if (instance.isScrolling) {
+      layoutFrame.current = requestAnimationFrame(() => remeasureLayout(force));
+      return;
+    }
+    cancelAnimationFrame(reflowFrame.current);
 
     // A real reflow (font size or column width): every row's height changes,
     // so the library's measured sizes are stale and unseen rows need the new
     // estimate. Re-lay the list, but put the reader back on the row and offset
     // they were reading — a bare measure() leaves them wherever the new
     // estimates put index 0.
-    const instance = virtualizerRef.current;
     // The DOM scroll position is the truth here; the library's scrollOffset can
     // lag a frame behind, which shifts the anchor by a row.
     const offset = speechDisplayRef.current
@@ -86,11 +99,18 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     const anchorDelta = anchorItem ? offset - anchorItem.start : 0;
 
     layoutRef.current = layout;
+    fontLayoutPending.current = false;
     measuredHeights.clear();
     instance.measure();
+    // measure() only clears sizes; stable row refs do not run again. Materialize
+    // fresh estimates before comparing sizes, then repopulate the mounted window.
+    instance.getVirtualItems();
+    for (const row of speechDisplayRef.current.querySelectorAll("[data-index]")) {
+      instance.measureElement(row);
+    }
 
     if (anchorKey != null) {
-      const index = keys.indexOf(anchorKey);
+      const index = anchorItem.index;
       const scroller = speechDisplayRef.current;
       if (index >= 0 && scroller) {
         // Bring the row into view from the new layout, then correct against its
@@ -110,7 +130,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
           const row = scroller.querySelector(`[data-index="${index}"]`);
           if (!row) {
             instance.scrollToIndex(index, { align: "start" });
-            requestAnimationFrame(() => align(attempt + 1));
+            reflowFrame.current = requestAnimationFrame(() => align(attempt + 1));
             return;
           }
           const rowTop =
@@ -126,12 +146,17 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
             stable = 0;
             scroller.scrollTop += delta;
           }
-          requestAnimationFrame(() => align(attempt + 1));
+          reflowFrame.current = requestAnimationFrame(() => align(attempt + 1));
         };
-        requestAnimationFrame(() => align(0));
+        reflowFrame.current = requestAnimationFrame(() => align(0));
       }
     }
-  });
+  }, [speechDisplayRef]);
+  useLayoutEffect(() => { invalidateLayout(); });
+  useEffect(() => () => {
+    cancelAnimationFrame(layoutFrame.current);
+    cancelAnimationFrame(reflowFrame.current);
+  }, []);
 
   const estimateSize = useCallback((index) => {
     const row = rowsRef.current[index];
@@ -233,6 +258,31 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     clearTimeout(highlightTimer.current);
     recordMeasured();
   }, [recordMeasured]);
+
+  // A webfont that finishes loading after a row painted changes that row's line
+  // box, so the sizes the virtualizer holds go stale and the rows below it move.
+  // Re-measure once when the faces settle: one deliberate correction instead of
+  // a slow drift as rows are scrolled into view.
+  useEffect(() => {
+    if (typeof document === "undefined" || !document.fonts) return undefined;
+    if (!document.fonts.addEventListener) return undefined;
+    let active = true;
+    let frame;
+    const remeasure = () => {
+      if (!active) return;
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => invalidateLayout(true));
+    };
+    document.fonts.addEventListener("loadingdone", remeasure);
+    if (document.fonts.status === "loading") {
+      document.fonts.ready.then(remeasure).catch(() => undefined);
+    }
+    return () => {
+      active = false;
+      cancelAnimationFrame(frame);
+      document.fonts.removeEventListener("loadingdone", remeasure);
+    };
+  }, [invalidateLayout]);
 
   useEffect(() => {
     const scroller = speechDisplayRef.current;
