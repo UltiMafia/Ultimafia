@@ -1303,7 +1303,7 @@ router.post("/host", async function (req, res) {
     }
   } catch (e) {
     logger.error(e);
-    errors.serverError(res, "Could not host game. Please try again or contact support if this persists.");
+    errors.serverError(res, "Unable to host the game right now. Try again in a moment.");
   } finally {
     // Hosting failed (a check refused it, or an error): let the next click try.
     if (rehostToken)
