@@ -152,9 +152,31 @@ async function main() {
                 dialogWidth: dialog.getBoundingClientRect().width,
                 viewportWidth: window.innerWidth,
                 pageOverflow: document.documentElement.scrollWidth - window.innerWidth,
+                background: getComputedStyle(dialog).backgroundColor,
+                foreground: getComputedStyle(dialog).color,
                 buttons,
               };
             });
+            // The claimed colour scheme is really on screen: the paper is dark
+            // in dark mode and light in light mode. Without this the fixture
+            // can render both schemes identically and still pass.
+            const luminance = (colour) => {
+              const [r, g, b] = colour.match(/[\d.]+/g).slice(0, 3).map(Number);
+              const [lr, lg, lb] = [r, g, b]
+                .map((value) => value / 255)
+                .map((value) => (value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4));
+              return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+            };
+            const paper = luminance(layout.background);
+            const ink = luminance(layout.foreground);
+            check(
+              mode === "dark" ? paper < 0.2 : paper > 0.7,
+              `${mode} mode paints a ${mode} dialog (paper luminance ${paper.toFixed(2)} from ${layout.background})`,
+            );
+            check(
+              Math.abs(paper - ink) > 0.3,
+              `${mode} mode keeps readable contrast (paper ${paper.toFixed(2)} vs text ${ink.toFixed(2)})`,
+            );
             check(
               layout.dialogWidth <= layout.viewportWidth,
               `the dialog fits the ${viewport.name} width`,

@@ -13,7 +13,16 @@ const params = new URLSearchParams(window.location.search);
 const mode = params.get("mode") === "light" ? "light" : "dark";
 const withSpectate = params.get("spectate") !== "0";
 
-document.documentElement.classList.add(mode === "light" ? "light-mode" : "dark-mode");
+// The site selects its own variables with a class and MUI selects the palette
+// with the color-scheme attribute (cssVariables.colorSchemeSelector: "data").
+// Set both, so the fixture renders the scheme it claims to.
+const html = document.documentElement;
+html.classList.add(mode === "light" ? "light-mode" : "dark-mode");
+html.setAttribute(mode === "light" ? "data-light" : "data-dark", "");
+
+// The provider picks its mode from this key, not from a `mode` prop; clearing
+// it lets defaultMode below decide, the same way the app boots in dark.
+window.localStorage.removeItem("mui-mode");
 
 const theme = getSiteTheme(undefined, mode);
 
@@ -22,7 +31,7 @@ const record = (name) => () => window.__calls.push(name);
 
 function Fixture() {
   return (
-    <ThemeProvider theme={theme} mode={mode} noSsr>
+    <ThemeProvider theme={theme} defaultMode={mode} noSsr>
       <CssBaseline />
       <Box
         sx={{
