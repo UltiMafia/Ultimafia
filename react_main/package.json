@@ -61,6 +61,7 @@
     "test:lobby-count:browser": "rsbuild build --config rsbuild.lobby-count-test.config.ts && node test/run-lobby-count.cjs",
     "test:mobile-header:browser": "rsbuild build --config rsbuild.mobile-header-test.config.ts && node test/run-mobile-header.cjs",
     "test:user-search:browser": "rsbuild build --config rsbuild.user-search-test.config.ts && node test/run-user-search.cjs",
+    "test:ready-check:browser": "rsbuild build --config rsbuild.ready-check-test.config.ts && node test/run-ready-check.cjs",
     "test:banned:browser": "rsbuild build --config rsbuild.banned-test.config.ts && node test/run-banned.cjs",
     "test:mod-commands:browser": "rsbuild build --config rsbuild.mod-commands-test.config.ts && node test/run-mod-commands.cjs",
     "test:ban-appeals:browser": "rsbuild build --config rsbuild.ban-appeals-test.config.ts && node test/run-ban-appeals.cjs",
