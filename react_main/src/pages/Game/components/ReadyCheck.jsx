@@ -16,6 +16,7 @@ export default function ReadyCheckDialog({
   timeLeft,
   onReady,
   onLeave,
+  onSpectate,
 }) {
   const [remaining, setRemaining] = useState(0);
 
@@ -51,7 +52,11 @@ export default function ReadyCheckDialog({
     function onKeyDown(e) {
       if (e.key !== "Enter" && e.key !== "NumpadEnter") return;
       if (e.repeat || e.altKey || e.ctrlKey || e.metaKey || e.isComposing) return;
-      if (e.target instanceof HTMLElement && e.target.closest("[data-ready-check-leave]")) {
+      // Enter on either secondary button belongs to that button.
+      if (
+        e.target instanceof HTMLElement &&
+        e.target.closest("[data-ready-check-secondary]")
+      ) {
         return;
       }
 
@@ -86,23 +91,39 @@ export default function ReadyCheckDialog({
         </Stack>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-        <Button
-          onClick={onLeave}
-          color="error"
-          variant="outlined"
-          data-ready-check-leave
-        >
-          Leave Game
-        </Button>
-        <Button
-          onClick={onReady}
-          color="success"
-          variant="contained"
-          size="large"
-          autoFocus
-        >
-          I am Ready
-        </Button>
+        <Stack spacing={1} sx={{ width: "100%" }}>
+          {onSpectate && (
+            <Button
+              onClick={onSpectate}
+              color="inherit"
+              variant="outlined"
+              size="small"
+              fullWidth
+              data-ready-check-secondary
+            >
+              Spectate instead
+            </Button>
+          )}
+          <Stack direction="row" spacing={1} justifyContent="center">
+            <Button
+              onClick={onLeave}
+              color="error"
+              variant="outlined"
+              data-ready-check-secondary
+            >
+              Leave Game
+            </Button>
+            <Button
+              onClick={onReady}
+              color="success"
+              variant="contained"
+              size="large"
+              autoFocus
+            >
+              I am Ready
+            </Button>
+          </Stack>
+        </Stack>
       </DialogActions>
     </Dialog>
   );
