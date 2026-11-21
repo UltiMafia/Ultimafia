@@ -91,14 +91,13 @@ export default function ReadyCheckDialog({
         </Stack>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "center", pb: 2 }}>
-        <Stack spacing={1} sx={{ width: "100%" }}>
+        <Stack spacing={1} alignItems="center" sx={{ width: "100%" }}>
           {onSpectate && (
             <Button
               onClick={onSpectate}
               color="inherit"
               variant="outlined"
               size="small"
-              fullWidth
               data-ready-check-secondary
             >
               Spectate instead

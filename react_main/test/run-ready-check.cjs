@@ -146,6 +146,7 @@ async function main() {
               const buttons = [...dialog.querySelectorAll("button")].map((el) => ({
                 label: el.textContent.trim(),
                 clipped: el.scrollWidth > el.clientWidth + 1,
+                width: Math.round(el.getBoundingClientRect().width),
               }));
               return {
                 dialogWidth: dialog.getBoundingClientRect().width,
@@ -161,6 +162,14 @@ async function main() {
             check(
               layout.pageOverflow <= 0,
               `the page does not scroll sideways (${viewport.name}, ${mode})`,
+            );
+            // The extra choice is a normal-sized button, not a stretched bar.
+            const spectateWidth = layout.buttons.find(
+              (entry) => entry.label === LABELS.spectate,
+            ).width;
+            check(
+              spectateWidth < layout.dialogWidth * 0.75,
+              `Spectate instead keeps the footprint of a button (${spectateWidth}px of ${Math.round(layout.dialogWidth)}px)`,
             );
             for (const entry of layout.buttons) {
               check(
