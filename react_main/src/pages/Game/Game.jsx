@@ -3315,6 +3315,7 @@ function ReplyReference(props) {
       >
         <UserText
           text={reply.content}
+          gameFormatting
           settings={user.settings}
           players={players}
           spectators={spectators}
@@ -3803,6 +3804,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                     {index > 0 && <br />}
                     <UserText
                       text={line}
+                      gameFormatting={!isServerMessage && !isVoteMessage}
                       settings={user.settings}
                       players={players}
                       spectators={spectators}
@@ -3849,6 +3851,7 @@ const MessageRow = React.memo(function MessageRow(props) {
               <span className="quote-content">
                 <UserText
                   text={quotedMessage.content}
+                  gameFormatting
                   settings={user.settings}
                   players={players}
                   spectators={spectators}
@@ -4389,6 +4392,7 @@ function SpeechInput(props) {
             name="MafiaSpeech"
             inputProps={{
               inputMode: "text",
+              title: "Formatting: **bold**, *italic*, __underline__, ~~strikethrough~~. Escape markers with a backslash.",
               autoCorrect: "on",
               autoCapitalize: "on",
               autoComplete: "off",
