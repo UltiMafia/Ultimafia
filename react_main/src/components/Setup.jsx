@@ -66,6 +66,10 @@ export default function Setup(props) {
   const classList = props.classList || "";
   const disablePopover = props.disablePopover;
   const small = props.small ?? true;
+  // Lets a parent that has other flexible content beside this setup ask for the
+  // width the roles actually need instead of a share of the row.
+  const fitContent = props.fitContent;
+  const maxWidth = props.maxWidth ?? "100%";
   const useRoleGroups = props.setup.useRoleGroups;
   const multi =
     (!props.setup.closed || useRoleGroups) &&
@@ -302,7 +306,8 @@ export default function Setup(props) {
         ref={setupRef}
         sx={{
           minWidth: 0,
-          width: "100%",
+          width: fitContent ? "fit-content" : "100%",
+          maxWidth: maxWidth,
           backgroundColor:
             backgroundColor !== undefined
               ? "background.paper"

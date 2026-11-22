@@ -271,7 +271,11 @@ const server = http.createServer((req, res) => {
             await page.goto(origin + `?theme=${theme}${renderer}`);
             await page.getByTestId('desktop-state-control').waitFor();
             assert.equal(await page.getByRole('group', { name: 'Game phase navigation' }).count(), 0);
-            assert.ok(await page.getByRole('button', { name: 'Go to first state', exact: true }).isVisible());
+            // The desktop strip shows the whole history, so the jump-to-first and
+            // jump-to-current controls are only rendered when it overflows. This
+            // fixture's four phases fit at 1280px.
+            assert.equal(await page.getByRole('button', { name: 'Go to first state', exact: true }).count(), 0);
+            assert.equal(await page.getByRole('button', { name: 'Go to current state', exact: true }).count(), 0);
             assert.equal(await page.getByRole('tab', { name: 'Day 2', exact: true }).count(), 1);
             assert.deepEqual(errors, [], 'no browser exceptions');
             console.log(`${engine}/${theme}/${full ? 'full' : 'virtual'}: phase order, endpoints, gutter, panels, widths, desktop: PASS`);
