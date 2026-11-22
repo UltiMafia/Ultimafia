@@ -598,7 +598,12 @@ export default function Game(props) {
       handleGameEscape(e, {
         replyPending: Boolean(replyTargetRef.current),
         cancelReply: () => setReplyTarget(null),
-        leave: onLeaveGameClick,
+        // Escape is easy to press accidentally: always ask, including in
+        // pregame. Do not capture onLeaveGameClick here: this effect only
+        // rebinds on visibility changes, so its phase/socket can be stale
+        // after joining or returning from a profile. The dialog's Confirm
+        // button uses the current leaveGame callback.
+        leave: () => setLeaveDialogOpen(true),
       });
     }
 
@@ -2059,10 +2064,8 @@ export function MobileLayout({
   innerRightContent = <ActionList />,
   additionalInfoContent = <></>,
   hideInfoTab = false,
-  chatTab = false,
 }) {
   const game = useContext(GameContext);
-  const { singleState } = useContext(GameTypeContext);
   const isPhoneDevice = useIsPhoneDevice();
 
   if (!isPhoneDevice) {
@@ -2154,32 +2157,12 @@ export function MobileLayout({
               icon={<i className="fas fa-info" />}
             />
           )}
-          {chatTab ? (
-            <BottomNavigationAction
-              label="Chat"
-              value="chat"
-              icon={<i className="fas fa-comments" />}
-              data-tutorial="chat-tab"
-            />
-          ) : (
-            <Stack
-              direction="row"
-              data-tutorial="chat-tab"
-              onClick={() => setSelectedPanel("chat")}
-              sx={{
-                flex: 2,
-                minWidth: 0,
-                filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              {!singleState && <Divider orientation="vertical" flexItem />}
-              <StateSwitcher stateRange={singleState ? 0 : undefined} />
-              {!singleState && <Divider orientation="vertical" flexItem />}
-            </Stack>
-          )}
+          <BottomNavigationAction
+            label="Chat"
+            value="chat"
+            icon={<i className="fas fa-comments" />}
+            data-tutorial="chat-tab"
+          />
           <BottomNavigationAction
             {...innerRightNavigationProps}
             data-tutorial={`${innerRightNavigationProps.value}-tab`}
@@ -2748,6 +2731,14 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
       </Box>
 
       <div className="speech-wrapper" data-tutorial="chat-panel">
+        {isPhoneDevice && !singleState && (
+          <Box
+            className="mobile-phase-float"
+            sx={{ position: "absolute", top: 8, left: 0, right: 0, zIndex: 2, display: "flex", justifyContent: "center", pointerEvents: "none" }}
+          >
+            <StateSwitcher />
+          </Box>
+        )}
         {windowed ? <WindowedTranscript
           key={JSON.stringify([singleState, stateViewing, selTab, filters, settings.messageLayout])}
           rows={messages}
@@ -2755,9 +2746,11 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           onScroll={onSpeechScroll}
           autoScroll={autoScroll}
           startAtEnd={!game.review && (singleState || stateViewing === history.currentState)}
+          paddingStart={isPhoneDevice && !singleState ? 60 : 0}
         /> : <div
           className="speech-display"
           data-name-animation-viewport
+          style={{ paddingTop: isPhoneDevice && !singleState ? 60 : undefined }}
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
         >

@@ -223,6 +223,20 @@ async function notifyRehost(oldGameId, newGameId, { hostId, hostName, setup } = 
   return true;
 }
 
+// Spectators aren't in Redis, so every game server is asked to drop them.
+function kickSpectator(userId) {
+  for (const port in servers) {
+    try {
+      servers[port].send("kickSpectator", {
+        userId: userId,
+        key: process.env.LOAD_BALANCER_KEY,
+      });
+    } catch (e) {
+      logger.error(e);
+    }
+  }
+}
+
 async function deprecateServer(port) {
   await redis.removeGameServer(port);
   servers[port].send("deprecated", {
@@ -236,5 +250,6 @@ module.exports = {
   cancelGame,
   notifyRehost,
   devControl,
+  kickSpectator,
   deprecateServer,
 };

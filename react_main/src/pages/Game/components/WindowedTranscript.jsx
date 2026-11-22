@@ -27,7 +27,7 @@ const UNSEEN_ROW_ESTIMATE = iOSDefersCorrections ? 150 : 60;
 // current phase of a running game. A review, or an older phase someone opened to
 // read, starts at its first message — the same place the full-DOM transcript put
 // them before this component existed.
-export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScroll, startAtEnd = true }) {
+export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScroll, startAtEnd = true, paddingStart = 0 }) {
   const initializing = useRef(true);
   const jumpFrame = useRef(null);
   const highlightTimer = useRef(null);
@@ -155,6 +155,10 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
     getItemKey,
     estimateSize,
     overscan: 8,
+    paddingStart,
+    // A jump to row zero must reveal the gutter too, not scroll it underneath
+    // the floating controls (including iOS top-edge reconciliation).
+    scrollPaddingStart: paddingStart,
     anchorTo: "end",
     followOnAppend: autoScroll,
     scrollEndThreshold: 10,
@@ -277,7 +281,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
         return;
       }
       const first = scroller.querySelector('[data-index="0"]');
-      const atFirst = first && Math.abs(first.getBoundingClientRect().top - scroller.getBoundingClientRect().top) < 2;
+      const atFirst = first && Math.abs(first.getBoundingClientRect().top - scroller.getBoundingClientRect().top - paddingStart) < 2;
       if (atFirst) {
         pendingTop.current = false;
         edgeDeadline.current = 0;
@@ -297,7 +301,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
       bridgingTop.current = true;
       virtualizer.scrollToIndex(0, { align: "start", behavior: "smooth" });
     });
-  }, [speechDisplayRef, virtualizer]);
+  }, [speechDisplayRef, virtualizer, paddingStart]);
   const handleTouchStart = useCallback((event) => {
     touchDown.current = true;
     touchPeakY.current = event.touches?.[0]?.clientY ?? null;
@@ -366,7 +370,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
   // cannot descend below the viewport top, while its normal upward motion is
   // untouched. Only item zero qualifies; real offscreen history stays scrollable.
   // No scrollTop writes, private gesture hooks, or per-scroll React updates.
-  const boundHistoryStart = firstItem?.index === 0 && windowStart > 0;
+  const boundHistoryStart = firstItem?.index === 0 && windowStart > paddingStart;
 
   return (
     <div
@@ -387,7 +391,7 @@ export function WindowedTranscript({ rows, speechDisplayRef, onScroll, autoScrol
           position: boundHistoryStart ? "sticky" : "absolute",
           top: boundHistoryStart ? undefined : windowStart,
 
-          bottom: boundHistoryStart ? (virtualizer.scrollRect?.height ?? 0) - windowHeight : undefined,
+          bottom: boundHistoryStart ? (virtualizer.scrollRect?.height ?? 0) - windowHeight - paddingStart : undefined,
           height: windowHeight,
           width: "100%",
         }}>

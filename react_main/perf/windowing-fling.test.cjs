@@ -45,7 +45,8 @@ async function main(){
     },warm);
     await page.clock.pauseAt(await page.evaluate(()=>Date.now()+100));
     const tick=async()=>{await page.waitForTimeout(25);await page.clock.runFor(16)};
-    const snapshot=()=>page.evaluate(()=>{const{s,v}=window.__flingProbe;const first=s.querySelector('[data-index="0"]');return{native:s.scrollTop,logical:v.scrollOffset,firstGap:first?first.getBoundingClientRect().top-s.getBoundingClientRect().top:null}});
+    // A real top includes the explicit phase-control gutter, but no extra gap.
+    const snapshot=()=>page.evaluate(()=>{const{s,v}=window.__flingProbe;const first=s.querySelector('[data-index="0"]');return{native:s.scrollTop,logical:v.scrollOffset,firstGap:first?first.getBoundingClientRect().top-s.getBoundingClientRect().top-(v.options.paddingStart||0):null}});
     await page.evaluate(()=>{const{s}=window.__flingProbe;s.dispatchEvent(new Event('touchstart',{bubbles:true}));s.scrollTop-=32});await tick();
     await page.evaluate(()=>window.__flingProbe.s.dispatchEvent(new Event('touchend',{bubbles:true})));
     const samples=[];let velocity=420,edge=null;
