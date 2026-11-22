@@ -26,7 +26,10 @@ import {
 } from "firebase/auth";
 import axios from "axios";
 import { verifyRecaptcha } from "../utils";
-import { collectFingerprint } from "../utils/fingerprint";
+import {
+  collectFingerprint,
+  writeFingerprintCookie,
+} from "../utils/fingerprint";
 import { useSnackbar } from "../hooks/useSnackbar";
 import { SiteInfoContext, UserContext } from "../Contexts";
 import { Link } from "react-router-dom";
@@ -306,6 +309,10 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
       } else {
         hrefUrl = window.location.origin + ":3000/auth/discord";
       }
+      // The Discord callback cannot read this page's state, so the device
+      // fingerprint rides along in a short-lived cookie; without it the
+      // account is created with none.
+      writeFingerprintCookie(await collectFingerprint());
       window.location.href = hrefUrl;
     } catch (err) {
       if (err.message.includes("(auth/too-many-requests)")) {
@@ -411,6 +418,7 @@ export const Auth = ({ defaultTab = 0, open, onClose, asDialog = false }) => {
         import.meta.env.MODE !== "development"
           ? `${window.location.origin}/auth/discord`
           : `${window.location.origin}:3000/auth/discord`;
+      writeFingerprintCookie(await collectFingerprint());
       window.location.href = hrefUrl;
     } catch (err) {
       if (!err?.message) return;
