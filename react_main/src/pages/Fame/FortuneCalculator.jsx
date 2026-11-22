@@ -20,6 +20,11 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { useIsPhoneDevice } from "hooks/useIsPhoneDevice";
 import { getAlignmentColor } from "components/Setup";
+import {
+  TWO_FACTION_MIN,
+  TWO_FACTION_MAX,
+  clampTwoFactionPayout,
+} from "shared/fortunePayout";
 
 // Constants mirror modules/fortunePoints.js. Displayed to users as read-only
 // reference values — not editable in the calculator.
@@ -31,8 +36,6 @@ const ANCHOR_PAYOUT = 80;
 const INDEPENDENT_CAP = 120;
 const MIN_FORTUNE_GAMES = 25;
 const LOW_SAMPLE_PAYOUT = 60;
-const TWO_FACTION_MIN = 50;
-const TWO_FACTION_MAX = 70;
 
 const MAJOR_NAMES = ["Village", "Mafia", "RedMafia", "Cult"];
 
@@ -56,8 +59,7 @@ function colorForButton(name) {
 }
 
 function clampTwoFaction(payout, factionCount) {
-  if (factionCount !== 2) return payout;
-  return Math.max(TWO_FACTION_MIN, Math.min(TWO_FACTION_MAX, payout));
+  return factionCount === 2 ? clampTwoFactionPayout(payout) : payout;
 }
 
 function rawSoloPayout(category, wrPercent) {

@@ -21,6 +21,7 @@
  */
 const constants = require("../data/constants");
 const roleData = require("../data/roles");
+const { clampTwoFactionPayout } = require("../shared/fortunePayout");
 
 const FORTUNE_GAME_TYPES = new Set(["ranked", "competitive"]);
 const MAJOR_ALIGNMENTS = new Set(["Village", "Mafia", "Cult"]);
@@ -36,10 +37,9 @@ const JOINT_DAMP_INDEPENDENT = 0.7;
 const MIN_FORTUNE_GAMES = 25;
 const LOW_SAMPLE_PAYOUT = 60;
 
-// Clamping rules for setups with 2 factions and skewed win ratios above the minimum fortune games
-const TWO_FACTION_MIN = 50;
-const TWO_FACTION_MAX = 70;
-
+// Clamping rules for setups with 2 factions and skewed win ratios above the
+// minimum fortune games live in shared/fortunePayout.js, so the award, the
+// setup Statistics tab and the Fortune calculator cannot disagree.
 // Priors when a faction has no ranked/competitive history yet.
 // Majors get a neutral 50/50 (→ half of K on a solo win); independents
 // get the anchor itself (→ exactly the anchor payout).
@@ -140,16 +140,18 @@ function computeFactionFortunePoints(opts) {
       continue;
     }
 
+    // Computed from the exact value, never from the rounded display field, so
+    // the award and the number shown in the Statistics tab cannot drift.
     const row = rowByFaction[f];
-    if (row.lowSampleSize) {
-      pointsWonByFactions[f] = row.soloPayout;
-    } else {
-      pointsWonByFactions[f] = isJoint
-        ? Math.round(row.soloPayoutExact * jointDampFor(f))
-        : row.soloPayout;
-    }
-    if(isTwoFactionGame){
-      pointsWonByFactions[f] = Math.max(TWO_FACTION_MIN, Math.min(TWO_FACTION_MAX,pointsWonByFactions[f]));
+    pointsWonByFactions[f] = row.lowSampleSize
+      ? Math.round(row.soloPayoutExact)
+      : isJoint
+      ? Math.round(row.soloPayoutExact * jointDampFor(f))
+      : Math.round(row.soloPayoutExact);
+
+    // The one two-faction clamp on this path.
+    if (isTwoFactionGame) {
+      pointsWonByFactions[f] = clampTwoFactionPayout(pointsWonByFactions[f]);
     }
   }
 
@@ -308,10 +310,7 @@ function computeSoloPayoutsForSetup(opts) {
       games,
       lowSampleSize,
       soloPayout: isTwoFactionSetup
-        ? Math.max(
-            TWO_FACTION_MIN,
-            Math.min(TWO_FACTION_MAX, Math.round(exact))
-          )
+        ? clampTwoFactionPayout(Math.round(exact))
         : Math.round(exact),
       soloPayoutExact: exact,
     };

@@ -708,5 +708,40 @@ describe("modules/fortunePoints", function () {
       byFaction.Mafia.soloPayout.should.equal(0);
       byFaction.Cult.soloPayout.should.equal(96);
     });
+
+    // The invariant behind #3172: whatever the Statistics tab advertises for a
+    // two-faction setup has to be the number a solo win actually pays. When the
+    // rule and the award were written separately they drifted apart.
+    it("advertises exactly what a two-faction solo win pays", function () {
+      const shapes = [
+        { Village: 6, Mafia: 30, games: 30 },
+        { Village: 1, Mafia: 39, games: 40 },
+        { Village: 20, Mafia: 20, games: 40 },
+        { Village: 29, Mafia: 29, games: 30 },
+      ];
+      for (const shape of shapes) {
+        const alignmentWinRates = {
+          Village: Array.from({ length: shape.games }, (_, i) => [
+            "ranked",
+            i < shape.Village,
+          ]),
+          Mafia: Array.from({ length: shape.games }, (_, i) => [
+            "ranked",
+            i < shape.Mafia,
+          ]),
+        };
+        const rows = computeSoloPayoutsForSetup({
+          factions: ["Village", "Mafia"],
+          alignmentWinRates,
+        });
+        const awarded = computeFactionFortunePoints({
+          factionNames: ["Village", "Mafia"],
+          winningFactions: ["Village"],
+          alignmentWinRates,
+        }).pointsWonByFactions.Village;
+        const advertised = rows.find((r) => r.faction === "Village").soloPayout;
+        advertised.should.equal(awarded);
+      }
+    });
   });
 });
