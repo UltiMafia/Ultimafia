@@ -1,6 +1,7 @@
 import React, {
   useState,
   useEffect,
+  useLayoutEffect,
   useReducer,
   useContext,
   useRef,
@@ -27,7 +28,7 @@ import {
   pickSpeechTarget,
   pregameSpectatorList,
 } from "shared/spectatorChat";
-import { completePlayerName, tabCompleteNames } from "shared/tabComplete";
+import { cyclePlayerName, tabCompleteNames } from "shared/tabComplete";
 import { isSpectatorPing } from "shared/spectatorPing";
 import Newspaper, {
   ObituariesMessage,
@@ -4017,6 +4018,21 @@ function SpeechInput(props) {
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
   const pendingSpeechRef = useRef(null);
+  const completionRef = useRef(null);
+  const speechInputRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const completion = completionRef.current;
+    if (completion?.value === speechInput) {
+      speechInputRef.current?.setSelectionRange(completion.caret, completion.caret);
+    } else {
+      completionRef.current = null;
+    }
+  }, [speechInput]);
+
+  useEffect(() => {
+    completionRef.current = null;
+  }, [selTab, game.history?.currentState, game.isSpectator]);
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
@@ -4236,6 +4252,7 @@ function SpeechInput(props) {
   }
 
   function onSpeechType(e) {
+    completionRef.current = null;
     if (isSpeakCooldownActive) return;
     setSpeechInput(e.target.value);
 
@@ -4256,6 +4273,7 @@ function SpeechInput(props) {
   const setReplyTarget = game.setReplyTarget;
 
   function onSpeechSubmit(e) {
+    if (e.key !== "Tab" || e.shiftKey) completionRef.current = null;
     if (isSpeakCooldownActive) return;
 
     if (e.key === "Enter" && selTab && speechInput.length) {
@@ -4318,25 +4336,52 @@ function SpeechInput(props) {
       // Tab completes a name; Shift+Tab leaves the chat box as usual (back
       // to the messages, which can be replied to with Enter).
       e.preventDefault();
-      const words = speechInput.split(" ");
-      const word = words.pop();
-      const completed = completePlayerName(
+      const input = e.target;
+      const caret = input.selectionStart;
+      if (caret !== input.selectionEnd) {
+        completionRef.current = null;
+        return;
+      }
+      // Do not splice a completion into the middle of an existing word.
+      if (caret < speechInput.length && !/\s/.test(speechInput[caret])) {
+        completionRef.current = null;
+        return;
+      }
+      const previous = completionRef.current;
+      const continuing =
+        previous?.value === speechInput && previous.caret === caret;
+      const start = continuing
+        ? previous.start
+        : speechInput.slice(0, caret).search(/\S*$/);
+      const word = continuing ? previous.word : speechInput.slice(start, caret);
+      const completed = cyclePlayerName(
         word,
         tabCompleteNames({
           players,
           spectators: game.spectators,
           isPregame: game.history?.currentState == -1,
           isSpectator: game.isSpectator,
-        })
+        }),
+        continuing ? previous.completed : undefined
       );
+      completionRef.current = null;
       if (completed === undefined) return;
-      if (completed) {
-        words.push(completed);
-        setSpeechInput(words.join(" "));
-      } else if (word.toLowerCase() === "@everyone".substring(0, word.length)) {
-        words.push("@everyone");
-        setSpeechInput(words.join(" "));
-      }
+      const replacement =
+        completed ||
+        (word.toLowerCase() === "@everyone".substring(0, word.length)
+          ? "@everyone"
+          : null);
+      if (!replacement) return;
+      const value =
+        speechInput.slice(0, start) + replacement + speechInput.slice(caret);
+      completionRef.current = {
+        word,
+        start,
+        completed: replacement,
+        value,
+        caret: start + replacement.length,
+      };
+      setSpeechInput(value);
     }
   }
 
@@ -4402,6 +4447,20 @@ function SpeechInput(props) {
             placeholder={speechPlaceholder}
             onChange={onSpeechType}
             onKeyDown={onSpeechSubmit}
+            inputRef={speechInputRef}
+            onBlur={() => {
+              completionRef.current = null;
+            }}
+            onSelect={(e) => {
+              const completion = completionRef.current;
+              if (
+                completion &&
+                (e.target.selectionStart !== completion.caret ||
+                  e.target.selectionEnd !== completion.caret)
+              ) {
+                completionRef.current = null;
+              }
+            }}
             enterKeyHint="done"
             disabled={isSpeakCooldownActive}
             sx={{
