@@ -27,6 +27,7 @@ export function bindMessageTouch(row, {
     gesture = null;
     row.classList.remove("reply-swiping", "reply-swipe-ready");
     row.style.removeProperty("--reply-swipe-offset");
+    row.style.removeProperty("--reply-cue-scale");
   }
   function point(touches) {
     return Array.from(touches || []).find((t) => t.identifier === gesture?.id);
@@ -61,6 +62,10 @@ export function bindMessageTouch(row, {
     if (!canReply || dx >= 0 || Math.abs(dy) >= -dx / 1.5) {
       reset();
       return;
+    }
+    if (!gesture.swiping) {
+      // Fit even the 1.4x cue pop inside this row; measure only when claimed.
+      row.style.setProperty("--reply-cue-scale", `${Math.min(1, row.offsetHeight / (32 * 1.4))}`);
     }
     gesture.swiping = true;
     if (e.cancelable) e.preventDefault();
