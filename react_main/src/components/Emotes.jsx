@@ -65,13 +65,13 @@ export function emotify(text, customEmotes, customStickers, options) {
 
     if (typeof segment != "string") continue;
 
-    // Split on runs of whitespace, so no empty tokens are produced for the
-    // spaces themselves: an empty token used to be rendered *and* carry the
-    // separator, which doubled the gap around any inline element. The single
-    // separator is added back below, for every kind of word.
-    const words = segment.split(/\s+/).filter((w) => w !== "");
+    // Keep whitespace as tokens, including at boundaries with markdown elements.
+    // Reusing the original separators avoids both lost spaces and doubled gaps.
+    const words = segment.split(/(\s+)/).filter((w) => w !== "");
 
     for (let j in words) {
+      if (/^\s+$/.test(words[j])) continue;
+
       let word = words[j].toLowerCase();
       const hasSticker =
         stickers && Object.prototype.hasOwnProperty.call(stickers, word);
@@ -80,38 +80,24 @@ export function emotify(text, customEmotes, customStickers, options) {
 
       // Site/system emotes win so user stickers cannot steal :gun: etc.
       if (Emotes[word] && typeof Emotes[word] != "function") {
-        words[j] = <Emote emote={word} />;
+        words[j] = <Emote key={`${i}-${j}`} emote={word} />;
         stickerOnlyText = false;
       } else if (hasSticker) {
         if (collapseStickers) {
-          words[j] = <span className="collapsed-sticker-label">
+          words[j] = <span key={`${i}-${j}`} className="collapsed-sticker-label">
             <CustomEmote emote={stickers[word]} />
             Click to see sticker
           </span>;
         } else {
-          words[j] = <CustomSticker sticker={stickers[word]} />;
+          words[j] = <CustomSticker key={`${i}-${j}`} sticker={stickers[word]} />;
         }
         emoteOnlyText = false;
       } else if (hasEmote) {
-        words[j] = <CustomEmote emote={emotes[word]} />;
+        words[j] = <CustomEmote key={`${i}-${j}`} emote={emotes[word]} />;
         stickerOnlyText = false;
       } else {
         emoteOnlyText = false;
         stickerOnlyText = false;
-      }
-
-      // The separator between words lives on the word before it, so an emote,
-      // sticker or custom emote needs one too; only plain words used to get it,
-      // which glued the next word to the right side of every inline element.
-      if (j < words.length - 1) {
-        if (typeof words[j] === "string") words[j] += " ";
-        else
-          words[j] = (
-            <React.Fragment key={`${i}-${j}`}>
-              {words[j]}
-              {" "}
-            </React.Fragment>
-          );
       }
     }
 
