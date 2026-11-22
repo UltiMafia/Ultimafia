@@ -52,7 +52,12 @@ async function main(){
    for(const virtual of [false,true]){
     const context=await browser.newContext({viewport:{width,height:900},isMobile:width<900,hasTouch:width<900});
     try{
-     const page=await context.newPage();page.on('pageerror',e=>failures.push({width,layout,theme,error:e.message}));
+     const page=await context.newPage();
+     // The fixture derives timestamps (and text-formatting seeds) from Date.now.
+     // Separate pages otherwise compare different content: proportional timestamp
+     // digits can add a whole wrapped line in compactInline. Keep real timers/rAF.
+     await page.clock.setFixedTime(new Date('2026-11-14T23:28:07Z'));
+     page.on('pageerror',e=>failures.push({width,layout,theme,error:e.message}));
      await page.route('**/*',r=>r.request().url().startsWith(base)?r.continue():r.abort());
      await page.goto(base+`?count=100&nameplates=78&cosmetic=mixed&virtual=${virtual?1:0}`);
      await page.waitForFunction(()=>window.chatPerf&&document.querySelector('.speech-display .message'));
