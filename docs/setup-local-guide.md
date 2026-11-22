@@ -409,5 +409,6 @@ If a different guide mentions **Codespaces**, `/workspaces/Ultimafia`, or port f
 - [Role icon guide](./guide-role-icons.md)
 - [Firebase / reCAPTCHA / other API keys](./setup-dependencies.md)
 - [Bot games](./setup-bot-games.md)
+- [Developing against a live backend](./setup-remote-backend.md)
 
 When you are ready to contribute: create a branch, make your changes, push to your fork, and open a pull request against UltiMafia `master`.
