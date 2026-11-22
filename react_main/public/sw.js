@@ -25,6 +25,24 @@ const DEFAULT_NOTIFICATION = {
   url: "/",
 };
 
+// Payload contract, shared with modules/pushNotifications.js:
+//
+//   { kind, gameId, url, title, body, tag, state?, timestamp? }
+//
+// `kind` is one of "ready-check", "game-starting" or "kicks-reminder". It does
+// not change how the notification looks -- the copy comes from the server -- it
+// only decides where a click lands. A payload without `kind` is an older one and
+// keeps the pre-kicks behaviour exactly.
+const KIND_KICKS_REMINDER = "kicks-reminder";
+
+// Phone layouts open on the chat panel and keep the meeting forms on the Actions
+// tab (Game.jsx `selectedPanel`), so a reminder that the player still owes an
+// action is wasted if the tap drops them in chat. The game page reads this once
+// on mount (src/pages/Game/pushDeepLink.js) and the player can switch panels
+// afterwards.
+const PANEL_PARAM = "panel";
+const KICKS_PANEL = "actions";
+
 function parsePushData(event) {
   if (!event.data) return DEFAULT_NOTIFICATION;
 
@@ -49,6 +67,91 @@ async function hasFocusedClient() {
   return clients.some((client) => client.focused);
 }
 
+function parseUrl(url) {
+  try {
+    return new URL(url, self.location.origin);
+  } catch (e) {
+    return new URL(DEFAULT_NOTIFICATION.url, self.location.origin);
+  }
+}
+
+/**
+ * The game id in a pathname, using the same `/game/:gameId` prefix rule the
+ * client routes on (src/hooks/useHostedGameSession.jsx).
+ */
+function gameIdFromPathname(pathname) {
+  const match = /^\/game\/([^/]+)(?:\/|$)/.exec(pathname || "");
+  return match ? match[1] : null;
+}
+
+/**
+ * Absolute URL a click should open.
+ *
+ * Every kind goes to the game named by the payload. A kicks reminder also asks
+ * for the action panel: landing in chat is the one outcome that would waste it.
+ */
+function clickUrl(data) {
+  const raw =
+    data.url || (data.gameId ? `/game/${data.gameId}` : DEFAULT_NOTIFICATION.url);
+  const url = parseUrl(raw);
+
+  if (
+    data.kind === KIND_KICKS_REMINDER &&
+    gameIdFromPathname(url.pathname) &&
+    !url.searchParams.has(PANEL_PARAM)
+  ) {
+    url.searchParams.set(PANEL_PARAM, KICKS_PANEL);
+  }
+
+  return url.href;
+}
+
+/**
+ * `focus()` rejects when the browser does not consider the window focusable
+ * (it demands user activation, which a real notification click carries but a
+ * synthetic one does not). Raising the window is a nicety: losing it must not
+ * cost the player the deep link, so the client is still returned.
+ */
+async function focusSafely(client) {
+  try {
+    return (await client.focus()) || client;
+  } catch (e) {
+    return client;
+  }
+}
+
+function showGameNotification(payload) {
+  const options = {
+    body: payload.body,
+    icon: "/images/icon-192.png",
+    badge: "/images/icon-192.png",
+    // One live notification per game: a ready-check push, then a starting push,
+    // then a kicks reminder for the same game replace each other instead of
+    // stacking, and `renotify` makes the replacement alert again rather than
+    // silently swapping the text. Neither kind pins itself to the screen -- a
+    // "your action is due" that outlived the kicks window would be stale -- so
+    // `requireInteraction` stays false for every kind.
+    tag: payload.tag || "ultimafia",
+    renotify: true,
+    requireInteraction: false,
+    data: {
+      // Resolved once, so `data.url` is always the URL a click should open even
+      // when the payload only names a game.
+      url: clickUrl(payload),
+      kind: payload.kind || null,
+      gameId:
+        payload.gameId ||
+        gameIdFromPathname(parseUrl(payload.url || "").pathname) ||
+        null,
+    },
+  };
+
+  const timestamp = Number(payload.timestamp);
+  if (Number.isFinite(timestamp) && timestamp > 0) options.timestamp = timestamp;
+
+  return self.registration.showNotification(payload.title, options);
+}
+
 self.addEventListener("push", (event) => {
   const payload = parsePushData(event);
 
@@ -56,7 +159,8 @@ self.addEventListener("push", (event) => {
     (async () => {
       // Someone staring at the ready-check dialog does not also need a system
       // notification; the page already has the dialog, the urgency overlay and
-      // the audio cue.
+      // the audio cue. Same for a player who is looking at the game when kicks
+      // start.
       //
       // The subscription is userVisibleOnly, which in principle obliges us to
       // show something for every push. Skipping while the player is looking
@@ -71,24 +175,13 @@ self.addEventListener("push", (event) => {
   );
 });
 
-function showGameNotification(payload) {
-  return self.registration.showNotification(payload.title, {
-    body: payload.body,
-    icon: "/images/icon-192.png",
-    badge: "/images/icon-192.png",
-    // Same tag per game, so a ready-check push followed by a starting push
-    // replaces rather than stacks.
-    tag: payload.tag || "ultimafia",
-    renotify: true,
-    requireInteraction: false,
-    data: { url: payload.url || DEFAULT_NOTIFICATION.url },
-  });
-}
-
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const targetUrl = event.notification.data?.url || DEFAULT_NOTIFICATION.url;
+  const data = event.notification.data || {};
+  const targetUrl = clickUrl(data);
+  const target = parseUrl(targetUrl);
+  const targetGameId = data.gameId || gameIdFromPathname(target.pathname);
 
   event.waitUntil(
     (async () => {
@@ -97,19 +190,45 @@ self.addEventListener("notificationclick", (event) => {
         includeUncontrolled: true,
       });
 
-      const targetPath = new URL(targetUrl, self.location.origin).pathname;
+      // Prefer a tab that is already in this game, wherever in the game it is:
+      // tapping the notification must not reload the game the player is in the
+      // middle of (a reload reconnects the socket and drops them back to
+      // loading). When the payload names no game, fall back to an exact path
+      // match, which is what this handler did before kinds existed.
+      const onGame = targetGameId
+        ? allClients.find(
+            (client) =>
+              gameIdFromPathname(parseUrl(client.url).pathname) === targetGameId
+          )
+        : allClients.find(
+            (client) => parseUrl(client.url).pathname === target.pathname
+          );
 
-      // Prefer an existing tab. Reuse one already on the game before falling back
-      // to any open tab, so tapping the notification does not pile up windows.
-      const onTarget = allClients.find(
-        (client) => new URL(client.url).pathname === targetPath
-      );
+      if (onGame) {
+        const focused = await focusSafely(onGame);
 
-      if (onTarget) return onTarget.focus();
+        // The panel is page state, not part of a live game's URL, so it is sent
+        // as a message rather than by navigating.
+        if (
+          target.searchParams.has(PANEL_PARAM) &&
+          typeof focused.postMessage === "function"
+        ) {
+          focused.postMessage({
+            type: "push-deep-link",
+            kind: data.kind || null,
+            gameId: targetGameId,
+            panel: target.searchParams.get(PANEL_PARAM),
+          });
+        }
 
+        return focused;
+      }
+
+      // Nothing in this game: reuse whatever window is open rather than piling
+      // up a second one, and only open a new window when the app is closed.
       const anyClient = allClients[0];
       if (anyClient && "navigate" in anyClient) {
-        await anyClient.focus();
+        await focusSafely(anyClient);
         return anyClient.navigate(targetUrl);
       }
 

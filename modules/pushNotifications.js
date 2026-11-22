@@ -5,8 +5,8 @@ const logger = require("./logging")("games");
  * Out-of-band push notifications for players who are not looking at the page.
  *
  * Subscriptions live in memory, deliberately. A push is only ever needed while a
- * player is sitting in pregame waiting for a game to fill, which is a span of
- * minutes inside a single game server process, so there is nothing worth
+ * player is attached to a game on this process -- first while waiting for the
+ * lobby to fill, then when their game enters kicks -- so there is nothing worth
  * persisting and no schema change to make. Anything that has to outlive the
  * process (an account-wide "notify me about X" preference, say) would need a
  * real store and should not be bolted onto this.
@@ -18,9 +18,13 @@ const logger = require("./logging")("games");
  * `normalizeSubscription` to recognise its payload shape -- nothing else.
  */
 
-const SUBSCRIPTION_TTL = 6 * 60 * 60 * 1000; // 6h; a pregame lobby never lives this long
+// Idle time before a subscription is dropped. Measured from its last successful
+// send (notifyUser), not from registration, because a game can outlast this.
+const SUBSCRIPTION_TTL = 6 * 60 * 60 * 1000; // 6h
 const MAX_TARGETS_PER_USER = 5; // one per device/browser, generously
 const SWEEP_INTERVAL = 30 * 60 * 1000;
+// A game's whole table fits in one batch; the cap only bounds a bad caller.
+const NOTIFY_BATCH_SIZE = 50;
 
 // userId -> Map<targetKey, target>
 const subscriptions = new Map();
@@ -179,15 +183,24 @@ function hasSubscription(userId) {
 }
 
 /**
- * Fan out one notification to every target a user has registered. Never throws:
- * a push failing must not take down a game state transition.
+ * Fan out one notification to every target a user has registered and report what
+ * happened per target: `{ targets, sent, failed, pruned }`. Never throws: a push
+ * failing must not take down a game state transition.
  */
-async function notifyUser(userId, payload) {
+async function notifyUserReport(userId, payload) {
+  const report = { targets: 0, sent: 0, failed: 0, pruned: 0 };
+
   const targets = subscriptions.get(userId);
-  if (!targets || targets.size === 0) return 0;
+  if (!targets || targets.size === 0) return report;
+
+  const keys = [...targets.keys()];
+  report.targets = keys.length;
 
   const results = await Promise.all(
-    [...targets.values()].map(async (target) => {
+    keys.map(async (key) => {
+      const target = targets.get(key);
+      if (!target) return "failed";
+
       const transport = TRANSPORTS[target.type];
       if (!transport) return "failed";
 
@@ -200,22 +213,84 @@ async function notifyUser(userId, payload) {
     })
   );
 
-  let sent = 0;
-  [...targets.keys()].forEach((key, i) => {
-    if (results[i] === "sent") sent++;
-    else if (results[i] === "gone") targets.delete(key);
+  keys.forEach((key, i) => {
+    if (results[i] === "sent") {
+      report.sent++;
+      // A delivered push proves the browser still holds the subscription, so the
+      // TTL sweep measures idleness since the last send rather than since
+      // registration -- otherwise a long game could have its subscriptions
+      // swept away mid-game.
+      const target = targets.get(key);
+      if (target) target.addedAt = Date.now();
+    } else if (results[i] === "gone") {
+      // 404/410: the browser threw the subscription away, so stop sending to it.
+      targets.delete(key);
+      report.pruned++;
+    } else {
+      report.failed++;
+    }
   });
 
   if (targets.size === 0) subscriptions.delete(userId);
 
+  return report;
+}
+
+/**
+ * One user, one notification per registered device. Resolves to the number of
+ * deliveries; see notifyUserReport for the breakdown.
+ */
+async function notifyUser(userId, payload) {
+  const { sent } = await notifyUserReport(userId, payload);
   return sent;
 }
 
+function uniqueUserIds(userIds) {
+  return [
+    ...new Set(
+      (userIds || []).filter((id) => id != null && id !== "").map(String)
+    ),
+  ];
+}
+
+/**
+ * Deliver to many users in bounded batches, isolating failures per target, and
+ * report totals a caller can log: `{ recipients, reached, targets, sent, failed,
+ * pruned }`. `reached` counts recipients that had at least one subscription, so
+ * recipients - reached is "nobody to tell".
+ */
+async function notifyUsersWithReport(userIds, payload) {
+  const ids = uniqueUserIds(userIds);
+  const report = {
+    recipients: ids.length,
+    reached: 0,
+    targets: 0,
+    sent: 0,
+    failed: 0,
+    pruned: 0,
+  };
+
+  for (let i = 0; i < ids.length; i += NOTIFY_BATCH_SIZE) {
+    const batch = ids.slice(i, i + NOTIFY_BATCH_SIZE);
+    const results = await Promise.all(
+      batch.map((userId) => notifyUserReport(userId, payload))
+    );
+
+    for (const result of results) {
+      if (result.targets > 0) report.reached++;
+      report.targets += result.targets;
+      report.sent += result.sent;
+      report.failed += result.failed;
+      report.pruned += result.pruned;
+    }
+  }
+
+  return report;
+}
+
 async function notifyUsers(userIds, payload) {
-  const counts = await Promise.all(
-    [...new Set(userIds)].map((userId) => notifyUser(userId, payload))
-  );
-  return counts.reduce((sum, n) => sum + n, 0);
+  const { sent } = await notifyUsersWithReport(userIds, payload);
+  return sent;
 }
 
 function sweepExpired(now = Date.now()) {
@@ -253,10 +328,13 @@ module.exports = {
   unregisterUser,
   hasSubscription,
   notifyUser,
+  notifyUserReport,
   notifyUsers,
+  notifyUsersWithReport,
   // exported for tests
   normalizeSubscription,
   sweepExpired,
   SUBSCRIPTION_TTL,
   MAX_TARGETS_PER_USER,
+  NOTIFY_BATCH_SIZE,
 };

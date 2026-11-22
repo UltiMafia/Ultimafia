@@ -75,9 +75,10 @@ VAPID_SUBJECT=mailto:<an address you monitor>
 
 #### Push notifications
 
-Players waiting in pregame can opt in to a notification when their game fills,
-delivered even with the browser closed. This needs a VAPID key pair. Generate one
-**once** and keep it:
+Players can opt in to web push while they are on a game page: "your game is
+starting" when the lobby fills, and "your game is in kicks" if they still owe an
+action when the phase timer runs out. Both are delivered even with the browser
+closed. This needs a VAPID key pair. Generate one **once** and keep it:
 
 ```
 node -e "console.log(require('web-push').generateVAPIDKeys())"

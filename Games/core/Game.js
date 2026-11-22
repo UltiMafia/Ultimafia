@@ -37,6 +37,7 @@ const PostgameMeeting = require("./PostgameMeeting");
 const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const { isTestBotPlayer } = require("./botPlayers");
+const kicksReminder = require("./kicksReminder");
 const devControls = require("./devControls");
 const gameEventLog = require("../../modules/gameEventLog");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
@@ -136,6 +137,10 @@ module.exports = class Game {
       options.settings.vegKickCountdownLength != null
         ? options.settings.vegKickCountdownLength
         : 300000;
+    // Kicks reminders already sent, keyed `${gameId}:${state}:${userId}:kicks`
+    // (see kicksReminder.dedupeKey). In memory like the push subscriptions: a
+    // restarted process has no game to remind anyone about either.
+    this.kicksReminderSent = new Set();
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
@@ -1401,10 +1406,10 @@ module.exports = class Game {
       await this.endTutorialEarly(player);
       return;
     }
-    // The subscription only exists to cover the pregame wait, so it goes as soon
-    // as the player does. Note this is driven by leaving, not by the socket
-    // closing: a player who backgrounds or closes their browser stays in the
-    // lobby, and covering exactly that case is the point of the push.
+    // The subscription goes as soon as the player does, so nobody is pushed a
+    // game they are no longer in. Note this is driven by leaving, not by the
+    // socket closing: a player who backgrounds or closes their browser stays in
+    // the game, and covering exactly that case is the point of the push.
     if (player.user && player.user.id) {
       pushNotifications.unregisterUser(player.user.id);
     }
@@ -2086,6 +2091,7 @@ module.exports = class Game {
       pushNotifications
         .notifyUsers(userIds, {
           ...payload,
+          gameId: this.id,
           url: `${process.env.BASE_URL || ""}/game/${this.id}`,
           tag: `game-${this.id}`,
         })
@@ -2093,6 +2099,20 @@ module.exports = class Game {
     } catch (e) {
       logger.error(e);
     }
+  }
+
+  /**
+   * Nudge every player who still owes an action to a meeting that will veg them,
+   * once per player per kicks window. Called from checkVeg(), i.e. on the one
+   * path into kicks -- there is no timer or poll behind it.
+   *
+   * Not awaited: checkVeg() has already moved the game into kicks, and a push
+   * must neither hold that up nor be able to break it. kicksReminder.notify
+   * records the dedupe markers before sending, logs a structured summary, and
+   * never rejects.
+   */
+  pushKicksReminder() {
+    kicksReminder.notify(this, this.kicksReminderSent);
   }
 
   readyCheckInitPayload(endTime) {
@@ -2108,6 +2128,7 @@ module.exports = class Game {
     this.readyPlayers = {};
 
     this.pushToPlayers({
+      kind: "ready-check",
       title: "Your game is ready!",
       body: this.spectating
         ? "Ready up now or you will be moved to spectators."
@@ -2232,6 +2253,7 @@ module.exports = class Game {
     // looking at the page and startReadyCheck did the nudging.
     if (!this.readyCheck) {
       this.pushToPlayers({
+        kind: "game-starting",
         title: "Your game is starting!",
         body: `${this.setup?.name || "Your game"} is about to begin.`,
       });
@@ -2309,12 +2331,10 @@ module.exports = class Game {
     // them in the spectator meeting.
     this.removePregameSpectators();
 
-    // The pregame wait is over; nothing else pushes.
-    for (let player of this.players) {
-      if (player.user && player.user.id) {
-        pushNotifications.unregisterUser(player.user.id);
-      }
-    }
+    // Subscriptions are deliberately *not* dropped here: they now cover the
+    // whole game, not just the wait for it to fill, because pushes also go out
+    // when a game enters kicks (pushKicksReminder). They are dropped when the
+    // player leaves (playerLeave) or when the client unsubscribes.
 
     // Set game in progress in redis db
     redis.setGameStatus(this.id, "In Progress");
@@ -3590,6 +3610,12 @@ module.exports = class Game {
     for (let player of this.players) {
       player.warnOfVoteKick();
     }
+
+    // The one funnel into kicks (base and every type override end up here), so
+    // this is where the reminder belongs. Claimed before checkAllMeetingsReady,
+    // which can advance the state synchronously and would leave the recipients
+    // looking like the next phase's. Fire-and-forget: it cannot throw.
+    this.pushKicksReminder();
 
     this.checkAllMeetingsReady();
   }
