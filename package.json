@@ -10,7 +10,8 @@
     "start": "docker-compose up; pm2 start pm2.config.js",
     "stop": "pm2 kill; docker-compose down",
     "test": "NODE_ENV=test mocha --require ./test/helpers/pushConfig.js --recursive --parallel --exit",
-    "test:push": "NODE_ENV=test mocha --require ./test/helpers/pushConfig.js --exit test/pushNotifications.test.js test/Games/kicksReminder.test.js test/Games/KicksPush.test.js && node --test react_main/test/serviceWorkerPush.test.mjs react_main/test/pushDeepLink.test.mjs"
+    "test:push": "NODE_ENV=test mocha --require ./test/helpers/pushConfig.js --exit test/pushNotifications.test.js test/Games/kicksReminder.test.js test/Games/KicksPush.test.js && node --test react_main/test/serviceWorkerPush.test.mjs react_main/test/pushDeepLink.test.mjs",
+    "fuzz:mafia": "NODE_ENV=test node scripts/mafia-fuzz/run.js"
   },
   "dependencies": {
     "@octokit/core": "^7.0.3",
