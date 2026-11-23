@@ -18,8 +18,6 @@ module.exports = class GuessAdversaryKill extends Card {
                 if (this.dominates()) this.target.kill("basic", this.actor);
               }
             }
-
-            //if (this.dominates()) this.target.kill("basic", this.actor);
           },
         },
       },

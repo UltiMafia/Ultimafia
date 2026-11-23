@@ -78,7 +78,7 @@ export default function DmPanel(props) {
           <Typography
             data-testid="dm-conversation-title"
             noWrap
-            sx={{ fontWeight: 700, fontSize: 15, lineHeight: 1.2 }}
+            sx={{ fontWeight: 700, fontSize: "0.9375rem", lineHeight: 1.2 }}
           >
             {current ? dmTitle(current, user.id) : "Conversation"}
           </Typography>
@@ -95,7 +95,7 @@ export default function DmPanel(props) {
     left = (
       <>
         <BackButton onClick={props.onCancelNew} />
-        <Typography sx={{ fontWeight: 700, fontSize: 16, flex: 1 }} noWrap>
+        <Typography sx={{ fontWeight: 700, fontSize: "1rem", flex: 1 }} noWrap>
           New message
         </Typography>
       </>
@@ -103,7 +103,7 @@ export default function DmPanel(props) {
     body = <NewConversationView {...props} />;
   } else {
     left = (
-      <Typography sx={{ fontWeight: 700, fontSize: 17, flex: 1 }} noWrap>
+      <Typography sx={{ fontWeight: 700, fontSize: "1.0625rem", flex: 1 }} noWrap>
         Messages
       </Typography>
     );
@@ -258,7 +258,7 @@ function ConversationList({ loading, directs, notifsByChannel, selfId, onOpen, o
   if (directs.length === 0)
     return (
       <Box sx={{ m: "auto", p: 3, textAlign: "center" }} data-testid="dm-empty">
-        <Typography sx={{ fontWeight: 700, fontSize: 18, mb: 0.5 }}>
+        <Typography sx={{ fontWeight: 700, fontSize: "1.125rem", mb: 0.5 }}>
           Welcome to your inbox!
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -309,7 +309,7 @@ function ConversationList({ loading, directs, notifsByChannel, selfId, onOpen, o
               <Stack direction="row" alignItems="baseline" spacing={0.5} sx={{ minWidth: 0 }}>
                 <Typography
                   noWrap
-                  sx={{ fontWeight: 700, fontSize: 15, minWidth: 0, flexShrink: 1 }}
+                  sx={{ fontWeight: 700, fontSize: "0.9375rem", minWidth: 0, flexShrink: 1 }}
                 >
                   {dmTitle(c, selfId)}
                 </Typography>
@@ -374,7 +374,7 @@ function InlineError({ text }) {
       sx={{
         px: 2,
         py: 0.75,
-        fontSize: 13,
+        fontSize: "0.8125rem",
         color: "error.main",
         display: "flex",
         alignItems: "center",
@@ -500,7 +500,7 @@ function ConversationView(props) {
             }}
             placeholder="Start a new message"
             inputProps={{ maxLength: MaxChatMessageLength, "aria-label": "Message", "data-testid": "dm-input" }}
-            sx={{ flex: 1, fontSize: 14, py: 0.75 }}
+            sx={{ flex: 1, fontSize: "0.875rem", py: 0.75 }}
             disabled={!loaded}
           />
           {/* Same picker as game chat: site emotes, my custom emotes and
@@ -577,7 +577,7 @@ function Bubble({ message, mine, first, last, socket }) {
           px: stickerOnly ? 0 : 1.5,
           py: stickerOnly ? 0.25 : 0.75,
           borderRadius: radius,
-          fontSize: 14,
+          fontSize: "0.875rem",
           lineHeight: 1.35,
           wordBreak: "break-word",
           whiteSpace: "pre-wrap",
@@ -670,7 +670,7 @@ function NewConversationView(props) {
           cursor: "text",
         }}
       >
-        <Typography color="text.secondary" sx={{ fontSize: 14, mr: 0.5 }}>
+        <Typography color="text.secondary" sx={{ fontSize: "0.875rem", mr: 0.5 }}>
           To:
         </Typography>
         {selected.map((u) => (
@@ -702,7 +702,7 @@ function NewConversationView(props) {
           }}
           placeholder={selected.length ? "" : "Type a name"}
           inputProps={{ "aria-label": "Search people", "data-testid": "dm-search" }}
-          sx={{ flex: 1, minWidth: 90, fontSize: 14 }}
+          sx={{ flex: 1, minWidth: 90, fontSize: "0.875rem" }}
         />
       </Box>
       {sendError && <InlineError text={sendError} />}
@@ -744,7 +744,7 @@ function NewConversationView(props) {
               <Box sx={{ lineHeight: 0, position: "relative", "& .avatar": { width: "36px !important", height: "36px !important" } }}>
                 <Avatar id={u.id} name={u.name} hasImage={u.avatar} />
               </Box>
-              <Typography sx={{ flex: 1, fontWeight: 600, fontSize: 14 }} noWrap>
+              <Typography sx={{ flex: 1, fontWeight: 600, fontSize: "0.875rem" }} noWrap>
                 {u.name}
               </Typography>
               {u.status && <StatusIcon status={u.status} />}

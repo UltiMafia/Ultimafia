@@ -70,7 +70,7 @@ const modifierData = {
     Playful: {
       category: "Items",
       internal: ["StartWithJack"],
-      tags: ["Items", "Coffee"],
+      tags: ["Items", "Jack-In-The-Box"],
       description: "You start with a Jack-In-The-Box. "+jackBoxDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -102,7 +102,7 @@ const modifierData = {
     Explosive: {
       category: "Items",
       internal: ["StartWithBomb"],
-      tags: ["Items", "Killing"],
+      tags: ["Items", "Killing", "Bomb"],
       description: "You start with a Bomb. "+bombDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -110,7 +110,7 @@ const modifierData = {
     Combustible: {
       category: "Items",
       internal: ["StartWithTNT"],
-      tags: ["Items", "Killing"],
+      tags: ["Items", "Killing", "TNT"],
       description: "You start with TNT. "+tntDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -151,7 +151,7 @@ const modifierData = {
     Shielded: {
       category: "Items",
       internal: ["StartWithShield"],
-      tags: ["Items"],
+      tags: ["Items", "Shield"],
       description: "You start with a Shield. "+shieldDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -167,7 +167,7 @@ const modifierData = {
     Rifled: {
       category: "Items",
       internal: ["StartWithRifle"],
-      tags: ["Items", "Killing", "Gun", "Alignments", "Day Killer"],
+      tags: ["Items", "Killing", "Gun", "Rifle", "Alignments", "Day Killer"],
       description: "You start with a Rifle. "+rifleDef,
       eventDescription: "This modifier does nothing when on an Event.",
       allowDuplicate: true,
@@ -977,6 +977,14 @@ const modifierData = {
       eventDescription: "This modifier does nothing when on an Event.",
       incompatible: ["Vain"],
     },
+    Rakish: {
+      category: "Visits",
+      internal: ["Rakish"],
+      tags: ["Killing", "Death Interaction", "Linked", "Visits"],
+      description:
+        "If you die, the player you most recently protected will also die.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
     Regretful: {
       category: "Visits",
       internal: ["Regretful"],
@@ -1427,6 +1435,24 @@ const modifierData = {
       internal: ["BecomeRedMafia"],
       tags: ["Alignments"],
       description: "Mafia roles with this modifier applied join the Red Mafia.",
+    },
+    Binary: {
+      category: "Other",
+      internal: ["Binary"],
+      tags: ["Information", "Visit Interaction"],
+      roles: ["Tracker", "Scout", "Shadow"],
+      description:
+        "On Tracker, Scout, and Shadow, you learn whether your target visited anybody, instead of who they visited. A watch on that target is unchanged.",
+      eventDescription: "This modifier does nothing when on an Event.",
+    },
+    Desperate: {
+      category: "Other",
+      internal: ["Desperate"],
+      tags: ["Guess", "Self Kill"],
+      roles: ["Manhunter", "Bondsman", "Seeker", "Hider", "Invader", "Sculptor"],
+      description:
+        "If your guess is wrong, you die. Manhunter and Bondsman must guess a player and a role from the setup each night.",
+      eventDescription: "This modifier does nothing when on an Event.",
     },
   },
   Jotto: {},

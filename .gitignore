@@ -40,3 +40,4 @@ firebase.json
 .codex/
 AGENTS.md
 backups/
+mafia-fuzz-failures/

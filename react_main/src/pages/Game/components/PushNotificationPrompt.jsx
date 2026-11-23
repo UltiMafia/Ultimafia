@@ -17,6 +17,10 @@ import {
  * Offers push notifications while a player waits in pregame, so they can put the
  * phone down and still be told when the game fills.
  *
+ * The same subscription carries the kicks reminders sent once the game is
+ * running, so this is also how a player finds out that they still owe an action
+ * before being kicked.
+ *
  * This is the only place the site asks for notification permission. Asking on
  * page load instead (as the game page used to) prompts with no context, and
  * Chrome's quieter-permissions heuristic auto-blocks sites that do it for anyone
@@ -172,8 +176,8 @@ export default function PushNotificationPrompt({ socket }) {
   if (isIos() && !isStandalone()) {
     return banner(
       <>
-        Add UltiMafia to your home screen (Share &rarr; Add to Home Screen) to get
-        notified when your game starts.
+        Add UltiMafia to your home screen (Share &rarr; Add to Home Screen) to be
+        notified when your game starts and when you still owe an action.
       </>,
       null
     );
@@ -182,7 +186,10 @@ export default function PushNotificationPrompt({ socket }) {
   if (permission !== "default") return null;
 
   return banner(
-    "Get a notification when this game starts.",
+    <>
+      Get notified when this game starts, and when kicks begin and you still
+      owe an action.
+    </>,
     <Button
       color="inherit"
       size="small"

@@ -280,6 +280,9 @@ module.exports = class Spectator extends Player {
         var meeting = this.game.getMeeting(quote.toMeetingId);
         if (!this.canSpeakIn(meeting)) return;
 
+        const sourceMeeting = this.game.getMeeting(quote.fromMeetingId, quote.fromState);
+        if (!sourceMeeting || !sourceMeeting.messages.some((target) => target.id === quote.messageId)) return;
+
         speechPast.push(Date.now());
         const posted = meeting.quote(this, quote);
         if (!posted) return;

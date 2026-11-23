@@ -223,8 +223,10 @@ describe("moderation fingerprint parity endpoints", function () {
       const res = response();
       await handlers.unlink(request({ body: { userId1: "one", userId2: "two" } }), res);
       res.statusCode.should.equal(200);
-      if (linkType === "ip") res.body.removed.should.deep.equal(["198.51.100.4"]);
+      if (linkType === "ip") res.body.removedIpCount.should.equal(1);
       else res.body.removedFingerprintCount.should.equal(1);
+      res.body.should.not.have.property("removed");
+      JSON.stringify(res.body).should.not.include("198.51.100.4");
       const alts = response();
       await handlers.alts(request({ query: { userId: "one" } }), alts);
       alts.body.map((user) => user.id).should.deep.equal(["one"]);

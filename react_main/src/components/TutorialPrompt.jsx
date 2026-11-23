@@ -2,6 +2,7 @@ import React, { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Alert,
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -37,13 +38,29 @@ export function TutorialLobbyBanner() {
       icon={<span>📘</span>}
       data-testid="tutorial-banner"
       action={
-        <>
-          <Button component={Link} to="/play/tutorial" size="small" variant="contained">
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            flexWrap: "nowrap",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Button
+            component={Link}
+            to="/play/tutorial"
+            size="small"
+            variant="contained"
+            sx={{ whiteSpace: "nowrap", textTransform: "none" }}
+          >
             Play tutorial
           </Button>
           <Button
             size="small"
+            variant="outlined"
             color="inherit"
+            sx={{ whiteSpace: "nowrap", textTransform: "none" }}
             onClick={() => {
               localStorage.setItem(BANNER_KEY, "1");
               setDismissed(true);
@@ -51,7 +68,7 @@ export function TutorialLobbyBanner() {
           >
             Skip
           </Button>
-        </>
+        </Box>
       }
     >
       New here? Play a quick guided game against bots before jumping into ranked.

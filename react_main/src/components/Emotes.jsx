@@ -50,6 +50,8 @@ export function emotify(text, customEmotes, customStickers, options) {
   if (text == null) return;
 
   const isSystem = Boolean(options && options.system);
+  const collapseStickers = Boolean(options && options.collapseStickers);
+  const isReply = Boolean(options && options.isReply);
   // System/game text never uses player stickers or custom emotes.
   const stickers = isSystem ? null : customStickers;
   const emotes = isSystem ? null : customEmotes;
@@ -63,9 +65,13 @@ export function emotify(text, customEmotes, customStickers, options) {
 
     if (typeof segment != "string") continue;
 
-    const words = segment.split(" ");
+    // Keep whitespace as tokens, including at boundaries with markdown elements.
+    // Reusing the original separators avoids both lost spaces and doubled gaps.
+    const words = segment.split(/(\s+)/).filter((w) => w !== "");
 
     for (let j in words) {
+      if (/^\s+$/.test(words[j])) continue;
+
       let word = words[j].toLowerCase();
       const hasSticker =
         stickers && Object.prototype.hasOwnProperty.call(stickers, word);
@@ -74,23 +80,24 @@ export function emotify(text, customEmotes, customStickers, options) {
 
       // Site/system emotes win so user stickers cannot steal :gun: etc.
       if (Emotes[word] && typeof Emotes[word] != "function") {
-        words[j] = <Emote emote={word} />;
+        words[j] = <Emote key={`${i}-${j}`} emote={word} />;
         stickerOnlyText = false;
       } else if (hasSticker) {
-        words[j] = <CustomSticker sticker={stickers[word]} />;
+        if (collapseStickers) {
+          words[j] = <span key={`${i}-${j}`} className="collapsed-sticker-label">
+            <CustomEmote emote={stickers[word]} />
+            Click to see sticker
+          </span>;
+        } else {
+          words[j] = <CustomSticker key={`${i}-${j}`} sticker={stickers[word]} />;
+        }
         emoteOnlyText = false;
       } else if (hasEmote) {
-        words[j] = <CustomEmote emote={emotes[word]} />;
+        words[j] = <CustomEmote key={`${i}-${j}`} emote={emotes[word]} />;
         stickerOnlyText = false;
       } else {
-        if (word !== "") {
-          emoteOnlyText = false;
-          stickerOnlyText = false;
-        }
-        if (j < words.length - 1) {
-          // do NOT append an extra ' ' space in the last word (which wasn't there in the first place)
-          words[j] += " ";
-        }
+        emoteOnlyText = false;
+        stickerOnlyText = false;
       }
     }
 
@@ -117,7 +124,7 @@ export function emotify(text, customEmotes, customStickers, options) {
         segment
       )
     );
-  } else if (emoteOnlyText) {
+  } else if (emoteOnlyText && !isReply) {
     // if the entire text is only emotes, make them larger
     text = text.map((segment, i) =>
       React.isValidElement(segment) ? (

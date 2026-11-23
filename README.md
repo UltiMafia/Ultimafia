@@ -37,6 +37,7 @@ alias d="docker compose -f docker-compose-core.yml -f docker-compose-dev.yml"
 
 - **Local setup (your computer, no Codespaces):** [Local Setup Guide](/docs/setup-local-guide.md)
 - **GitHub Codespaces:** [EZ setup guide](/docs/setup-EZ-guide.md)
+- **Frontend against a live backend:** [Remote backend guide](/docs/setup-remote-backend.md)
 
 If you have any questions or concerns please feel free to ask in our [Discord server](https://discord.gg/C5WMFpYRHQ).
 

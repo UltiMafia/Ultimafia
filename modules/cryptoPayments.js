@@ -17,6 +17,12 @@ const PLACEHOLDER_VALUES = new Set([
 
 const ataCache = new Map();
 
+// Highest Solana transaction version getTransaction will return. Mainnet has
+// carried v1 transactions since September 2026; anything newer makes the RPC
+// fail with -32015 for that transaction.
+const SOLANA_MAX_TX_VERSION = 1;
+const SOLANA_UNSUPPORTED_TX_VERSION = -32015;
+
 function envString(name, fallback = "") {
   const value = process.env[name];
   if (value == null) return fallback;
@@ -287,7 +293,10 @@ async function alchemyRpc(url, method, params) {
     { timeout: 15_000, headers: { "Content-Type": "application/json" } }
   );
   if (res.data?.error) {
-    throw new Error(res.data.error.message || `${method} failed`);
+    throw Object.assign(
+      new Error(res.data.error.message || `${method} failed`),
+      { code: res.data.error.code }
+    );
   }
   return res.data.result;
 }
@@ -484,10 +493,33 @@ async function findSolanaMatch(alchemy, invoice) {
   for (const row of sigs || []) {
     const signature = row.signature;
     if (!signature || row.err) continue;
-    const tx = await alchemyRpc(alchemy.solanaUrl, "getTransaction", [
-      signature,
-      { encoding: "jsonParsed", maxSupportedTransactionVersion: 0 },
-    ]);
+    let tx;
+    try {
+      tx = await alchemyRpc(alchemy.solanaUrl, "getTransaction", [
+        signature,
+        {
+          encoding: "jsonParsed",
+          maxSupportedTransactionVersion: SOLANA_MAX_TX_VERSION,
+        },
+      ]);
+    } catch (e) {
+      if (e?.code === SOLANA_UNSUPPORTED_TX_VERSION) {
+        logger.error({
+          message: "Solana transaction version not supported; raise SOLANA_MAX_TX_VERSION",
+          signature,
+          maxSupportedTransactionVersion: SOLANA_MAX_TX_VERSION,
+          error: e.message,
+        });
+      } else {
+        logger.warn({
+          message: "Solana getTransaction failed; skipping",
+          signature,
+          code: e?.code,
+          error: e?.message || e,
+        });
+      }
+      continue;
+    }
     const incoming = solanaIncomingRaw(tx, invoice.mint, alchemy.solanaAddress);
     if (incoming && rawEqual(incoming, invoice.expectedAmountRaw)) {
       return signature;

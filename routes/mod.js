@@ -2502,6 +2502,7 @@ router.post("/kick", async (req, res) => {
     } catch (e) {
       await redis.leaveGame(userIdToKick);
     }
+    gameLoadBalancer.kickSpectator(userIdToKick);
 
     routeUtils.createModAction(userId, "Kick Player", [userIdToKick]);
     res.sendStatus(200);
@@ -2574,7 +2575,8 @@ router.post("/unlinkAccounts", async (req, res) => {
 
     if (removed.ips.length === 0 && removed.fingerprintCount === 0) {
       res.send({
-        removed: [],
+        removedIpCount: 0,
+        removedFingerprintCount: 0,
         message:
           "No shared login evidence to remove; accounts were not directly linked.",
       });
@@ -2583,8 +2585,10 @@ router.post("/unlinkAccounts", async (req, res) => {
 
     routeUtils.createModAction(modId, "Unlink Accounts", [userId1, userId2]);
     res.send({
-      removed: removed.ips,
+      removedIpCount: removed.ips.length,
       removedFingerprintCount: removed.fingerprintCount,
+      // Cached clients can show the result without receiving login identifiers.
+      message: `Removed ${removed.ips.length} shared IP address(es) and ${removed.fingerprintCount} shared device-link record(s) from both users.`,
     });
   } catch (e) {
     logger.error(e);

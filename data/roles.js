@@ -419,16 +419,6 @@ const roleData = {
         },
       ],
     },
-    Soprano: {
-      alignment: "Village",
-      category: "Protective",
-      tags: ["Protective", "Visiting", "Death Interaction", "Basic", "Killing"],
-      description: [
-        "Each night, you can choose to visit one player and protect them from death.",
-        "If you die, the player you most recently protected will also die.",
-      ],
-      nightOrder: [["Protect", PRIORITY_NIGHT_SAVER]],
-    },
     Martyr: {
       alignment: "Village",
       category: "Protective",
@@ -837,26 +827,6 @@ const roleData = {
         "At the start of each night, learn how many players in the most recent vote appeared evil.",
       ],
       nightOrder: [["Arbiter", PRIORITY_INVESTIGATIVE_DEFAULT]],
-    },
-    Bloodhound: {
-      alignment: "Village",
-      category: "Investigative",
-      tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
-      description: [
-        "Each night, you can choose to visit one player and learn if they visited anybody.",
-        //"Tracks a player each night and learns if they visited anybody.",
-      ],
-      nightOrder: [["Binary Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
     },
     "Bounty Hunter": {
       alignment: "Village",
@@ -2062,16 +2032,6 @@ const roleData = {
         //"Chooses two players during the day to attend a banquet the following evening.",
         //"Players chosen to attend the banquet meet anonymously with their roles revealed to one another.",
       ],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
     },
     Freemason: {
       alignment: "Village",
@@ -2214,17 +2174,6 @@ const roleData = {
       nightOrder: [["Learn Role Visitors", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
     //killing roles
-    Debtor: {
-      alignment: "Village",
-      category: "Killing",
-      disabled: true,
-      tags: ["Guess", "Roles", "Visiting", "Self Kill", "Advanced"],
-      description: [
-        "Each night, you must choose a player and role from the Setup.",
-        "If the selected role is not the player's role, you die.",
-      ],
-      nightOrder: [["Die with Incorrect Guess", PRIORITY_KILL_DEFAULT - 1]],
-    },
     Firebrand: {
       alignment: "Village",
       category: "Killing",
@@ -2249,16 +2198,6 @@ const roleData = {
         "You can only be killed by condemn.",
       ],
       nightOrder: [["Kill Visitors", PRIORITY_KILL_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
     },
     Jailer: {
       alignment: "Village",
@@ -2865,15 +2804,6 @@ const roleData = {
       "See also: Watcher (Village).",
       ],
       nightOrder: [["Watch", PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 5]],
-    },
-    Lurker: {
-      alignment: "Mafia",
-      category: "Investigative",
-      tags: ["Information", "Visit Interaction", "Visiting", "Basic"],
-      description: [
-        "Each night, you can choose to visit one player and learn if they visited anybody.",
-      ],
-      nightOrder: [["Binary Track", PRIORITY_INVESTIGATIVE_DEFAULT]],
     },
     Revisionist: {
       alignment: "Mafia",
@@ -3825,16 +3755,6 @@ const roleData = {
         "While you are alive, Mafia will not win by majority.",
       ],
       nightOrder: [["Kill players in Room", PRIORITY_KILL_DEFAULT]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
       SpecialInteractionsModifiers: {
         "X-Shot": ["Splits players into an additional room."],
         Delayed: ["Adds an extra round of switching before killing."],
@@ -5225,18 +5145,6 @@ const roleData = {
       ],
       nightOrder: [["Kill", PRIORITY_KILL_DEFAULT]],
     },
-    Prince: {
-      alignment: "Independent",
-      tags: ["Essential", "Alignment Changing", "Visiting", "Advanced", "Death Interaction"],
-      description: [
-        "On your first night, you must choose to visit a player and become their alignment.",
-        "If you die, all players who are aligned with you die.",
-        "You win if your current alignment wins.",
-      ],
-      nightOrder: [
-        ["Conquer Alignment", PRIORITY_MODIFY_INVESTIGATIVE_RESULT_DEFAULT],
-      ],
-    },
     Nomad: {
       alignment: "Independent",
       tags: ["Alignment Changing", "Visiting", "Basic"],
@@ -5606,21 +5514,6 @@ const roleData = {
         "You win if Hellhounds have majority.",
       ],
       nightOrder: [["Kill", PRIORITY_KILL_GUESS_ROLE]],
-      skins: [
-        {
-          label: "Vivid",
-          value: "vivid",
-        },
-        {
-          label: "Goofy",
-          value: "goofy",
-          achReq: "Mafia29",
-        },
-        {
-          label: "Old",
-          value: "old",
-        },
-      ],
     },
     Blob: {
       alignment: "Independent",
@@ -6003,13 +5896,6 @@ const roleData = {
     },
 
     //Events
-    "No Event": {
-      alignment: "Event",
-      tags: ["Event"],
-      description: [
-        "Put this in a setup with other Events to have a chance for no Events to occur.",
-      ],
-    },
     Airdrop: {
       alignment: "Event",
       tags: ["Event", "Items"],

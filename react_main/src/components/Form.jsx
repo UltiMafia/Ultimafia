@@ -1,6 +1,6 @@
 import React, { useState, useReducer, useRef, useEffect } from "react";
 import { ChromePicker } from "react-color";
-import ReactMde from "react-mde";
+import ReactMde, { getDefaultCommandMap } from "react-mde";
 import axios from "axios";
 
 import CustomMarkdown from "components/CustomMarkdown";
@@ -608,9 +608,21 @@ export default function Form({
                     min={field.min}
                     max={field.max}
                     step={field.step}
-                    value={field.value}
+                    value={
+                      Number.isFinite(Number(field.value))
+                        ? Number(field.value)
+                        : 0
+                    }
+                    {...(field.valueLabelDisplay
+                      ? { valueLabelDisplay: field.valueLabelDisplay }
+                      : {})}
+                    {...(field.valueLabelFormat
+                      ? { valueLabelFormat: field.valueLabelFormat }
+                      : {})}
                     disabled={disabled}
-                    onChange={(e) => onFieldChange(e, field)}
+                    onChange={(e, value) =>
+                      onFieldChange({ target: { value } }, field)
+                    }
                     helperText={field.extraInfo}
                     label={compact ? field.label : undefined}
                   />
@@ -1339,6 +1351,38 @@ export function UserSearchSelect(props) {
 
 export function TextEditor(props) {
   const [tab, setTab] = useState("write");
+  const current = useRef(props);
+  current.current = props;
+
+  // react-mde retains commands and paste options from its constructor.
+  const [uploadOptions] = useState(() => ({
+    command: "upload-image",
+    accept: "image/*",
+    multiple: false,
+    // The command selects a local file; only the comment's Post uploads it.
+    saveImage: async function* () { yield ""; },
+  }));
+  const [commands] = useState(() => ({
+    ...getDefaultCommandMap(),
+    "upload-image": {
+      execute({ context }) {
+        const props = current.current;
+        if (!props.pasteImages || props.readOnly) return;
+        const event = context.event;
+        const transfer = event.clipboardData || event.dataTransfer;
+        const files = transfer?.items
+          ? Array.from(transfer.items)
+              .filter((item) => item.kind === "file")
+              .map((item) => item.getAsFile())
+          : Array.from(transfer?.files || event.target.files || []);
+        const file = files[0];
+        if (!file || !file.type.startsWith("image/")) return;
+        event.preventDefault();
+        props.onImageSelect?.(file);
+        if (!transfer) event.target.value = "";
+      },
+    },
+  }));
 
   return (
     <ReactMde
@@ -1352,6 +1396,10 @@ export function TextEditor(props) {
       }
       suggestionTriggerCharacters={props.suggestionTriggerCharacters}
       loadSuggestions={props.loadSuggestions}
+      childProps={{ textArea: { onPaste: props.onPaste } }}
+      readOnly={props.readOnly}
+      commands={commands}
+      paste={props.pasteImages ? uploadOptions : undefined}
     />
   );
 }

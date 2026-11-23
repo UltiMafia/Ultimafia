@@ -204,10 +204,6 @@ const Nightdata = {
       ActionNames: ["Learn Evil Pairs"],
       ActionValues: [PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT - 10],
     },
-    Bloodhound: {
-      ActionNames: ["Track"],
-      ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
-    },
     Housekeeper: {
       ActionNames: ["Track and Check for Reports"],
       ActionValues: [PRIORITY_INVESTIGATIVE_AFTER_RESOLVE_DEFAULT + 1],
@@ -460,10 +456,6 @@ const Nightdata = {
     Priest: {
       ActionNames: ["Learn Visitors"],
       ActionValues: [PRIORITY_INVESTIGATIVE_DEFAULT],
-    },
-    Debtor: {
-      ActionNames: ["Die with Incorrect Guess"],
-      ActionValues: [PRIORITY_KILL_DEFAULT - 1],
     },
     Firebrand: {
       ActionNames: ["Douse In Gasoline"],

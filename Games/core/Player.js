@@ -470,6 +470,9 @@ module.exports = class Player {
         var meeting = this.game.getMeeting(quote.toMeetingId);
         if (!meeting) return;
 
+        const sourceMeeting = this.game.getMeeting(quote.fromMeetingId, quote.fromState);
+        if (!sourceMeeting || !sourceMeeting.messages.some((target) => target.id === quote.messageId)) return;
+
         const posted = postQuote(meeting, quote);
         if (!posted) return;
 
@@ -1025,6 +1028,19 @@ module.exports = class Player {
             this.game.kickPlayer(player, kickPermanently);
             this.game.sendAlert(
               `${player.name} was kicked ${andBanned}from the game.`,
+              undefined,
+              undefined,
+              ["info"]
+            );
+            return;
+          }
+        }
+
+        for (let spectator of this.game.spectators) {
+          if (spectator.name.toLowerCase() === cmd.args[0].toLowerCase()) {
+            this.game.kickSpectator(spectator, kickPermanently);
+            this.game.sendAlert(
+              `${spectator.name} was kicked ${andBanned}from the game.`,
               undefined,
               undefined,
               ["info"]

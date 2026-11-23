@@ -22,6 +22,7 @@ export default function TrophyCase({
   showHeading = true,
   className = "box-panel trophy-case",
   wrapInPanel = true,
+  keyboardAccessible = false,
 }) {
   if (!trophies || trophies.length === 0) {
     return null;
@@ -39,6 +40,7 @@ export default function TrophyCase({
       <Tooltip
         arrow
         placement="top"
+        describeChild={keyboardAccessible}
         title={
           <Stack spacing={0.5}>
             <Typography variant="subtitle2">{trophy.name}</Typography>
@@ -58,17 +60,21 @@ export default function TrophyCase({
         key={trophy.id}
       >
         <Box
+          tabIndex={keyboardAccessible ? 0 : undefined}
+          role={keyboardAccessible ? "img" : undefined}
+          aria-label={keyboardAccessible ? `${trophy.name} ${trophyType} trophy` : undefined}
           sx={{
             width: "100%",
             height: "100%",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            "&:focus-visible": { outline: "2px solid currentColor", outlineOffset: 2 },
           }}
         >
           <img
             src={trophyIcon}
-            alt={`${trophy.name} ${trophyType} trophy`}
+            alt={keyboardAccessible ? "" : `${trophy.name} ${trophyType} trophy`}
             className="trophy-icon"
           />
         </Box>

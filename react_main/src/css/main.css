@@ -428,7 +428,10 @@ input:focus:not(:focus-visible) {
 
 ::selection,
 ::-moz-selection {
-  background-color: green;
+  /* Follow the active theme primary (red in light, yellow in dark, holiday/custom). */
+  background-color: var(--mui-palette-primary-main);
+  /* Keep selected text legible whatever the primary color is. */
+  color: var(--mui-palette-primary-contrastText);
 }
 
 .rainbow {

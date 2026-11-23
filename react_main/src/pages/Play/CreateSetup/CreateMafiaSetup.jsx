@@ -105,6 +105,21 @@ export default function CreateMafiaSetup() {
       value: "1",
       min: "0",
       max: "5",
+      showIf: (deps) => Boolean(deps?.hasEvent),
+    },
+    {
+      label: "Chance of No Event",
+      ref: "NoEventChance",
+      type: "range",
+      value: 0,
+      min: 0,
+      max: 100,
+      step: 1,
+      valueLabelDisplay: "on",
+      valueLabelFormat: (v) => `${v}%`,
+      infoTooltip:
+        "Each event slot this night has this chance to be skipped.",
+      showIf: (deps) => Boolean(deps?.hasEvent),
     },
     {
       label: "States With No Death",
@@ -192,6 +207,8 @@ export default function CreateMafiaSetup() {
   }, []);
 
   function onCreateSetup(roleData, editing, setRedirect, gameSettings) {
+    const fieldValue = (ref) => formFields.find((f) => f.ref === ref)?.value;
+
     axios
       .post("/api/setup/create", {
         gameType: gameType,
@@ -212,9 +229,10 @@ export default function CreateMafiaSetup() {
         },
         gameStartPrompt: formFields[9].value,
         EventsPerNight: formFields[10].value,
-        noDeathLimit: formFields[11].value,
-        ForceMustAct: formFields[12].value,
-        GameEndEvent: formFields[13].value,
+        NoEventChance: Number(fieldValue("NoEventChance") || 0),
+        noDeathLimit: fieldValue("noDeathLimit"),
+        ForceMustAct: fieldValue("ForceMustAct"),
+        GameEndEvent: fieldValue("GameEndEvent"),
         firstTeamSize: Number(
           formFields.find((f) => f.ref === "firstTeamSize")?.value || 2
         ),

@@ -40,6 +40,10 @@ module.exports = class Mutation extends Event {
             modifiersToUse = modifiersToUse.filter(
               (m) => !this.target.role.modifier.split("/").includes(m)
             );
+            modifiersToUse = modifiersToUse.filter((m) => {
+              const allowed = modifiers.Mafia[m].roles;
+              return !allowed || allowed.includes(player.role.name);
+            });
             if (modifiersToUse.length <= 0) {
               continue;
             }

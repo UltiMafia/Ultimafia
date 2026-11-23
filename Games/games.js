@@ -98,7 +98,7 @@ var deprecated = false;
         var user;
 
         socket.logId = shortid.generate();
-        socket.send("connected");
+        socket.send("connected", { serverAuthentication: true });
 
         socket.on("auth", async (token) => {
           try {
@@ -256,7 +256,10 @@ var deprecated = false;
         // The main server authenticating as a server
         socket.on("authAsServer", async (token) => {
           try {
-            if (token == process.env.LOAD_BALANCER_KEY) socket.isServer = true;
+            if (token == process.env.LOAD_BALANCER_KEY) {
+              socket.isServer = true;
+              socket.send("serverAuthenticated");
+            }
           } catch (e) {
             logger.error(e);
           }
@@ -316,6 +319,21 @@ var deprecated = false;
               userId: data.userId,
               error: e.message,
             });
+          }
+        });
+
+        // The main server removing a user from every game they spectate
+        socket.on("kickSpectator", (data) => {
+          try {
+            if (!socket.isServer)
+              throw new Error("Not authenticated as server.");
+
+            for (const game of Object.values(games))
+              for (const spectator of [...game.spectators])
+                if (spectator.user.id === data.userId)
+                  game.kickSpectator(spectator);
+          } catch (e) {
+            logger.error(e);
           }
         });
 

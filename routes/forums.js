@@ -12,6 +12,7 @@ const {
   attachReactionSummaries,
 } = require("../modules/reactions");
 const errors = require("../lib/errors");
+const { parseForumReplyForm, normalizeForumReplyImage, appendForumReplyImage } = require("../modules/forumReplyImage");
 const router = express.Router();
 
 async function notifyMentionedUsers(content, userId, userName, link, threadId) {
@@ -1386,22 +1387,63 @@ router.post("/thread/move", async function (req, res) {
   }
 });
 
+router.get("/reply/:id/image", async function (req, res) {
+  res.setHeader("Cache-Control", "no-store");
+  try {
+    const userId = await routeUtils.verifyLoggedIn(req, true);
+    const rank = userId ? await redis.getUserRank(userId) : 0;
+    const id = String(req.params.id);
+    const reply = await models.ForumReply.findOne({ id, deleted: false, pending: false })
+      .select("+image content thread")
+      .populate({
+        path: "thread",
+        select: "deleted pending board",
+        populate: {
+          path: "board", select: "category",
+          populate: { path: "category", select: "rank" },
+        },
+      });
+    const thread = reply?.thread;
+    const category = thread?.board?.category;
+    const token = appendForumReplyImage("", id);
+    if (!reply?.image || !reply.content?.includes(token) ||
+        !thread || thread.deleted || thread.pending || !category ||
+        !Number.isFinite(category.rank) || !Number.isFinite(rank) || category.rank > rank) {
+      res.sendStatus(404);
+      return;
+    }
+    res.setHeader("Content-Type", "image/webp");
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.send(reply.image);
+  } catch (error) {
+    logger.error(error);
+    res.sendStatus(500);
+  }
+});
+
 router.post("/reply", async function (req, res) {
   try {
     var userId = await routeUtils.verifyLoggedIn(req);
     var userName = await redis.getUserName(userId);
-    var threadId = String(req.body.thread);
+    const multipart = req.is("multipart/form-data");
+    if (multipart) {
+      if (!(await routeUtils.verifyPermission(res, userId, "postReply"))) return;
+      if (!(await routeUtils.rateLimit(userId, "postReply", res))) return;
+    }
+    const upload = multipart ? await parseForumReplyForm(req) : null;
+    const fields = upload ? upload.fields : req.body;
+    var threadId = String(fields.thread);
     var perm = "postReply";
 
     var thread = await models.ForumThread.findOne({
       id: threadId,
       deleted: false,
     })
-      .select("board author replyCount locked replyNotify subscribers restricted roster")
+      .select("board author replyCount locked replyNotify subscribers restricted roster mutedTags pending")
       .populate("board", "id rank")
       .populate("author", "id");
 
-    if (!thread) {
+    if (!thread || !thread.board || (upload && thread.pending)) {
       errors.notFound(res, "That thread does not exist. It may have been removed.");
       return;
     }
@@ -1411,7 +1453,7 @@ router.post("/reply", async function (req, res) {
     )
       return;
 
-    if (!(await routeUtils.rateLimit(userId, "postReply", res))) return;
+    if (!multipart && !(await routeUtils.rateLimit(userId, "postReply", res))) return;
 
     if (
       thread.locked &&
@@ -1448,7 +1490,9 @@ router.post("/reply", async function (req, res) {
 
     var page =
       Math.ceil((thread.replyCount + 1) / constants.repliesPerPage) || 1;
-    var content = String(req.body.content);
+    const replyId = shortid.generate();
+    var content = String(fields.content);
+    if (upload) content = appendForumReplyImage(content, replyId);
 
     if (content.length == 0 || content.length > constants.maxReplyLength) {
       errors.unprocessable(
@@ -1458,8 +1502,10 @@ router.post("/reply", async function (req, res) {
       return;
     }
 
+    const image = upload ? await normalizeForumReplyImage(upload.image) : undefined;
     var reply = new models.ForumReply({
-      id: shortid.generate(),
+      id: replyId,
+      image,
       author: req.session.user._id,
       thread: thread._id,
       postDate: Date.now(),
@@ -1573,7 +1619,8 @@ router.post("/reply", async function (req, res) {
     res.send(String(page));
   } catch (e) {
     logger.error(e);
-    errors.serverError(res, "Could not post reply. Please try again.");
+    if (e.status) res.status(e.status).send(e.message);
+    else errors.serverError(res, "Could not post reply. Please try again.");
   }
 });
 

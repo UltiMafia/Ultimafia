@@ -20,6 +20,10 @@ MONGO_DB=ultimafia
 MONGO_USER=admin
 MONGO_PW=password
 
+# optional Redis endpoint; unset or empty uses redis://redis:6379 for Docker
+# Host-run CI sets redis://127.0.0.1:6379 for its mapped service port.
+REDIS_URL=
+
 # any number from 0 to 15
 REDIS_DB=0
 
@@ -56,9 +60,10 @@ GITHUB_FEEDBACK_REPO=ultimafia
 #optional - dev use only
 DEV_USERNAME=x
 
-# optional - web push notifications ("your game is starting" while the tab is
-# closed or backgrounded). Push is disabled and the client skips the whole flow
-# when these are unset, so a dev environment works fine without them.
+# optional - web push notifications ("your game is starting" and "your game is in
+# kicks" while the tab is closed or backgrounded). Push is disabled and the client
+# skips the whole flow when these are unset, so a dev environment works fine
+# without them.
 # Generate a pair with:  node -e "console.log(require('web-push').generateVAPIDKeys())"
 # VAPID_SUBJECT must be a mailto: or https: URL identifying the sender; it
 # defaults to BASE_URL.

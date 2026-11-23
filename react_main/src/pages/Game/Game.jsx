@@ -1,6 +1,7 @@
 import React, {
   useState,
   useEffect,
+  useLayoutEffect,
   useReducer,
   useContext,
   useRef,
@@ -8,7 +9,7 @@ import React, {
   useCallback,
   createContext,
 } from "react";
-import { useParams, Navigate, Link, useNavigate } from "react-router-dom";
+import { useParams, Navigate, Link, useLocation, useNavigate } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
 import ReactLoading from "react-loading";
@@ -27,12 +28,16 @@ import {
   pickSpeechTarget,
   pregameSpectatorList,
 } from "shared/spectatorChat";
-import { completePlayerName, tabCompleteNames } from "shared/tabComplete";
+import { cyclePlayerName, tabCompleteNames } from "shared/tabComplete";
+import { isSpectatorPing } from "shared/spectatorPing";
 import Newspaper, {
   ObituariesMessage,
 } from "../../components/gameComponents/Newspaper";
 import { newspaperPlayer } from "../../utils/newspaperPlayers";
 import { legacyObituaryMessages } from "../../utils/legacyObituaries";
+import { gameUrlTarget } from "../../utils/gameUrlSync";
+import { gameIdAt } from "../../hooks/useHostedGameSession";
+import { pingSenderName } from "../../utils/pingSender";
 import MafiaGame from "./MafiaGame";
 import JottoGame from "./JottoGame";
 import AcrotopiaGame from "./AcrotopiaGame";
@@ -50,6 +55,7 @@ import BattleshipGame from "./BattleshipGame";
 import SpotItGame from "./SpotItGame";
 import ChessGame from "./ChessGame";
 import { GameContext, SiteInfoContext, UserContext } from "Contexts";
+import { mobileInfoTabSx } from "./mobileInfoTab";
 import Dropdown from "../../components/Dropdown";
 import Setup from "../../components/Setup";
 import { NameWithAvatar } from "../User/UserWidgets";
@@ -86,6 +92,9 @@ import { hyphenDelimit } from "../../utils";
 import { useIsPhoneDevice } from "../../hooks/useIsPhoneDevice";
 import { pregameSeatAction } from "shared/pregameSeatAction";
 import { useLongPress } from "../../hooks/useLongPress.jsx";
+import { WindowedTranscript } from "./components/WindowedTranscript";
+import { bindMessageTouch } from "../../utils/messageTouch";
+import { mergeDepartedPregamePlayers } from "../../utils/pregameRoster";
 import {
   Accordion,
   AccordionSummary,
@@ -142,11 +151,17 @@ import ChangeSetupDialog from "components/gameComponents/ChangeSetupDialog";
 import UrgencyOverlay from "./components/UrgencyOverlay";
 import ReadyCheckDialog from "./components/ReadyCheck";
 import PushNotificationPrompt from "./components/PushNotificationPrompt";
+import { pushDeepLinkPanel, pushDeepLinkPanelFromMessage } from "./pushDeepLink";
 import { releaseSubscription } from "utils/pushNotifications";
 import {
   buildReplyPayload,
   canReplyTo,
   describeQuotedMessage,
+  isReplyClick,
+  redirectTypingToChat,
+  hasSelectionIn,
+  REPLY_CLICK_DELAY_MS,
+  REPLY_CLICK_MOVE_PX,
   findMessageRow,
   handleGameEscape,
   makeReplyTarget,
@@ -215,12 +230,14 @@ export default function Game(props) {
   const user = useContext(UserContext);
   // HTTP connect, socket join and reconnect all belong to the same entry URL,
   // even while this session is retained behind an unrelated site page. Only a
-  // server-confirmed membership change may replace the spectator join mode.
+  // server-confirmed membership change may replace the spectator join mode
+  // within a hosted session; a new lobby entry mounts a new session.
   const joinOptionsRef = useRef(null);
   if (!joinOptionsRef.current) {
     const search = props.joinSearch ?? window.location.search;
+    const params = new URLSearchParams(search);
     joinOptionsRef.current = {
-      spectate: new URLSearchParams(search).get("spectate") === "true",
+      spectate: params.get("spectate") === "true",
       isBot: search === "?bot",
     };
   }
@@ -247,6 +264,7 @@ export default function Game(props) {
   const [spectators, setSpectators] = useState();
   const [spectatorCount, setSpectatorCount] = useState(0);
   const [isSpectator, setIsSpectator] = useState(false);
+  const isSpectatorRef = useRef(false);
   const [isOmniscientSpectator, setIsOmniscientSpectator] = useState(false);
   const [self, setSelf] = useState();
   const [voteKickUrgency, setVoteKickUrgency] = useState(false);
@@ -286,6 +304,7 @@ export default function Game(props) {
   rehostInviteSlotsRef.current = rehostInviteSlots;
 
   const playersRef = useRef();
+  const spectatorsRef = useRef();
   const rehostInviteSeenRef = useRef(false);
   const selfRef = useRef();
   const noLeaveRef = useRef();
@@ -366,9 +385,81 @@ export default function Game(props) {
     if (!active) stopDeathSounds();
   }, [active, stopDeathSounds]);
   const navigate = useNavigate();
+  const location = useLocation();
+  // The game named by the URL, which is the one being opened. `routeGameId`
+  // above is the route param and is empty when the hosted session renders
+  // outside the route table.
+  const locationGameId = gameIdAt(location.pathname);
+
+  // Keep the URL equal to the role the server confirmed. Otherwise a stale
+  // ?spectate=true would move a newly seated player back to spectators on
+  // reload. The membershipUpdate navigation changes the hosted search without
+  // changing the session key, so it does not remount the game. A bot tab has
+  // no URL state.
+  useEffect(() => {
+    if (!active || !loaded || leave || joinOptionsRef.current.isBot) return;
+    // Null when the URL already names a different game, which is the moment a
+    // new session is taking over: do not rewrite it back to this one.
+    const target = gameUrlTarget({ routeGameId: locationGameId, gameId, isSpectator });
+    if (!target) return;
+    const current = window.location.pathname + window.location.search;
+    if (current !== target) {
+      navigate(target, {
+        replace: true,
+        state: { membershipUpdate: true },
+      });
+    }
+  }, [active, loaded, leave, isSpectator, gameId, navigate, locationGameId]);
+
+  // A lobby Join/Spectate click for the game already hosted asks for the other
+  // role. Send that over the existing socket instead of replacing the session
+  // and reconnecting. Each navigation is applied once.
+  const appliedMembershipRequestRef = useRef(null);
+  useEffect(() => {
+    if (!active || !loaded || leave || !props.membershipRequest) return;
+    const { key, membership } = props.membershipRequest;
+    if (appliedMembershipRequestRef.current === key) return;
+    appliedMembershipRequestRef.current = key;
+    if (membership === (isSpectator ? "spectator" : "player")) return;
+    const action = membership === "spectator" ? "spectate" : "takeSeat";
+    if (socket && socket.send) socket.send(action);
+  }, [active, loaded, leave, isSpectator, props.membershipRequest, socket]);
+
   const [selectedPanel, setSelectedPanel] = useState("chat");
   const isPhoneDeviceRef = useRef(false);
   isPhoneDeviceRef.current = isPhoneDevice;
+
+  // A push notification's click asks for a panel as well as a game: a kicks
+  // reminder that landed on chat would hide the action forms it is about.
+  // Applied once per game, so switching panels afterwards still sticks.
+  const deepLinkPanelGameRef = useRef(null);
+  useEffect(() => {
+    if (deepLinkPanelGameRef.current === gameId) return;
+
+    const panel = pushDeepLinkPanel(props.joinSearch ?? window.location.search);
+    if (!panel) return;
+
+    deepLinkPanelGameRef.current = gameId;
+    setSelectedPanel(panel);
+  }, [gameId, props.joinSearch]);
+
+  // Clicking a notification while this game is already open focuses the tab
+  // instead of reloading it, so the worker sends the panel as a message.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.serviceWorker) return;
+
+    function onServiceWorkerMessage(event) {
+      const panel = pushDeepLinkPanelFromMessage(event.data, gameId);
+      if (panel) setSelectedPanel(panel);
+    }
+
+    navigator.serviceWorker.addEventListener("message", onServiceWorkerMessage);
+    return () =>
+      navigator.serviceWorker.removeEventListener(
+        "message",
+        onServiceWorkerMessage
+      );
+  }, [gameId]);
 
   const isParticipant = !isSpectator && !review;
   const currentStateObject = history.states[history.currentState];
@@ -518,6 +609,17 @@ export default function Game(props) {
   const replyTargetRef = useRef(replyTarget);
   replyTargetRef.current = replyTarget;
 
+  const replyMeetingId = history.states[stateViewing]?.selTab;
+  useEffect(() => {
+    setReplyTarget((target) => {
+      if (!target || !target.protectMeeting) return target;
+      return target.selectedMeetingId === replyMeetingId &&
+        target.selectedState === stateViewing &&
+        target.currentState === history.currentState
+        ? target : null;
+    });
+  }, [replyMeetingId, history.currentState, stateViewing]);
+
   useEffect(() => {
     // Only the visible session reacts to Escape. A session retained while the
     // user browses another page must not capture the key.
@@ -530,7 +632,12 @@ export default function Game(props) {
       handleGameEscape(e, {
         replyPending: Boolean(replyTargetRef.current),
         cancelReply: () => setReplyTarget(null),
-        leave: onLeaveGameClick,
+        // Escape is easy to press accidentally: always ask, including in
+        // pregame. Do not capture onLeaveGameClick here: this effect only
+        // rebinds on visibility changes, so its phase/socket can be stale
+        // after joining or returning from a profile. The dialog's Confirm
+        // button uses the current leaveGame callback.
+        leave: () => setLeaveDialogOpen(true),
       });
     }
 
@@ -720,16 +827,23 @@ export default function Game(props) {
     // example. Fall back to the page's own host, so the same build works from
     // localhost, a LAN/tailnet address, or the real domain.
     const configuredSocketHost = import.meta.env.REACT_APP_SOCKET_URI;
-    const socketHost =
-      !configuredSocketHost || configuredSocketHost === "localhost"
-        ? window.location.hostname
-        : configuredSocketHost;
+    const usePageHost =
+      !configuredSocketHost || configuredSocketHost === "localhost";
+    const socketHost = usePageHost
+      ? window.location.hostname
+      : configuredSocketHost;
+    // Sockets routed by path share the page's port, which is not always the
+    // default one: the dev server runs on 3001, and a dev server proxying a live
+    // backend needs its own port here too.
+    const pathSocketHost = usePageHost
+      ? window.location.host
+      : configuredSocketHost;
 
     if (import.meta.env.REACT_APP_USE_PORT === "true")
       socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${socketHost}:${port}`;
     else
       socketURL = `${import.meta.env.REACT_APP_SOCKET_PROTOCOL}://${
-        import.meta.env[`REACT_APP_SOCKET_URI_${port}`] || socketHost
+        import.meta.env[`REACT_APP_SOCKET_URI_${port}`] || pathSocketHost
       }/${port}`;
 
     var newSocket = new Socket(socketURL);
@@ -766,17 +880,9 @@ export default function Game(props) {
     if (!review) {
       loadAudioFiles(coreAudioConfig);
 
-      function onKeydown() {
+      function onKeydown(e) {
         if (!activeRef.current) return;
-        var speechInput = document.getElementById("speechInput");
-        var activeElName = document.activeElement.tagName;
-
-        if (
-          speechInput &&
-          activeElName !== "INPUT" &&
-          activeElName !== "TEXTAREA"
-        )
-          speechInput.focus();
+        redirectTypingToChat(e);
       }
 
       window.addEventListener("keydown", onKeydown);
@@ -890,6 +996,10 @@ export default function Game(props) {
             };
           }
 
+          // Players who left during pregame still have messages in the stored
+          // history; without their snapshot those messages render nameless.
+          mergeDepartedPregamePlayers(players, data.pastPregamePlayers);
+
           updatePlayers({
             type: "set",
             players,
@@ -921,6 +1031,10 @@ export default function Game(props) {
   useEffect(() => {
     playersRef.current = players;
   }, [players]);
+
+  useEffect(() => {
+    spectatorsRef.current = spectators;
+  }, [spectators]);
 
   useEffect(() => {
     if (socket.readyState !== 1) {
@@ -1166,16 +1280,27 @@ export default function Game(props) {
         pings.indexOf("@" + playersRef?.current?.[selfRef?.current]?.name) !==
         -1;
 
+      const spectatorWasPinged = isSpectatorPing(
+        message.content,
+        isSpectatorRef.current
+      );
       if (
-        selfRef.current &&
-        playersRef.current[selfRef.current] &&
-        (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING)))
+        spectatorWasPinged ||
+        (selfRef.current &&
+          playersRef.current[selfRef.current] &&
+          (iWasPinged || pings.some((p) => p.startsWith(EVERYONE_PING))))
       ) {
         playAudio("ping");
         if (iWasPinged) {
-          const senderName = playersRef?.current?.[message?.senderId]?.name;
+          // Spectators are not in `players`, so a spectator ping used to name
+          // the sender "undefined".
+          const senderName = pingSenderName(
+            message,
+            playersRef?.current,
+            spectatorsRef?.current
+          );
           setPingInfo({
-            msg: `⚠ ${senderName} pinged you!`,
+            msg: `⚠ ${senderName || "Someone"} pinged you!`,
             timestamp: new Date().getTime(),
           });
         }
@@ -1229,6 +1354,7 @@ export default function Game(props) {
     socket.on("isSpectator", (value) => {
       const spectatingNow = value !== false;
       joinOptionsRef.current.spectate = spectatingNow;
+      isSpectatorRef.current = spectatingNow;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
     });
@@ -1238,6 +1364,7 @@ export default function Game(props) {
     });
 
     socket.on("left", (data) => {
+      isSpectatorRef.current = false;
       stopReadyBellRepeatRef.current();
       if (!noLeaveRef.current) {
         setLeave(true);
@@ -1417,11 +1544,21 @@ export default function Game(props) {
   }
 
   const quoteMeetingId = history.states[history.currentState]?.selTab;
-  const onMessageReply = useCallback((message) => {
+  const onMessageReply = useCallback((message, deliveryMeetingId) => {
     if (!canReplyTo(message, { review, stateViewing })) return;
-    setReplyTarget(makeReplyTarget(message, stateViewing));
+    setReplyTarget({
+      ...makeReplyTarget(message, stateViewing),
+      selectedMeetingId: history.states[stateViewing]?.selTab,
+      deliveryMeetingId,
+      selectedState: stateViewing,
+      currentState: history.currentState,
+      protectMeeting: !isSpectator && gameType === "Mafia" &&
+        !["Village", "Pregame"].includes(
+          history.states[stateViewing]?.meetings[message.meetingId]?.name
+        ),
+    });
     document.getElementById("speechInput")?.focus();
-  }, [review, stateViewing]);
+  }, [review, stateViewing, history, gameType, isSpectator]);
   // Pinned rows show a stored copy while the current state is on screen, so
   // the quote has to find the state the original was sent in.
   const onMessageQuote = useCallback((message) => {
@@ -1759,9 +1896,21 @@ export function TopBar({ forceShow = false } = {}) {
     return <></>;
   }
 
+  // A one-phase game (pregame, a single-round game, or a finished single-state
+  // game) has nothing to switch between, so the strip is left out entirely and
+  // the rest of the bar keeps its normal width.
+  const stateCount = Object.keys(game.history.states || {}).length;
+  const showStateSwitcher = !singleState && stateCount > 1;
+
   const logo = (
     <Stack direction="row" sx={{
-      flex: "1",
+      // With a history strip beside it, the wordmark is a fixed-size image and
+      // growing would only take width the strip can use.
+      flex: isPhoneDevice
+        ? "1"
+        : showStateSwitcher
+        ? "0 0 auto"
+        : "1 1 14rem",
       alignItems: "center",
     }}>
       <SiteLogo />
@@ -1770,12 +1919,14 @@ export function TopBar({ forceShow = false } = {}) {
 
   const stateSwitcher = (
     <Stack direction="column" spacing={1} sx={{
-      alignItems: "center",
+      alignItems: "stretch",
       justifyContent: "center",
-      flex: "none",
+      flex: isPhoneDevice || !showStateSwitcher ? "none" : "1 1 0",
+      // Keep a usable strip when a large setup wants most of the bar.
+      minWidth: isPhoneDevice || !showStateSwitcher ? 0 : 320,
     }}>
-      {!singleState && (
-        <Paper>
+      {showStateSwitcher && (
+        <Paper sx={{ minWidth: 0 }}>
           <StateSwitcher />
         </Paper>
       )}
@@ -1786,6 +1937,11 @@ export function TopBar({ forceShow = false } = {}) {
     <Setup
       setup={game.setup}
       backgroundColor={getSetupBackgroundColor(game.options, false)}
+      // The setup takes the width its roles need instead of stretching across
+      // whatever the strip (or an empty bar) leaves, capped near the width the
+      // old top bar gave it so a large setup cannot crowd out the strip.
+      fitContent={!isPhoneDevice}
+      maxWidth={!isPhoneDevice ? "32rem" : undefined}
     />
   ) : (
     <></>
@@ -1833,9 +1989,13 @@ export function TopBar({ forceShow = false } = {}) {
       <Stack
         direction="row"
         spacing={1}
+        useFlexGap
         sx={{
           px: 1,
           pb: 1,
+          // Everything on the row can shrink to fit, so wrapping would only
+          // push the setup box onto its own line.
+          flexWrap: "nowrap",
           alignItems: "center",
         }}
       >
@@ -1848,7 +2008,9 @@ export function TopBar({ forceShow = false } = {}) {
           ref={game.scrollDownTriggerRef}
           sx={{
             alignItems: "center",
-            flex: "1",
+            // The setup keeps its content width; the strip (or the logo, when
+            // there is no strip) takes the remaining room.
+            flex: "0 1 auto",
             minWidth: "0px",
           }}
         >
@@ -1943,10 +2105,8 @@ export function MobileLayout({
   innerRightContent = <ActionList />,
   additionalInfoContent = <></>,
   hideInfoTab = false,
-  chatTab = false,
 }) {
   const game = useContext(GameContext);
-  const { singleState } = useContext(GameTypeContext);
   const isPhoneDevice = useIsPhoneDevice();
 
   if (!isPhoneDevice) {
@@ -1979,7 +2139,7 @@ export function MobileLayout({
         {outerLeftContent}
       </Stack>
       {!hideInfoTab && (
-        <Box sx={{ display: selectedPanel === "info" ? undefined : "none" }}>
+        <Box data-testid="game-info-tab" sx={mobileInfoTabSx(selectedPanel)}>
           {/* The additionalInfoContent displays after the mobile version of TopBar */}
           {additionalInfoContent}
         </Box>
@@ -2038,32 +2198,12 @@ export function MobileLayout({
               icon={<i className="fas fa-info" />}
             />
           )}
-          {chatTab ? (
-            <BottomNavigationAction
-              label="Chat"
-              value="chat"
-              icon={<i className="fas fa-comments" />}
-              data-tutorial="chat-tab"
-            />
-          ) : (
-            <Stack
-              direction="row"
-              data-tutorial="chat-tab"
-              onClick={() => setSelectedPanel("chat")}
-              sx={{
-                flex: 2,
-                minWidth: 0,
-                filter: selectedPanel !== "chat" ? "grayscale(100%)" : undefined,
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              {!singleState && <Divider orientation="vertical" flexItem />}
-              <StateSwitcher stateRange={singleState ? 0 : undefined} />
-              {!singleState && <Divider orientation="vertical" flexItem />}
-            </Stack>
-          )}
+          <BottomNavigationAction
+            label="Chat"
+            value="chat"
+            icon={<i className="fas fa-comments" />}
+            data-tutorial="chat-tab"
+          />
           <BottomNavigationAction
             {...innerRightNavigationProps}
             data-tutorial={`${innerRightNavigationProps.value}-tab`}
@@ -2132,7 +2272,7 @@ const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 // above the chat box on mobile and sits in the player list on desktop
 export function PregameSeatActions() {
   const isPhoneDevice = useIsPhoneDevice();
-  const { review, history, isSpectator, socket, options, gameId } =
+  const { review, history, isSpectator, socket, options } =
     useContext(GameContext);
   const action = pregameSeatAction({ review, history, isSpectator, options });
   if (!action) return null;
@@ -2176,7 +2316,7 @@ export function PregameSeatActions() {
         fullWidth={true}
         size={"small"}
         onClick={() => {
-          window.location.assign(`/game/${gameId}?spectate=true`);
+          if (socket && socket.on) socket.send("spectate");
         }}
       >
       Spectate
@@ -2197,6 +2337,10 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const { isolationEnabled, isolatedPlayers, isSpectator } = game;
   const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
     game;
+  // Explicit fixture overrides win; partial legacy contexts retain the full DOM.
+  const windowed = typeof game.transcriptWindowing === "boolean"
+    ? game.transcriptWindowing
+    : settings.virtualizeTranscript === true;
 
   const stateInfo = history.states[stateViewing];
   const meetings = stateInfo ? stateInfo.meetings : EMPTY_CHAT_STATE.meetings;
@@ -2206,13 +2350,72 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const selTab = stateInfo && stateInfo.selTab;
 
   const [speechInput, setSpeechInput] = useState("");
-  const [autoScroll, setAutoScroll] = useState(true);
+  const [autoScroll, setAutoScrollState] = useState(true);
   const [mouseMoved, setMouseMoved] = useState(false);
   const speechDisplayRef = useRef();
+  const lastSpeechScrollTop = useRef(0);
+  const autoScrollRef = useRef(true);
+  const autoScrollFrame = useRef(null);
   const hasMouse = useMediaQuery("(pointer:fine)");
+  const [quoteJump, setQuoteJump] = useState(null);
+  const quoteJumpRef = useRef(null);
+  const [quoteJumpNotice, setQuoteJumpNotice] = useState("");
+  useEffect(() => {
+    if (!quoteJumpNotice) return;
+    const timer = setTimeout(() => setQuoteJumpNotice(""), 4000);
+    return () => clearTimeout(timer);
+  }, [quoteJumpNotice]);
+  const onQuoteJump = useCallback((quote) => {
+    const sourceState = history.states[quote.fromState];
+    const sourceMeeting = sourceState?.meetings?.[quote.fromMeetingId];
+    const sourceMessage = sourceMeeting?.messages?.find(
+      (entry) => entry.id === quote.messageId
+    );
+    // Only navigate history already delivered to this viewer. Never fetch or
+    // infer a hidden meeting or an anonymous sender.
+    if (!sourceMessage) {
+      setQuoteJumpNotice("The original message is not available in your history.");
+      return;
+    }
+    const sourceTabs = getSpeechMeetings(sourceState.meetings);
+    const sourceSpectatorChat = findSpectatorChatMeeting(sourceState.meetings, isSpectator);
+    const sourceTab = sourceTabs.find((meeting) => meeting.id === quote.fromMeetingId);
+    const spectatorSource = sourceSpectatorChat?.id === quote.fromMeetingId;
+    if (!singleState && !sourceTab && !spectatorSource) {
+      setQuoteJumpNotice("The original message is not available in this chat view.");
+      return;
+    }
+    const target = {
+      state: String(quote.fromState),
+      meeting: String(quote.fromMeetingId),
+      message: String(quote.messageId),
+      tab: sourceTab?.id ?? getDefaultSpeechMeetingId(sourceTabs),
+    };
+    quoteJumpRef.current = target;
+    setQuoteJump(target);
+    setQuoteJumpNotice("");
+    setAutoScroll(false);
+    if (!singleState) {
+      updateHistory({ type: "selTab", state: quote.fromState, meetingId: target.tab });
+      game.updateStateViewing({ type: "set", stateNum: Number(quote.fromState) });
+    }
+  }, [history, isSpectator, singleState, updateHistory, game.updateStateViewing]);
 
   const speechMeetings = getSpeechMeetings(meetings);
   const spectatorChatMeeting = findSpectatorChatMeeting(meetings, isSpectator);
+
+  function setAutoScroll(enabled) {
+    autoScrollRef.current = enabled;
+    if (enabled) {
+      lastSpeechScrollTop.current = Math.round(
+        speechDisplayRef.current?.scrollTop || 0
+      );
+    } else {
+      cancelAnimationFrame(autoScrollFrame.current);
+      autoScrollFrame.current = null;
+    }
+    setAutoScrollState(enabled);
+  }
 
   function onTabChange(event, newValue) {
     updateHistory({
@@ -2244,7 +2447,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   }, [stateViewing, speechMeetings, selTab, meetings, isSpectator]);
 
   useEffect(() => {
-    if (stateViewing === history.currentState) setAutoScroll(true);
+    if (stateViewing === history.currentState && !quoteJumpRef.current) setAutoScroll(true);
     else setAutoScroll(false);
   }, [stateViewing]);
 
@@ -2261,9 +2464,11 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
 
   function doAutoScroll() {
     const container = speechDisplayRef.current;
-    if (autoScroll && container) {
-      requestAnimationFrame(() => {
-        container.scrollTo(0, container.scrollHeight);
+    if (autoScrollRef.current && container) {
+      cancelAnimationFrame(autoScrollFrame.current);
+      autoScrollFrame.current = requestAnimationFrame(() => {
+        autoScrollFrame.current = null;
+        if (autoScrollRef.current) container.scrollTo(0, container.scrollHeight);
       });
     }
   }
@@ -2279,19 +2484,25 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   }
 
   function onSpeechScroll() {
+    var speech = speechDisplayRef.current;
+    const scrollTop = Math.round(speech.scrollTop);
+    const scrolledUp = scrollTop < lastSpeechScrollTop.current;
+    lastSpeechScrollTop.current = scrollTop;
+
     if (hasMouse && !mouseMoved) {
       doAutoScroll();
       return;
     }
-
-    var speech = speechDisplayRef.current;
 
     if (
       Math.round(speech.scrollTop + speech.clientHeight) >=
       Math.round(speech.scrollHeight - 10)
     )
       setAutoScroll(true);
-    else setAutoScroll(false);
+    // Use decreasing scrollTop as the signal to stop following. New rows or
+    // growing content can land between a scroll to the bottom and its event.
+    else if (scrolledUp) setAutoScroll(false);
+    else doAutoScroll();
   }
 
   const tabs = speechMeetings.map((meeting) => {
@@ -2316,6 +2527,10 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     }
 
     if (Math.abs(message.time - previousMessage.time) > 30000) {
+      return false;
+    }
+
+    if (message.replyTo) {
       return false;
     }
 
@@ -2382,6 +2597,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           history={history}
           players={players}
           self={game.self}
+          isSpectator={game.isSpectator}
           spectators={spectators}
           stateViewing={
             singleState && !message.obituaries && !message.winners
@@ -2389,9 +2605,13 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
               : stateViewing
           }
           meetingState={singleState ? message.fromState : stateViewing}
+          sourceState={singleState ? message.fromState : stateViewing}
+          onQuoteJump={onQuoteJump}
           key={message.id || message.messageId + message.time || i}
           onMessageQuote={game.onMessageQuote}
-          onMessageReply={canSpeak ? game.onMessageReply : undefined}
+          onMessageReply={canSpeak && typeof game.onMessageReply === "function"
+            ? (message) => game.onMessageReply(message, speechTarget.meetingId)
+            : undefined}
           onPinMessage={game.onPinMessage}
           isMessagePinned={game.isMessagePinned}
           settings={settings}
@@ -2420,23 +2640,52 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     isolatedPlayers,
     game.review,
     game.onMessageQuote,
+    onQuoteJump,
     game.onMessageReply,
+    speechTarget.meetingId,
     canSpeak,
     game.onPinMessage,
     game.isMessagePinned,
     game.self,
+    game.isSpectator,
   ]);
+
+  useEffect(() => {
+    if (!quoteJump) return;
+    if (!singleState &&
+        (String(stateViewing) !== quoteJump.state || selTab !== quoteJump.tab)) return;
+    setAutoScroll(false);
+    const container = speechDisplayRef.current;
+    const row = container && Array.from(
+      container.querySelectorAll(".message[data-message-id]")
+    ).find((element) =>
+      element.dataset.messageId === quoteJump.message &&
+      element.dataset.messageState === quoteJump.state &&
+      element.dataset.messageMeeting === quoteJump.meeting
+    );
+    if (row) {
+      row.scrollIntoView({ block: "center", behavior: "auto" });
+      row.classList.remove("reply-jump-highlight");
+      void row.offsetWidth;
+      row.classList.add("reply-jump-highlight");
+      setTimeout(() => row.classList.remove("reply-jump-highlight"), 1600);
+      setQuoteJumpNotice("Jumped to the original message.");
+    } else {
+      setQuoteJumpNotice("The original message is not shown with the current chat filters.");
+    }
+    quoteJumpRef.current = null;
+    setQuoteJump(null);
+  }, [quoteJump, singleState, stateViewing, selTab, messages]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
   // transcript. Cancel pending work when the user scrolls away or changes tabs.
   useEffect(() => {
-    const container = speechDisplayRef.current;
-    if (!autoScroll || !container) return;
-    const frame = requestAnimationFrame(() => {
-      container.scrollTo(0, container.scrollHeight);
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [messages, autoScroll]);
+    if (!windowed) doAutoScroll();
+    return () => {
+      cancelAnimationFrame(autoScrollFrame.current);
+      autoScrollFrame.current = null;
+    };
+  }, [messages, autoScroll, windowed]);
 
   // Keep the newest message in view when the transcript is resized, e.g. when
   // the on-screen keyboard opens and the game frame shrinks (which grows the
@@ -2444,13 +2693,13 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   // the bottom).
   useEffect(() => {
     const container = speechDisplayRef.current;
-    if (!container || typeof ResizeObserver === "undefined") return;
+    if (windowed || !container || typeof ResizeObserver === "undefined") return;
     const observer = new ResizeObserver(() => {
-      if (autoScroll) container.scrollTo(0, container.scrollHeight);
+      if (autoScrollRef.current) container.scrollTo(0, container.scrollHeight);
     });
     observer.observe(container);
     return () => observer.disconnect();
-  }, [autoScroll]);
+  }, [autoScroll, windowed]);
 
   const newMessageCount = useNewMessageCount({
     messageCount: messages.length,
@@ -2523,15 +2772,33 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
       </Box>
 
       <div className="speech-wrapper" data-tutorial="chat-panel">
-        <div
+        {isPhoneDevice && !singleState && (
+          <Box
+            className="mobile-phase-float"
+            sx={{ position: "absolute", top: 8, left: 0, right: 0, zIndex: 2, display: "flex", justifyContent: "center", pointerEvents: "none" }}
+          >
+            <StateSwitcher />
+          </Box>
+        )}
+        {windowed ? <WindowedTranscript
+          key={JSON.stringify([singleState, stateViewing, selTab, filters, settings.messageLayout])}
+          rows={messages}
+          speechDisplayRef={speechDisplayRef}
+          onScroll={onSpeechScroll}
+          autoScroll={autoScroll}
+          startAtEnd={!game.review && (singleState || stateViewing === history.currentState)}
+          paddingStart={isPhoneDevice && !singleState ? 60 : 0}
+        /> : <div
           className="speech-display"
           data-name-animation-viewport
+          style={{ paddingTop: isPhoneDevice && !singleState ? 60 : undefined }}
           onScroll={onSpeechScroll}
           ref={speechDisplayRef}
         >
           {messages}
-        </div>
+        </div>}
         <div className="speech-footer">
+          <span role="status" aria-live="polite">{quoteJumpNotice}</span>
           {newMessageCount > 0 && (
             <button
               type="button"
@@ -2835,6 +3102,7 @@ function Message(props) {
     meetingState,
     replyQuote,
     replyMerged,
+    isSpectator,
     ...rowProps
   } = props;
   const { message, stateViewing } = props;
@@ -2843,7 +3111,9 @@ function Message(props) {
   if (message.content && props.settings.highlightMentions) {
     const pings = parsePings(message.content);
     iWasPinged =
-          pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 || pings.some((p) => p.startsWith(EVERYONE_PING));
+      pings.indexOf("@" + props.players?.[props.self]?.name) !== -1 ||
+      pings.some((p) => p.startsWith(EVERYONE_PING)) ||
+      isSpectatorPing(message.content, isSpectator);
   }
 
   // The quoted line shown inside a reply row (see pairReplies).
@@ -2862,6 +3132,17 @@ function Message(props) {
         : null,
     [replyQuote, replyQuoteState, props.players, props.spectators]
   );
+  // A reply addresses the original sender, not the player who posted its
+  // quote. Reuse the visible preview: anonymous or unavailable sources do
+  // not identify anyone, and mention highlighting keeps its existing switch.
+  if (
+    props.settings.highlightMentions &&
+    props.self != null &&
+    message.senderId !== props.self &&
+    replyPreview?.sender?.id === props.self
+  ) {
+    iWasPinged = true;
+  }
   if (message.obituaries && props.settings.legacyObituaries) {
     return legacyObituaryMessages(message).map((alert) => (
       <Message
@@ -2890,6 +3171,55 @@ function Message(props) {
   );
 }
 
+// Delay pointer navigation so selecting text and double-click quoting retain
+// their existing behavior. The header button also supplies keyboard activation.
+function QuoteJumpTarget({ message, onJump, children }) {
+  const timer = useRef(null);
+  const pointerDown = useRef(null);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  function onPointerDown(event) {
+    clearTimeout(timer.current);
+    pointerDown.current = {
+      x: event.clientX,
+      y: event.clientY,
+      button: event.button,
+    };
+  }
+  function onClick(event) {
+    const down = event.detail === 0 ? null : pointerDown.current;
+    pointerDown.current = null;
+    clearTimeout(timer.current);
+    // CSS can prevent a selection even when the user drags. A keyboard click
+    // has no pointer press, so it must still activate the header button.
+    if (
+      event.button !== 0 ||
+      (down && down.button !== 0) ||
+      (down && Math.hypot(event.clientX - down.x, event.clientY - down.y) >
+        REPLY_CLICK_MOVE_PX)
+    ) return;
+    if (!onJump || event.target.closest("a, input, textarea, select")) return;
+    if (String(window.getSelection() || "").trim()) return;
+    event.stopPropagation();
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      if (!String(window.getSelection() || "").trim()) onJump(message);
+    }, REPLY_CLICK_DELAY_MS);
+  }
+  return (
+    <span
+      onPointerDown={onPointerDown}
+      onPointerCancel={() => {
+        pointerDown.current = null;
+        clearTimeout(timer.current);
+      }}
+      onClick={onClick}
+      onDoubleClick={() => clearTimeout(timer.current)}
+    >
+      {children}
+    </span>
+  );
+}
+
 // The line above a reply, as in Discord: a curved line from the replier's
 // avatar column to a tiny avatar, the original sender's name and one line of
 // what they said. It never carries a timestamp, so the reply's own header
@@ -2913,11 +3243,28 @@ function ReplyReference(props) {
     autoContrastColor: user.autoContrastColor.bind(user),
     theme,
   });
+  // The original line in its sender's text colour, resolved the same way its
+  // own row does (accessible colours, "ignore text colours", auto contrast).
+  let textColor = sender ? reply.textColor : undefined;
+  if (Object.keys(textColor ?? {}).length === 2)
+    textColor = textColor["darkTheme"];
+  const resolvedTextColor = resolveDisplayTextColor({
+    accessibleNameColors,
+    ignoreTextColor: user.settings?.ignoreTextColor,
+    rawTextColor: textColor && textColor !== "" ? textColor : null,
+    autoContrastColor: user.autoContrastColor.bind(user),
+    theme,
+  });
 
   function jumpToOriginal(e) {
     e.stopPropagation();
     const row = findMessageRow(e.currentTarget.closest(".message"), reply.messageId);
-    if (!row) return;
+    if (!row) {
+      e.currentTarget.closest(".speech-display")?.dispatchEvent(
+        new CustomEvent("transcript-jump", { detail: { messageId: reply.messageId } })
+      );
+      return;
+    }
     row.scrollIntoView({ block: "center", behavior: "smooth" });
     row.classList.remove("reply-jump-highlight");
     // Restart the highlight animation on repeated clicks.
@@ -2948,7 +3295,14 @@ function ReplyReference(props) {
             avatar={sender.avatar}
             isSquare={sender.avatarShape === "square"}
             color={color}
+            nameColorSwatch={
+              accessibleNameColors && rawNameColor ? rawNameColor : undefined
+            }
             nameFont={sender.nameFont}
+            animatedNameColor={sender.animatedNameColor}
+            nameGradientColorA={sender.nameGradientColorA}
+            nameGradientColorB={sender.nameGradientColorB}
+            nameGradientColorC={sender.nameGradientColorC}
             noLink
             small
           />
@@ -2956,14 +3310,20 @@ function ReplyReference(props) {
           <NameWithAvatar name="Anonymous" noLink small />
         )}
       </span>
-      <span className="reply-reference-text">
+      <span
+        className="reply-reference-text"
+        style={resolvedTextColor ? { color: resolvedTextColor } : undefined}
+      >
         <UserText
           text={reply.content}
+          gameFormatting
           settings={user.settings}
           players={players}
           spectators={spectators}
           customEmotes={reply.customEmotes}
           customStickers={reply.customStickers}
+          collapseStickers={true}
+          compactAvatars={true}
           filterProfanity
           linkify={false}
           emotify
@@ -2982,16 +3342,24 @@ const MessageRow = React.memo(function MessageRow(props) {
   const theme = useTheme();
   const [isHovering, setIsHovering] = useState(false);
   const accessibleNameColors = user.settings?.accessibleNameColors;
+  // Click to reply: the pending single click, cleared by a double-click, by
+  // another click and on unmount.
+  const replyClickTimer = useRef(null);
+  // Where the last left press on the row started (a drag is not a reply).
+  const pointerDownAt = useRef(null);
+  const cancelReplyClick = useCallback(() => {
+    clearTimeout(replyClickTimer.current);
+    replyClickTimer.current = null;
+  }, []);
+  useEffect(() => cancelReplyClick, [cancelReplyClick]);
 
-  // Mobile only - users pin message by long pressing them
-  const onPinMessage = props.onPinMessage;
   const messageObj = props.message;
-  const messageLongPress = useLongPress(
-    // Stable identity: useLongPress keys its effect on the callback, so a fresh
-    // arrow here re-runs that effect for every message on every render pass.
-    useCallback(() => onPinMessage(messageObj), [onPinMessage, messageObj]),
-    600
-  );
+  const rowRef = useRef(null);
+  const touchCallbacks = useRef(null);
+  touchCallbacks.current = {
+    onReply: startReply,
+    onPin: () => props.onPinMessage(messageObj),
+  };
   // Chat text effect (/wave etc.), attached by the server for item owners.
   // Plays once when the message first appears; pinned and review rows stay plain.
   const textEffect = useTextEffect(
@@ -3039,17 +3407,25 @@ const MessageRow = React.memo(function MessageRow(props) {
     isHovering,
     stateViewing: props.stateViewing,
   });
-  // Whether this row offers a reply button (shown on hover). It does not
-  // depend on hover, so the room the row keeps for it never changes the
-  // layout when the mouse moves.
-  const replyButtonSlot =
+  // Whether clicking this row starts a reply (the rows that used to show the
+  // reply button).
+  const replyable =
     !!props.onMessageReply &&
-    !isPhoneDevice &&
     !isRightAligned &&
     canReplyTo(message, {
       review: props.review,
       stateViewing: props.stateViewing,
     });
+  const clickToReply = replyable && !isPhoneDevice;
+  const swipeToReply = replyable && isPhoneDevice;
+  useEffect(() => {
+    if (!isPhoneDevice || !rowRef.current) return;
+    return bindMessageTouch(rowRef.current, {
+      canReply: swipeToReply,
+      onReply: () => touchCallbacks.current.onReply(),
+      onPin: () => touchCallbacks.current.onPin(),
+    });
+  }, [isPhoneDevice, swipeToReply, messageObj, props.stateViewing]);
   const thumbtackFaClass = props.pinned
     ? "fas fa-thumbtack"
     : "fas fa-thumbtack fa-rotate-270";
@@ -3241,11 +3617,12 @@ const MessageRow = React.memo(function MessageRow(props) {
   }
 
   // if right aligned, use flex direction row-reverse to put timestamp on right hand side
-  // otherwise if in compact mode AKA denseMessages, use inline display to keep everyone on one line if possible
   // otherwise, use flex direction column when in non-compact mode so that nameplate can appear above content
   // otherwise if there is no nameplate, use row to always keep everything on the same line
   const innerClassName = isRightAligned
     ? "message-inner-rightaligned"
+    : alignedNameplate
+    ? "message-inner-aligned"
     : hasNameplate && denseMessages
     ? "message-inner-inline"
     : hasNameplate
@@ -3258,7 +3635,7 @@ const MessageRow = React.memo(function MessageRow(props) {
 
   let className = "message";
   if (message.spectatorChat) className += " spectator-chat";
-  else if (props.iWasPinged) className += " mention";
+  if (props.iWasPinged) className += " mention";
   // A reply shows what it answers above its header (see ReplyReference). One
   // whose quote cannot be found keeps the indented look.
   if (message.replyTo && !message.isQuote && !props.replyPreview)
@@ -3267,18 +3644,67 @@ const MessageRow = React.memo(function MessageRow(props) {
     className += props.replyMerged
       ? " reply-merged with-reply-reference"
       : " with-reply-reference";
-  if (replyButtonSlot) className += " with-reply-button";
-  
+  if (clickToReply) className += " click-to-reply";
+  if (swipeToReply) className += " swipe-to-reply";
+
+  function startReply() {
+    props.onMessageReply(message);
+    // Focusing the chat box would drop a text selection; leave it alone then.
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed && String(selection).trim()) return;
+    document.getElementById("speechInput")?.focus();
+  }
+
+  function onRowPointerDown(e) {
+    pointerDownAt.current =
+      e.button === 0 ? { x: e.clientX, y: e.clientY } : null;
+  }
+
+  // One click starts a reply after REPLY_CLICK_DELAY_MS, so that a
+  // double-click can still quote without starting one.
+  function onRowClick(e) {
+    cancelReplyClick();
+    if (!clickToReply) return;
+    const row = e.currentTarget;
+    const env = {
+      selection: window.getSelection(),
+      getComputedStyle: (el) => window.getComputedStyle(el),
+      pointerDown: pointerDownAt.current,
+    };
+    pointerDownAt.current = null;
+    if (!isReplyClick(e, row, env)) return;
+    replyClickTimer.current = setTimeout(() => {
+      replyClickTimer.current = null;
+      if (hasSelectionIn(row, window.getSelection())) return;
+      startReply();
+    }, REPLY_CLICK_DELAY_MS);
+  }
+
+  function onRowKeyDown(e) {
+    if (e.key !== "Enter" || e.target !== e.currentTarget) return;
+    e.preventDefault();
+    startReply();
+  }
+
   return (
     <div
+      ref={rowRef}
       className={className}
       data-message-id={message.id ?? undefined}
-      onDoubleClick={() => props.onMessageQuote(message)}
+      data-message-state={props.sourceState ?? props.stateViewing}
+      data-message-meeting={message.meetingId ?? undefined}
+      onPointerDown={clickToReply ? onRowPointerDown : undefined}
+      onClick={clickToReply ? onRowClick : undefined}
+      onKeyDown={clickToReply ? onRowKeyDown : undefined}
+      tabIndex={clickToReply ? 0 : undefined}
+      aria-keyshortcuts={clickToReply ? "Enter" : undefined}
+      onDoubleClick={() => {
+        cancelReplyClick();
+        props.onMessageQuote(message);
+      }}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
       onMouseLeave={messageOnMouseLeave}
-      onTouchStart={messageLongPress.onTouchStart}
-      onTouchEnd={messageLongPress.onTouchEnd}
     >
       <div className={innerClassName}>
         {props.replyPreview && !message.isQuote && (
@@ -3380,6 +3806,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                     {index > 0 && <br />}
                     <UserText
                       text={line}
+                      gameFormatting={!isServerMessage && !isVoteMessage}
                       settings={user.settings}
                       players={players}
                       spectators={spectators}
@@ -3402,7 +3829,7 @@ const MessageRow = React.memo(function MessageRow(props) {
             </>
           )}
           {message.isQuote && (
-            <>
+            <QuoteJumpTarget message={message} onJump={props.onQuoteJump}>
               {message.spectatorChat && (
                 <span
                   className="spectator-chat-tag"
@@ -3412,13 +3839,21 @@ const MessageRow = React.memo(function MessageRow(props) {
                 </span>
               )}
               <i className="fas fa-quote-left" />
-              <Timestamp time={quotedMessage.time} />
-              <span className="quote-info">
-                {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
-              </span>
+              <button
+                type="button"
+                disabled={!props.onQuoteJump}
+                aria-label="Jump to the original quoted message"
+                className="quote-jump-header"
+              >
+                <Timestamp time={quotedMessage.time} />
+                <span className="quote-info">
+                  {`${quotedMessage.senderName} on ${quotedMessage.fromStateName}: `}
+                </span>
+              </button>
               <span className="quote-content">
                 <UserText
                   text={quotedMessage.content}
+                  gameFormatting
                   settings={user.settings}
                   players={players}
                   spectators={spectators}
@@ -3433,7 +3868,7 @@ const MessageRow = React.memo(function MessageRow(props) {
                 />
               </span>
               <i className="fas fa-quote-right" />
-            </>
+            </QuoteJumpTarget>
           )}
         </div>
       </div>
@@ -3449,21 +3884,6 @@ const MessageRow = React.memo(function MessageRow(props) {
             />
           )}
         </div>
-      )}
-      {replyButtonSlot && isHovering && (
-        // Bottom-right corner of the row, under the pin (which stays where
-        // it always was, top-right). The row reserves room for both.
-        <i
-          className="fas fa-reply reply-button"
-          title="Reply"
-          role="button"
-          aria-label="Reply"
-          onClick={(e) => {
-            e.stopPropagation();
-            props.onMessageReply(message);
-          }}
-          onDoubleClick={(e) => e.stopPropagation()}
-        />
       )}
     </div>
   );
@@ -3599,6 +4019,21 @@ function SpeechInput(props) {
   const speechInput = props.speechInput;
   const setSpeechInput = props.setSpeechInput;
   const pendingSpeechRef = useRef(null);
+  const completionRef = useRef(null);
+  const speechInputRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const completion = completionRef.current;
+    if (completion?.value === speechInput) {
+      speechInputRef.current?.setSelectionRange(completion.caret, completion.caret);
+    } else {
+      completionRef.current = null;
+    }
+  }, [speechInput]);
+
+  useEffect(() => {
+    completionRef.current = null;
+  }, [selTab, game.history?.currentState, game.isSpectator]);
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
@@ -3818,6 +4253,7 @@ function SpeechInput(props) {
   }
 
   function onSpeechType(e) {
+    completionRef.current = null;
     if (isSpeakCooldownActive) return;
     setSpeechInput(e.target.value);
 
@@ -3838,6 +4274,7 @@ function SpeechInput(props) {
   const setReplyTarget = game.setReplyTarget;
 
   function onSpeechSubmit(e) {
+    if (e.key !== "Tab" || e.shiftKey) completionRef.current = null;
     if (isSpeakCooldownActive) return;
 
     if (e.key === "Enter" && selTab && speechInput.length) {
@@ -3865,7 +4302,15 @@ function SpeechInput(props) {
           };
         }
 
-        const reply = buildReplyPayload(replyTarget, {
+        const isCurrentReply = replyTarget &&
+          (!replyTarget.protectMeeting || (
+            replyTarget.selectedMeetingId === game.history.states[game.stateViewing]?.selTab &&
+            replyTarget.deliveryMeetingId === selTab &&
+            replyTarget.selectedState === game.stateViewing &&
+            replyTarget.currentState === game.history.currentState
+          ));
+        if (replyTarget && !isCurrentReply) setReplyTarget(null);
+        const reply = buildReplyPayload(isCurrentReply ? replyTarget : null, {
           meetingId: selTab,
           content: speechInput,
           abilityName,
@@ -3888,27 +4333,56 @@ function SpeechInput(props) {
           setSpeechInput("");
         }
       }
-    } else if (e.key === "Tab") {
+    } else if (e.key === "Tab" && !e.shiftKey) {
+      // Tab completes a name; Shift+Tab leaves the chat box as usual (back
+      // to the messages, which can be replied to with Enter).
       e.preventDefault();
-      const words = speechInput.split(" ");
-      const word = words.pop();
-      const completed = completePlayerName(
+      const input = e.target;
+      const caret = input.selectionStart;
+      if (caret !== input.selectionEnd) {
+        completionRef.current = null;
+        return;
+      }
+      // Do not splice a completion into the middle of an existing word.
+      if (caret < speechInput.length && !/\s/.test(speechInput[caret])) {
+        completionRef.current = null;
+        return;
+      }
+      const previous = completionRef.current;
+      const continuing =
+        previous?.value === speechInput && previous.caret === caret;
+      const start = continuing
+        ? previous.start
+        : speechInput.slice(0, caret).search(/\S*$/);
+      const word = continuing ? previous.word : speechInput.slice(start, caret);
+      const completed = cyclePlayerName(
         word,
         tabCompleteNames({
           players,
           spectators: game.spectators,
           isPregame: game.history?.currentState == -1,
           isSpectator: game.isSpectator,
-        })
+        }),
+        continuing ? previous.completed : undefined
       );
+      completionRef.current = null;
       if (completed === undefined) return;
-      if (completed) {
-        words.push(completed);
-        setSpeechInput(words.join(" "));
-      } else if (word.toLowerCase() === "@everyone".substring(0, word.length)) {
-        words.push("@everyone");
-        setSpeechInput(words.join(" "));
-      }
+      const replacement =
+        completed ||
+        (word.toLowerCase() === "@everyone".substring(0, word.length)
+          ? "@everyone"
+          : null);
+      if (!replacement) return;
+      const value =
+        speechInput.slice(0, start) + replacement + speechInput.slice(caret);
+      completionRef.current = {
+        word,
+        start,
+        completed: replacement,
+        value,
+        caret: start + replacement.length,
+      };
+      setSpeechInput(value);
     }
   }
 
@@ -3964,6 +4438,7 @@ function SpeechInput(props) {
             name="MafiaSpeech"
             inputProps={{
               inputMode: "text",
+              title: "Formatting: **bold**, *italic*, __underline__, ~~strikethrough~~. Escape markers with a backslash.",
               autoCorrect: "on",
               autoCapitalize: "on",
               autoComplete: "off",
@@ -3973,6 +4448,20 @@ function SpeechInput(props) {
             placeholder={speechPlaceholder}
             onChange={onSpeechType}
             onKeyDown={onSpeechSubmit}
+            inputRef={speechInputRef}
+            onBlur={() => {
+              completionRef.current = null;
+            }}
+            onSelect={(e) => {
+              const completion = completionRef.current;
+              if (
+                completion &&
+                (e.target.selectionStart !== completion.caret ||
+                  e.target.selectionEnd !== completion.caret)
+              ) {
+                completionRef.current = null;
+              }
+            }}
             enterKeyHint="done"
             disabled={isSpeakCooldownActive}
             sx={{
@@ -4422,8 +4911,10 @@ export function PlayerList(props) {
     <Stack
       direction="row"
       spacing={1}
+      useFlexGap
       sx={{
         width: "100%",
+        flexWrap: "wrap",
         alignItems: "center",
       }}
     >
@@ -6292,7 +6783,22 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
       step: 0.1,
       value: settings.importantVolume,
     },
+    {
+      label: "Virtualize transcript",
+      ref: "virtualizeTranscript",
+      type: "boolean",
+      value: settings.virtualizeTranscript,
+    },
   ]);
+
+  // Settings may load after this form mounts; reflect the persisted preference.
+  useEffect(() => {
+    updateFormFields({
+      ref: "virtualizeTranscript",
+      prop: "value",
+      value: settings.virtualizeTranscript,
+    });
+  }, [settings.virtualizeTranscript, updateFormFields]);
 
   function handleFieldChange(action) {
     if (
@@ -6360,6 +6866,11 @@ function SettingsForm({ handleClose = null, onLeave = null }) {
         </Button>
       )}
       <Form compact fields={formFields.slice(1)} onChange={handleFieldChange} />
+      <Typography variant="caption" color="text.secondary">
+        Virtualization keeps long chats responsive by rendering only nearby messages.
+        To use browser Find (Ctrl/Cmd+F) or select the full history, turn off
+        Virtualize transcript and click Save. Loading the full history may be slower.
+      </Typography>
     </Stack>
   );
 
@@ -6423,6 +6934,7 @@ export function SettingsMenu() {
     <SideMenu
       title="Settings"
       isAccordionMenu
+      scrollable
       content={<SettingsForm handleClose={handleClose} />}
       expanded={expanded}
       onChange={handleToggle}
@@ -6622,6 +7134,7 @@ export function PinnedMessages() {
         history={game.history}
         players={game.players}
         self={game.self}
+        isSpectator={game.isSpectator}
         spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}
@@ -7253,6 +7766,7 @@ export function useSettingsReducer() {
     messageLayout: "default",
     legacyObituaries: false,
     highlightMentions: true,
+    virtualizeTranscript: true,
   };
 
   function clampVolume(value, fallback = 1) {

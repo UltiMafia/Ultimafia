@@ -27,6 +27,7 @@ import {
 import { getSiteTheme } from "./constants/themes";
 import { AlertList, useErrorAlert } from "./components/Alerts";
 import { ConnectionBanner } from "./components/ConnectionBanner";
+import { RemoteBackendBanner } from "./components/RemoteBackendBanner";
 import UserNavSection from "./pages/User/UserNavSection";
 import CookieBanner from "./components/CookieBanner";
 import IosBetaTicker from "./components/IosBetaTicker";
@@ -40,6 +41,8 @@ import ThemeColorMeta from "./components/ThemeColorMeta";
 import RetainedSiteRoutes from "./components/RetainedSiteRoutes";
 import { DmWindowProvider } from "./components/dms/DmWindowContext";
 import FloatingDmWindow from "./components/dms/FloatingDmWindow";
+import { StrategyWindowsProvider } from "./components/strategyWindows/StrategyWindowsContext";
+import FloatingStrategyWindows from "./components/strategyWindows/FloatingStrategyWindows";
 import ViewOverlayBoundary from "./components/ViewOverlayBoundary";
 import { AppLocationContext, ViewActivityContext, ViewNavigate } from "./hooks/useViewActivity";
 import { useAppViewport } from "./hooks/useAppViewport";
@@ -163,6 +166,14 @@ function Main(props) {
     return () => root.removeAttribute("data-bottom-inset");
   }, []);
   const { inGame, hostedGameId, hostedGameSearch, leaveGameSession } = useHostedGameSession();
+  // A lobby Join/Spectate click carries the requested role in navigation
+  // state. The mounted Game applies it over its existing socket.
+  const membershipRequest = location.state?.requestedMembership
+    ? {
+        membership: location.state.requestedMembership,
+        key: location.key,
+      }
+    : null;
 
   useEffect(() => {
     const root = document.documentElement;
@@ -269,6 +280,7 @@ function Main(props) {
           gameId={hostedGameId}
           joinSearch={hostedGameSearch}
           active={inGame}
+          membershipRequest={membershipRequest}
           onLeave={leaveGameSession}
         />
       </div>
@@ -279,6 +291,10 @@ function Main(props) {
       {loading && <Loading />}
       {!loading && (
         <AppLocationContext.Provider value={location}>
+        {/* Guide windows are hosted here rather than inside the game page, so a
+            popped-out guide stays on screen while the user plays and while
+            they browse setups. */}
+        <StrategyWindowsProvider>
         <SheetProvider>
           <ProfileSheetProvider>
             <ThemeColorMeta />
@@ -297,8 +313,11 @@ function Main(props) {
             </ViewActivityContext.Provider>
             <AlertList />
             <ConnectionBanner />
+            <RemoteBackendBanner />
+            <FloatingStrategyWindows />
           </ProfileSheetProvider>
         </SheetProvider>
+        </StrategyWindowsProvider>
         </AppLocationContext.Provider>
       )}
     </SiteInfoProvider>
@@ -336,7 +355,7 @@ function Main(props) {
   );
 }
 
-function Header({ setShowAnnouncementTemporarily }) {
+export function Header({ setShowAnnouncementTemporarily }) {
   const user = useContext(UserContext);
   const isPhoneDevice = useIsPhoneDevice();
   const location = useLocation();
@@ -435,7 +454,7 @@ function Header({ setShowAnnouncementTemporarily }) {
               },
             ]}
           />
-          <SiteLogo small />
+          <SiteLogo small flexible />
           {/* User section */}
           <div style={{ flex: "1 0" }}>
             {/* Signed-out auth lives in the phone bottom navigation; the header
@@ -560,57 +579,69 @@ function InGameWarning() {
       .catch(errorAlert);
   }
 
+  const warning = (
+    <Alert
+      severity="warning"
+      variant="outlined"
+      sx={{
+        width: "100%",
+        backgroundColor: "background.paper",
+        alignItems: "center",
+        py: 0.5,
+      }}
+      slotProps={{
+        message: {
+          sx: {
+            flex: "1",
+          },
+        },
+      }}
+    >
+      <AlertTitle sx={{ mb: 0.5, fontSize: "0.9rem" }}>
+        You are in a game in progress.
+      </AlertTitle>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Button
+          component={Link}
+          to={`/game/${user.inGame}`}
+          size="small"
+          sx={{ flex: "1" }}
+        >
+          Return
+        </Button>
+        <Button onClick={() => setLeaveDialogOpen(true)} size="small" sx={{ flex: "1" }}>
+          Leave
+        </Button>
+      </Stack>
+    </Alert>
+  );
+
   return (
     <>
-      <Snackbar
-        open={user.inGame !== null}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: isPhoneDevice ? "center" : "left",
-        }}
-        sx={{
-          maxWidth: "calc(100vw - 16px)",
-          // Sit above the phone bottom navigation instead of over it.
-          bottom: isPhoneDevice
-            ? "calc(60px + env(safe-area-inset-bottom, 0px))"
-            : undefined,
-        }}
-      >
-        <Alert
-          severity="warning"
-          variant="outlined"
-          sx={{
-            width: "100%",
-            backgroundColor: "background.paper",
-            alignItems: "center",
-            py: 0.5,
-          }}
-          slotProps={{
-            message: {
-              sx: {
-                flex: "1",
-              },
-            },
-          }}
+      {isPhoneDevice ? (
+        // In the page flow, so it takes its own space at the end of the
+        // scrolling column and never covers the last row.
+        user.inGame !== null && (
+          <Box
+            sx={{
+              position: "sticky",
+              bottom: 0,
+              mt: "auto !important",
+              zIndex: "snackbar",
+            }}
+          >
+            {warning}
+          </Box>
+        )
+      ) : (
+        <Snackbar
+          open={user.inGame !== null}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+          sx={{ maxWidth: "calc(100vw - 16px)" }}
         >
-          <AlertTitle sx={{ mb: 0.5, fontSize: "0.9rem" }}>
-            You are in a game in progress.
-          </AlertTitle>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Button
-              component={Link}
-              to={`/game/${user.inGame}`}
-              size="small"
-              sx={{ flex: "1" }}
-            >
-              Return
-            </Button>
-            <Button onClick={() => setLeaveDialogOpen(true)} size="small" sx={{ flex: "1" }}>
-              Leave
-            </Button>
-          </Stack>
-        </Alert>
-      </Snackbar>
+          {warning}
+        </Snackbar>
+      )}
       <LeaveGameDialog
         open={leaveDialogOpen && user.inGame !== null}
         onClose={() => setLeaveDialogOpen(false)}

@@ -10,6 +10,11 @@ import { Typography } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
 import { splitIntoLetters } from "./TextEffects";
+import {
+  formatGameText,
+  mapGameFormattedText,
+  gameFormattedPlainText,
+} from "./gameInlineFormatting";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 
 export function ItemList(props) {
@@ -190,33 +195,76 @@ export function UserText(props) {
         props.slangifySeed
       );
 
-    if (props.linkify) text = linkify(text);
+    if (props.linkify && !props.gameFormatting) text = linkify(text);
 
-    // Any effects that inject elements need to be added after this point because the text property changes
-    // throughout this useEffect function
-    if (props.emotify)
-      text = emotify(
-        text,
-        props.systemMessage ? null : props.customEmotes,
-        props.systemMessage ? null : props.customStickers,
-        props.systemMessage ? { system: true } : undefined
-      );
+    // The existing filter receives the whole raw line before formatting.
+    // Formatting protects URL spans and removes surrounding delimiters before
+    // the existing linkifier creates their anchors.
+    function decorate(text, suppressLinks = false) {
+      if (props.linkify && props.gameFormatting && !suppressLinks) text = linkify(text);
+      // Any effects that inject elements need to be added after this point because the text property changes
+      // throughout this useEffect function
+      if (props.emotify) {
+        let options = { 
+          system: props.systemMessage,
+          collapseStickers: props.collapseStickers,
+          // TODO: give this its own property
+          isReply: props.collapseStickers,
+        };
+        text = emotify(
+          text,
+          props.systemMessage ? null : props.customEmotes,
+          props.systemMessage ? null : props.customStickers,
+          options
+        );
+      }
 
-    if (props.slangify)
-      text = slangify({
-        chatMessage: text,
-        slangifySeed: props.slangifySeed,
-        displayEmoji: props.terminologyEmoticons,
-      });
-    if (props.iconUsername) text = iconUsername(text, props.players);
+      if (props.slangify)
+        text = slangify({
+          chatMessage: text,
+          slangifySeed: props.slangifySeed,
+          displayEmoji: props.terminologyEmoticons,
+        });
+      if (props.iconUsername)
+        text = iconUsername(text, props.players, {
+          compact: props.compactAvatars,
+        });
 
-    if (props.roleify) text = roleifySegments(text, siteInfo);
+      if (props.roleify) text = roleifySegments(text, siteInfo);
+
+      return text;
+    }
+    if (props.gameFormatting) {
+      const formatted = formatGameText(text);
+      const visible = gameFormattedPlainText(formatted);
+      const filteredVisible = props.filterProfanity && visible !== null
+        ? filterProfanity(visible, props.settings, props.profChar, props.slangifySeed)
+        : visible;
+      // Formatting markers must not shield words from display policy. A
+      // replacement can change string length, so drop styling for this line
+      // instead of guessing how to map replacement characters to old spans.
+      if (visible !== null && filteredVisible !== visible) {
+        const urls = (value) => value.match(/https?:\/\/([\w.]+)\.(\w+)([^\s]*)/g) || [];
+        const visibleUrls = urls(visible);
+        const filteredUrls = urls(filteredVisible);
+        const changedUrl = visibleUrls.length !== filteredUrls.length ||
+          visibleUrls.some((url, index) => url !== filteredUrls[index]);
+        // A display replacement is not permission to rewrite a destination.
+        // Keep the already-filtered raw syntax literal and non-clickable when
+        // stripping markup would expose a policy change inside a URL.
+        text = changedUrl ? decorate(text, true) : decorate(filteredVisible);
+      } else {
+        text = mapGameFormattedText(formatted, decorate);
+      }
+    } else {
+      text = decorate(text);
+    }
 
     // Per-letter chat text effects (wave, rainbow) run on the filtered text.
     if (props.splitLetters) text = splitIntoLetters(text);
 
     setContent(text);
-  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage, props.splitLetters]);
+  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage, props.splitLetters, props.gameFormatting]);
 
   return content ?? "";
 }
@@ -339,7 +387,7 @@ export function filterProfanity(text, settings, char, seed) {
   return text.length === 1 ? text[0] : text;
 }
 
-export function iconUsername(text, players) {
+export function iconUsername(text, players, options) {
   if (text == null) return;
 
   if (!Array.isArray(text)) text = [text];
@@ -349,46 +397,29 @@ export function iconUsername(text, players) {
 
     if (typeof segment != "string") continue;
 
-    const words = segment.trim().split(" ");
+    // Keep whitespace as its own token so inserting inline avatars does not
+    // synthesize another separator after emotify has preserved the originals.
+    const words = segment.split(/(\s+)/).filter((word) => word !== "");
 
     for (let j in words) {
       const word = words[j];
-      let replaced = false;
+      if (/^\s+$/.test(word) || word.length <= 1 || word.charAt(0) !== "%")
+        continue;
 
-      if (word.length > 1 && word.charAt(0) === "%") {
-        const checkName = word.substring(1);
+      const checkName = word.substring(1);
+      const matchedPlayer = Object.values(players).find((curPlayer) => {
+        return curPlayer.name === checkName;
+      });
+      if (!matchedPlayer) continue;
 
-        const matchedPlayer = Object.values(players).find((curPlayer) => {
-          return curPlayer.name === checkName;
-        });
-
-        if (matchedPlayer) {
-          if (matchedPlayer.avatar) {
-            replaced = true;
-
-            words[j] = (
-              <InlineAvatar
-                key={matchedPlayer.userId || matchedPlayer.name}
-                userId={matchedPlayer.userId}
-                username={matchedPlayer.name}
-              />
-            );
-          } else {
-            // no avatar
-            replaced = true;
-
-            words[j] = (
-              <InlineAvatar
-              username={matchedPlayer.name}
-              />
-            );
-          }
-        }
-      }
-
-      if (!replaced) {
-        words[j] = words[j] + " ";
-      }
+      words[j] = (
+        <InlineAvatar
+          key={matchedPlayer.userId || matchedPlayer.name}
+          userId={matchedPlayer.avatar ? matchedPlayer.userId : undefined}
+          username={matchedPlayer.name}
+          compact={Boolean(options && options.compact)}
+        />
+      );
     }
 
     text[i] = words;
@@ -406,6 +437,17 @@ function InlineAvatar(props) {
   let style = {
     position: "relative",
   };
+
+  // Only where the avatar would draw out of its line: the reply reference is a
+  // small single line of text inside a tight row. Sized in em so it follows the
+  // font; nothing else about the avatar changes.
+  if (props.compact) {
+    style.width = "1.1em";
+    style.height = "1.1em";
+    style.maxWidth = "1.1em";
+    style.maxHeight = "1.1em";
+    style.verticalAlign = "-0.2em";
+  }
   let src = photoSrc;
   if (props.userId && photoSrc) {
     style.backgroundImage = "none";

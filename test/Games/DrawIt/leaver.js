@@ -24,11 +24,12 @@ function makePlayerStub(name) {
     addScore: (n) => { score += n; },
     getScore: () => score,
     queueAlert: () => {},
+    send: () => {},
   };
 }
 
 describe("DrawIt leaver and turn rotation", () => {
-  it("advances drawer index after Reveal", () => {
+  it("keeps the drawer during Reveal and advances at the next Pick", () => {
     const game = makeBareGame();
     const players = [makePlayerStub("A"), makePlayerStub("B"), makePlayerStub("C")];
     game.players = players;
@@ -44,11 +45,17 @@ describe("DrawIt leaver and turn rotation", () => {
 
     game.beginRevealState();
 
+    expect(game.currentDrawerIndex).to.equal(0);
+    expect(game.currentRound).to.equal(0);
+
+    game._stateName = "Pick";
+    game.beginPickState();
+
     expect(game.currentDrawerIndex).to.equal(1);
     expect(game.currentRound).to.equal(0);
   });
 
-  it("wraps drawer index and increments round", () => {
+  it("wraps drawer index and increments round at the next Pick", () => {
     const game = makeBareGame();
     const players = [makePlayerStub("A"), makePlayerStub("B"), makePlayerStub("C")];
     game.players = players;
@@ -63,6 +70,12 @@ describe("DrawIt leaver and turn rotation", () => {
     game.currentRound = 0;
 
     game.beginRevealState();
+
+    expect(game.currentDrawerIndex).to.equal(2);
+    expect(game.currentRound).to.equal(0);
+
+    game._stateName = "Pick";
+    game.beginPickState();
 
     expect(game.currentDrawerIndex).to.equal(0);
     expect(game.currentRound).to.equal(1);
@@ -109,6 +122,7 @@ describe("DrawIt leaver and turn rotation", () => {
   it("checkWinConditions returns false when rounds incomplete", () => {
     const game = makeBareGame();
     game.players = [makePlayerStub("A"), makePlayerStub("B"), makePlayerStub("C")];
+    game.turnOrder = [...game.players];
     game.currentRound = 0;
     const [done] = game.checkWinConditions();
     expect(done).to.equal(false);

@@ -10,6 +10,7 @@ const redis = require("../modules/redis");
 const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const rehost = require("../modules/rehost");
 const { defaultLobbyName, isCustomLobbyName } = require("../modules/lobbyName");
+const { reviewPlayerSettings } = require("../modules/reviewPlayerSettings");
 const blocks = require("../modules/blocks");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
@@ -59,10 +60,7 @@ async function enrichReviewUser(user) {
 
   return {
     ...user,
-    settings: {
-      textColor: user.settings.textColor,
-      nameColor: user.settings.textColor,
-    },
+    settings: reviewPlayerSettings(user.settings),
     vanityUrl: vanityUrl?.url,
   };
 }
@@ -322,7 +320,7 @@ router.get("/list", async function (req, res) {
         lobby != "All" ? { lobby } : { lobby: { $ne: constants.testingLobby } };
       var finishedNeeded = constants.lobbyPageSize - games.length;
       var finishedSelect =
-        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap endTime -_id";
+        "id type setup lobby lobbyName anonymousGame anonymousDeck ranked competitive private spectating guests readyCheck noVeg stateLengths gameTypeOptions broken winnersInfo playerIdMap playerAlignmentMap pastPregamePlayers endTime -_id";
       var finishedSetupSelect =
         "id gameType name roles closed useRoleGroups roleGroupSizes count total -_id";
       // A few extra rows so that dropping a repeated id still fills the page.
@@ -774,7 +772,7 @@ router.get("/:id/info", async function (req, res) {
     if (!game) {
       game = await models.Game.findOne({ id: gameId })
         .select(
-          "type users spectatorsUsers players spectators left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver kudosReceivers playerIdMap playerAlignmentMap skillRatingChanges -_id"
+          "type users spectatorsUsers players spectators left stateLengths lobbyName ranked competitive anonymousGame anonymousDeck spectating guests readyCheck noVeg startTime endTime gameTypeOptions winners winnersInfo kudosReceiver kudosReceivers playerIdMap playerAlignmentMap pastPregamePlayers skillRatingChanges -_id"
         )
         .populate("users", "id name avatar -_id");
 
@@ -1118,6 +1116,12 @@ router.post("/host", async function (req, res) {
       }
     }
 
+    // Ranked and competitive games must not allow no-vegging. The hosting
+    // dialog hides the option, but the request can still carry it — including a
+    // value left set before the host ticked ranked, since the field is only
+    // hidden, not cleared.
+    const noVeg = Boolean(req.body.noVeg) && !req.body.ranked && !isCompetitive;
+
     var settings = settingsChecks[gameType](req.body, setup);
     settings.anonymousGame = Boolean(req.body.anonymousGame);
     settings.anonymousDeckId = String(req.body.anonymousDeckId);
@@ -1240,7 +1244,7 @@ router.post("/host", async function (req, res) {
         rehostId: rehostId,
         scheduled: scheduled,
         readyCheck: isCompetitive ? true : Boolean(req.body.readyCheck),
-        noVeg: Boolean(req.body.noVeg),
+        noVeg: noVeg,
         stateLengths: stateLengths,
         gameTypeOptions: JSON.stringify({ deckSize: req.body.deckSize || "standard" }),
         ...settings,

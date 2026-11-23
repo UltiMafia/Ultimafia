@@ -203,9 +203,10 @@ function getHeartRefreshMessage(user, type, now) {
   else if (type === "gold") timestamp = user.goldHeartRefreshTimestamp;
 
   if (timestamp && timestamp > 0) {
+    if (timestamp <= now) return `Your ${type}-heart refill is due; waiting for an updated balance.`;
     return `Your ${type} hearts will replenish in: ${timeToGo(timestamp, now)}`;
   }
-  return `Your ${type} hearts are at full capacity. Go play some games!`;
+  return `No ${type}-heart refill is currently scheduled.`;
 }
 
 function HeartRefreshTooltip({ user, type, children }) {

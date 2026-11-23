@@ -19,6 +19,9 @@
 .mde-text {
   background-color: var(--scheme-color);
   color: var(--scheme-color-text);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .react-mde button.selected {
@@ -32,6 +35,12 @@
 .react-mde .grip {
   border-top: 1px solid var(--scheme-color-border);
 
+  background-color: var(--scheme-color-sec);
+}
+
+.react-mde label.image-tip {
+  border-top: 1px solid var(--scheme-color-border);
+  color: var(--scheme-color-text);
   background-color: var(--scheme-color-sec);
 }
 
