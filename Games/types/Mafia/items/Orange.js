@@ -39,9 +39,12 @@ module.exports = class Orange extends Item {
       actionsNext: function (stateInfo) {
         var stateInfo = this.game.getStateInfo();
 
-        if (stateInfo.name.match(/Night/) && this.holder.role.visitHotSprings) {
+        const holder = this.holder;
+        if (!holder || !holder.role) return;
+
+        if (stateInfo.name.match(/Night/) && holder.role.visitHotSprings) {
           this.drop();
-          this.holder.role.visitHotSprings = false;
+          holder.role.visitHotSprings = false;
         }
       },
     };
