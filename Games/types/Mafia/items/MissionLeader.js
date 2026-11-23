@@ -50,7 +50,7 @@ module.exports = class MissionLeader extends Item {
             var selectedNames = this.target.map((t) => t.name);
             this.game.recordMissionTeam(selectedNames);
             this.game.queueAlert(`Team selected: ${selectedNames.join(", ")}`);
-            this.holder.dropItem("MissionLeader");
+            this.actor.dropItem("MissionLeader");
           },
         },
       },
