@@ -567,6 +567,11 @@ export default function MafiaGame() {
                     descriptors={actionDescriptorData.regularActionDescriptors}
                   />
                 )}
+                <StrategiesPanel
+                  setupId={setupId}
+                  visible={Boolean(setupId)}
+                  title={setupTitle}
+                />
               </>
             ) : (
               <ActionList
@@ -582,11 +587,6 @@ export default function MafiaGame() {
             <LastWillEntry />
             <PinnedMessages />
             <Notes />
-            <StrategiesPanel
-              setupId={setupId}
-              visible={Boolean(setupId)}
-              title={setupTitle}
-            />
           </>
         }
       />
