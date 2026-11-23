@@ -12,7 +12,7 @@ const {
   generate,
   selections,
 } = require("../scripts/mafia-fuzz/generator");
-const { runCase } = require("../scripts/mafia-fuzz/run");
+const { runCase, failureClass } = require("../scripts/mafia-fuzz/run");
 
 describe("Mafia Fuzzer Test Suite", function () {
   this.timeout(30000);
@@ -175,6 +175,15 @@ describe("Mafia Fuzzer Test Suite", function () {
   });
 
   describe("3. Crash capture", function () {
+    it("failureClass names the error and top engine frame", function () {
+      const stack = "TypeError: Cannot read properties of null (reading 'role')\n    at Orange.actionsNext (Games/types/Mafia/items/Orange.js:44:23)";
+      expect(failureClass(stack)).to.equal(
+        "TypeError: Cannot read properties of null (reading 'role') (Games/types/Mafia/items/Orange.js:44)"
+      );
+      expect(failureClass("MongooseError: no stack")).to.equal("MongooseError: no stack");
+      expect(failureClass(undefined)).to.equal("unknown");
+    });
+
     it("keeps the first real worker failure despite cascading errors and completion", async function () {
       const vm = require("vm");
       const worker = path.join(__dirname, "../scripts/mafia-fuzz/worker.js");

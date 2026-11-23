@@ -61,6 +61,7 @@ The fuzzer is structured into four core components:
 | `--modifiers` | Integer | `3` | Maximum number of modifiers stacked onto any single role. |
 | `--output` | String | `mafia-fuzz-failures` | Directory where failure JSON artifacts are written. |
 | `--replay` | File path | `null` | Path to a failure JSON file to replay with identical inputs. |
+| `--replay-dir` | Directory | `null` | Replay every failure JSON in a directory (a saved corpus); exits 1 while any case still fails. Surveys also end with a per-class failure summary (error + top engine frame, with seeds). |
 
 ---
 
