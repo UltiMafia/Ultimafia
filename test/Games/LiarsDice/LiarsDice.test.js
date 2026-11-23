@@ -18,7 +18,15 @@ async function startGame(options = {}) {
       spotOn: options.spotOn ?? true,
     },
   });
-  await waitFor(() => made.game.started && made.game.getStateName() == "Guess Dice");
+  // getStateName() flips to "Guess Dice" before makeMeetings() has created
+  // the Casino chat, so seedChat() can otherwise run against no meeting on a
+  // loaded machine.
+  await waitFor(
+    () =>
+      made.game.started &&
+      made.game.getStateName() == "Guess Dice" &&
+      made.game.getMeetings().some((m) => m.name == "Casino")
+  );
   return made;
 }
 
