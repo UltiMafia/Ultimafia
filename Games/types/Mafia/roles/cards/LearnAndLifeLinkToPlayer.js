@@ -57,10 +57,11 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
         this.targetPlayer = Random.randArrayVal(nonMafia);
       },
       death: function (player, killer, deathType, instant) {
-        if (this.targetPlayer && player != this.targetPlayer) {
+        if (!this.targetPlayer || player != this.targetPlayer) {
           return;
         }
         if (this.game.getStateName() != "Night") return;
+        if (!killer || !killer.role) return;
         if (killer.role.alignment != "Mafia" && !killer.isDemonic(true)) return;
         if (!this.hasAbility(["Kill", "OnlyWhenAlive"])) {
           return;
@@ -69,7 +70,7 @@ module.exports = class LearnAndLifeLinkToPlayer extends Card {
           var action = new Action({
             actor: this.player,
             target: this.player,
-            game: this.holder.game,
+            game: this.game,
             labels: ["kill"],
             run: function () {
               if (this.dominates())
