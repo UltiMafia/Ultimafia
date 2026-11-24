@@ -1378,13 +1378,17 @@ module.exports = class Game {
   }
 
   announcePlayerLeave(player) {
-    if (player.spectator || player.exorcised) return;
-    if (!this.started || this.finished || player.alive) {
+    if (player.spectator) return;
+
+    // Everyone hears that a living player left. A dead player's departure is
+    // only news while their participation still matters (a graveyard game),
+    // but when it is, it is still news to the whole game, not just the dead.
+    if (
+      player.alive ||
+      (this.graveyardParticipation == true && player.exorcised === false) ||
+      (this.type === "Mafia" && player.requiresGraveyardParticipation())
+    ) {
       this.sendAlert(`${player.name} has left.`, undefined, undefined, ["info"]);
-    } else if (this.graveyardParticipation ||
-        (this.type === "Mafia" && player.requiresGraveyardParticipation())) {
-      const dead = this.players.filter((recipient) => !recipient.alive && !recipient.exorcised);
-      this.sendAlert(`${player.name} has left.`, dead, undefined, ["info"]);
     }
   }
 
@@ -1399,14 +1403,16 @@ module.exports = class Game {
     // as the player does. Note this is driven by leaving, not by the socket
     // closing: a player who backgrounds or closes their browser stays in the
     // lobby, and covering exactly that case is the point of the push.
-    if (player.user && player.user.id) {
-      pushNotifications.unregisterUser(player.user.id);
+    // The connection account, not the seat's user: after a Disguiser swap the
+    // seat still points at the account that originally owned it.
+    const userId = player.connectionAccountId;
+    if (userId) {
+      pushNotifications.unregisterUser(userId);
     }
 
     // player.leaveReason: why the server removed them, shown on their page.
     const reason = player.leaveReason;
     const socket = player.socket;
-    const userId = player.connectionAccountId;
     player.left = true;
 
     this.kudosVoterLeft(player);
@@ -4090,17 +4096,17 @@ module.exports = class Game {
   }
 
   spectatorsHear(message) {
-    if (message.abilityName != "Whisper") {
-      for (let spectator of this.spectators) {
-        // Omniscient spectators get every message via omniscientSpectatorsHear.
-        if (spectator.omniscient) continue;
+    for (let spectator of this.spectators) {
+      // Omniscient spectators get every message via omniscientSpectatorsHear.
+      if (spectator.omniscient) continue;
 
-        // Members already heard this as recipients. A second copy doubles chat.
-        if (message.recipients && message.recipients.indexOf(spectator) != -1)
-          continue;
+      // Members already heard this as recipients. A second copy doubles chat.
+      if (message.recipients && message.recipients.indexOf(spectator) != -1)
+        continue;
 
-        spectator.hear(message);
-      }
+      // A whisper only reaches here once it has leaked to the whole meeting;
+      // isVisibleToSpectators keeps the private ones out.
+      spectator.hear(message);
     }
   }
 

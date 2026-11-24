@@ -64,6 +64,17 @@ function makeMeeting(game, name, members, extra = {}) {
       length: list.length,
       array: () => list,
     }),
+    getPlayers() {
+      return list.map((member) => member.player);
+    },
+    restrictChatRecipients(sender, recipients) {
+      return recipients;
+    },
+    isVisibleToSpectators(message) {
+      if (!game.isSpectatorMeeting(this)) return false;
+      const recipients = new Set(message.recipients);
+      return this.getPlayers().every((player) => recipients.has(player));
+    },
     getMeetingInfo() {
       return { id: this.id, name: this.name, itemId: "item1", messages: [] };
     },

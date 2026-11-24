@@ -1148,8 +1148,13 @@ module.exports = class Meeting {
   }
 
   // Visibility is fixed at send time; a join/leave must not change what was public.
+  // A whisper is visible only once it has leaked beyond its two participants:
+  // then the whole meeting heard it, so spectators of that meeting see it too.
+  // In a two-member meeting there is nobody to leak to, so it stays private.
   isVisibleToSpectators(message) {
-    if (!this.game.isSpectatorMeeting(this) || message.abilityName === "Whisper") return false;
+    if (!this.game.isSpectatorMeeting(this)) return false;
+    if (message.abilityName === "Whisper" && this.members.length <= 2)
+      return false;
     const recipients = new Set(message.recipients);
     return this.getPlayers().every((player) => recipients.has(player));
   }

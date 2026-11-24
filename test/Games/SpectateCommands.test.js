@@ -129,7 +129,20 @@ describe("Games/SpectateCommands", function () {
       const game = await openGame.call(this);
       const { disguiser, target, disguiserId, targetId, disguiserSocket, targetSocket } = await disguise(game);
       game.finished = true;
-      await game.userLeave(targetId);
+
+      // The leaving connection's account, not the seat's displayed user, is
+      // what the push subscription belongs to.
+      const pushNotifications = require("../../modules/pushNotifications");
+      const originalUnregister = pushNotifications.unregisterUser;
+      const unregistered = [];
+      pushNotifications.unregisterUser = (id) => unregistered.push(id);
+      try {
+        await game.userLeave(targetId);
+      } finally {
+        pushNotifications.unregisterUser = originalUnregister;
+      }
+
+      expect(unregistered).to.deep.equal([targetId]);
       expect(await redis.inGame(targetId)).to.equal(false);
       expect(await redis.inGame(disguiserId)).to.equal(game.id);
       expect(events(targetSocket, "left")).to.have.lengthOf(1);
@@ -168,6 +181,30 @@ describe("Games/SpectateCommands", function () {
       await redis.joinGame(targetId, "next-game", false, false);
       await redis.leaveGame(targetId, game.id);
       expect(await redis.inGame(targetId)).to.equal("next-game");
+    });
+  });
+
+  describe("leaving", function () {
+    it("tells everyone when a dead participant leaves a graveyard game", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const watch = makeUser(null, "watch");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+
+      const dead = playerFor(game, other);
+      dead.alive = false;
+      game.graveyardParticipation = true;
+      host.socket.flushMessages();
+      watch.socket.flushMessages();
+
+      game.announcePlayerLeave(dead);
+
+      expect(chatTexts(host.socket)).to.include("other has left.");
+      expect(chatTexts(watch.socket)).to.include("other has left.");
     });
   });
 
@@ -1150,6 +1187,50 @@ describe("Games/SpectateCommands", function () {
       // Players get the village message and quote once, no spectator chat.
       heard(host.socket).should.deep.equal(["village talk", `quote:${vm.id}`]);
       heard(other.socket).should.deep.equal(["village talk", `quote:${vm.id}`]);
+    });
+
+    it("shows a leaked whisper to spectators but not a private one", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const third = makeUser(null, "third");
+      const watch = makeUser(null, "watch");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(third);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+
+      const room = game.createMeeting(Meeting, "Village");
+      room.group = true;
+      room.speech = true;
+      for (const player of game.players) room.join(player);
+      const [sender, recipient] = game.players.array();
+      const watcher = game.spectators[0];
+      game.isWhispers = () => true;
+      for (const user of [host, other, third, watch]) user.socket.flushMessages();
+
+      game.getWhisperLeakChance = () => 0;
+      room.speak({
+        sender,
+        content: "private line",
+        abilityName: "Whisper",
+        abilityTarget: recipient.id,
+      });
+      game.getWhisperLeakChance = () => 100;
+      room.speak({
+        sender,
+        content: "leaked line",
+        abilityName: "Whisper",
+        abilityTarget: recipient.id,
+        forceLeak: true,
+      });
+
+      heard(recipient.socket).should.deep.equal(["private line", "leaked line"]);
+      // The private whisper reached two of three members, so spectators do
+      // not see it. The leaked one reached the whole meeting.
+      heard(watcher.socket).should.deep.equal(["leaked line"]);
     });
 
     it("pregame chat stays shared between players and spectators", async function () {
