@@ -277,14 +277,6 @@ function Miniprofile(props) {
                   );
                 })}
               </Box>
-              <Typography
-                variant="caption"
-                component="div"
-                color="text.secondary"
-                sx={{ px: 1.5, py: 0.75, borderTop: 1, borderColor: "divider" }}
-              >
-                Ranked &amp; competitive · includes abandons
-              </Typography>
             </Box>
           )}
         </Box>
