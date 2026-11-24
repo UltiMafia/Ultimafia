@@ -49,6 +49,7 @@
     }
   },
   "scripts": {
+    "test:miniprofile-winrates:browser": "rsbuild build --config rsbuild.miniprofile-winrates-test.config.ts && node test/run-miniprofile-winrates.cjs",
     "test:lifecycle": "node --test test/*.test.mjs",
     "test:escape-leave:browser": "rsbuild build --config rsbuild.lifecycle-test.config.ts && node test/run-browser.cjs --escape-leave",
     "test:lifecycle:browser": "rsbuild build --config rsbuild.lifecycle-test.config.ts && rsbuild preview --config rsbuild.lifecycle-test.config.ts",
