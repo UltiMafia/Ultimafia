@@ -499,7 +499,7 @@ describe("Games/SpectateCommands", function () {
       hints(early.socket).should.have.lengthOf(0);
     });
 
-    it("is not sent when a gate would refuse the seat (banned)", async function () {
+    it("is not sent when a banned user is refused the seat and spectator entry", async function () {
       const game = await openGame.call(this, { total: 3 });
       const host = makeUser(game.hostId, "host");
       const watcher = makeUser(null, "watcher");
@@ -508,7 +508,9 @@ describe("Games/SpectateCommands", function () {
       await game.userJoin(watcher, { spectate: true });
       await settle();
 
-      game.spectators.should.have.lengthOf(1);
+      // A game ban refuses spectator entry as well as the seat, so there is
+      // no seat to hint at and the join hint is not sent.
+      game.spectators.should.have.lengthOf(0);
       hints(watcher.socket).should.have.lengthOf(0);
     });
 

@@ -46,7 +46,29 @@ module.exports = class MissionGame extends Card {
 
         this.game.leaderIndex = Random.randInt(0, this.game.players.length - 1);
 
-        this.registerMissionStates();
+        // Card listeners are bound to the Role, so the states are registered
+        // through this.game rather than a method on the card.
+        const dayIndex = this.game.states.findIndex((s) => s.name === "Day");
+        if (
+          dayIndex !== -1 &&
+          !this.game.states.some((s) => s.name === "Team Approval")
+        ) {
+          this.game.addStateType(
+            "Team Approval",
+            dayIndex + 1,
+            this.game.stateLengths?.["Team Approval"] || 1000 * 60,
+            false,
+            () => !this.game.ResistanceMode
+          );
+          this.game.addStateType(
+            "Mission",
+            dayIndex + 2,
+            this.game.stateLengths?.["Mission"] || 1000 * 60,
+            false,
+            () =>
+              !this.game.ResistanceMode || Boolean(this.game.currentTeamFail)
+          );
+        }
 
         for (let p of this.game.players) {
           p.holdItem("NoVillageMeeting");
@@ -79,19 +101,6 @@ module.exports = class MissionGame extends Card {
           }
         }
       },
-      extraStateCheck: function (stateName) {
-        if (!this.game.ResistanceMode) {
-          return;
-        }
-        if (this.game.ExtraStates == null) {
-          this.game.ExtraStates = [];
-        }
-        for (let name of ["Team Approval", "Mission"]) {
-          if (stateName == name && !this.game.ExtraStates.includes(name)) {
-            this.game.ExtraStates.push(name);
-          }
-        }
-      },
     };
 
     this.stateMods = {
@@ -102,41 +111,5 @@ module.exports = class MissionGame extends Card {
         },
       },
     };
-  }
-
-  registerMissionStates() {
-    const game = this.game;
-    if (game.states.some((s) => s.name === "Team Approval")) {
-      return;
-    }
-
-    const dayIndex = game.states.findIndex((s) => s.name === "Day");
-    if (dayIndex === -1) {
-      return;
-    }
-
-    const teamApprovalLength =
-      game.stateLengths?.["Team Approval"] || 1000 * 60;
-    const missionLength = game.stateLengths?.["Mission"] || 1000 * 60;
-
-    game.addStateType(
-      "Team Approval",
-      dayIndex + 1,
-      teamApprovalLength,
-      false,
-      function () {
-        return !game.ResistanceMode;
-      }
-    );
-
-    game.addStateType(
-      "Mission",
-      dayIndex + 2,
-      missionLength,
-      false,
-      function () {
-        return !game.ResistanceMode || game.currentTeamFail;
-      }
-    );
   }
 };
