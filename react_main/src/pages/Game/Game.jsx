@@ -70,6 +70,7 @@ import Form, { useForm } from "../../components/Form";
 import { Modal } from "../../components/Modal";
 import SiteLogo from "../../components/SiteLogo";
 import LeaveGameDialog from "../../components/LeaveGameDialog";
+import ReportDialog from "../../components/ReportDialog";
 import { SportsmanshipJoinModal } from "../../components/SportsmanshipJoinModal";
 import { useErrorAlert } from "../../components/Alerts";
 import {
@@ -110,6 +111,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Menu,
   MenuItem,
   Select,
   Stack,
@@ -286,6 +288,7 @@ export default function Game(props) {
   const [dev, setDev] = useState(false);
   const [pingInfo, setPingInfo] = useState(null);
   const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [messageReport, setMessageReport] = useState(null);
   const [roleRevealModalOpen, setRoleRevealModalOpen] = useState(false);
   const [roleRevealData, setRoleRevealData] = useState(null);
   const [hostId, setHostId] = useState(null);
@@ -464,6 +467,18 @@ export default function Game(props) {
 
   const isParticipant = !isSpectator && !review;
   const currentStateObject = history.states[history.currentState];
+  const canReportMessages =
+    user.loggedIn && (review || currentStateObject?.name === "Postgame");
+  const onMessageReport = useCallback((message, sender) => {
+    if (!sender?.userId || sender.anonId != null || message.isQuote) return;
+    setMessageReport({
+      game: gameId,
+      userId: sender.userId,
+      userName: sender.name,
+      description: `Message ${message.id ?? ""}:\n${message.content ?? ""}`,
+    });
+  }, [gameId]);
+
   const unresolvedActionCount = Object.values(
     currentStateObject ? currentStateObject.meetings : {}
   ).filter(
@@ -1596,6 +1611,7 @@ export default function Game(props) {
   else {
     const gameContext = {
       gameId: gameId,
+      onMessageReport: canReportMessages ? onMessageReport : undefined,
       socket: socket,
       review: review,
       gameType: gameType,
@@ -1746,6 +1762,12 @@ export default function Game(props) {
             socket.send("changeSetup", setupId);
             setChangeSetupDialogOpen(false);
           }}
+        />
+        <ReportDialog
+          open={active && messageReport !== null}
+          sessionOpen={messageReport !== null}
+          onClose={() => setMessageReport(null)}
+          prefilledArgs={messageReport || {}}
         />
         </IsPhoneDeviceContext.Provider>
       </GameContext.Provider>
@@ -3097,6 +3119,7 @@ export function rowStateClass(stateViewing) {
 }
 
 function Message(props) {
+  const game = useContext(GameContext);
   const {
     history,
     isMessagePinned,
@@ -3162,6 +3185,7 @@ function Message(props) {
     <MessageRow
       {...rowProps}
       iWasPinged={iWasPinged}
+      onMessageReport={game?.onMessageReport}
       pinned={isMessagePinned(message)}
       replyPreview={replyPreview || undefined}
       replyMerged={!!replyPreview && !!replyMerged}
@@ -3342,6 +3366,7 @@ const MessageRow = React.memo(function MessageRow(props) {
   const user = useContext(UserContext);
   const theme = useTheme();
   const [isHovering, setIsHovering] = useState(false);
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const accessibleNameColors = user.settings?.accessibleNameColors;
   // Click to reply: the pending single click, cleared by a double-click, by
   // another click and on unmount.
@@ -3359,7 +3384,10 @@ const MessageRow = React.memo(function MessageRow(props) {
   const touchCallbacks = useRef(null);
   touchCallbacks.current = {
     onReply: startReply,
-    onPin: () => props.onPinMessage(messageObj),
+    onPin: () => {
+      if (reportable) setActionMenuOpen(true);
+      else props.onPinMessage(messageObj);
+    },
   };
   // Chat text effect (/wave etc.), attached by the server for item owners.
   // Plays once when the message first appears; pinned and review rows stay plain.
@@ -3419,14 +3447,30 @@ const MessageRow = React.memo(function MessageRow(props) {
     });
   const clickToReply = replyable && !isPhoneDevice;
   const swipeToReply = replyable && isPhoneDevice;
+  // Named, ordinary rows only. Quote/reply preview targets keep their own
+  // identity and must not be mistaken for the row's sender.
+  const reportable = !!props.onMessageReport && !message.isQuote &&
+    isPlayerMessage && typeof message.content === "string" &&
+    (players[message.senderId] || spectators?.[message.senderId])?.userId &&
+    (players[message.senderId] || spectators?.[message.senderId])?.anonId == null;
+
   useEffect(() => {
     if (!isPhoneDevice || !rowRef.current) return;
     return bindMessageTouch(rowRef.current, {
       canReply: swipeToReply,
+      cancelOnContextMenu: reportable,
       onReply: () => touchCallbacks.current.onReply(),
       onPin: () => touchCallbacks.current.onPin(),
     });
-  }, [isPhoneDevice, swipeToReply, messageObj, props.stateViewing]);
+  }, [isPhoneDevice, swipeToReply, reportable, messageObj, props.stateViewing]);
+  // Preserve the existing device-specific pin policy: phone holds can pin,
+  // while desktop pinning excludes review and pregame transcript rows.
+  const canMenuPin = isPhoneDevice || showPinButton({
+    review: props.review,
+    isQuote: message.isQuote,
+    isHovering: true,
+    stateViewing: props.stateViewing,
+  });
   const thumbtackFaClass = props.pinned
     ? "fas fa-thumbtack"
     : "fas fa-thumbtack fa-rotate-270";
@@ -3694,6 +3738,18 @@ const MessageRow = React.memo(function MessageRow(props) {
       data-message-id={message.id ?? undefined}
       data-message-state={props.sourceState ?? props.stateViewing}
       data-message-meeting={message.meetingId ?? undefined}
+      onContextMenu={
+        reportable
+          ? (e) => {
+              // Keep the browser's link/image context menu intact.
+              if (e.target.closest("a, button, input, textarea, img, .reply-reference")) return;
+              e.preventDefault();
+              e.stopPropagation();
+              cancelReplyClick();
+              setActionMenuOpen(true);
+            }
+          : undefined
+      }
       onPointerDown={clickToReply ? onRowPointerDown : undefined}
       onClick={clickToReply ? onRowClick : undefined}
       onKeyDown={clickToReply ? onRowKeyDown : undefined}
@@ -3873,6 +3929,46 @@ const MessageRow = React.memo(function MessageRow(props) {
           )}
         </div>
       </div>
+      <Menu
+        anchorEl={rowRef.current}
+        open={Boolean(reportable) && actionMenuOpen}
+        onClose={() => setActionMenuOpen(false)}
+        onClick={(e) => e.stopPropagation()}
+        onDoubleClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        {canMenuPin && (
+          <MenuItem onClick={() => {
+            setActionMenuOpen(false);
+            if (canMenuPin) props.onPinMessage(messageObj);
+          }}>
+            {props.pinned ? "Unpin message" : "Pin message"}
+          </MenuItem>
+        )}
+        <MenuItem onClick={() => {
+          setActionMenuOpen(false);
+          props.onMessageReport(messageObj, player);
+        }}>
+          Report message
+        </MenuItem>
+      </Menu>
+      {reportable && (
+        <button
+          type="button"
+          className="message-report-button"
+          aria-label={`Report message by ${player.name}`}
+          title="Report this message"
+          onClick={(e) => {
+            e.stopPropagation();
+            cancelReplyClick();
+            props.onMessageReport(messageObj, player);
+          }}
+          onDoubleClick={(e) => e.stopPropagation()}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
+          <i className="fas fa-flag" aria-hidden="true" />
+        </button>
+      )}
       {!isPhoneDevice && !isRightAligned && (
         <div
           className="pin-button-wrapper"

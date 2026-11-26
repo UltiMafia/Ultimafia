@@ -21,19 +21,24 @@ import { useViolations } from "../hooks/useViolations";
 
 import janitor from "images/roles/mafia/janitor-vivid.png";
 
-export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
+export default function ReportDialog({
+  open,
+  onClose,
+  prefilledArgs = {},
+  sessionOpen = open,
+}) {
   const [game, setGame] = useState(prefilledArgs.game || "");
   const [userReported, setUserReported] = useState(
     prefilledArgs.userId || prefilledArgs.user || ""
   );
   const [ruleBroken, setRuleBroken] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(prefilledArgs.description || "");
 
-  // Reset form only when the dialog opens, not on every parent re-render (e.g. game
-  // state updates) which pass a new prefilledArgs object identity each time.
+  // Reset only for a new report session. A retained game can temporarily hide
+  // the dialog while keeping sessionOpen true, preserving edited fields.
   const dialogSessionStartedRef = useRef(false);
   useEffect(() => {
-    if (!open) {
+    if (!sessionOpen) {
       dialogSessionStartedRef.current = false;
       return;
     }
@@ -45,12 +50,13 @@ export default function ReportDialog({ open, onClose, prefilledArgs = {} }) {
     setGame(prefilledArgs.game || "");
     setUserReported(userId);
     setRuleBroken("");
-    setDescription("");
+    setDescription(prefilledArgs.description || "");
   }, [
-    open,
+    sessionOpen,
     prefilledArgs.game,
     prefilledArgs.userId,
     prefilledArgs.user,
+    prefilledArgs.description,
   ]);
 
   // Get display value for user (prefer userName, fall back to userId)
