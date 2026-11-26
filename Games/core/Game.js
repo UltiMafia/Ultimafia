@@ -608,8 +608,12 @@ module.exports = class Game {
 
       if (!isBot) currentGame = await redis.inGame(user.id);
 
-      // Check if user is already in a different game
-      if (currentGame && currentGame != this.id) {
+      // A closed lobby can leave a stale Redis seat behind.
+      if (
+        currentGame &&
+        currentGame !== this.id &&
+        (await redis.gameExists(currentGame))
+      ) {
         user.send(
           "error",
           "You must leave your current game before joining a new one."

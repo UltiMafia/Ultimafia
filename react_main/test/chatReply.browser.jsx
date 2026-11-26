@@ -12,9 +12,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
-import { GameTypeContext, IsPhoneDeviceContext, PlayerRows, SpectatorRows, TextMeetingLayout } from "../src/pages/Game/Game";
+import { GameTypeContext, IsPhoneDeviceContext, PlayerRows, SpectatorRows, SpeechFilter, TextMeetingLayout } from "../src/pages/Game/Game";
 import { RosterTypingProvider } from "../src/pages/Game/RosterTyping";
 import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
+import { filterProfanity } from "../src/components/Basic";
+import { slurs } from "../src/constants/filteredStrings";
 import { makeReplyTarget, redirectTypingToChat } from "../src/utils/messageReply";
 import "../src/css/main.css";
 import "../src/css/game.css";
@@ -298,7 +300,6 @@ const game = {
     highlightMentions: true,
     roleMentions: rolesOn || decorOn,
   },
-  filters: {},
   socket: { on: () => {}, send: () => {} },
   isolatedPlayers: new Set(),
   getSetupGameSetting: () => undefined,
@@ -384,10 +385,21 @@ if (membership) {
   window.__typingListenerCount = () => typingListeners.size;
   game.onMessageQuote = (message, destination) => window.__quotes.push({ message, destination });
 }
+window.__filteredSwear = filterProfanity("shit", {}, "*", "speech-filter-fixture");
+const decodeRot13 = (value) =>
+  value.replace(/[a-z]/g, (character) =>
+    String.fromCharCode(((character.charCodeAt(0) - 97 + 13) % 26) + 97),
+  );
+const slurSample = decodeRot13(slurs.find((word) => word === "avttre"));
+window.__filteredSlur = filterProfanity(slurSample, { disablePg13Censor: true }, "*");
+window.__slurWasMasked = window.__filteredSlur !== slurSample;
+const showSpeechFilter = params.get("speech") === "1";
 function FixtureGame({ children }) {
   const [replyTarget, setReplyTarget] = React.useState(null);
   const [stateViewing, setStateViewing] = React.useState(game.stateViewing);
   const [history, setHistory] = React.useState(game.history);
+  const [speechFilters, setSpeechFilters] = React.useState({ from: "", contains: "" });
+  const [isolationEnabled, setIsolationEnabled] = React.useState(false);
   window.__setReplyTarget = setReplyTarget;
   window.__setViewedPhase = setStateViewing;
   window.__ackReply = () => {
@@ -418,7 +430,19 @@ function FixtureGame({ children }) {
   };
   return (
     <IsPhoneDeviceContext.Provider value={mobile}>
-      <GameContext.Provider value={{ ...game, history, stateViewing, replyTarget, setReplyTarget }}>
+      <GameContext.Provider
+        value={{
+          ...game,
+          history,
+          stateViewing,
+          replyTarget,
+          setReplyTarget,
+          speechFilters,
+          setSpeechFilters,
+          isolationEnabled,
+          setIsolationEnabled,
+        }}
+      >
         {membership ? <RosterTypingProvider>{children}</RosterTypingProvider> : children}
       </GameContext.Provider>
     </IsPhoneDeviceContext.Provider>
@@ -459,6 +483,7 @@ ReactDOM.render(
                     <SpectatorRows />
                   </div>
                 )}
+                {showSpeechFilter && <SpeechFilter />}
                 <TextMeetingLayout seatActions={false} />
               </Box>
             </GameTypeContext.Provider>

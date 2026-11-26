@@ -248,9 +248,15 @@ module.exports = class WackyWordsGame extends Game {
   }
 
   async speedUp() {
+    if (this.finished) return;
+    const currentState = this.currentState;
     for (const player of this.players) {
+      // The question owner has no response or guess meeting in Wacky People.
+      if (this.hasNeighbor && player.name === this.realAnswerer) continue;
       if (player.alive && !player.left && !this.playerHasVoted[player.name]) {
         await this.vegPlayer(player);
+        // Timer cancellation cannot stop a penalty that is already awaiting I/O.
+        if (this.finished || this.currentState !== currentState) return;
       }
     }
     this.gotoNextState();

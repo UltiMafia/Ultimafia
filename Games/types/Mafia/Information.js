@@ -102,15 +102,22 @@ module.exports = class MafiaInformation {
   getKillVictims() {
     var visits = [];
     for (let action of this.game.actions[0]) {
-      let toCheck = action.target;
-      if (action.hasLabels(["kill"]) && action.dominates()) {
-        if (!Array.isArray(action.target)) {
-          toCheck = [action.target];
-        }
+      if (!action.hasLabels(["kill"])) continue;
 
-        if (action.target && toCheck[0] instanceof Player) {
-          visits.push(...toCheck);
-        }
+      let raw = action.target;
+      let candidates = [];
+      if (Array.isArray(raw)) {
+        candidates = raw.filter((target) => target instanceof Player);
+      } else if (raw instanceof Player) {
+        candidates = [raw];
+      } else if (raw === "Yes" || raw === true) {
+        let prisoner =
+          action.role && action.role.data && action.role.data.prisoner;
+        if (prisoner instanceof Player) candidates = [prisoner];
+      }
+
+      for (let player of candidates) {
+        if (action.dominates(player, false)) visits.push(player);
       }
     }
     return visits;

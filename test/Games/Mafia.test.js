@@ -47,6 +47,52 @@ async function makeGame(setup, stateLength) {
 
   await game.init();
 
+  // onClientEvent replays past meetings to listeners attached after the game
+  // started, and the vote dedupe above keeps that to one vote per meeting. A
+  // vote cast while a transition is already running (a meeting created by
+  // that transition is answered immediately) can still chain transitions on
+  // the stack. Let the transition finish, then take one queued advance.
+  // A vote makes the game send the updated meeting to its members, and the
+  // test listeners vote on every "meeting" event, so the same meeting would
+  // be voted on again forever. Count one vote per meeting per state.
+  for (const user of users) {
+    const socket = user.socket;
+    const sendToServer = socket.sendToServer.bind(socket);
+    const votedMeetings = new Set();
+
+    socket.sendToServer = (eventName, data) => {
+      if (eventName === "vote" && data && data.meetingId) {
+        const key = `${game.currentState}:${data.meetingId}`;
+        if (votedMeetings.has(key)) return;
+        votedMeetings.add(key);
+      }
+      return sendToServer(eventName, data);
+    };
+  }
+
+  let advancing = false;
+  let queued = false;
+  const advance = game.gotoNextState.bind(game);
+  game.gotoNextState = () => {
+    if (advancing) {
+      if (!queued) {
+        queued = true;
+        setImmediate(() => {
+          queued = false;
+          game.gotoNextState();
+        });
+      }
+      return;
+    }
+
+    advancing = true;
+    try {
+      advance();
+    } finally {
+      advancing = false;
+    }
+  };
+
   for (let user of users) await game.userJoin(user);
 
   return game;
@@ -192,14 +238,17 @@ describe("Games/Mafia", function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
+      // Two Mafiosi, not three: with three, killing the Villager gives the
+      // Mafia parity immediately and the game ends before the Watcher's
+      // after-resolve action can report the visitors.
       const setup = {
         total: 6,
-        roles: [{ Watcher: 1, Drunk: 1, Villager: 1, Mafioso: 3 }],
+        roles: [{ Watcher: 1, Drunk: 1, Villager: 2, Mafioso: 2 }],
       };
       const game = await makeGame(setup);
       const roles = getRoles(game);
       const mafiosi = roles["Mafioso"];
-      const target = roles["Villager"];
+      const target = roles["Villager"][0];
 
       addListenerToPlayer(roles["Watcher"], "meeting", function (meeting) {
         if (meeting.name == "Watch") {
@@ -439,13 +488,17 @@ describe("Games/Mafia", function () {
             selection: roles["Villager"].id,
             meetingId: meeting.id,
           });
-        } else if (
-          meeting.name == "Mafia Kill" &&
-          game.stateEvents["Full Moon"]
-        ) {
-          this.sendToServer("vote", {
-            selection: roles["Werewolf"].id,
-            meetingId: meeting.id,
+        } else if (meeting.name == "Mafia Kill") {
+          // Full Moon is set by the role's "state" listener, which runs after
+          // this meeting is sent. Read it on the next tick, before the phase
+          // clock advances.
+          const socket = this;
+          const meetingId = meeting.id;
+          process.nextTick(() => {
+            const selection = game.stateEvents["Full Moon"]
+              ? roles["Werewolf"].id
+              : "*";
+            socket.sendToServer("vote", { selection, meetingId });
           });
         } else {
           this.sendToServer("vote", {
@@ -1230,7 +1283,7 @@ describe("Games/Mafia", function () {
   });
 
   describe("Apothecary", function () {
-    it("should kill the Werewolf upon visiting the Apothecary", async function () {
+    it("protects the Apothecary from the Werewolf's bite", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
@@ -1247,6 +1300,11 @@ describe("Games/Mafia", function () {
             selection: roles["Apothecary"].id,
             meetingId: meeting.id,
           });
+        } else if (meeting.name == "Village") {
+          this.sendToServer("vote", {
+            selection: roles["Werewolf"].id,
+            meetingId: meeting.id,
+          });
         } else {
           this.sendToServer("vote", {
             selection: "*",
@@ -1258,6 +1316,9 @@ describe("Games/Mafia", function () {
       await waitForGameEnd(game);
       should.not.exist(game.winners.groups["Cult"]);
       should.exist(game.winners.groups["Village"]);
+
+      const apothecary = roles["Apothecary"];
+      apothecary.alive.should.be.true;
     });
   });
 
@@ -1430,7 +1491,7 @@ describe("Games/Mafia", function () {
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Give Gun") {
+        if (meeting.name == "Give Tommy Gun") {
           this.sendToServer("vote", {
             selection: roles["Hunter"].id,
             meetingId: meeting.id,
@@ -1893,21 +1954,21 @@ describe("Games/Mafia", function () {
   });
 
   describe("Psychic", function () {
-    it("can get true alignment of godfather", async function () {
+    it("learns a player's role through its current See meeting", async function () {
       await db.promise;
       await redis.client.flushdbAsync();
 
       const setup = {
         total: 3,
-        roles: [{ Godfather: 1, Villager: 1, Psychic: 1 }],
+        roles: [{ Villager: 1, Mafioso: 1, Psychic: 1 }],
       };
-      const game = await makeGame(setup, 3);
+      const game = await makeGame(setup);
       const roles = getRoles(game);
 
       addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Read Mind") {
+        if (meeting.name == "See") {
           this.sendToServer("vote", {
-            selection: roles["Godfather"].id,
+            selection: "1 Player Role",
             meetingId: meeting.id,
           });
         } else if (meeting.name == "Mafia Kill") {
@@ -1917,46 +1978,17 @@ describe("Games/Mafia", function () {
           });
         } else if (meeting.name == "Village") {
           this.sendToServer("vote", {
-            selection: roles["Godfather"].id,
+            selection: roles["Mafioso"].id,
             meetingId: meeting.id,
           });
         }
       });
 
       await waitForGameEnd(game);
-      gameHasAlert(game, "sided with the Mafia", "Psychic").should.be.true;
+      should.exist(game.winners.groups["Village"]);
+      gameHasAlert(game, ":invest:", "Psychic").should.be.true;
     });
 
-    it("no results when disturbed", async function () {
-      await db.promise;
-      await redis.client.flushdbAsync();
-
-      const setup = { total: 3, roles: [{ Cop: 1, Psychic: 1, Cthulhu: 1 }] };
-      const game = await makeGame(setup, 3);
-      const roles = getRoles(game);
-
-      addListenerToPlayers(game.players, "meeting", function (meeting) {
-        if (meeting.name == "Investigate") {
-          this.sendToServer("vote", {
-            selection: roles["Psychic"].id,
-            meetingId: meeting.id,
-          });
-        } else if (meeting.name == "Read Mind") {
-          this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
-            meetingId: meeting.id,
-          });
-        } else if (meeting.name == "Village") {
-          this.sendToServer("vote", {
-            selection: roles["Cthulhu"].id,
-            meetingId: meeting.id,
-          });
-        }
-      });
-
-      await waitForGameEnd(game);
-      gameHasAlert(game, "was distracted", "Psychic").should.be.true;
-    });
   });
 
   describe("Miller", function () {

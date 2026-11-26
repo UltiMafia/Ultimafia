@@ -1,7 +1,8 @@
-import React, { useState, useContext, useRef, useEffect, useMemo } from "react";
+import React, { useState, useContext, useEffect, useMemo } from "react";
 import axios from "axios";
 
-import { Box, Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Button, ButtonBase, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import KeyboardArrowDownRounded from "@mui/icons-material/KeyboardArrowDownRounded";
 import { Link } from "react-router-dom";
 
 import { KUDOS_ICON, KARMA_ICON, ACHIEVEMENTS_ICON } from "pages/User/profileIcons";
@@ -209,22 +210,75 @@ function Miniprofile(props) {
       )}
       {pieChart}
       {mafiaStats && totalGames > 0 && (
-        <Button size="small" onClick={() => setShowAlignmentStats((shown) => !shown)} aria-expanded={showAlignmentStats}>
-          {showAlignmentStats ? "Hide" : "Show"} Town / Mafia win rates
-        </Button>
-      )}
-      {mafiaStats && showAlignmentStats && (
-        <Box sx={{ mb: 1 }}>
-          <Typography variant="caption" color="text.secondary">Ranked and competitive games, including abandons</Typography>
-          {[["Village", "Town"], ["Mafia", "Mafia"]].map(([alignment, label]) => {
-            const stats = mafiaStats.byAlignment?.[alignment];
-            const games = getTotalGames(stats);
-            return (
-              <Typography variant="body2" key={alignment}>
-                {label}: {games ? `${(getWinRate(stats) * 100).toFixed(1)}% (${getWins(stats)} wins / ${games} games)` : "No recorded games"}
-              </Typography>
-            );
-          })}
+        <Box sx={{ mx: 1.5, mb: 1.5, border: 1, borderColor: "divider", borderRadius: 1 }}>
+          <ButtonBase
+            aria-expanded={showAlignmentStats}
+            onClick={() => setShowAlignmentStats((shown) => !shown)}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+              minHeight: 36,
+              px: 1.5,
+              py: 0.75,
+              gap: 1,
+              borderRadius: 1,
+              textAlign: "left",
+              color: "text.primary",
+              bgcolor: showAlignmentStats ? "action.selected" : "action.hover",
+              "&:hover": { bgcolor: "action.selected" },
+              "&.Mui-focusVisible": { outline: "2px solid currentColor", outlineOffset: -2 },
+            }}
+          >
+            <Typography component="span" variant="body2" sx={{ fontWeight: 600 }}>
+              Town / Mafia win rates
+            </Typography>
+            <KeyboardArrowDownRounded
+              fontSize="small"
+              sx={{
+                color: "text.secondary",
+                flexShrink: 0,
+                transform: showAlignmentStats ? "rotate(180deg)" : undefined,
+              }}
+            />
+          </ButtonBase>
+          {showAlignmentStats && (
+            <Box sx={{ contain: "inline-size" }}>
+              <Box component="dl" sx={{ m: 0, px: 1.5 }}>
+                {[["Village", "Town"], ["Mafia", "Mafia"]].map(([alignment, label]) => {
+                  const stats = mafiaStats.byAlignment?.[alignment];
+                  const games = getTotalGames(stats);
+                  return (
+                    <Box
+                      key={alignment}
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        gap: 1,
+                        py: 0.75,
+                        "& + &": { borderTop: 1, borderColor: "divider" },
+                      }}
+                    >
+                      <Typography component="dt" variant="body2" sx={{ fontWeight: 600 }}>
+                        {label}
+                      </Typography>
+                      <Box component="dd" sx={{ m: 0, textAlign: "right", fontVariantNumeric: "tabular-nums" }}>
+                        {games > 0 && (
+                          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                            {(getWinRate(stats) * 100).toFixed(1)}%
+                          </Typography>
+                        )}
+                        <Typography variant="caption" component="div" color="text.secondary">
+                          {games > 0 ? `${getWins(stats)} wins / ${games} games` : "No recorded games"}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Box>
+          )}
         </Box>
       )}
       {user.trophies?.length > 0 && (
