@@ -1,5 +1,11 @@
 PORT=3001
 
+# Optional: develop this client against a live site's backend instead of the
+# local one, for example https://ultimafia.com. Leave empty for the normal
+# local backend. See docs/setup-remote-backend.md -- it also needs that site's
+# Firebase configuration below.
+REACT_APP_REMOTE_BACKEND=
+
 # Leave as-is in development but change to https and your domain name in production
 REACT_APP_URL=http://localhost:3000
 REACT_APP_SOCKET_URI=localhost

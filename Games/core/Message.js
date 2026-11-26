@@ -52,6 +52,15 @@ module.exports = class Message {
     }
 
     this.setMeetingAudience();
+    if (this.replyTo && this.meeting) {
+      const quote = this.meeting.messages.find((entry) => entry.id === this.replyTo && entry.isQuote);
+      if (quote?.sourceMessage && !this.meeting.canShareChatReference(
+        quote.sourceMessage, this.recipients, this.visibleToSpectators
+      )) {
+        this.meeting.refuseChatReference(this.sender);
+        return;
+      }
+    }
     if (this.meeting) this.meeting.messages.push(this);
     else this.game.history.addAlert(this);
 

@@ -411,25 +411,7 @@ module.exports = class MafiaPlayer extends Player {
 
   speakQuote(quote) {
     this.useDeadChatAudience(quote);
-    quote = super.speakQuote(quote);
-    if (!quote) {
-      return;
-    }
-
-    let sourceMeeting = this.game.getMeeting(
-      quote.fromMeetingId,
-      quote.fromState
-    );
-    if (
-      sourceMeeting.name === "Village" ||
-      sourceMeeting.name === "Pregame" ||
-      sourceMeeting.name === quote.meeting.name
-    ) {
-      return quote;
-    }
-
-    quote.cancel = true;
-    return;
+    return super.speakQuote(quote);
   }
 
   joinMeetings(meetings, extraRole) {

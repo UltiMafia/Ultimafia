@@ -37,6 +37,7 @@ const PostgameMeeting = require("./PostgameMeeting");
 const { KudosVote, isWinLossResult, pickBotVote } = require("./Kudos");
 const dbStats = require("../../db/stats");
 const { isTestBotPlayer } = require("./botPlayers");
+const kicksReminder = require("./kicksReminder");
 const devControls = require("./devControls");
 const gameEventLog = require("../../modules/gameEventLog");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
@@ -136,6 +137,10 @@ module.exports = class Game {
       options.settings.vegKickCountdownLength != null
         ? options.settings.vegKickCountdownLength
         : 300000;
+    // Kicks reminders already sent, keyed `${gameId}:${state}:${userId}:kicks`
+    // (see kicksReminder.dedupeKey). In memory like the push subscriptions: a
+    // restarted process has no game to remind anyone about either.
+    this.kicksReminderSent = new Set();
     this.postgameLength = 1000 * 60 * 2;
     this.players = new ArrayHash();
     this.playersGone = {};
@@ -521,8 +526,10 @@ module.exports = class Game {
     for (let item of this.exorciseQueue) {
       this.recordExorcised(item.player, item.exorcised);
 
-      if (item.exorcised && !item.player.alive)
-        this.broadcast("exorcised", item.player.id);
+      this.broadcast("exorcised", {
+        playerId: item.player.id,
+        exorcised: item.exorcised,
+      });
     }
 
     this.exorciseQueue.empty();
@@ -532,12 +539,13 @@ module.exports = class Game {
   // dead player (DMs allowed) from an alive one (DMs locked in ranked and
   // competitive games). See modules/dmGate.js.
   syncDeadForDms(player) {
-    const userId = player && player.user && player.user.id;
+    const userId = player.connectionAccountId;
     if (!userId) return;
-    redis.setPlayerDead(this.id, userId, !player.alive).catch(() => {});
+    return redis.setPlayerDead(this.id, userId, !player.alive).catch(() => {});
   }
 
   queueDeath(player) {
+    player.stopTyping();
     player.alive = false;
     this.deathQueue.enqueue({ player, dead: true });
   }
@@ -617,6 +625,22 @@ module.exports = class Game {
       }
 
       var player = this.findJoinedPlayer(user, isBot);
+
+      // The seat stays in game history after exorcism, but its connection
+      // belongs to the spectator now, even if the old watcher entry expired.
+      if (player?.exorcised && !player.left) {
+        const omniscient = await this.canSpectateOmnisciently(user);
+        if (player.left) return;
+        const watcher = this.findSpectator(user);
+        if (watcher) {
+          this.reconnectSpectator(watcher, user, omniscient);
+          player.socket = watcher.socket;
+        } else {
+          player.socket = player.user.socket = user.socket;
+          this.addSpectator(player.user, omniscient, player);
+        }
+        return;
+      }
 
       // A seated player opening ?spectate=true during pregame gives up the
       // seat through the same path as /spectate and the spectate event
@@ -800,11 +824,10 @@ module.exports = class Game {
 
   findSpectator(user) {
     for (let s of this.spectators) {
-      if (user.id && s.user.id == user.id) return s;
+      if (user.id && s.connectionAccountId === user.id) return s;
       if (
         user.guestId &&
-        s.user.guestId &&
-        s.user.guestId == user.guestId
+        s.connectionGuestId === user.guestId
       ) {
         return s;
       }
@@ -974,8 +997,15 @@ module.exports = class Game {
     return player;
   }
 
-  addSpectator(user, omniscient) {
+  addSpectator(user, omniscient, exorcisedPlayer) {
     const spectator = new Spectator(user, this);
+    if (exorcisedPlayer) {
+      spectator.exorcisedPlayer = exorcisedPlayer;
+      spectator.connectionAccountId = exorcisedPlayer.connectionAccountId;
+      spectator.connectionGuestId = exorcisedPlayer.connectionGuestId;
+      spectator.name = exorcisedPlayer.name;
+      spectator.anonId = exorcisedPlayer.anonId;
+    }
     this.reusePastSpectatorId(spectator);
     spectator.omniscient = !!omniscient;
     spectator.init();
@@ -1028,15 +1058,14 @@ module.exports = class Game {
   // grace time, or back from a seat) keeps their old spectator id, so the
   // spectators map has one entry per user and old chat still names them.
   reusePastSpectatorId(spectator) {
-    const userId = spectator.user && spectator.user.id;
+    const userId = spectator.connectionAccountId;
     if (!userId) return;
 
     const past = this.spectatorsOld.filter(
       (s) =>
         s.spectator &&
         s !== spectator &&
-        s.user &&
-        s.user.id == userId &&
+        s.connectionAccountId === userId &&
         this.spectators.indexOf(s) == -1
     )[0];
     if (!past) return;
@@ -1089,6 +1118,7 @@ module.exports = class Game {
   dropPregameMember(person) {
     if (!this.pregame || !person || !this.pregame.members[person.id]) return;
 
+    person.stopTyping();
     delete this.pregame.members[person.id];
 
     // Spectator history is shared. leftMeeting() would delete Pregame for
@@ -1399,12 +1429,8 @@ module.exports = class Game {
       await this.endTutorialEarly(player);
       return;
     }
-    // The subscription only exists to cover the pregame wait, so it goes as soon
-    // as the player does. Note this is driven by leaving, not by the socket
-    // closing: a player who backgrounds or closes their browser stays in the
-    // lobby, and covering exactly that case is the point of the push.
-    // The connection account, not the seat's user: after a Disguiser swap the
-    // seat still points at the account that originally owned it.
+    // Leave removes push subscriptions; disconnect alone does not. Use the
+    // connection account because a Disguiser swap can move it to another seat.
     const userId = player.connectionAccountId;
     if (userId) {
       pushNotifications.unregisterUser(userId);
@@ -1413,7 +1439,11 @@ module.exports = class Game {
     // player.leaveReason: why the server removed them, shown on their page.
     const reason = player.leaveReason;
     const socket = player.socket;
+    player.stopTyping();
     player.left = true;
+    const watcher = this.spectators.find((spectator) => spectator.exorcisedPlayer === player);
+    if (watcher) this.removeSpectator(watcher);
+    this.dropChatMember(this.postgame, player);
 
     this.kudosVoterLeft(player);
     const releaseConnection = async () => {
@@ -1530,25 +1560,14 @@ module.exports = class Game {
   }
 
   exorcisePlayer(player) {
+    if (player.exorcised) return;
+    player.stopTyping();
     player.exorcised = true;
     this.events.emit("exorcise", player);
     this.exorciseQueue.enqueue({ player, exorcised: true });
     this.spectatorLimit = this.spectatorLimit + 1;
-    var spectator = new Spectator(player.user, this);
-    spectator.init();
-
-    this.spectators.push(spectator);
-    this.spectatorsOld.push(spectator);
-    // Out of the game, so they read and write spectator chat from now on.
-    if (this.spectatorMeeting && !this.spectatorMeeting.finished) {
-      this.spectatorMeeting.join(spectator);
-    }
-    this.sendAllGameInfo(spectator);
-    spectator.send("loaded");
-
-    this.broadcast("spectatorCount", this.spectators.length);
-    redis.setSpectatorCount(this.id, this.spectators.length);
-    this.broadcastSpectators();
+    player.socket.clearListeners();
+    this.addSpectator(player.user, false, player);
   }
 
   // Returns if the integrity of the game was broken for the first time or not
@@ -1761,13 +1780,11 @@ module.exports = class Game {
       spectator.reconnectTimer = null;
     }
 
+    spectator.stopTyping();
     this.spectators.splice(index, 1);
     this.dropPregameMember(spectator);
-    for (const meeting of [this.spectatorMeeting, this.postgame]) {
-      if (!meeting?.members[spectator.id]) continue;
-      delete meeting.members[spectator.id];
-      for (const member of meeting.getPlayers()) member.sendMeetingMembers(meeting);
-    }
+    this.dropChatMember(this.spectatorMeeting, spectator);
+    this.dropChatMember(this.postgame, spectator);
 
     if (options.forget !== false && spectator.user && spectator.user.id) {
       this.pregameSpectatorUserIds.delete(spectator.user.id);
@@ -1777,6 +1794,13 @@ module.exports = class Game {
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
     this.broadcastSpectators();
+  }
+
+  dropChatMember(meeting, player) {
+    if (meeting?.members[player.id]?.player !== player) return;
+    // Keep the shared transcript; only remove the departing chat member.
+    delete meeting.members[player.id];
+    for (const member of meeting.getPlayers()) member.sendMeetingMembers(meeting);
   }
 
   async kickPlayer(player, permanent) {
@@ -2093,6 +2117,7 @@ module.exports = class Game {
       pushNotifications
         .notifyUsers(userIds, {
           ...payload,
+          gameId: this.id,
           url: `${process.env.BASE_URL || ""}/game/${this.id}`,
           tag: `game-${this.id}`,
         })
@@ -2100,6 +2125,20 @@ module.exports = class Game {
     } catch (e) {
       logger.error(e);
     }
+  }
+
+  /**
+   * Nudge every player who still owes an action to a meeting that will veg them,
+   * once per player per kicks window. Called from checkVeg(), i.e. on the one
+   * path into kicks -- there is no timer or poll behind it.
+   *
+   * Not awaited: checkVeg() has already moved the game into kicks, and a push
+   * must neither hold that up nor be able to break it. kicksReminder.notify
+   * records the dedupe markers before sending, logs a structured summary, and
+   * never rejects.
+   */
+  pushKicksReminder() {
+    kicksReminder.notify(this, this.kicksReminderSent);
   }
 
   readyCheckInitPayload(endTime) {
@@ -2115,6 +2154,7 @@ module.exports = class Game {
     this.readyPlayers = {};
 
     this.pushToPlayers({
+      kind: "ready-check",
       title: "Your game is ready!",
       body: this.spectating
         ? "Ready up now or you will be moved to spectators."
@@ -2239,6 +2279,7 @@ module.exports = class Game {
     // looking at the page and startReadyCheck did the nudging.
     if (!this.readyCheck) {
       this.pushToPlayers({
+        kind: "game-starting",
         title: "Your game is starting!",
         body: `${this.setup?.name || "Your game"} is about to begin.`,
       });
@@ -2316,12 +2357,10 @@ module.exports = class Game {
     // them in the spectator meeting.
     this.removePregameSpectators();
 
-    // The pregame wait is over; nothing else pushes.
-    for (let player of this.players) {
-      if (player.user && player.user.id) {
-        pushNotifications.unregisterUser(player.user.id);
-      }
-    }
+    // Subscriptions are deliberately *not* dropped here: they now cover the
+    // whole game, not just the wait for it to fill, because pushes also go out
+    // when a game enters kicks (pushKicksReminder). They are dropped when the
+    // player leaves (playerLeave) or when the client unsubscribes.
 
     // Set game in progress in redis db
     redis.setGameStatus(this.id, "In Progress");
@@ -3596,6 +3635,12 @@ module.exports = class Game {
     for (let player of this.players) {
       player.warnOfVoteKick();
     }
+
+    // The one funnel into kicks (base and every type override end up here), so
+    // this is where the reminder belongs. Claimed before checkAllMeetingsReady,
+    // which can advance the state synchronously and would leave the recipients
+    // looking like the next phase's. Fire-and-forget: it cannot throw.
+    this.pushKicksReminder();
 
     this.checkAllMeetingsReady();
   }
@@ -5015,7 +5060,7 @@ module.exports = class Game {
   openPostgameMeeting() {
     this.postgame = this.createMeeting(PostgameMeeting);
     for (const player of this.players)
-      if (!player.left) this.postgame.join(player, this.postgame);
+      if (!player.left && !player.exorcised) this.postgame.join(player, this.postgame);
     for (const spectator of this.spectators) this.restoreSpectatorMeetings(spectator);
     this.postgame.init();
     for (const player of this.postgame.getPlayers()) player.sendMeeting(this.postgame);

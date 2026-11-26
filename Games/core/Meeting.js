@@ -1134,7 +1134,8 @@ module.exports = class Meeting {
 
   canSendChat(sender) {
     // `finished` is also used for voting, which can end while speech is open.
-    return this.speech && this.members[sender.id]?.canTalk && !sender.exorcised && !sender.left &&
+    const member = this.members[sender.id];
+    return this.speech && member?.player === sender && member.canTalk && !sender.exorcised && !sender.left &&
       (!sender.spectator || sender.canSpeakIn(this)) &&
       (this.members.length > 1 || this.name === "Pregame" || this.name === "Spectator Meeting");
   }
@@ -1143,8 +1144,10 @@ module.exports = class Meeting {
     if (!this.game.started || this.game.finished) return recipients;
     if (sender.spectator) return recipients.filter((player) => player.spectator);
     if (sender.alive && !sender.exorcised) return recipients;
-    if (!sender.exorcised && sender.canSpeakToLivingIn(this)) return recipients;
-    return recipients.filter((player) => player.spectator || !player.alive || player.hasEffect("CanSeeDead"));
+    const canSpeakToLiving = !sender.exorcised && sender.canSpeakToLivingIn(this);
+    return recipients.filter((player) =>
+      !player.spectator && (canSpeakToLiving || !player.alive || player.hasEffect("CanSeeDead"))
+    );
   }
 
   // Visibility is fixed at send time; a join/leave must not change what was public.
@@ -1153,6 +1156,9 @@ module.exports = class Meeting {
   // In a two-member meeting there is nobody to leak to, so it stays private.
   isVisibleToSpectators(message) {
     if (!this.game.isSpectatorMeeting(this)) return false;
+    const { sender } = message;
+    if (this.game.started && !this.game.finished && sender && !sender.spectator && !sender.alive)
+      return false;
     if (message.abilityName === "Whisper" && this.members.length <= 2)
       return false;
     const recipients = new Set(message.recipients);
@@ -1236,16 +1242,21 @@ module.exports = class Meeting {
     if (!source || source.isQuote || source.isServer || !source.quotable) return null;
 
     let visibleSource;
-    if (sourceMeeting === this.game.pregame ||
-        (sender.spectator && this.game.isSpectatorOnlyMeeting(sourceMeeting))) {
+    if (sourceMeeting === this.game.pregame) {
       visibleSource = source.getMessageInfo();
     } else if (sender.spectator) {
-      if (sender.omniscient || source.visibleToSpectators)
+      if (sender.canReadMeetingMessage(source))
         visibleSource = source.getMessageInfo("spectator");
     } else {
       visibleSource = source.getMessageInfo(sender);
     }
     if (!visibleSource) return null;
+
+    const recipients = this.restrictChatRecipients(sender, this.getPlayers());
+    if (!this.canShareChatReference(source, recipients, this.isVisibleToSpectators({ sender, recipients }))) {
+      this.refuseChatReference(sender);
+      return null;
+    }
 
     var quote = new Quote({
       game: this.game,
@@ -1256,28 +1267,82 @@ module.exports = class Meeting {
       fromState: quote.fromState,
       anonymous: this.anonymous,
       messageContent: visibleSource.content,
+      sourceMessage: source,
     });
 
     // The posted quote, or null when the sender's effects cancelled it.
     return quote.send() ? quote : null;
   }
 
+  canShareChatReference(source, recipients, visibleToSpectators) {
+    const spectatorOnly = this.game.isSpectatorOnlyMeeting(source.meeting);
+    if (source.meeting === this.game.pregame || (!spectatorOnly && source.visibleToSpectators))
+      return true;
+
+    // Spectator history can be read by future watchers too, not just by
+    // the spectators currently connected.
+    if (visibleToSpectators || this.game.isSpectatorOnlyMeeting(this))
+      return spectatorOnly && recipients.every((recipient) => recipient.spectator);
+
+    // A new phase can recreate the same private room, but other private rooms
+    // aren't valid destinations even when their current members overlap.
+    if (this.name !== source.meeting.name) return false;
+
+    return recipients.every((recipient) => recipient.spectator
+      ? recipient.canReadMeetingMessage(source)
+      : Boolean(source.versions[recipient.id]));
+  }
+
+  refuseChatReference(sender) {
+    sender.sendAlert(":system: That message is private to a different audience. It can’t be quoted or replied to in this chat.");
+  }
+
   typing(playerId, isTyping) {
     const sender = this.members[playerId]?.player;
-    if (!sender || !this.canSendChat(sender) || this.anonymous) return;
-    if (sender.spectator || !sender.alive || sender.exorcised) return;
-
-    const isSilenced = sender.hasEffect("Silenced");
-    const info = { playerId, meetingId: isTyping ? this.id : null };
-    if (isSilenced) {
-      sender.seeTyping(info);
+    if (!sender) return;
+    if (!isTyping) {
+      if (sender.typingActivity?.meeting === this) sender.typingActivity.stop();
       return;
     }
+    if (!this.canSendChat(sender) || this.anonymous) return;
+
+    sender.typingActivity?.stop();
     const recipients = new Set(this.getPlayers());
-    for (const spectator of this.game.spectators)
-      if (spectator.omniscient || this.game.isSpectatorMeeting(this)) recipients.add(spectator);
-    // Recipient-specific effects may mutate the event (e.g. Blind).
-    for (const recipient of recipients) recipient.seeTyping({ ...info });
+    if (sender.hasEffect("Silenced")) {
+      recipients.clear();
+      recipients.add(sender);
+    } else if (sender.spectator) {
+      // Pregame and postgame are shared rooms; live spectator chat is private.
+      if (this !== this.game.pregame && this !== this.game.postgame) {
+        for (const recipient of recipients) {
+          if (!recipient.spectator) recipients.delete(recipient);
+        }
+      }
+    } else if (!sender.alive && this !== this.game.postgame) {
+      for (const recipient of recipients) {
+          if (recipient.spectator || recipient.alive || recipient.exorcised || recipient.left)
+            recipients.delete(recipient);
+      }
+    } else {
+      for (const spectator of this.game.spectators)
+        if (spectator.omniscient || this.game.isSpectatorMeeting(this)) recipients.add(spectator);
+    }
+    // Effects may suppress recipients (e.g. Blind). Clear only the indicators
+    // that were actually shown, even if an effect changes before typing stops.
+    const notified = [];
+    for (const recipient of recipients) {
+      if (recipient.seeTyping({ playerId, meetingId: this.id }) !== false)
+        notified.push({ recipient, socket: recipient.socket });
+    }
+    sender.typingActivity = {
+      meeting: this,
+      stop() {
+        sender.typingActivity = null;
+        for (const { recipient, socket } of notified) {
+          if (recipient.socket === socket) recipient.seeTyping({ playerId, meetingId: null });
+        }
+      },
+    };
   }
 
   sendAlert(message) {

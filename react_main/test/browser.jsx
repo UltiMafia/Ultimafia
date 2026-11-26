@@ -212,6 +212,7 @@ function GameSessionFixture({ delayed = false, loggedIn = true }) {
   const [inGame, setInGame] = useState(null);
   useEffect(() => { api = { ...session, navigate, setGameMounted }; });
   return <UserContext.Provider value={{ ...user, loggedIn, id: loggedIn ? "fixture-member" : null,
+    autoContrastColor: (color) => color,
     refreshHearts: ignore, refreshGameMembership: () => setInGame("fixture-game"), inGame, setInGame }}><SiteInfoContext.Provider value={siteInfo}>
     <span id="fixture-membership">{inGame || "none"}</span>
     <Link id="fixture-profile" to="/user/fixture-player">Player profile</Link>
@@ -245,9 +246,9 @@ async function nextGameRequest(spectating) {
     "connection changed join intent: " + request.url);
   return request;
 }
-async function authenticateGame(request, token = "fixture-token", beforeAuth = ignore) {
+async function authenticateGame(request, token = "fixture-token", beforeAuth = ignore, type = "Fixture") {
   const previousCount = FakeSocket.all.length;
-  request.resolve({ type: "Fixture", port: 3010, token, hostId: "host" });
+  request.resolve({ type, port: 3010, token, hostId: "host" });
   await until(() => FakeSocket.all.length > previousCount, "game socket");
   const native = FakeSocket.all[FakeSocket.all.length - 1];
   native.open(); native.message("connected");
@@ -371,12 +372,13 @@ function ObituaryFixture({ review = false, singleState = false }) {
   </UserContext.Provider></ThemeProvider>;
 }
 
-async function joinedEscapeGame() {
+async function joinedEscapeGame(type = "Fixture") {
   mountGameSession("/play");
   await until(() => api, "initial Play route");
   api.navigate("/game/fixture-game");
-  const { native } = await authenticateGame(await nextGameRequest(false));
-  native.message('options:object:' + JSON.stringify({ ranked: false, competitive: false }));
+  const { native } = await authenticateGame(await nextGameRequest(false), undefined, ignore, type);
+  native.message('options:object:' + JSON.stringify({ ranked: false, competitive: false, gameTypeOptions: {} }));
+  if (type === "Mafia") native.message("setup:object:" + JSON.stringify({ ...publicGame.setup, roles: [{}] }));
   native.message('players:object:{}');
   native.message('spectators:object:{}');
   native.message('history:object:' + JSON.stringify({ '-1': { name: 'Pregame', meetings: {}, alerts: [], roles: {}, dead: {}, exorcised: {} } }));
@@ -467,6 +469,76 @@ async function escapeLeaveTests() {
 }
 
 async function tests() {
+  await run("replying to a visible earlier message returns to the current composer", async () => {
+    const native = await joinedEscapeGame("Mafia");
+    const self = { id: "reply-self", name: "ReplyUser" };
+    const speaker = { id: "reply-speaker", name: "EarlierSpeaker" };
+    const original = {
+      id: "earlier-message", meetingId: "earlier-room", senderId: speaker.id,
+      time: Date.now(), content: "Earlier visible chat", quotable: true,
+    };
+    const meeting = (id, name, messages) => ({
+      id, name, messages, amMember: true, canTalk: true, speech: true,
+      members: [{ id: self.id }, { id: speaker.id }], votes: {}, voteRecord: [],
+    });
+    const phase = (name, room) => ({
+      name, meetings: { [room.id]: room }, selTab: room.id, roles: {},
+      dead: {}, exorcised: {}, alerts: [], obituaries: {}, stateEvents: [],
+    });
+    native.message("self:string:" + self.id);
+    native.message("players:object:" + JSON.stringify({ [self.id]: self, [speaker.id]: speaker }));
+    native.message("history:object:" + JSON.stringify({
+      [-1]: phase("Pregame", meeting("earlier-room", "Pregame", [original])),
+      [-2]: phase("Postgame", meeting("current-room", "Postgame", [])),
+    }));
+    const previous = () => root.querySelector('button[aria-label="Previous phase"]:not(:disabled)');
+    await until(previous, "postgame can navigate to the earlier phase");
+    previous().click();
+    const source = () => root.querySelector(`[data-message-id="${original.id}"] .content`);
+    await until(source, "visible original in the earlier phase");
+    assert(!root.querySelector("#speechInput"), "earlier phase unexpectedly has a composer");
+
+    const gesture = (type, x) => {
+      const target = source();
+      const touch = new Touch({ identifier: 1, target, clientX: x, clientY: 60 });
+      target.dispatchEvent(new TouchEvent(type, {
+        bubbles: true, cancelable: true,
+        touches: type === "touchend" ? [] : [touch], changedTouches: [touch],
+      }));
+    };
+    gesture("touchstart", 200);
+    gesture("touchmove", 100);
+    gesture("touchend", 100);
+    await until(() => root.querySelector(".reply-preview") && root.querySelector("#speechInput"),
+      "postgame composer opens with the earlier reply target");
+    const input = root.querySelector("#speechInput");
+    Object.getOwnPropertyDescriptor(Object.getPrototypeOf(input), "value").set.call(input, "Reply from postgame");
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    const reply = () => native.sent.map(parseMessage).find(([event]) => event === "reply")?.[1];
+    await until(reply, "historical reply is sent");
+    assert(reply().quote.fromMeetingId === "earlier-room" && Number(reply().quote.fromState) === -1 &&
+      reply().message.meetingId === "current-room", "reply changed its source or destination");
+  });
+  await run("exorcisms move the existing roster row without a refresh", async () => {
+    const native = await joinedEscapeGame("Mafia");
+    const player = { id: "roster-player", name: "RosterFixture", userId: "roster-user" };
+    native.message("players:object:" + JSON.stringify({ [player.id]: player }));
+    native.message("state:object:" + JSON.stringify({ id: 0, name: "Day 1" }));
+    const rows = () => [...root.querySelectorAll('[data-player-name="RosterFixture"]')];
+    const inUnderworld = () => rows().some((row) =>
+      [...row.parentElement.children]
+        .slice(0, [...row.parentElement.children].indexOf(row))
+        .filter((element) => element.classList.contains("section-title"))
+        .at(-1)?.textContent.trim() === "Underworld"
+    );
+    await until(() => rows().length > 0, "player in the roster");
+    native.message("exorcised:object:" + JSON.stringify({ playerId: player.id, exorcised: true }));
+    await until(inUnderworld, "player moves to Underworld");
+    assert(rows().every((row) => row.classList.contains("dead")), "exorcised players also appeared in the living roster");
+    native.message("exorcised:object:" + JSON.stringify({ playerId: player.id, exorcised: false }));
+    await until(() => !inUnderworld() && rows().length > 0, "player returns to the roster");
+  });
   await escapeLeaveTests();
   await run("compact obituaries use real chat rows and saved in-game settings", async () => {
     const saved = localStorage.getItem("gameSettings");

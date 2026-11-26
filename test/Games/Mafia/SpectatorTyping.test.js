@@ -73,9 +73,13 @@ describe("Spectator typing", function () {
   it("clears the indicator when typing stops", function () {
     const { ctx, spec } = makeContext();
 
+    ctx.typing("p1", true);
     Meeting.prototype.typing.call(ctx, "p1", false);
 
-    spec.seen.should.deep.equal([{ playerId: "p1", meetingId: null }]);
+    spec.seen.should.deep.equal([
+      { playerId: "p1", meetingId: "m1" },
+      { playerId: "p1", meetingId: null },
+    ]);
   });
 
   it("hides typing in a Mafia meeting", function () {

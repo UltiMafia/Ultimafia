@@ -25,7 +25,11 @@ let checks = 0;
 function check(value, message) { assert.ok(value, message); checks++; }
 const row = (id = "m2aaaaaa") => `.message[data-message-id="${id}"]`;
 async function run(engine, url) {
-  const browser = await playwright[engine].launch();
+  const browser = await playwright[engine].launch(
+    engine === "chromium" && process.env.CHROMIUM_PATH
+      ? { executablePath: process.env.CHROMIUM_PATH }
+      : {},
+  );
   try {
     const context = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
     const page = await context.newPage();
@@ -133,7 +137,9 @@ async function run(engine, url) {
       await page.locator("#speechInput").press("Enter");
       const sent = await page.evaluate(() => window.__sent.filter((s) => s.type === "reply"));
       check(sent.length === 1 && sent[0].payload.quote.messageId === "m2aaaaaa" && sent[0].payload.message.content === "I agree with Bob.", `${engine}/${layout}: real composer sends reply payload`);
-      check(await page.locator(".reply-preview").count() === 0, `${engine}/${layout}: sending clears target`);
+      check(await page.locator(".reply-preview").count() === 1, `${engine}/${layout}: unconfirmed send keeps target`);
+      await page.evaluate(() => window.__ackReply());
+      await page.locator(".reply-preview").waitFor({ state: "hidden" });
     }
     // Explicit selection must win over the opposite OS preference. Auto mode
     // must follow the OS. Verify real colors, not merely a CSS class/token.

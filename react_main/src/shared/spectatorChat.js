@@ -87,19 +87,18 @@ function pickSpeechTarget({ activeMeeting, spectatorMeeting, isPregame }) {
   return { meetingId: null, spectatorChat: false };
 }
 
-// The spectators to list. Everyone sees the list in pregame. Once the game
-// has started only spectators see it (players just see the count; the
-// server no longer sends them who is watching). The spectators map also
+// Everyone sees the list in pregame and postgame. During live play only
+// spectators see it; players see just the count. The spectators map also
 // keeps past spectators so chat can name them; "watching" marks the ones
 // spectating now.
-function pregameSpectatorList(
+function visibleSpectatorList(
   spectators,
   { currentState, stateViewing, review, isSpectator }
 ) {
   if (review) return [];
-  const inPregame =
-    Number(currentState) === -1 && Number(stateViewing) === -1;
-  if (!inPregame && !isSpectator) return [];
+  const state = Number(currentState);
+  const viewingSharedChat = (state === -1 || state === -2) && Number(stateViewing) === state;
+  if (!viewingSharedChat && !isSpectator) return [];
   return Object.values(spectators || {})
     .filter((spectator) => spectator && spectator.watching)
     .sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
@@ -111,5 +110,5 @@ module.exports = {
   findSpectatorChatMeeting,
   mergeSpectatorChat,
   pickSpeechTarget,
-  pregameSpectatorList,
+  visibleSpectatorList,
 };

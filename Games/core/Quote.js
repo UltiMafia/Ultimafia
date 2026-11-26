@@ -11,6 +11,7 @@ module.exports = class Quote extends Message {
     this.quotable = false;
     this.cancel = false;
     this.messageContent = info.messageContent;
+    this.sourceMessage = info.sourceMessage;
   }
 
   send() {
@@ -33,6 +34,12 @@ module.exports = class Quote extends Message {
     }
 
     this.setMeetingAudience();
+    if (this.sourceMessage && !this.meeting.canShareChatReference(
+      this.sourceMessage, this.recipients, this.visibleToSpectators
+    )) {
+      this.meeting.refuseChatReference(this.sender);
+      return false;
+    }
     this.meeting.messages.push(this);
 
     for (let player of this.versions["*"].recipients)

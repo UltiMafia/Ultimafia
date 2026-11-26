@@ -654,24 +654,7 @@ module.exports = class Player {
       }
     });
 
-    socket.on("typing", (info) => {
-      try {
-        if (typeof info != "object") return;
-
-        const meetingId = String(info.meetingId);
-        const isTyping = Boolean(info.isTyping);
-
-        if (!Utils.validProp(meetingId)) return;
-
-        var meeting = this.game.getMeeting(meetingId);
-        if (!meeting) return;
-
-        meeting.typing(this.id, isTyping);
-      } catch (e) {
-        logger.error(e);
-        // this.handleError(e);
-      }
-    });
+    this.listenForTyping(socket);
 
     socket.on("changeSetup", (setupId) => {
       try {
@@ -1177,8 +1160,34 @@ module.exports = class Player {
     this.socket.send(eventName, data);
   }
 
+  listenForTyping(socket) {
+    socket.on("disconnected", () => {
+      if (this.socket === socket) this.stopTyping();
+    });
+    socket.on("typing", (info) => {
+      try {
+        if (!info || typeof info !== "object" || this.socket !== socket) return;
+
+        const meetingId = String(info.meetingId);
+        if (!Utils.validProp(meetingId)) return;
+
+        const meeting = this.game.getMeeting(meetingId);
+        if (meeting?.members[this.id]?.player !== this) return;
+
+        meeting.typing(this.id, Boolean(info.isTyping));
+      } catch (e) {
+        logger.error(e);
+      }
+    });
+  }
+
+  stopTyping() {
+    this.typingActivity?.stop();
+  }
+
   setUser(user) {
     if (this.socket !== user.socket) {
+      this.stopTyping();
       this.socket.send("left");
       this.socket.terminate();
 
@@ -1669,26 +1678,29 @@ module.exports = class Player {
   }
 
   seeTyping(info) {
-    if (this.role) this.role.seeTyping(info);
+    if (info.meetingId != null) {
+      if (this.role) this.role.seeTyping(info);
 
-    if (this.ExtraRoles) {
-      for (let extraRole of this.ExtraRoles) {
-        extraRole.seeTyping(info);
+      if (this.ExtraRoles) {
+        for (let extraRole of this.ExtraRoles) {
+          extraRole.seeTyping(info);
+        }
       }
-    }
 
-    if (info.cancel) return;
+      if (info.cancel) return false;
 
-    for (let effect of this.effects) {
-      effect.seeTyping(info);
+      for (let effect of this.effects) {
+        effect.seeTyping(info);
 
-      if (info.cancel) return;
+        if (info.cancel) return false;
+      }
     }
 
     this.send("typing", {
       playerId: info.playerId,
       meetingId: info.meetingId,
     });
+    return true;
   }
 
   canSpeakToLivingIn(meeting) {
@@ -2382,6 +2394,12 @@ module.exports = class Player {
     player.faction = tempFaction;
 
     // Swap sockets
+    const thisWatcher = this.game.spectators.find((watcher) => watcher.exorcisedPlayer === this);
+    const otherWatcher = this.game.spectators.find((watcher) => watcher.exorcisedPlayer === player);
+    this.stopTyping();
+    player.stopTyping();
+    thisWatcher?.stopTyping();
+    otherWatcher?.stopTyping();
     this.socket.clearListeners();
     player.socket.clearListeners();
 
@@ -2398,13 +2416,24 @@ module.exports = class Player {
       [player.connectionGuestId, this.connectionGuestId];
     [this.left, player.left] = [player.left, this.left];
 
-    if (!this.left) this.socketListeners();
-    if (!player.left) player.socketListeners();
-
-    this.sendSelf();
-    this.sendSelfWill();
-    player.sendSelf();
-    player.sendSelfWill();
+    if (this.exorcised !== player.exorcised) {
+      [this.exorcised, player.exorcised] = [player.exorcised, this.exorcised];
+      this.game.exorciseQueue.enqueue({ player: this, exorcised: this.exorcised });
+      this.game.exorciseQueue.enqueue({ player, exorcised: player.exorcised });
+    }
+    for (const [seat, watcher] of [[this, otherWatcher], [player, thisWatcher]]) {
+      if (seat.left) continue;
+      if (watcher) {
+        watcher.exorcisedPlayer = seat;
+        watcher.user = seat.user;
+        watcher.socketListeners();
+      } else if (!seat.exorcised) {
+        seat.socketListeners();
+      }
+      const participant = watcher || seat;
+      participant.sendSelf();
+      participant.sendSelfWill();
+    }
 
     // Swap stats
     var tempStats = this.user.stats;

@@ -599,6 +599,20 @@ export default function Settings() {
         disabled: (deps) => !deps.user.itemsOwned.customProfile,
       },
       {
+        label: "Panel Opacity",
+        ref: "profilePanelOpacity",
+        type: "select",
+        groupName: "Profile",
+        default: "100",
+        options: [100, 90, 75, 50, 25, 0].map((opacity) => ({
+          label: opacity === 100 ? "100% (solid)" : `${opacity}%`,
+          value: String(opacity),
+        })),
+        disabled: (deps) => !deps.user.itemsOwned.customProfile,
+        extraInfo:
+          "Changes profile panel backgrounds, not text or images. Low opacity can make text harder to read over your background. Choose 100% to restore solid panels.",
+      },
+      {
         label: "Media URL",
         ref: "youtube",
         type: "text",

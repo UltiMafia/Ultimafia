@@ -1032,7 +1032,6 @@ export default function Profile() {
   }
 
   const panelStyle = {
-    // Ensure panels always have explicit background to prevent site-wrapper background from showing through
     position: "relative",
     zIndex: 1,
   };
@@ -1054,6 +1053,30 @@ export default function Profile() {
       headingStyle.color = "#fff";
     }
     panelTextStyle.color = headingStyle.color;
+  }
+
+  // Change the surface paint only: opacity on the panel element would also fade
+  // its text, images and controls. Older profiles keep their existing solid look.
+  const savedPanelOpacity = Number(settings.profilePanelOpacity ?? 100);
+  const panelOpacity =
+    [100, 90, 75, 50, 25, 0].includes(savedPanelOpacity)
+      ? savedPanelOpacity
+      : 100;
+  // The existing contrast choice uses the solid base color. An arbitrary
+  // background image cannot be reliably contrast-corrected after blending;
+  // Settings warns about readability and offers the unchanged solid setting.
+  const transparentPanels = panelOpacity < 100;
+  const profileStyle = transparentPanels
+    ? {
+        "--profile-panel-opacity": `${panelOpacity}%`,
+        "--profile-panel-background":
+          settings.backgroundColor || "var(--scheme-color-sec)",
+        "--profile-panel-text": headingStyle.color || "var(--scheme-color-text)",
+      }
+    : undefined;
+  if (transparentPanels) {
+    panelStyle.backgroundColor =
+      "color-mix(in srgb, var(--profile-panel-background) var(--profile-panel-opacity), transparent)";
   }
 
   const bannerExtSafe = ["webp", "gif", "png", "jpg", "jpeg"].includes(bannerExt)
@@ -1635,7 +1658,13 @@ export default function Profile() {
           />
         </Suspense>
       )}
-      <Grid container rowSpacing={1} columnSpacing={1} className="profile">
+      <Grid
+        container
+        rowSpacing={1}
+        columnSpacing={1}
+        className={`profile${transparentPanels ? " profile--transparent-panels" : ""}`}
+        style={profileStyle}
+      >
         <Grid item xs={12}>
           <Stack
             direction="row"

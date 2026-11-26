@@ -28,6 +28,7 @@ async function makePregame(joined) {
     hostId: users[0].id,
     settings: {
       setup: { total: 3, roles: [{ Villager: 2, Mafioso: 1 }] },
+      pregameWaitLength: 1,
       stateLengths: { Day: 0, Night: 0 },
       pregameCountdownLength: 0,
     },
@@ -75,8 +76,10 @@ describe("Games/ChatReply", function () {
     ({ game, users } = await makePregame(2));
   });
 
-  afterEach(function () {
-    if (game) game.cancel && game.cancel();
+  afterEach(async function () {
+    if (!game) return;
+    game.clearTimers();
+    await game.cancel();
   });
 
   it("posts the quote, then the reply text marked with the quote's id", async function () {

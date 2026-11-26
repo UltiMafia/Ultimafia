@@ -7,6 +7,7 @@ module.exports = class PostgameMeeting extends Meeting {
     this.group = true;
     this.speech = true;
     this.speakDead = true;
+    this.liveJoin = true;
     this.noVeg = true;
     // Kudos are voted on in the postgame kudos overlay (see Kudos.js), not
     // through this meeting.

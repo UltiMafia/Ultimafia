@@ -37,7 +37,6 @@ test("a reply sends the quote and the text to the same meeting", () => {
         toMeetingId: "village3",
         fromMeetingId: "village1",
         fromState: 1,
-        messageContent: "I am the cop",
       },
       message: { content: "prove it", meetingId: "village3" },
     }
@@ -84,7 +83,7 @@ test("only quotable player messages can be replied to, pregame included", () => 
   assert.equal(canReplyTo({ ...claim, isQuote: true }, live), false);
   assert.equal(canReplyTo({ ...claim, quotable: false }, live), false);
   assert.equal(canReplyTo(claim, { review: true, stateViewing: 1 }), false);
-  assert.equal(canReplyTo(claim, { review: false, stateViewing: -2 }), false);
+  assert.equal(canReplyTo(claim, { review: false, stateViewing: -2 }), true);
 });
 
 function escapeRun(key, replyPending) {

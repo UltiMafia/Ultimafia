@@ -10,6 +10,11 @@ import { Typography } from "@mui/material";
 import { SiteInfoContext } from "../Contexts";
 import { InlineRoleMention } from "./Roles";
 import { splitIntoLetters } from "./TextEffects";
+import {
+  formatGameText,
+  mapGameFormattedText,
+  gameFormattedPlainText,
+} from "./gameInlineFormatting";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
 import { findChatIdentity } from "shared/chatIdentity";
 
@@ -193,44 +198,77 @@ export function UserText(props) {
         props.slangifySeed
       );
 
-    if (props.linkify) text = linkify(text);
+    if (props.linkify && !props.gameFormatting) text = linkify(text);
 
-    // Any effects that inject elements need to be added after this point because the text property changes
-    // throughout this useEffect function
-    if (props.emotify) {
-      let options = { 
-        system: props.systemMessage,
-        collapseStickers: props.collapseStickers,
-        // TODO: give this its own property
-        isReply: props.collapseStickers,
-      };
-      text = emotify(
-        text,
-        props.systemMessage ? null : props.customEmotes,
-        props.systemMessage ? null : props.customStickers,
-        options
-      );
+    // The existing filter receives the whole raw line before formatting.
+    // Formatting protects URL spans and removes surrounding delimiters before
+    // the existing linkifier creates their anchors.
+    function decorate(text, suppressLinks = false) {
+      if (props.linkify && props.gameFormatting && !suppressLinks) text = linkify(text);
+      // Any effects that inject elements need to be added after this point because the text property changes
+      // throughout this useEffect function
+      if (props.emotify) {
+        let options = { 
+          system: props.systemMessage,
+          collapseStickers: props.collapseStickers,
+          // TODO: give this its own property
+          isReply: props.collapseStickers,
+        };
+        text = emotify(
+          text,
+          props.systemMessage ? null : props.customEmotes,
+          props.systemMessage ? null : props.customStickers,
+          options
+        );
+      }
+
+      if (props.slangify)
+        text = slangify({
+          chatMessage: text,
+          slangifySeed: props.slangifySeed,
+          displayEmoji: props.terminologyEmoticons,
+        });
+      if (props.iconUsername)
+        text = iconUsername(text, avatarPlayers, {
+          spectators: avatarSpectators,
+          compact: props.compactAvatars,
+        });
+
+      if (props.roleify) text = roleifySegments(text, siteInfo);
+
+      return text;
     }
-
-    if (props.slangify)
-      text = slangify({
-        chatMessage: text,
-        slangifySeed: props.slangifySeed,
-        displayEmoji: props.terminologyEmoticons,
-      });
-    if (props.iconUsername)
-      text = iconUsername(text, avatarPlayers, {
-        spectators: avatarSpectators,
-        compact: props.compactAvatars,
-      });
-
-    if (props.roleify) text = roleifySegments(text, siteInfo);
+    if (props.gameFormatting) {
+      const formatted = formatGameText(text);
+      const visible = gameFormattedPlainText(formatted);
+      const filteredVisible = props.filterProfanity && visible !== null
+        ? filterProfanity(visible, props.settings, props.profChar, props.slangifySeed)
+        : visible;
+      // Formatting markers must not shield words from display policy. A
+      // replacement can change string length, so drop styling for this line
+      // instead of guessing how to map replacement characters to old spans.
+      if (visible !== null && filteredVisible !== visible) {
+        const urls = (value) => value.match(/https?:\/\/([\w.]+)\.(\w+)([^\s]*)/g) || [];
+        const visibleUrls = urls(visible);
+        const filteredUrls = urls(filteredVisible);
+        const changedUrl = visibleUrls.length !== filteredUrls.length ||
+          visibleUrls.some((url, index) => url !== filteredUrls[index]);
+        // A display replacement is not permission to rewrite a destination.
+        // Keep the already-filtered raw syntax literal and non-clickable when
+        // stripping markup would expose a policy change inside a URL.
+        text = changedUrl ? decorate(text, true) : decorate(filteredVisible);
+      } else {
+        text = mapGameFormattedText(formatted, decorate);
+      }
+    } else {
+      text = decorate(text);
+    }
 
     // Per-letter chat text effects (wave, rainbow) run on the filtered text.
     if (props.splitLetters) text = splitIntoLetters(text);
 
     setContent(text);
-  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage, props.splitLetters, props.iconUsername, props.compactAvatars, avatarPlayers, avatarSpectators]);
+  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage, props.splitLetters, props.gameFormatting, props.iconUsername, props.compactAvatars, avatarPlayers, avatarSpectators]);
 
   return content ?? "";
 }
@@ -363,39 +401,33 @@ export function iconUsername(text, players, options) {
 
     if (typeof segment != "string") continue;
 
-    const words = segment.trim().split(" ");
+    // Keep whitespace as its own token so inserting inline avatars does not
+    // synthesize another separator after emotify has preserved the originals.
+    const words = segment.split(/(\s+)/).filter((word) => word !== "");
 
     for (let j in words) {
       const word = words[j];
-      let replaced = false;
+      if (word.length <= 1 || word.charAt(0) !== "%") continue;
 
-      if (word.length > 1 && word.charAt(0) === "%") {
-        const name = word.slice(1);
-        let person = findChatIdentity(name, players, options?.spectators);
-        const bareName = name.replace(/[.,!?;:)]+$/, "");
-        if (!person && bareName !== name)
-          person = findChatIdentity(bareName, players, options?.spectators);
+      const name = word.slice(1);
+      const bareName = name.replace(/[.,!?;:)]+$/, "");
+      const exact = findChatIdentity(name, players, options?.spectators);
+      const person = exact || (bareName !== name
+        ? findChatIdentity(bareName, players, options?.spectators)
+        : null);
+      if (!person) continue;
 
-        if (person) {
-          replaced = true;
-          const suffix = person.name.toLowerCase() === name.toLowerCase() ? "" : name.slice(bareName.length);
-          words[j] = (
-            <React.Fragment key={j}>
-              <InlineAvatar
-                userId={person.avatar && person.anonId == null ? person.userId : undefined}
-                avatar={person.avatar}
-                username={person.name}
-                compact={Boolean(options?.compact)}
-              />
-              {suffix}{" "}
-            </React.Fragment>
-          );
-        }
-      }
-
-      if (!replaced) {
-        words[j] = words[j] + " ";
-      }
+      words[j] = (
+        <React.Fragment key={j}>
+          <InlineAvatar
+            userId={person.avatar && person.anonId == null ? person.userId : undefined}
+            avatar={person.avatar}
+            username={person.name}
+            compact={Boolean(options?.compact)}
+          />
+          {!exact && name.slice(bareName.length)}
+        </React.Fragment>
+      );
     }
 
     text[i] = words;

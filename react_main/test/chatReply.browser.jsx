@@ -12,7 +12,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
-import { GameTypeContext, IsPhoneDeviceContext, PlayerRows, TextMeetingLayout } from "../src/pages/Game/Game";
+import { GameTypeContext, IsPhoneDeviceContext, PlayerRows, SpectatorRows, TextMeetingLayout } from "../src/pages/Game/Game";
+import { RosterTypingProvider } from "../src/pages/Game/RosterTyping";
 import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
 import { makeReplyTarget, redirectTypingToChat } from "../src/utils/messageReply";
 import "../src/css/main.css";
@@ -22,7 +23,7 @@ const params = new URLSearchParams(window.location.search);
 const layout = params.get("layout") || "default";
 const anon = params.get("anon") === "1";
 const st = Number(params.get("st") || -1);
-const stName = st === -1 ? "Pregame" : "Day 1";
+const stName = st === -1 ? "Pregame" : st === -2 ? "Postgame" : "Day 1";
 const themeMode = params.get("theme");
 if (themeMode === "light" || themeMode === "dark") {
   document.documentElement.classList.add(`${themeMode}-mode`);
@@ -124,7 +125,11 @@ const msgs0 = [
     id: "r1aaaaaa",
     senderId: S("pC"),
     meetingId: "v1",
-    content: "yo im replying to this @Vinman",
+    // Exercise UserText's normal message processing through emotify,
+    // iconUsername, and roleify under one real reply row.
+    content: decorOn
+      ? "hello box %AlageRheba10 Cop yeah no I'm Mafioso with an inno on Raya"
+      : "yo im replying to this @Vinman",
     replyTo: "q1aaaaaa",
     time: t0 + 2001,
     quotable: true,
@@ -244,7 +249,7 @@ const msgs = msgs0.map((m) =>
 );
 const meeting = {
   id: "v1",
-  name: stName === "Pregame" ? "Pregame" : "Village",
+  name: st < 0 ? stName : "Village",
   messages: msgs,
   speech: true,
   canTalk: true,
@@ -338,34 +343,83 @@ window.__sent = [];
 // Stub transport only: the real SpeechInput builds and sends the reply payload.
 game.socket.send = (type, payload) => window.__sent.push({ type, payload });
 if (membership) {
-  game.isSpectator = true;
-  game.self = "watcher";
+  const solo = params.get("solo") === "1";
+  const seated = params.get("seated") === "1";
+  game.isSpectator = !seated;
+  game.self = seated ? (params.get("deadSelf") === "1" ? "pB" : "pC") : "watcher";
   game.spectators = {
     watcher: { id: "watcher", name: "Watcher", watching: true },
+    ...(solo ? {} : { peer: { id: "peer", name: "OtherWatcher", watching: true } }),
     former: { id: "former", name: "FormerWatcher", watching: false },
   };
   players.departed = { id: "departed", name: "FormerPlayer", left: true };
-  meeting.canTalk = meeting.amMember = false;
+  meeting.canTalk = meeting.amMember = seated;
   msgs[0].content = "Hello %formerwatcher, and %FormerPlayer!";
   game.history.states[st].meetings.s1 = {
     id: "s1", name: "Spectator Meeting", speech: true, canTalk: true, amMember: true,
-    members: [{ id: "watcher" }], messages: [],
+    members: solo ? [{ id: "watcher" }] : [{ id: "watcher" }, { id: "peer" }],
+    messages: [],
   };
   game.rolePredictions = {};
   game.history.states[st].roles = {};
   game.history.states[st].dead = { pB: true };
+  if (params.get("deadSelf") === "1") game.history.states[st].dead.pA = true;
+  if (st !== -1) {
+    game.history.states[-1] = {
+      ...game.history.states[st],
+      name: "Pregame",
+      meetings: {},
+      selTab: null,
+    };
+  }
+  const typingListeners = new Set();
   game.socket.on = (type, callback) => {
-    if (type === "typing") window.__receiveTyping = callback;
+    if (type === "typing") typingListeners.add(callback);
+    return callback;
   };
+  game.socket.off = (type, callback) => {
+    if (type === "typing") typingListeners.delete(callback);
+  };
+  window.__receiveTyping = (event) => typingListeners.forEach((callback) => callback(event));
+  window.__typingListenerCount = () => typingListeners.size;
   game.onMessageQuote = (message, destination) => window.__quotes.push({ message, destination });
 }
 function FixtureGame({ children }) {
   const [replyTarget, setReplyTarget] = React.useState(null);
+  const [stateViewing, setStateViewing] = React.useState(game.stateViewing);
+  const [history, setHistory] = React.useState(game.history);
   window.__setReplyTarget = setReplyTarget;
+  window.__setViewedPhase = setStateViewing;
+  window.__ackReply = () => {
+    const sent = window.__sent.findLast(({ type }) => type === "reply").payload.message;
+    setHistory((current) => {
+      const state = current.states[current.currentState];
+      const room = state.meetings[sent.meetingId];
+      return {
+        ...current,
+        states: {
+          ...current.states,
+          [current.currentState]: {
+            ...state,
+            meetings: {
+              ...state.meetings,
+              [room.id]: {
+                ...room,
+                messages: room.messages.concat({
+                  ...sent, id: "echoed-reply", senderId: game.self,
+                  time: Date.now(), replyTo: "echoed-quote", quotable: true,
+                }),
+              },
+            },
+          },
+        },
+      };
+    });
+  };
   return (
     <IsPhoneDeviceContext.Provider value={mobile}>
-      <GameContext.Provider value={{ ...game, replyTarget, setReplyTarget }}>
-        {children}
+      <GameContext.Provider value={{ ...game, history, stateViewing, replyTarget, setReplyTarget }}>
+        {membership ? <RosterTypingProvider>{children}</RosterTypingProvider> : children}
       </GameContext.Provider>
     </IsPhoneDeviceContext.Provider>
   );
@@ -399,7 +453,12 @@ ReactDOM.render(
                   flexDirection: "column",
                 }}
               >
-                {membership && <PlayerRows players={[players.pB, players.pC]} renderMarker={() => null} />}
+                {membership && (
+                  <div className="player-list" style={{ width: 250 }}>
+                    <PlayerRows players={[players.pA, players.pB, players.pC]} renderMarker={() => null} />
+                    <SpectatorRows />
+                  </div>
+                )}
                 <TextMeetingLayout seatActions={false} />
               </Box>
             </GameTypeContext.Provider>

@@ -2,26 +2,14 @@
 // server as one "reply" event. The server posts them as a normal quote and a
 // normal message marked with the quote's id.
 
+import { quoteReference } from "./messageQuote.js";
+export { canQuoteMessage as canReplyTo } from "./messageQuote.js";
+
 // Whether a hovered chat row shows the pin button. This is the rule master
 // uses; replying never changes it. Pinning is not
 // offered in pregame (state -1) or on quotes.
 export function showPinButton({ review, isQuote, isHovering, stateViewing }) {
   return Boolean(!review && !isQuote && isHovering && stateViewing >= 0);
-}
-
-// Whether a chat row can be replied to: the same rule as double-click quoting.
-export function canReplyTo(message, { review, stateViewing } = {}) {
-  return Boolean(
-    message &&
-      !review &&
-      stateViewing >= -1 &&
-      message.senderId !== "server" &&
-      message.senderId !== "vote" &&
-      !message.isQuote &&
-      message.quotable &&
-      message.id != null &&
-      message.meetingId != null
-  );
 }
 
 // Click to reply: a single click on a row starts a reply after this delay; a
@@ -162,13 +150,7 @@ export function buildReplyPayload(target, { meetingId, content, abilityName }) {
 
   const { message, fromState } = target;
   return {
-    quote: {
-      messageId: message.id,
-      toMeetingId: meetingId,
-      fromMeetingId: message.meetingId,
-      fromState,
-      messageContent: message.content,
-    },
+    quote: quoteReference(message, meetingId, fromState),
     message: { content, meetingId },
   };
 }

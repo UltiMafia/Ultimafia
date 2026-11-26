@@ -11,12 +11,14 @@ import { Avatar } from "pages/User/UserWidgets";
 import { TIER_ICONS, getConservativeRank } from "utils/skillRating";
 import { UserContext, SiteInfoContext } from "Contexts";
 import ReportDialog from "components/ReportDialog";
+import TrophyCase from "components/TrophyCase";
 import { useErrorAlert } from "components/Alerts";
 import {
   getTotalGames,
   getWins,
   getLosses,
   getAbandons,
+  getWinRate,
 } from "utils/mafiaStats";
 
 function Miniprofile(props) {
@@ -36,10 +38,16 @@ function Miniprofile(props) {
   const hasDefaultPronouns = pronouns === "";
   const vanityUrl = user.vanityUrl;
 
+  const [showAlignmentStats, setShowAlignmentStats] = useState(false);
+  const mafiaStats = !user.settings?.hideStatistics && user.stats?.Mafia?.all;
+
+  useEffect(() => {
+    setShowAlignmentStats(false);
+  }, [id]);
+
   let pieChart = <></>;
   let totalGames = 0;
-  if (user.stats?.["Mafia"]?.all) {
-    const mafiaStats = user.stats["Mafia"].all;
+  if (mafiaStats) {
     totalGames = getTotalGames(mafiaStats);
     pieChart = (
       <PieChart
@@ -47,6 +55,8 @@ function Miniprofile(props) {
         losses={getLosses(mafiaStats)}
         abandons={getAbandons(mafiaStats)}
         showTotal
+        onClick={() => setShowAlignmentStats((shown) => !shown)}
+        expanded={showAlignmentStats}
       />
     );
   }
@@ -198,6 +208,30 @@ function Miniprofile(props) {
         </Stack>
       )}
       {pieChart}
+      {mafiaStats && totalGames > 0 && (
+        <Button size="small" onClick={() => setShowAlignmentStats((shown) => !shown)} aria-expanded={showAlignmentStats}>
+          {showAlignmentStats ? "Hide" : "Show"} Town / Mafia win rates
+        </Button>
+      )}
+      {mafiaStats && showAlignmentStats && (
+        <Box sx={{ mb: 1 }}>
+          <Typography variant="caption" color="text.secondary">Ranked and competitive games, including abandons</Typography>
+          {[["Village", "Town"], ["Mafia", "Mafia"]].map(([alignment, label]) => {
+            const stats = mafiaStats.byAlignment?.[alignment];
+            const games = getTotalGames(stats);
+            return (
+              <Typography variant="body2" key={alignment}>
+                {label}: {games ? `${(getWinRate(stats) * 100).toFixed(1)}% (${getWins(stats)} wins / ${games} games)` : "No recorded games"}
+              </Typography>
+            );
+          })}
+        </Box>
+      )}
+      {user.trophies?.length > 0 && (
+        <Box component="section" aria-label="Trophies" sx={{ p: 1 }}>
+          <TrophyCase trophies={user.trophies} showHeading={false} wrapInPanel={false} keyboardAccessible />
+        </Box>
+      )}
       <div className="score-info">
         <div className="score-info-column">
           <div className="score-info-row score-info-smallicon">

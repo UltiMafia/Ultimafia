@@ -7,7 +7,7 @@ const {
   findSpectatorChatMeeting,
   mergeSpectatorChat,
   pickSpeechTarget,
-  pregameSpectatorList,
+  visibleSpectatorList,
 } = require("../react_main/src/shared/spectatorChat");
 const {
   tabCompleteNames,
@@ -106,46 +106,49 @@ describe("Spectator chat (client helpers)", function () {
     }).should.deep.equal({ meetingId: null, spectatorChat: false });
   });
 
-  it("lists spectators in pregame, then only for spectators", function () {
+  it("lists spectators in shared pregame and postgame chat, but not for seated players during live play", function () {
     const spectators = {
       s1: { id: "s1", name: "zed", watching: true },
       s2: { id: "s2", name: "amy", watching: true },
       s3: { id: "s3", name: "gone" },
     };
-    pregameSpectatorList(spectators, { currentState: -1, stateViewing: -1 })
+    visibleSpectatorList(spectators, { currentState: -1, stateViewing: -1 })
       .map((s) => s.name)
       .should.deep.equal(["amy", "zed"]);
-    pregameSpectatorList(spectators, {
+    visibleSpectatorList(spectators, { currentState: -2, stateViewing: -2 })
+      .map((s) => s.name)
+      .should.deep.equal(["amy", "zed"]);
+    visibleSpectatorList(spectators, {
       currentState: 1,
       stateViewing: 1,
     }).should.deep.equal([]);
-    pregameSpectatorList(spectators, {
+    visibleSpectatorList(spectators, {
       currentState: 1,
       stateViewing: -1,
     }).should.deep.equal([]);
-    pregameSpectatorList(spectators, {
+    visibleSpectatorList(spectators, {
       currentState: -1,
       stateViewing: -1,
       review: true,
     }).should.deep.equal([]);
-    pregameSpectatorList(undefined, {
+    visibleSpectatorList(undefined, {
       currentState: -1,
       stateViewing: -1,
     }).should.deep.equal([]);
     // Once started, only spectators see the list.
-    pregameSpectatorList(spectators, {
+    visibleSpectatorList(spectators, {
       currentState: 2,
       stateViewing: 2,
       isSpectator: true,
     })
       .map((s) => s.name)
       .should.deep.equal(["amy", "zed"]);
-    pregameSpectatorList(spectators, {
+    visibleSpectatorList(spectators, {
       currentState: 2,
       stateViewing: 1,
       isSpectator: false,
     }).should.deep.equal([]);
-    pregameSpectatorList(spectators, {
+    visibleSpectatorList(spectators, {
       currentState: 2,
       stateViewing: 2,
       isSpectator: true,
