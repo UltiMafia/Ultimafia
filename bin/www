@@ -13,6 +13,7 @@ const logger = require("../modules/logging")(".");
 const db = require("../db/db");
 const periodic = require("../modules/periodic.js");
 const startup = require("../modules/startup.js");
+const { backfillAdminMemberships } = require("../modules/adminElections");
 var server;
 
 /**
@@ -29,6 +30,7 @@ app.set("port", port);
 (async function () {
 	try {
 		await db.promise;
+		await backfillAdminMemberships();
 
 		/**
 		 * Create HTTP server.

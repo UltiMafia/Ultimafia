@@ -1,5 +1,6 @@
 const models = require("../db/models");
 const { accountLinkEvidenceKeys } = require("./accountLinkage");
+const { activeMemberships, stageElectionMembership } = require("./groupMemberships");
 
 const ADMIN_GROUP = "Admin";
 const ADMIN_GROUPS = ["Owner", ADMIN_GROUP];
@@ -7,28 +8,34 @@ const MAX_NOMINEES = 20;
 const MAX_TERM_DAYS = 365;
 const DAY = 24 * 60 * 60 * 1000;
 
-function activeTermQuery() {
-  return { termEndsAt: { $gt: new Date() } };
-}
-
-function hasActiveTerm(userId) {
-  return models.AdminElection.exists({ winnerId: userId, ...activeTermQuery() });
-}
-
-function activeElectedAdminIds() {
-  return models.AdminElection.distinct("winnerId", activeTermQuery());
-}
-
 async function isElectionAdmin(user) {
-  const [groups, elected] = await Promise.all([
-    models.Group.find({ name: { $in: ADMIN_GROUPS } }).select("name"),
-    hasActiveTerm(user.id),
-  ]);
-  if (elected && groups.some((group) => group.name === ADMIN_GROUP)) return true;
-  return !!(await models.InGroup.exists({
+  const groups = await models.Group.find({ name: { $in: ADMIN_GROUPS } }).select("_id");
+  return (await activeMemberships({
     user: user._id,
     group: { $in: groups.map((group) => group._id) },
-  }));
+  })).length > 0;
+}
+
+// Link any live terms created before elections used the group membership model.
+// The filter makes repeating the migration safe, including after removal.
+async function backfillAdminMemberships() {
+  const legacy = {
+    termEndsAt: { $gt: new Date() },
+    winnerId: { $ne: null },
+    adminMembership: null,
+  };
+  const elections = await models.AdminElection.find(legacy).select("winnerId").lean();
+  if (!elections.length) return;
+  const group = await models.Group.findOne({ name: ADMIN_GROUP }).select("_id").lean();
+  if (!group) return;
+  for (const election of elections) {
+    const user = await models.User.findOne({ id: election.winnerId }).select("_id").lean();
+    if (!user) continue;
+    const membership = await stageElectionMembership(election._id, user._id, group._id);
+    await models.AdminElection.updateOne(
+      { ...legacy, _id: election._id }, { $set: { adminMembership: membership._id } }
+    );
+  }
 }
 
 function electionPhase(election, now) {
@@ -95,9 +102,8 @@ module.exports = {
   MAX_NOMINEES,
   MAX_TERM_DAYS,
   DAY,
-  hasActiveTerm,
-  activeElectedAdminIds,
   isElectionAdmin,
+  backfillAdminMemberships,
   electionPhase,
   countableRankings,
   countRankedBallots,

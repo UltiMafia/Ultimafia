@@ -2,12 +2,13 @@ const bluebird = require("bluebird");
 const redis = bluebird.promisifyAll(require("redis"));
 const shortid = require("shortid");
 const sha1 = require("sha1");
+const { Types } = require("mongoose");
 const models = require("../db/models");
 const constants = require("../data/constants");
 const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
-const { ADMIN_GROUP, hasActiveTerm } = require("./adminElections");
+const { activeMemberships, electedMemberships } = require("./groupMemberships");
 
 const permanentMembershipPermissions = new Set([
   "createGroup", "deleteGroup", "giveGroup", "removeFromGroup",
@@ -25,18 +26,12 @@ client.select(process.env.REDIS_DB || 0);
 
 async function getUserDbId(userId) {
   const key = `user:${userId}:dbId`;
-  const exists = await client.existsAsync(key);
-
-  if (!exists) {
-    const user = await models.User.findOne({ id: userId }).select("_id");
-
-    if (user) {
-      client.set(key, user._id);
-      client.expire(key, 3600);
-    }
-
-    return user._id;
-  } else return await client.get(key);
+  const cached = await client.getAsync(key);
+  if (cached) return new Types.ObjectId(cached);
+  const user = await models.User.findOne({ id: userId, deleted: false }).select("_id").lean();
+  if (!user) return null;
+  await client.setAsync(key, user._id.toString(), "EX", 3600);
+  return user._id;
 }
 
 async function cacheSetups(userId) {
@@ -301,7 +296,7 @@ async function cacheUserInfo(userId, reset) {
       JSON.stringify(user.itemsOwned)
     );
 
-    var inGroups = await models.InGroup.find({ user: user._id }).populate(
+    var inGroups = await models.InGroup.find({ user: user._id, election: null }).populate(
       "group",
       "id name rank badge badgeColor -_id"
     );
@@ -1610,15 +1605,15 @@ async function cacheUserPermissions(userId) {
   const permissionInfo = await loadUserPermissions(userId);
   if (permissionInfo.noUser) return permissionInfo;
 
-  client.set(permKey, JSON.stringify(permissionInfo.perms));
-  client.expire(permKey, 3600);
-  client.set(rankKey, permissionInfo.rank);
-  client.expire(rankKey, 3600);
+  await Promise.all([
+    client.setAsync(permKey, JSON.stringify(permissionInfo.perms), "EX", 3600),
+    client.setAsync(rankKey, permissionInfo.rank, "EX", 3600),
+  ]);
 
   return permissionInfo;
 }
 
-async function loadUserPermissions(userId, electedAdminGroup) {
+async function loadUserPermissions(userId, { includeElected = false } = {}) {
   var user = await models.User.findOne({ id: userId, deleted: false }).select(
     "rank permissions"
   );
@@ -1627,22 +1622,16 @@ async function loadUserPermissions(userId, electedAdminGroup) {
 
   user = user.toJSON();
 
-  var inGroups = await models.InGroup.find({ user: user._id }).populate(
-    "group",
-    "rank permissions"
-  );
-  var groups = inGroups.map((inGroup) => inGroup.toJSON().group).filter(Boolean);
-  if (electedAdminGroup) groups.push({
-    rank: electedAdminGroup.rank,
-    permissions: electedAdminGroup.permissions.filter(
-      (permission) => !permanentMembershipPermissions.has(permission)
-    ),
-  });
-
   var bans = await models.Ban.find({
     userId: userId,
     $or: [{ expires: 0 }, { expires: { $gt: Date.now() } }],
   }).select("permissions");
+  const memberships = await activeMemberships({ user: user._id }, { includeElected });
+  const permanentGroups = new Set(memberships.filter((membership) => !membership.election)
+    .map((membership) => membership.group?.toString()));
+  const groups = await models.Group.find({
+    _id: { $in: memberships.map((membership) => membership.group).filter(Boolean) },
+  }).select("rank permissions").lean();
 
   var perms = {};
   var maxRank = user.rank || 0;
@@ -1652,7 +1641,9 @@ async function loadUserPermissions(userId, electedAdminGroup) {
   for (let perm of user.permissions) perms[perm] = true;
 
   for (let group of groups) {
-    for (let perm of group.permissions) perms[perm] = true;
+    const permanent = permanentGroups.has(group._id.toString());
+    for (const perm of group.permissions)
+      if (permanent || !permanentMembershipPermissions.has(perm)) perms[perm] = true;
 
     if (group.rank > maxRank) maxRank = group.rank;
   }
@@ -1663,15 +1654,11 @@ async function loadUserPermissions(userId, electedAdminGroup) {
 }
 
 async function getUserPermissions(userId, { includeElectedTerm = true } = {}) {
-  // Elected permissions are an overlay, never written to the sliding Redis
-  // cache. Certification takes effect without invalidation or a cleanup job.
-  if (includeElectedTerm && userId && (await hasActiveTerm(userId))) {
-    const group = await models.Group.findOne({ name: ADMIN_GROUP })
-      .select("rank permissions").lean();
-    if (group) {
-      const permissionInfo = await loadUserPermissions(userId, group);
-      if (await hasActiveTerm(userId)) return permissionInfo;
-    }
+  // Term memberships are checked live, never written to the permanent cache.
+  if (includeElectedTerm && userId) {
+    const user = await getUserDbId(userId);
+    if (user && (await electedMemberships({ user })).length)
+      return loadUserPermissions(userId, { includeElected: true });
   }
   const permKey = `user:${userId}:perms`;
   const rankKey = `user:${userId}:rank`;

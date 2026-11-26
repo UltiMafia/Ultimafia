@@ -911,6 +911,9 @@ var schemas = {
   InGroup: new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
     group: { type: mongoose.Schema.Types.ObjectId, ref: "Group", index: true },
+    election: { type: mongoose.Schema.Types.ObjectId, ref: "AdminElection" },
+    revokedAt: Date,
+    revokedBy: String,
   }),
   ModAction: new mongoose.Schema(
     {
@@ -1824,10 +1827,13 @@ schemas.AdminElection = new mongoose.Schema({
   certifiedAt: Date,
   outcome: { type: String, enum: ["elected", "tie", "noVotes"] },
   winnerId: String,
+  adminMembership: { type: mongoose.Schema.Types.ObjectId, ref: "InGroup" },
   termEndsAt: Date,
 });
-schemas.AdminElection.index({ winnerId: 1, termEndsAt: 1 });
-schemas.AdminElection.index({ termEndsAt: 1 });
 schemas.AdminElection.index({ votingEndsAt: -1, _id: -1 });
+schemas.InGroup.index(
+  { election: 1, user: 1 },
+  { unique: true, partialFilterExpression: { election: { $type: "objectId" } } }
+);
 
 module.exports = schemas;

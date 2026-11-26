@@ -27,7 +27,7 @@ const errors = require("../lib/errors");
 const skillRating = require("../modules/skillRating");
 const blocks = require("../modules/blocks");
 const banAppeals = require("../modules/banAppeals");
-const { ADMIN_GROUP, activeElectedAdminIds, hasActiveTerm } = require("../modules/adminElections");
+const { activeMemberships, removeMemberships } = require("../modules/groupMemberships");
 const plotArmor = require("../modules/plotArmor");
 const router = express.Router();
 
@@ -40,23 +40,16 @@ router.get("/groups", async function (req, res) {
     visibleGroups = visibleGroups.map((group) => group.toJSON());
 
     for (let group of visibleGroups) {
-      group.members = await models.InGroup.find({ group: group._id })
-        .select("user")
-        .populate("user", "id name avatar -_id");
-      group.members = group.members
-        .map((member) => member.toJSON().user)
-        .filter((member) => member !== null);
-
-      if (group.name === ADMIN_GROUP) {
-        const electedIds = await activeElectedAdminIds();
-        if (electedIds.length) {
-          const electedMembers = await models.User.find({
-            id: { $in: electedIds, $nin: group.members.map(({ id }) => id) },
-            deleted: false,
-          }).select("id name avatar -_id").lean();
-          group.members.push(...electedMembers.map((member) => ({ ...member, electedOnly: true })));
-        }
-      }
+      const memberships = await activeMemberships({ group: group._id });
+      const memberIds = memberships.map(({ user }) => user).filter(Boolean);
+      const electedIds = new Set(memberships.filter(({ election }) => election)
+        .map(({ user }) => user?.toString()));
+      const users = await models.User.find({ _id: { $in: memberIds } })
+        .select("id name avatar").lean();
+      const usersById = new Map(users.map(({ _id, ...member }) => [
+        _id.toString(), { ...member, elected: electedIds.has(_id.toString()) },
+      ]));
+      group.members = [...new Set(memberIds.map(String))].map((id) => usersById.get(id)).filter(Boolean);
 
       for (let member of group.members)
         member.status = await redis.getUserStatus(member.id);
@@ -345,6 +338,7 @@ router.post("/addToGroup", async function (req, res) {
     var inGroup = await models.InGroup.findOne({
       user: userToAdd._id,
       group: group._id,
+      election: null,
     });
 
     if (inGroup) {
@@ -405,18 +399,13 @@ router.post("/removeFromGroup", async function (req, res) {
       return;
     }
 
-    const removed = await models.InGroup.deleteOne({
-      user: userToRemove._id,
-      group: group._id,
-    }).exec();
-    if (!removed.deletedCount && groupName === ADMIN_GROUP && await hasActiveTerm(userIdToRemove))
-      return errors.conflict(res, "This admin is serving an elected term and has no permanent membership to remove.");
+    await removeMemberships(userToRemove._id, group._id, userId);
     if (groupName == "Developer")
       await devApiKeys.revokeKeys({ userId: userIdToRemove }, userId);
     await redis.cacheUserInfo(userIdToRemove, true);
     await redis.cacheUserPermissions(userIdToRemove);
 
-    routeUtils.createModAction(userId, "Remove User from Group", [
+    await routeUtils.createModAction(userId, "Remove User from Group", [
       userIdToRemove,
       groupName,
     ]);

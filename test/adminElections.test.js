@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict");
-const { DAY, countRankedBallots, electionPhase } = require("../modules/adminElections");
+const { DAY, backfillAdminMemberships, countRankedBallots, electionPhase } = require("../modules/adminElections");
+const { stageElectionMembership } = require("../modules/groupMemberships");
 
 describe("Admin elections", function () {
   it("elects the candidate who gains a majority through transfers", function () {
@@ -48,13 +49,19 @@ describe("Admin elections API and permissions", function () {
     const redis = require("../modules/redis");
     const logPath = require.resolve("../modules/logging");
     const originalLog = require.cache[logPath];
+    const gamePath = require.resolve("../modules/gameLoadBalancer");
+    const originalGame = require.cache[gamePath];
     require.cache[logPath] = { exports: () => ({ error: console.error }) };
-    let router;
+    require.cache[gamePath] = { exports: {} };
+    let router, modRouter;
     try {
       router = require("../routes/adminElections");
+      modRouter = require("../routes/mod");
     } finally {
       if (originalLog) require.cache[logPath] = originalLog;
       else delete require.cache[logPath];
+      if (originalGame) require.cache[gamePath] = originalGame;
+      else delete require.cache[gamePath];
     }
     const fixtureId = randomUUID().replace(/-/g, "");
     await mongoose.connect(process.env.ELECTION_TEST_MONGO_URI, {
@@ -66,6 +73,7 @@ describe("Admin elections API and permissions", function () {
       req.session = { user: { id: req.get("x-fixture-user") } };
       next();
     });
+    app.use("/mod", modRouter);
     app.use(router);
     const server = await new Promise((resolve) => {
       const listener = app.listen(0, "127.0.0.1", () => resolve(listener));
@@ -73,16 +81,20 @@ describe("Admin elections API and permissions", function () {
     const users = [];
     try {
       users.push(...await models.User.create(
-        ["Admin", "A", "B", "C", "D", "E", "F", "G", "Alt", "Device1", "Device2", "Late1", "Late2"].map((name) => ({
+        ["Admin", "A", "B", "C", "D", "E", "F", "G", "Alt", "Device1", "Device2", "Late1", "Late2", "Owner"].map((name) => ({
           id: `${fixtureId}_${name}`, name, deleted: false,
         }))
       ));
-      const [admin, a, b, c, d, e, f, g, alt, device1, device2, late1, late2] =
+      const [admin, a, b, c, d, e, f, g, alt, device1, device2, late1, late2, owner] =
         users.map((user) => user.id);
       const group = await models.Group.create({
-        name: "Admin", rank: 10, permissions: ["seeModPanel", "giveGroup"],
+        name: "Admin", rank: 10, permissions: ["seeModPanel", "giveGroup"], visible: true,
+      });
+      const ownerGroup = await models.Group.create({
+        name: "Owner", rank: 99, permissions: ["giveGroup"],
       });
       await models.InGroup.create({ user: users[0]._id, group: group._id });
+      await models.InGroup.create({ user: users.find((user) => user.id === owner)._id, group: ownerGroup._id });
 
       async function request(path, user, method = "GET", payload) {
         return fetch(`http://127.0.0.1:${server.address().port}${path}`, {
@@ -216,6 +228,10 @@ describe("Admin elections API and permissions", function () {
       await certify(400, admin);
       const preview = await previewResult(200);
       assert.deepEqual(preview, { outcome: "elected", winnerId: b });
+      const winner = users.find((user) => user.id === b);
+      const staged = await stageElectionMembership(id, winner._id, group._id);
+      const otherNominee = users.find((user) => user.id === a);
+      await stageElectionMembership(id, otherNominee._id, group._id);
       const unconfirmed = (await listing()).elections[0];
       assert.equal(unconfirmed.phase, "awaitingCertification");
       assert.equal(unconfirmed.winnerId, undefined);
@@ -245,8 +261,10 @@ describe("Admin elections API and permissions", function () {
       const certified = await models.AdminElection.findById(id).select("+ballots +ballotOrder").lean();
       assert.equal(certified.ballots, undefined);
       assert.equal(certified.ballotOrder, undefined);
+      assert.equal(certified.adminMembership.toString(), staged._id.toString());
       assert.equal((await listing(b)).canManage, true);
       assert.equal(await redis.hasPermission(b, "seeModPanel", 10), true);
+      assert.equal(await redis.hasPermission(a, "seeModPanel", 10), false);
       assert.equal(await redis.hasPermission(b, "giveGroup"), false);
       assert.equal(await redis.hasPermission(admin, "giveGroup", 10), true);
       assert.equal(JSON.parse(await redis.client.getAsync(`user:${b}:perms`)).seeModPanel, undefined);
@@ -257,11 +275,61 @@ describe("Admin elections API and permissions", function () {
       assert.equal((await listing(b)).canManage, false);
       assert.equal(await redis.hasPermission(b, "seeModPanel", 10), false);
       assert.equal(await redis.hasPermission(admin, "seeModPanel", 10), true);
+
+      const legacyResults = await models.AdminElection.create([b, c, c].map((winnerId) => ({
+        title: "Legacy certification", createdBy: owner, winnerId, outcome: "elected",
+        certifiedAt: new Date(), votingStartsAt: new Date(Date.now() - 2 * DAY),
+        votingEndsAt: new Date(Date.now() - DAY), termDays: 90, termEndsAt: new Date(Date.now() + DAY),
+      })));
+      await backfillAdminMemberships();
+      // C has a permanent membership as well as two elected terms.
+      const permanent = await models.InGroup.create({
+        user: users.find((user) => user.id === c)._id, group: group._id,
+      });
+      await redis.cacheUserPermissions(c);
+      const getAdminRoster = async () => {
+        const response = await request("/mod/groups");
+        assert.equal(response.status, 200);
+        return (await response.json()).find(({ name }) => name === "Admin");
+      };
+      const fullRoster = await getAdminRoster();
+      assert.equal(fullRoster.members.filter((member) => member.id === c && member.elected).length, 1);
+      assert.equal(fullRoster.members.filter((member) => member.id === b && member.elected).length, 1);
+
+      const removeFromAdmin = async (staff, userId, expected) => {
+        const response = await request("/mod/removeFromGroup", staff, "POST", { groupName: "Admin", userId });
+        assert.equal(response.status, expected, await response.text());
+      };
+      await removeFromAdmin(admin, b, 403);
+      assert.equal(await redis.hasPermission(b, "seeModPanel", 10), true);
+      await removeFromAdmin(owner, b, 200);
+      await removeFromAdmin(owner, c, 200);
+      assert.ok(await models.ModAction.exists({
+        modId: owner, name: "Remove User from Group", args: [b, "Admin"],
+      }));
+      assert.equal(await models.InGroup.exists({ _id: permanent._id }), null);
+      for (const formerAdmin of [b, c]) {
+        assert.equal(await redis.hasPermission(formerAdmin, "seeModPanel", 10), false);
+        assert.equal((await listing(formerAdmin)).canManage, false);
+      }
+      assert.deepEqual((await getAdminRoster()).members.map((member) => member.id), [admin]);
+      const publicResults = (await listing()).elections;
+      for (const term of legacyResults) {
+        const history = publicResults.find((election) => election.id === term.id);
+        assert.equal(history.winnerId, term.winnerId);
+        assert.equal(history.termEndsAt, term.termEndsAt.toISOString());
+        assert.ok(history.termRevokedAt);
+        assert.equal(history.adminMembership, undefined);
+        const stored = await models.InGroup.findOne({ election: term._id }).lean();
+        assert.equal(stored.revokedBy, owner);
+      }
+      await backfillAdminMemberships();
+      assert.equal(await redis.hasPermission(b, "seeModPanel", 10), false);
     } finally {
       await new Promise((resolve) => server.close(resolve));
       await mongoose.connection.dropDatabase();
       await mongoose.disconnect();
-      const keys = users.flatMap(({ id }) => [`user:${id}:perms`, `user:${id}:rank`]);
+      const keys = users.flatMap(({ id }) => [`user:${id}:perms`, `user:${id}:rank`, `user:${id}:dbId`]);
       if (keys.length) await redis.client.delAsync(...keys);
       await redis.client.quitAsync();
     }

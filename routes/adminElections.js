@@ -4,6 +4,7 @@ const models = require("../db/models");
 const errors = require("../lib/errors");
 const logger = require("../modules/logging")("(admin elections)");
 const routeUtils = require("./utils");
+const { stageElectionMembership } = require("../modules/groupMemberships");
 const {
   ADMIN_GROUP,
   MAX_NOMINEES,
@@ -82,6 +83,7 @@ router.get("/", handle(async (req, res, user) => {
     certifiedBy: 1,
     outcome: 1,
     winnerId: 1,
+    adminMembership: 1,
     termEndsAt: 1,
   };
   if (user) projection.myBallot = { $ifNull: [`$ballots.${user._id}`, []] };
@@ -106,15 +108,21 @@ router.get("/", handle(async (req, res, user) => {
     avatar: true,
   }).select("id -_id").lean() : [];
   const nomineeAvatars = new Set(nomineeUsers.map(({ id }) => id));
+  const membershipIds = pageElections.map(({ adminMembership }) => adminMembership).filter(Boolean);
+  const revokedMemberships = membershipIds.length ? await models.InGroup.find({
+    _id: { $in: membershipIds }, revokedAt: { $ne: null },
+  }).select("revokedAt").lean() : [];
+  const revokedAt = new Map(revokedMemberships.map(({ _id, revokedAt }) => [_id.toString(), revokedAt]));
   const now = new Date();
   res.json({
-    elections: pageElections.map(({ _id, myBallot, ...election }) => ({
+    elections: pageElections.map(({ _id, myBallot, adminMembership, ...election }) => ({
       ...election,
       id: _id.toString(),
       nominees: election.nominees.map(({ id, name }) => ({
         id, name, avatar: nomineeAvatars.has(id),
       })),
       phase: electionPhase(election, now),
+      termRevokedAt: revokedAt.get(adminMembership?.toString()),
       ...(myBallot?.length && now < election.votingEndsAt ? { myBallot } : {}),
     })),
     canManage,
@@ -288,15 +296,22 @@ router.post("/:electionId/certify", handle(async (req, res, user) => {
   const result = await readElectionOutcome(election);
   if (req.body.outcome !== result.outcome || req.body.winnerId !== result.winnerId)
     return errors.conflict(res, "The outcome changed. Review the updated result before certifying.");
-  if (result.winnerId && !(await models.Group.exists({ name: ADMIN_GROUP })))
-    return errors.conflict(res, "The Admin group must exist before certifying a winner.");
-
   const fields = {
     outcome: result.outcome,
     certifiedAt: "$$NOW",
     certifiedBy: { $literal: user.id },
   };
   if (result.winnerId) {
+    const [group, winner] = await Promise.all([
+      models.Group.findOne({ name: ADMIN_GROUP }).select("_id").lean(),
+      models.User.findOne({ id: result.winnerId, deleted: false }).select("_id").lean(),
+    ]);
+    if (!group) return errors.conflict(res, "The Admin group must exist before certifying a winner.");
+    if (!winner) return errors.conflict(res, "The outcome changed. Review the updated result before certifying.");
+    // Stage the group membership first. Until the election points to it,
+    // it grants nothing, including after an interrupted certification.
+    const membership = await stageElectionMembership(election._id, winner._id, group._id);
+    fields.adminMembership = membership._id;
     fields.winnerId = { $literal: result.winnerId };
     fields.termEndsAt = { $add: ["$$NOW", { $multiply: ["$termDays", DAY] }] };
   }

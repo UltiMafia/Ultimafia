@@ -423,7 +423,7 @@ function ElectionDetails({ election }) {
 }
 
 function Election({ election, canManage, canVote, reload }) {
-  const { id, title, phase, nominees, outcome, termEndsAt, certifiedAt } = election;
+  const { id, title, phase, nominees, outcome, termEndsAt, termRevokedAt, certifiedAt } = election;
   const winner = nominees.find((nominee) => nominee.id === election.winnerId);
   return (
     <Stack component="article" aria-labelledby={`election-${id}`} spacing={1.5}>
@@ -472,7 +472,11 @@ function Election({ election, canManage, canVote, reload }) {
           )}
           {NO_WINNER_MESSAGES[outcome] && <Typography>{NO_WINNER_MESSAGES[outcome]}</Typography>}
           <Typography variant="body2">Certified {dateFormat.format(new Date(certifiedAt))}</Typography>
-          {termEndsAt && <Typography variant="body2">Term ends {dateFormat.format(new Date(termEndsAt))}</Typography>}
+          {termRevokedAt ? (
+            <Typography variant="body2">Term ended early {dateFormat.format(new Date(termRevokedAt))}</Typography>
+          ) : termEndsAt && (
+            <Typography variant="body2">Term ends {dateFormat.format(new Date(termEndsAt))}</Typography>
+          )}
         </Box>
       )}
     </Stack>
