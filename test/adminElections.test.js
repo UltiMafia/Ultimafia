@@ -118,8 +118,10 @@ describe("Admin elections API and permissions", function () {
         expectStatus(status, `${path}/nominate`, staff, "POST", { userId });
       const vote = (status, voter, ranking) =>
         expectStatus(status, `${path}/ballot`, voter, "PUT", { ranking });
-      const certify = (status, staff) =>
-        expectStatus(status, `${path}/certify`, staff, "POST");
+      const previewResult = (status, staff = admin) =>
+        expectStatus(status, `${path}/result-preview`, staff);
+      const certify = (status, staff, preview) =>
+        expectStatus(status, `${path}/certify`, staff, "POST", preview);
       const editSettings = (status, payload, staff = admin) =>
         expectStatus(status, `${path}/settings`, staff, "PUT", payload);
       const editClosingTime = (status, payload, staff = admin) =>
@@ -153,6 +155,7 @@ describe("Admin elections API and permissions", function () {
       await nominate(409, a);
       await vote(409, a, [a]);
       await certify(409, admin);
+      await previewResult(409);
 
       await editSettings(204, { ...updatedSettings, votingStartsAt: new Date(Date.now() - DAY) });
       assert.equal((await listing()).elections[0].phase, "voting");
@@ -208,8 +211,27 @@ describe("Admin elections API and permissions", function () {
       await editSettings(409, updatedSettings);
       await vote(409, g, [a]);
       await certify(403, b);
+      await previewResult(401, null);
+      await previewResult(403, b);
+      await certify(400, admin);
+      const preview = await previewResult(200);
+      assert.deepEqual(preview, { outcome: "elected", winnerId: b });
+      const unconfirmed = (await listing()).elections[0];
+      assert.equal(unconfirmed.phase, "awaitingCertification");
+      assert.equal(unconfirmed.winnerId, undefined);
+      assert.equal(await redis.hasPermission(b, "seeModPanel"), false);
+      assert.ok((await models.AdminElection.findById(id).select("+ballots").lean()).ballots);
+
+      // A nominee becomes ineligible after review. Certification must not
+      // publish a different result from the one the admin just reviewed.
+      await models.User.updateOne({ id: b }, { $set: { deleted: true } });
+      await certify(409, admin, preview);
+      assert.notDeepEqual(await previewResult(200), preview);
+      await models.User.updateOne({ id: b }, { $set: { deleted: false } });
+      assert.deepEqual(await previewResult(200), preview);
+
       const results = await Promise.all([admin, admin].map(async (staff) => {
-        const response = await request(`${path}/certify`, staff, "POST");
+        const response = await request(`${path}/certify`, staff, "POST", preview);
         await response.text();
         return response.status;
       }));
@@ -217,6 +239,7 @@ describe("Admin elections API and permissions", function () {
       const result = (await listing(b)).elections[0];
       assert.equal(result.winnerId, b);
       assert.equal(result.phase, "certified");
+      await previewResult(409);
       assert.equal(Date.parse(result.termEndsAt) - Date.parse(result.certifiedAt), 120 * DAY);
       await editClosingTime(409, { votingEndsAt: laterDeadline });
       const certified = await models.AdminElection.findById(id).select("+ballots +ballotOrder").lean();

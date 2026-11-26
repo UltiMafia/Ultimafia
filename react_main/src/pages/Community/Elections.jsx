@@ -20,6 +20,10 @@ const PHASE_LABELS = {
   awaitingCertification: "Awaiting certification",
   certified: "Certified",
 };
+const NO_WINNER_MESSAGES = {
+  tie: "No winner: unresolved tie.",
+  noVotes: "No winner: no ballots counted for eligible nominees.",
+};
 const dateFormat = new Intl.DateTimeFormat(undefined, {
   dateStyle: "medium", timeStyle: "short", hour12: true,
 });
@@ -325,28 +329,62 @@ function NominationForm({ election, onChange }) {
   );
 }
 
-function CertifyElection({ election, onChange }) {
+function ReviewElectionResult({ election, onChange }) {
   const [open, setOpen] = useState(false);
+  const [preview, setPreview] = useState(null);
   const { pending, error, run } = useElectionAction();
+  const winner = election.nominees.find((nominee) => nominee.id === preview?.winnerId);
+
+  function loadPreview() {
+    setPreview(null);
+    run(async () => {
+      const { data } = await axios.get(`${API}/${election.id}/result-preview`);
+      setPreview(data);
+    });
+  }
+
   return (
     <Box>
-      <Button variant="contained" onClick={() => setOpen(true)}>Certify result</Button>
+      <Button variant="contained" onClick={() => {
+        setOpen(true);
+        loadPreview();
+      }}>Review result</Button>
       <Dialog open={open} onClose={pending ? undefined : () => setOpen(false)}
-        aria-labelledby={`certify-${election.id}`}>
-        <DialogTitle id={`certify-${election.id}`}>Certify {election.title}?</DialogTitle>
+        fullWidth maxWidth="xs" aria-labelledby={`certify-${election.id}`}>
+        <DialogTitle id={`certify-${election.id}`}>Review election result</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            This publishes the ranked-choice outcome and starts the winner’s term immediately if there is a winner.
-          </DialogContentText>
-          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          <Stack spacing={1.5}>
+            <Typography variant="subtitle1">{election.title}</Typography>
+            {!preview && pending && <CircularProgress aria-label="Loading result" size={24} />}
+            {preview && (
+              <>
+                {winner && (
+                  <Stack direction="row" alignItems="center" gap={1}>
+                    <Typography component="strong" sx={{ fontWeight: 600 }}>Winner:</Typography>
+                    <NomineeIdentity nominee={winner} small />
+                  </Stack>
+                )}
+                {NO_WINNER_MESSAGES[preview.outcome] && <Typography>{NO_WINNER_MESSAGES[preview.outcome]}</Typography>}
+                <DialogContentText>
+                  {winner
+                    ? `Certifying publishes this result and starts the winner’s ${election.termDays}-day term immediately.`
+                    : "Certifying publishes this result without granting an admin term."}
+                </DialogContentText>
+              </>
+            )}
+            {error && (
+              <Alert severity="error" action={<Button onClick={loadPreview}>Refresh preview</Button>}>{error}</Alert>
+            )}
+          </Stack>
         </DialogContent>
         <DialogActions>
           <Button disabled={pending} onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" disabled={pending} onClick={() => run(async () => {
-            await axios.post(`${API}/${election.id}/certify`);
-            setOpen(false);
-            onChange();
-          })}>{pending ? "Certifying…" : "Certify result"}</Button>
+          <Button variant="contained" disabled={pending || !preview || !!error}
+            onClick={() => run(async () => {
+              await axios.post(`${API}/${election.id}/certify`, preview);
+              setOpen(false);
+              onChange();
+            })}>{pending && preview ? "Certifying…" : "Certify result"}</Button>
         </DialogActions>
       </Dialog>
     </Box>
@@ -417,9 +455,11 @@ function Election({ election, canManage, canVote, reload }) {
       {phase === "awaitingCertification" && (
         <Stack spacing={1.5}>
           <Typography variant="body2" color="text.secondary">
-            The result is published after an admin certifies the election.
+            {canManage
+              ? "Review the result before certifying and publishing it."
+              : "The result is published after an admin certifies the election."}
           </Typography>
-          {canManage && <CertifyElection election={election} onChange={reload} />}
+          {canManage && <ReviewElectionResult election={election} onChange={reload} />}
         </Stack>
       )}
       {phase === "certified" && (
@@ -430,8 +470,7 @@ function Election({ election, canManage, canVote, reload }) {
               <NomineeIdentity nominee={winner} link small />
             </Stack>
           )}
-          {outcome === "tie" && <Typography>No winner: unresolved tie.</Typography>}
-          {outcome === "noVotes" && <Typography>No winner: no ballots counted for eligible nominees.</Typography>}
+          {NO_WINNER_MESSAGES[outcome] && <Typography>{NO_WINNER_MESSAGES[outcome]}</Typography>}
           <Typography variant="body2">Certified {dateFormat.format(new Date(certifiedAt))}</Typography>
           {termEndsAt && <Typography variant="body2">Term ends {dateFormat.format(new Date(termEndsAt))}</Typography>}
         </Box>

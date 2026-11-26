@@ -249,23 +249,45 @@ router.put("/:electionId/ballot", handle(async (req, res, user) => {
   res.status(204).end();
 }, { login: true }));
 
-router.post("/:electionId/certify", handle(async (req, res, user) => {
-  // Nominees and ballots are immutable once the database clock reaches closing.
-  const closed = {
-    _id: req.electionId,
+function uncertifiedClosedElection(id) {
+  return {
+    _id: id,
     certifiedAt: null,
     $expr: { $lte: ["$votingEndsAt", "$$NOW"] },
   };
-  const election = await models.AdminElection.findOne(closed).select("+ballots +ballotOrder").lean();
-  if (!election)
-    return errors.conflict(res, "This election is still open or has already been certified.");
+}
 
+async function readElectionOutcome(election) {
   const nominees = await models.User.find({
     id: { $in: election.nominees.map(({ id }) => id) },
     deleted: false,
   }).distinct("id");
   const rankings = await countableRankings(election.ballots || {}, election.ballotOrder || {});
-  const result = countRankedBallots(nominees, rankings);
+  const { outcome, winnerId } = countRankedBallots(nominees, rankings);
+  return { outcome, winnerId: winnerId ?? null };
+}
+
+router.get("/:electionId/result-preview", handle(async (req, res) => {
+  const election = await models.AdminElection.findOne(uncertifiedClosedElection(req.electionId))
+    .select("+ballots +ballotOrder").lean();
+  if (!election)
+    return errors.conflict(res, "An uncertified result is only available after voting closes.");
+  res.json(await readElectionOutcome(election));
+}, { admin: true }));
+
+router.post("/:electionId/certify", handle(async (req, res, user) => {
+  // Nominees and ballots are immutable once the database clock reaches closing.
+  const closed = uncertifiedClosedElection(req.electionId);
+  const election = await models.AdminElection.findOne(closed).select("+ballots +ballotOrder").lean();
+  if (!election)
+    return errors.conflict(res, "This election is still open or has already been certified.");
+
+  if (!["elected", "tie", "noVotes"].includes(req.body.outcome) ||
+      (req.body.outcome === "elected" ? typeof req.body.winnerId !== "string" : req.body.winnerId !== null))
+    return errors.badRequest(res, "Review the result before certifying.");
+  const result = await readElectionOutcome(election);
+  if (req.body.outcome !== result.outcome || req.body.winnerId !== result.winnerId)
+    return errors.conflict(res, "The outcome changed. Review the updated result before certifying.");
   if (result.winnerId && !(await models.Group.exists({ name: ADMIN_GROUP })))
     return errors.conflict(res, "The Admin group must exist before certifying a winner.");
 
