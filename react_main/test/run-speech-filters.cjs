@@ -180,6 +180,14 @@ async function main() {
       "windowed transcript renders with data-transcript-window",
     );
 
+    const censor = await page.evaluate(() => window.__censorChecks);
+    check(censor?.swearMasked, "swear censor masks a known swear");
+    check(censor?.slurMasked, "slur censor masks a known slur");
+    check(
+      censor?.allDisabledUnchanged,
+      "disabling both censors leaves text unchanged",
+    );
+
     const renderedBefore = await renderedIds();
     check(
       renderedBefore.length > 0 && renderedBefore.length < BOX_MESSAGES,

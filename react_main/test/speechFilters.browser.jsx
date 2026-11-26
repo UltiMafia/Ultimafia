@@ -16,6 +16,8 @@ import {
 } from "../src/pages/Game/Game";
 import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
 import { getSiteTheme } from "../src/constants/themes";
+import { filterProfanity } from "../src/components/Basic";
+import { slurs } from "../src/constants/filteredStrings";
 import "../src/css/main.css";
 import "../src/css/game.css";
 
@@ -27,6 +29,29 @@ const stateViewing = pregame ? -1 : 1;
 const messageCount = Number(params.get("size") || 80);
 document.documentElement.classList.add("dark-mode");
 const theme = getSiteTheme(null, "dark");
+
+// The censor helper expects the decoded list names. These checks catch a call
+// site passing "swears"/"slurs", which silently returns the text unchanged.
+const decodeRot13 = (value) =>
+  value.replace(/[a-z]/g, (character) =>
+    String.fromCharCode(((character.charCodeAt(0) - 97 + 13) % 26) + 97)
+  );
+const slurSample = decodeRot13(
+  slurs.find((word) => word === "avttre") || slurs[0]
+);
+const swearSample = "shit";
+window.__censorChecks = {
+  swearMasked: filterProfanity(swearSample, {}, "*") !== swearSample,
+  slurMasked:
+    filterProfanity(slurSample, { disablePg13Censor: true }, "*") !==
+    slurSample,
+  allDisabledUnchanged:
+    filterProfanity(
+      swearSample,
+      { disablePg13Censor: true, disableAllCensors: true },
+      "*"
+    ) === swearSample,
+};
 
 const user = {
   id: "u1",
