@@ -296,7 +296,7 @@ const game = {
     highlightMentions: true,
     roleMentions: rolesOn || decorOn,
   },
-  filters: {},
+  speechFilters: {},
   socket: { on: () => {}, send: () => {} },
   isolatedPlayers: new Set(),
   getSetupGameSetting: () => undefined,

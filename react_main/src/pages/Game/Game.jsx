@@ -62,6 +62,7 @@ import { NameWithAvatar } from "../User/UserWidgets";
 import { ClientSocket as Socket, subscribeSocketListeners } from "../../Socket";
 import { LatestRequest } from "../../lib/latestRequest.js";
 import { useViewActive } from "../../hooks/useViewActivity";
+import { useSpeechFilterShortcut } from "../../hooks/useSpeechFilterShortcut";
 import { useGameMembership } from "../../hooks/useGameMembership";
 import { useGameSessionIdentity } from "../../hooks/useGameSessionIdentity";
 import { useNewMessageCount } from "../../hooks/useNewMessageCount";
@@ -99,6 +100,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Autocomplete,
   Badge,
   Box,
   Button,
@@ -169,6 +171,10 @@ import {
   showPinButton,
 } from "utils/messageReply";
 import { buildQuotePayload, findMessageState } from "utils/messageQuote";
+import {
+  filterTranscriptMessages,
+  hasSpeechFilter,
+} from "utils/speechFilters";
 import RoleMarkerToggle from "./components/RoleMarkerToggle";
 import { playerNameWithAvatarProps } from "./playerDisplay";
 import {
@@ -280,6 +286,7 @@ export default function Game(props) {
     from: "",
     contains: "",
   });
+  const [speechFilterOpen, setSpeechFilterOpen] = useState(false);
   const [isolationEnabled, setIsolationEnabled] = useState(false);
   const [isolatedPlayers, setIsolatedPlayers] = useState(new Set());
   const [dev, setDev] = useState(false);
@@ -1595,6 +1602,7 @@ export default function Game(props) {
   else {
     const gameContext = {
       gameId: gameId,
+      active: active,
       socket: socket,
       review: review,
       gameType: gameType,
@@ -1626,6 +1634,8 @@ export default function Game(props) {
       updateSettings: updateSettings,
       speechFilters: speechFilters,
       setSpeechFilters: setSpeechFilters,
+      speechFilterOpen,
+      setSpeechFilterOpen,
       isolationEnabled,
       setIsolationEnabled,
       isolatedPlayers,
@@ -2335,8 +2345,15 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const isPhoneDevice = useIsPhoneDevice();
   const { singleState } = useContext(GameTypeContext);
   const { isolationEnabled, isolatedPlayers, isSpectator } = game;
-  const { history, players, stateViewing, updateHistory, settings, filters, spectators } =
-    game;
+  const {
+    history,
+    players,
+    stateViewing,
+    updateHistory,
+    settings,
+    speechFilters: filters,
+    spectators,
+  } = game;
   // Explicit fixture overrides win; partial legacy contexts retain the full DOM.
   const windowed = typeof game.transcriptWindowing === "boolean"
     ? game.transcriptWindowing
@@ -2556,7 +2573,13 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const messages = useMemo(() => {
     var messageData;
     if (singleState) {
-      messageData = getAllMessagesToDisplay(history);
+      messageData = filterTranscriptMessages(
+        getAllMessagesToDisplay(history),
+        players,
+        spectators,
+        filters,
+        history
+      );
     } else {
       messageData = getMessagesToDisplay(
         meetings,
@@ -2723,6 +2746,29 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     if (container) container.scrollTo(0, container.scrollHeight);
   }
 
+  const filterFrom = (filters?.from || "").trim();
+  const filterContains = (filters?.contains || "").trim();
+  const filterActive = hasSpeechFilter(filters);
+  // Server rows (alerts, obituaries, winners) survive a speech filter, so the
+  // transcript is not necessarily empty when no speech matches. Count only
+  // speech rows to decide whether to explain the sparse chat.
+  const hasSpeechRows = messages.some((row) => {
+    const message = row?.props?.message;
+    return (
+      message &&
+      message.senderId !== "server" &&
+      !message.winners &&
+      !message.obituaries
+    );
+  });
+  const filterEmpty = filterActive && !hasSpeechRows;
+  const filterEmptyText =
+    filterFrom && filterContains
+      ? `No messages from ${filterFrom} containing “${filterContains}”.`
+      : filterFrom
+        ? `No messages from ${filterFrom}.`
+        : `No messages containing “${filterContains}”.`;
+
   return (
     <>
       <Box
@@ -2780,8 +2826,13 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
             <StateSwitcher />
           </Box>
         )}
+        {filterEmpty && (
+          <div className="speech-filter-empty-note" role="status">
+            {filterEmptyText}
+          </div>
+        )}
         {windowed ? <WindowedTranscript
-          key={JSON.stringify([singleState, stateViewing, selTab, filters, settings.messageLayout])}
+          key={JSON.stringify([singleState, stateViewing, selTab, settings.messageLayout])}
           rows={messages}
           speechDisplayRef={speechDisplayRef}
           onScroll={onSpeechScroll}
@@ -2934,19 +2985,13 @@ function getMessagesToDisplay(
 
   messages = mergeSpectatorChat(messages, spectatorChatMeeting, selTab);
 
-  if (filters && (filters.from || filters.contains))
-    messages = messages.filter((m) => {
-      var content = m.content || "";
-      var matches =
-        content.toLowerCase().indexOf(filters.contains.toLowerCase()) !== -1;
-
-      var playerName = players[m.senderId]?.name || spectators[m.senderId]?.name || "";
-      matches =
-        matches &&
-        playerName.toLowerCase().indexOf(filters.from.toLowerCase()) !== -1;
-
-      return matches;
-    });
+  messages = filterTranscriptMessages(
+    messages,
+    players,
+    spectators,
+    filters,
+    history
+  );
 
   for (let alert of alerts) {
     for (let i = 0; i <= messages.length; i++) {
@@ -7051,18 +7096,81 @@ function FirstGameModal(props) {
 export function SpeechFilter() {
   const game = useContext(GameContext);
   const {
+    active,
     isolationEnabled,
     setIsolationEnabled,
     speechFilters: filters,
     setSpeechFilters: setFilters,
-    stateViewing,
+    speechFilterOpen,
+    setSpeechFilterOpen,
+    players,
+    spectators,
   } = game;
+
+  const containsRef = useRef(null);
+  const focusOnOpen = useRef(false);
+
+  const focusContains = useCallback(() => {
+    const input = containsRef.current;
+    // A collapsed mobile info sheet keeps the content mounted but hidden;
+    // never pull focus into an off-screen field.
+    if (!input || !input.getClientRects().length) return;
+    input.focus();
+    input.select();
+  }, []);
+
+  const openForTyping = useCallback(() => {
+    if (speechFilterOpen) {
+      focusContains();
+      return;
+    }
+    focusOnOpen.current = true;
+    setSpeechFilterOpen(true);
+  }, [focusContains, speechFilterOpen, setSpeechFilterOpen]);
+
+  useSpeechFilterShortcut(active !== false, openForTyping);
+
+  useEffect(() => {
+    if (!speechFilterOpen || !focusOnOpen.current) return undefined;
+    focusOnOpen.current = false;
+    // Let the accordion paint its expanded content before moving the caret.
+    const frame = requestAnimationFrame(focusContains);
+    return () => cancelAnimationFrame(frame);
+  }, [focusContains, speechFilterOpen]);
+
+  // The roster is the authoritative list: the filter is a pick, not a name
+  // guess, and it can target spectators the roster does not list.
+  const playerNames = useMemo(() => {
+    const names = new Set();
+    for (const player of Object.values(players || {})) {
+      if (player?.name) names.add(player.name);
+    }
+    for (const spectator of Object.values(spectators || {})) {
+      if (spectator?.name) names.add(spectator.name);
+    }
+    return [...names].sort((a, b) => a.localeCompare(b));
+  }, [players, spectators]);
 
   const toggleIsolationEnabled = () => setIsolationEnabled(!isolationEnabled);
 
+  // A selected name can outlive the roster entry (a player leaves while the
+  // filter is set). Keep it as an option so the field keeps showing the value
+  // instead of warning that it is not in the list.
+  const fromValue = filters?.from || "";
+  const fromOptions =
+    fromValue && !playerNames.includes(fromValue)
+      ? [fromValue, ...playerNames]
+      : playerNames;
+
+  const filterActive = hasSpeechFilter(filters);
+
+  function clearFilters() {
+    setFilters({ from: "", contains: "" });
+  }
+
   function onFilter(type, value) {
     setFilters(
-      update(filters, {
+      update(filters || { from: "", contains: "" }, {
         [type]: {
           $set: value,
         },
@@ -7070,36 +7178,87 @@ export function SpeechFilter() {
     );
   }
 
-  if (stateViewing < 0) return <></>;
-
   return (
     <SideMenu
-      title="Speech Filters"
+      title={
+        <span>
+          Speech Filters
+          {filterActive && (
+            <span className="speech-filter-status">Filtered</span>
+          )}
+        </span>
+      }
       isAccordionMenu
+      expanded={Boolean(speechFilterOpen)}
+      onChange={() => setSpeechFilterOpen(!speechFilterOpen)}
       content={
         <div className="speech-filters">
-          <div style={{ marginBottom: "10px" }}>
+          <div className="speech-filter-isolate">
             <input
               id="isolateMessagesCheckbox"
               type="checkbox"
-              value={isolationEnabled}
+              checked={Boolean(isolationEnabled)}
               onChange={toggleIsolationEnabled}
             />
             <label htmlFor="isolateMessagesCheckbox"> Isolate messages</label>
           </div>
-          <input
-            type="text"
-            placeholder="From user"
-            value={filters.from}
-            onChange={(e) => onFilter("from", e.target.value)}
-            style={{ marginBottom: "10px" }}
+          <Autocomplete
+            size="small"
+            options={fromOptions}
+            value={filters?.from || null}
+            onChange={(event, value) => onFilter("from", value || "")}
+            autoHighlight
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="standard"
+                placeholder="From player"
+                InputProps={{
+                  ...params.InputProps,
+                  disableUnderline: true,
+                  sx: {
+                    backgroundColor: "var(--scheme-color-sec)",
+                    color: "var(--scheme-color-text)",
+                    px: 1,
+                    borderRadius: "4px",
+                  },
+                }}
+                inputProps={{
+                  ...params.inputProps,
+                  "aria-label": "From player",
+                }}
+              />
+            )}
           />
           <input
+            ref={containsRef}
             type="text"
             placeholder="Contains"
-            value={filters.contains}
+            value={filters?.contains || ""}
             onChange={(e) => onFilter("contains", e.target.value)}
           />
+          {filterActive && (
+            <Button
+              variant="text"
+              color="inherit"
+              size="small"
+              onClick={clearFilters}
+              sx={{
+                alignSelf: "flex-start",
+                px: 0,
+                minWidth: 0,
+                textTransform: "none",
+                color: "var(--scheme-color-text)",
+                opacity: 0.7,
+                "&:hover": {
+                  opacity: 1,
+                  backgroundColor: "transparent",
+                },
+              }}
+            >
+              Clear filters
+            </Button>
+          )}
         </div>
       }
     />
