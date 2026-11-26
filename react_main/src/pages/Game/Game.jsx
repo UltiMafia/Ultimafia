@@ -227,6 +227,29 @@ export const GameTypeContext = createContext({
 const READY_CHECK_BELL_REPEAT_MS = 15000;
 const PENDING_SPEECH_RESEND_MS = 5000;
 
+// Socket replay groups events by type; a buffered init can predate an accepted spectator change.
+function readyCheckInitSupersededBySpectator(socket, data) {
+  const received = socket && socket.received;
+  if (!received) return false;
+
+  let index = -1;
+  for (let i = received.length - 1; i >= 0; i--) {
+    if (received[i].eventName === "readyCheck init" && received[i].data === data) {
+      index = i;
+      break;
+    }
+  }
+  // Live delivery runs before Socket buffers the message.
+  if (index === -1) return false;
+
+  for (let i = index + 1; i < received.length; i++) {
+    if (received[i].eventName === "isSpectator" && received[i].data !== false) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export default function Game(props) {
   const user = useContext(UserContext);
   // HTTP connect, socket join and reconnect all belong to the same entry URL,
@@ -1371,6 +1394,10 @@ export default function Game(props) {
       isSpectatorRef.current = spectatingNow;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
+      else {
+        // Spectating does not send readyCheck cancel. Leave the missed-ready bell alone.
+        setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
+      }
     });
 
     socket.on("omniscientSpectator", () => {
@@ -1408,6 +1435,7 @@ export default function Game(props) {
     });
 
     socket.on("readyCheck init", (data) => {
+      if (readyCheckInitSupersededBySpectator(socket, data)) return;
       stopReadyBellRepeatRef.current();
       const readyMap = {};
       if (data.readyPlayers) data.readyPlayers.forEach((id) => (readyMap[id] = true));
