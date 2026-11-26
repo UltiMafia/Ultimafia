@@ -231,6 +231,30 @@ export const GameTypeContext = createContext({
 // urgent.mp3 does not loop (~15s). Repeat it until the failed player leaves,
 // takes a seat, refreshes, or a new ready check starts.
 const READY_CHECK_BELL_REPEAT_MS = 15000;
+const PENDING_SPEECH_RESEND_MS = 5000;
+
+// Socket replay groups events by type; a buffered init can predate an accepted spectator change.
+function readyCheckInitSupersededBySpectator(socket, data) {
+  const received = socket && socket.received;
+  if (!received) return false;
+
+  let index = -1;
+  for (let i = received.length - 1; i >= 0; i--) {
+    if (received[i].eventName === "readyCheck init" && received[i].data === data) {
+      index = i;
+      break;
+    }
+  }
+  // Live delivery runs before Socket buffers the message.
+  if (index === -1) return false;
+
+  for (let i = index + 1; i < received.length; i++) {
+    if (received[i].eventName === "isSpectator" && received[i].data !== false) {
+      return true;
+    }
+  }
+  return false;
+}
 
 export default function Game(props) {
   const user = useContext(UserContext);
@@ -489,6 +513,19 @@ export default function Game(props) {
     // it returns them to the game. Leaving does not navigate (see Main).
     if (!active) navigate(`/game/${gameId}`);
   }
+
+  // A seated player may watch instead of playing. The server gives up the seat
+  // and cancels the running ready check for everyone (Game.spectateFromSeat);
+  // refusals arrive as "spectateFailed", which is already shown as an alert.
+  function onReadyCheckSpectate() {
+    socket.send("spectate");
+  }
+
+  // Spectating has to be allowed for the lobby, and the tutorial's one human
+  // has to keep the seat; the server refuses both, so do not offer the button.
+  const canSpectateFromReadyCheck =
+    (options.spectating === true || options.spectating === "true") &&
+    !tutorialGameRef.current;
 
   // "Rehost?": leave this postgame lobby, then ask for a new lobby with the
   // same settings. The server lets only the first click create it; anyone
@@ -1364,6 +1401,10 @@ export default function Game(props) {
       isSpectatorRef.current = spectatingNow;
       setIsSpectator(spectatingNow);
       if (!spectatingNow) stopReadyBellRepeatRef.current();
+      else {
+        // Spectating does not send readyCheck cancel. Leave the missed-ready bell alone.
+        setReadyCheckInfo({ active: false, readyPlayers: {}, endTime: 0 });
+      }
     });
 
     socket.on("omniscientSpectator", () => {
@@ -1401,6 +1442,7 @@ export default function Game(props) {
     });
 
     socket.on("readyCheck init", (data) => {
+      if (readyCheckInitSupersededBySpectator(socket, data)) return;
       stopReadyBellRepeatRef.current();
       const readyMap = {};
       if (data.readyPlayers) data.readyPlayers.forEach((id) => (readyMap[id] = true));
@@ -1722,6 +1764,9 @@ export default function Game(props) {
           timeLeft={readyCheckInfo.timeLeft}
           onReady={onReadyCheckVerify}
           onLeave={leaveGame}
+          onSpectate={
+            canSpectateFromReadyCheck ? onReadyCheckSpectate : undefined
+          }
         />
         <LeaveGameDialog
           open={active && leaveDialogOpen}
@@ -4323,6 +4368,21 @@ function SpeechInput(props) {
     if (isSpeakCooldownActive) return;
 
     if (e.key === "Enter" && selTab && speechInput.length) {
+      // Holding Enter, or pressing it again before the first send comes back,
+      // would send the same line twice. Allow it again after a few seconds in
+      // case the first was never delivered.
+      const pending = pendingSpeechRef.current;
+      if (
+        e.repeat ||
+        (pending &&
+          pending.content === speechInput &&
+          pending.meetingId === selTab &&
+          Date.now() - pending.sentAt < PENDING_SPEECH_RESEND_MS)
+      ) {
+        e.preventDefault();
+        return;
+      }
+
       const abilityInfo = speechDropdownValue.split(":");
       var abilityName = abilityInfo[0];
       var abilityTarget = abilityInfo[1];
@@ -4342,6 +4402,8 @@ function SpeechInput(props) {
         } else {
           pendingSpeechRef.current = {
             content: speechInput,
+            meetingId: selTab,
+            sentAt: Date.now(),
             anonymous:
               Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
           };

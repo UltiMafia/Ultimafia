@@ -52,6 +52,7 @@ async function makeGame(setup, stateLength) {
         Mission: stateLength,
       },
       pregameCountdownLength: 0,
+      pregameWaitLength: 1,
     },
     isTest: true,
   });
@@ -102,12 +103,16 @@ function waitForState(game, statePattern) {
 }
 
 describe("Games/Mafia/Spymaster", function () {
+  this.timeout(5000);
+
   it("activates ResistanceMode and suppresses Village and faction Kill meetings", async function () {
     await db.promise;
     await redis.client.flushdbAsync();
 
+    // makeGame resolves after the game started, so the role-assigned items
+    // are still held. Do not poll for game.started: the short test state
+    // lengths let a 1-state item like NoVillageMeeting age out first.
     const game = await makeGame(spymasterSetup());
-    await waitForResult(() => game.started);
     game.ResistanceMode.should.equal(true);
     game.missionRecord.should.exist;
 
@@ -132,33 +137,37 @@ describe("Games/Mafia/Spymaster", function () {
       total: 5,
       roles: [{ Villager: 4, Mafioso: 1 }],
     });
-    await waitForResult(() => game.started);
 
-    game.ResistanceMode.should.not.be.true;
+    // chai's should cannot be called on undefined, so check existence first.
+    should.not.exist(game.ResistanceMode);
     game.shouldSkipState("Team Approval").should.be.true;
     game.shouldSkipState("Mission").should.be.true;
 
-    const teamApproval = game.states.find((s) => s.name === "Team Approval");
-    const mission = game.states.find((s) => s.name === "Mission");
-    teamApproval.skipChecks[0].call(game).should.be.true;
-    mission.skipChecks[0].call(game).should.be.true;
-
-    game.ResistanceMode = true;
-    teamApproval.skipChecks[0].call(game).should.be.false;
-    mission.skipChecks[0].call(game).should.be.false;
-
-    game.currentTeamFail = true;
-    mission.skipChecks[0].call(game).should.be.true;
+    // Only a dealt Spymaster registers the mission states, so a game without
+    // one has no mission states to enter at all.
+    should.not.exist(game.states.find((s) => s.name === "Team Approval"));
+    should.not.exist(game.states.find((s) => s.name === "Mission"));
   });
 
   it("skips Day and runs Team Approval after Dawn", async function () {
     await db.promise;
     await redis.client.flushdbAsync();
 
-    const game = await makeGame(spymasterSetup());
-    await waitForResult(() => game.started);
+    // Long enough that the Night poll is reliable; the test state lengths
+    // also drive Team Approval and Mission.
+    const game = await makeGame(spymasterSetup(), 1000);
     game.shouldSkipState("Day").should.be.true;
     game.shouldSkipState("Team Approval").should.be.false;
+
+    // ResistanceMode is on, so both mission states run; a rejected team
+    // skips the Mission state.
+    const teamApproval = game.states.find((s) => s.name === "Team Approval");
+    const mission = game.states.find((s) => s.name === "Mission");
+    teamApproval.skipChecks[0]().should.be.false;
+    mission.skipChecks[0]().should.be.false;
+    game.currentTeamFail = true;
+    mission.skipChecks[0]().should.be.true;
+    game.currentTeamFail = false;
 
     await waitForState(game, /Night/);
     await waitForState(game, /Team Approval/);
@@ -169,8 +178,7 @@ describe("Games/Mafia/Spymaster", function () {
     await db.promise;
     await redis.client.flushdbAsync();
 
-    const game = await makeGame(spymasterSetup());
-    await waitForResult(() => game.started);
+    const game = await makeGame(spymasterSetup(), 1000);
     await waitForState(game, /Night/);
 
     const leader = game.currentLeader;
@@ -187,11 +195,14 @@ describe("Games/Mafia/Spymaster", function () {
     await redis.client.flushdbAsync();
 
     const game = await makeGame(spymasterSetup({ teamFailLimit: 1 }));
-    await waitForResult(() => game.started);
 
+    // recordMissionFails expects the mission's team to have been recorded
+    // by the leader's Team Approval meeting first.
+    game.recordMissionTeam([]);
     game.recordMissionFails(0);
     game.missionRecord.score.rebels.should.equal(1);
 
+    game.recordMissionTeam([]);
     game.recordMissionFails(1);
     game.missionRecord.score.spies.should.equal(1);
   });
@@ -201,7 +212,6 @@ describe("Games/Mafia/Spymaster", function () {
     await redis.client.flushdbAsync();
 
     const game = await makeGame(spymasterSetup({ numMissions: 3 }));
-    await waitForResult(() => game.started);
     game.missionRecord.score.rebels = 2;
     const [finished, winners] = game.checkWinConditions();
 
@@ -214,7 +224,6 @@ describe("Games/Mafia/Spymaster", function () {
     await redis.client.flushdbAsync();
 
     const game = await makeGame(spymasterSetup({ numMissions: 3 }));
-    await waitForResult(() => game.started);
     game.missionRecord.score.spies = 2;
     const [finished, winners] = game.checkWinConditions();
 

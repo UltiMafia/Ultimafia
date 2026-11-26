@@ -30,6 +30,7 @@ module.exports = class Virus extends Effect {
             );
 
             for (let player of infectedPlayers) {
+              let neighbors = player.alive ? player.getNeighbors() : [];
               for (let effect of player.effects) {
                 if (effect.name == "Virus") {
                   effect.InfectionTime++;
@@ -40,8 +41,8 @@ module.exports = class Virus extends Effect {
                   }
                 }
               }
-              for (let neighbor of player.getNeighbors()) {
-                if (neighbor.hasEffect("Virus")) {
+              for (let neighbor of neighbors) {
+                if (!neighbor || neighbor.hasEffect("Virus")) {
                   continue;
                 }
 

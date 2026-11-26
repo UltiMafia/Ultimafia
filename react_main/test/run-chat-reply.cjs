@@ -716,6 +716,65 @@ async function main() {
         await page.screenshot({ path: path.join(shots, "click-to-reply.png") });
       }
     }
+
+    // The real SpeechFilter inputs must filter the TextMeetingLayout transcript,
+    // and the built-in swear censor must mask a known swear.
+    {
+      await page.goto(url + "?speech=1&st=1");
+      await page.waitForFunction(() => window.__ready, null, { timeout: 15000 });
+      const messageIds = () =>
+        page.evaluate(() =>
+          [...document.querySelectorAll(".game .message[data-message-id]")].map(
+            (message) => message.dataset.messageId,
+          ),
+        );
+      const initialIds = await messageIds();
+      check(initialIds.includes("m1aaaaaa") && initialIds.includes("m2aaaaaa"),
+        "speech filter fixture starts with messages from both players");
+      check(
+        await page.evaluate(() => window.__filteredSwear !== "shit"),
+        "swear censor masks a known swear",
+      );
+      check(
+        await page.evaluate(() => window.__slurWasMasked),
+        "slur censor masks a known slur without the swear censor",
+      );
+
+      await page.locator(".side-menu .MuiAccordionSummary-root").filter({ hasText: "Speech Filters" }).click();
+      const from = page.locator('input[placeholder="From user"]');
+      const contains = page.locator('input[placeholder="Contains"]');
+      await from.fill("bOb");
+      await page.waitForTimeout(50);
+      let ids = await messageIds();
+      check(
+        ids.includes("m2aaaaaa") && !ids.includes("m1aaaaaa"),
+        "From user filters messages by speaker name case-insensitively",
+      );
+
+      await from.fill("");
+      await contains.fill("PLAIN LINE FROM BOB");
+      await page.waitForTimeout(50);
+      ids = await messageIds();
+      check(
+        ids.includes("m2aaaaaa") && !ids.includes("m1aaaaaa"),
+        "Contains filters message text case-insensitively",
+      );
+
+      await from.fill("Bob");
+      await contains.fill("not present in this transcript");
+      await page.waitForTimeout(50);
+      ids = await messageIds();
+      check(ids.length === 0, "From user and Contains combine with AND");
+
+      await from.fill("");
+      await contains.fill("");
+      await page.waitForTimeout(50);
+      ids = await messageIds();
+      check(
+        ids.includes("m1aaaaaa") && ids.includes("m2aaaaaa"),
+        "clearing both speech filters restores the transcript",
+      );
+    }
   } finally {
     await browser.close();
     server.close();

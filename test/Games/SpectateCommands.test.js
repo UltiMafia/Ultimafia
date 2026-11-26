@@ -48,6 +48,16 @@ function settle() {
   return new Promise((resolve) => setTimeout(resolve, 50));
 }
 
+// Poll for the effect of a command when the machine is loaded; the fixed
+// settle() above is only a heuristic.
+async function waitUntil(check, timeoutMs = 2000) {
+  const started = Date.now();
+  while (!check()) {
+    if (Date.now() - started > timeoutMs) return;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+}
+
 async function makeGame(extra) {
   extra = extra || {};
   const game = new Game({
@@ -135,7 +145,7 @@ describe("Games/SpectateCommands", function () {
 
       watcher.socket.flushMessages();
       say(game.spectators[0], "/join", game.pregame.id);
-      await settle();
+      await waitUntil(() => game.players.length === 2);
 
       game.spectators.should.have.lengthOf(0);
       game.players.should.have.lengthOf(2);
@@ -499,7 +509,7 @@ describe("Games/SpectateCommands", function () {
       hints(early.socket).should.have.lengthOf(0);
     });
 
-    it("is not sent when a gate would refuse the seat (banned)", async function () {
+    it("is not sent when a banned user is refused the seat and spectator entry", async function () {
       const game = await openGame.call(this, { total: 3 });
       const host = makeUser(game.hostId, "host");
       const watcher = makeUser(null, "watcher");
@@ -508,7 +518,9 @@ describe("Games/SpectateCommands", function () {
       await game.userJoin(watcher, { spectate: true });
       await settle();
 
-      game.spectators.should.have.lengthOf(1);
+      // A game ban refuses spectator entry as well as the seat, so there is
+      // no seat to hint at and the join hint is not sent.
+      game.spectators.should.have.lengthOf(0);
       hints(watcher.socket).should.have.lengthOf(0);
     });
 
