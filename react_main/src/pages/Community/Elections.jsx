@@ -45,35 +45,93 @@ function useElectionAction() {
       setPending(false);
     }
   }
-  return { pending, error, run };
+  return { pending, error, run, clearError: () => setError("") };
 }
 
-function CallElection({ onCreated }) {
+function dateInputValue(isoDate) {
+  if (!isoDate) return "";
+  const date = new Date(isoDate);
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+}
+
+function readDateInput(value, existing) {
+  return existing && value === dateInputValue(existing)
+    ? existing
+    : new Date(value).toISOString();
+}
+
+function ElectionForm({ election, onSaved }) {
+  const editing = !!election;
+  const voting = election?.phase === "voting";
+  const titleId = editing ? `edit-election-${election.id}` : "call-election-title";
   const [open, setOpen] = useState(false);
-  const { pending, error, run } = useElectionAction();
+  const [confirmClose, setConfirmClose] = useState(false);
+  const { pending, error, run, clearError } = useElectionAction();
+  const submitLabel = editing ? "Save changes" : "Call election";
 
   function submit(event) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     run(async () => {
-      await axios.post(API, {
-        title: form.get("title"),
-        votingStartsAt: new Date(form.get("starts")).toISOString(),
-        votingEndsAt: new Date(form.get("ends")).toISOString(),
-        termDays: Number(form.get("termDays")),
-      });
+      const votingEndsAt = readDateInput(form.get("ends"), election?.votingEndsAt);
+      if (voting) {
+        await axios.patch(`${API}/${election.id}/voting-close`, { votingEndsAt });
+      } else {
+        const settings = {
+          title: form.get("title"),
+          votingStartsAt: readDateInput(form.get("starts"), election?.votingStartsAt),
+          votingEndsAt,
+          termDays: Number(form.get("termDays")),
+        };
+        if (editing) await axios.put(`${API}/${election.id}/settings`, settings);
+        else await axios.post(API, settings);
+      }
       setOpen(false);
-      onCreated();
+      onSaved();
+    });
+  }
+
+  function closeVoting() {
+    run(async () => {
+      await axios.patch(`${API}/${election.id}/voting-close`, { closeNow: true });
+      setOpen(false);
+      onSaved();
     });
   }
 
   return (
     <Box>
-      <Button onClick={() => setOpen(true)} variant="contained">Call election</Button>
+      <Button variant={editing ? "outlined" : "contained"} onClick={() => {
+        setConfirmClose(false);
+        clearError();
+        setOpen(true);
+      }}>{editing ? "Edit election" : "Call election"}</Button>
       <Dialog open={open} onClose={pending ? undefined : () => setOpen(false)}
-        fullWidth maxWidth="xs" aria-labelledby="call-election-title">
-        <Box component="form" onSubmit={submit}>
-          <DialogTitle id="call-election-title">Call an admin election</DialogTitle>
+        fullWidth maxWidth="xs" aria-labelledby={titleId}>
+        <DialogTitle id={titleId}>
+          {confirmClose ? "Close voting now?" : editing ? "Edit election" : "Call an admin election"}
+        </DialogTitle>
+        {confirmClose && (
+          <>
+            <DialogContent>
+              <DialogContentText>
+                Voting for {election.title} will end immediately and cannot be reopened.
+                Saved ballots will be kept for certification.
+              </DialogContentText>
+              {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+            </DialogContent>
+            <DialogActions>
+              <Button disabled={pending} onClick={() => {
+                clearError();
+                setConfirmClose(false);
+              }}>Back</Button>
+              <Button variant="contained" color="error" disabled={pending} onClick={closeVoting}>
+                {pending ? "Closing…" : "Close voting now"}
+              </Button>
+            </DialogActions>
+          </>
+        )}
+        <Box component="form" onSubmit={submit} sx={{ display: confirmClose ? "none" : undefined }}>
           <DialogContent>
             <Stack spacing={2} sx={{
               pt: 1,
@@ -87,23 +145,44 @@ function CallElection({ onCreated }) {
               },
             }}>
               <DialogContentText>
-                Nominations begin immediately and close when voting opens. Times use your local time zone.
+                {voting
+                  ? "Only the closing time can change once voting opens."
+                  : editing
+                    ? "Nominations end when voting opens. Set the opening time to now or earlier to open voting immediately."
+                    : "Nominations begin immediately and close when voting opens."}{" "}
+                Times use your local time zone.
               </DialogContentText>
-              {error && <Alert severity="error">{error}</Alert>}
-              <TextField required label="Election title" name="title" disabled={pending}
-                inputProps={{ maxLength: 100 }} />
-              <TextField required label="Voting opens" name="starts" type="datetime-local"
-                InputLabelProps={{ shrink: true }} disabled={pending} />
+              {!confirmClose && error && <Alert severity="error">{error}</Alert>}
+              {!voting && (
+                <>
+                  <TextField required label="Election title" name="title" disabled={pending}
+                    defaultValue={election?.title} inputProps={{ maxLength: 100 }} />
+                  <TextField required label="Voting opens" name="starts" type="datetime-local"
+                    defaultValue={dateInputValue(election?.votingStartsAt)}
+                    InputLabelProps={{ shrink: true }} disabled={pending} />
+                </>
+              )}
               <TextField required label="Voting closes" name="ends" type="datetime-local"
+                defaultValue={dateInputValue(election?.votingEndsAt)}
                 InputLabelProps={{ shrink: true }} disabled={pending} />
-              <TextField required label="Admin term (days)" name="termDays" type="number"
-                inputProps={{ min: 1, max: 365, step: 1 }} disabled={pending} />
+              {voting ? (
+                <Box>
+                  <Button variant="outlined" color="error" disabled={pending} onClick={() => {
+                    clearError();
+                    setConfirmClose(true);
+                  }}>Close voting now</Button>
+                </Box>
+              ) : (
+                <TextField required label="Admin term (days)" name="termDays" type="number"
+                  defaultValue={election?.termDays}
+                  inputProps={{ min: 1, max: 365, step: 1 }} disabled={pending} />
+              )}
             </Stack>
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpen(false)} disabled={pending}>Cancel</Button>
             <Button type="submit" variant="contained" disabled={pending}>
-              {pending ? "Calling election…" : "Call election"}
+              {pending ? "Saving…" : submitLabel}
             </Button>
           </DialogActions>
         </Box>
@@ -315,6 +394,9 @@ function Election({ election, canManage, canVote, reload }) {
         <Chip size="small" variant="outlined" color={phase === "voting" ? "primary" : "default"} label={PHASE_LABELS[phase]} />
       </Stack>
       <ElectionDetails election={election} />
+      {canManage && (phase === "nominations" || phase === "voting") && (
+        <ElectionForm key={phase} election={election} onSaved={reload} />
+      )}
       <Stack spacing={0.75}>
         <Typography component="h3" variant="subtitle1">Nominees</Typography>
         {nominees.length ? (
@@ -332,7 +414,14 @@ function Election({ election, canManage, canVote, reload }) {
         canVote ? <RankedBallot key={election.myBallot?.join() || ""} election={election} onChange={reload} />
           : <Typography variant="body2">Sign in to vote.</Typography>
       )}
-      {phase === "awaitingCertification" && canManage && <CertifyElection election={election} onChange={reload} />}
+      {phase === "awaitingCertification" && (
+        <Stack spacing={1.5}>
+          <Typography variant="body2" color="text.secondary">
+            The result is published after an admin certifies the election.
+          </Typography>
+          {canManage && <CertifyElection election={election} onChange={reload} />}
+        </Stack>
+      )}
       {phase === "certified" && (
         <Box>
           {winner && (
@@ -400,7 +489,7 @@ export default function Elections() {
           one. Individual ballots are never shown to other users or site admins.
         </Typography>
       </Box>
-      {data?.canManage && <CallElection onCreated={() => { setPage(1); reload(); }} />}
+      {data?.canManage && <ElectionForm onSaved={() => { setPage(1); reload(); }} />}
       {error && <Alert severity="error" action={<Button onClick={reload}>Retry</Button>}>{error}</Alert>}
       {!data && !error && <Box><CircularProgress aria-label="Loading elections" size={24} /></Box>}
       {data && !data.elections.length && <Typography>No elections on this page.</Typography>}

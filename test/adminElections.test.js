@@ -120,11 +120,28 @@ describe("Admin elections API and permissions", function () {
         expectStatus(status, `${path}/ballot`, voter, "PUT", { ranking });
       const certify = (status, staff) =>
         expectStatus(status, `${path}/certify`, staff, "POST");
-      const moveDeadlineToPast = (field) => models.AdminElection.updateOne(
-        { _id: id }, { $set: { [field]: new Date(Date.now() - 1000) } }
-      );
+      const editSettings = (status, payload, staff = admin) =>
+        expectStatus(status, `${path}/settings`, staff, "PUT", payload);
+      const editClosingTime = (status, payload, staff = admin) =>
+        expectStatus(status, `${path}/voting-close`, staff, "PATCH", payload);
 
       assert.equal((await listing()).elections[0].phase, "nominations");
+      const updatedSettings = {
+        ...options,
+        title: "$Community admin election",
+        votingStartsAt: new Date(Date.now() + 2 * DAY),
+        votingEndsAt: new Date(Date.now() + 3 * DAY),
+        termDays: 120,
+      };
+      await editSettings(403, updatedSettings, a);
+      await editSettings(400, { ...updatedSettings, termDays: 0 });
+      await editClosingTime(409, { closeNow: true });
+      await editSettings(204, updatedSettings);
+      const revised = (await listing()).elections[0];
+      assert.equal(revised.title, updatedSettings.title);
+      assert.equal(revised.votingStartsAt, updatedSettings.votingStartsAt.toISOString());
+      assert.equal(revised.votingEndsAt, updatedSettings.votingEndsAt.toISOString());
+      assert.equal(revised.termDays, 120);
       await nominate(403, a, b);
       for (const candidate of [a, b, c]) await nominate(204, candidate);
       await models.User.updateOne({ id: b }, { $set: { avatar: true } });
@@ -137,7 +154,14 @@ describe("Admin elections API and permissions", function () {
       await vote(409, a, [a]);
       await certify(409, admin);
 
-      await moveDeadlineToPast("votingStartsAt");
+      await editSettings(204, { ...updatedSettings, votingStartsAt: new Date(Date.now() - DAY) });
+      assert.equal((await listing()).elections[0].phase, "voting");
+      await editSettings(409, updatedSettings);
+      await editClosingTime(403, { closeNow: true }, b);
+      await editClosingTime(409, { votingEndsAt: new Date(Date.now() - DAY) });
+      const laterDeadline = new Date(Date.now() + 4 * DAY);
+      await editClosingTime(204, { votingEndsAt: laterDeadline });
+      assert.equal((await listing()).elections[0].votingEndsAt, laterDeadline.toISOString());
       await nominate(409, d);
       await vote(401, null, [a]);
       await vote(400, a, [a, a]);
@@ -178,7 +202,10 @@ describe("Admin elections API and permissions", function () {
       }
 
       assert.equal(await redis.hasPermission(b, "seeModPanel"), false);
-      await moveDeadlineToPast("votingEndsAt");
+      await editClosingTime(204, { closeNow: true });
+      assert.equal((await listing()).elections[0].phase, "awaitingCertification");
+      await editClosingTime(409, { votingEndsAt: laterDeadline });
+      await editSettings(409, updatedSettings);
       await vote(409, g, [a]);
       await certify(403, b);
       const results = await Promise.all([admin, admin].map(async (staff) => {
@@ -190,7 +217,8 @@ describe("Admin elections API and permissions", function () {
       const result = (await listing(b)).elections[0];
       assert.equal(result.winnerId, b);
       assert.equal(result.phase, "certified");
-      assert.equal(Date.parse(result.termEndsAt) - Date.parse(result.certifiedAt), 90 * DAY);
+      assert.equal(Date.parse(result.termEndsAt) - Date.parse(result.certifiedAt), 120 * DAY);
+      await editClosingTime(409, { votingEndsAt: laterDeadline });
       const certified = await models.AdminElection.findById(id).select("+ballots +ballotOrder").lean();
       assert.equal(certified.ballots, undefined);
       assert.equal(certified.ballotOrder, undefined);
@@ -200,7 +228,9 @@ describe("Admin elections API and permissions", function () {
       assert.equal(await redis.hasPermission(admin, "giveGroup", 10), true);
       assert.equal(JSON.parse(await redis.client.getAsync(`user:${b}:perms`)).seeModPanel, undefined);
 
-      await moveDeadlineToPast("termEndsAt");
+      await models.AdminElection.updateOne(
+        { _id: id }, { $set: { termEndsAt: new Date(Date.now() - 1000) } }
+      );
       assert.equal((await listing(b)).canManage, false);
       assert.equal(await redis.hasPermission(b, "seeModPanel", 10), false);
       assert.equal(await redis.hasPermission(admin, "seeModPanel", 10), true);

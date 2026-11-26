@@ -18,6 +18,24 @@ const {
 const router = express.Router();
 const PAGE_SIZE = 20;
 
+function parseElectionDate(value) {
+  return new Date(typeof value === "string" ? value : NaN);
+}
+
+function readElectionSettings({ title, votingStartsAt, votingEndsAt, termDays }) {
+  const start = parseElectionDate(votingStartsAt);
+  const end = parseElectionDate(votingEndsAt);
+  if (typeof title !== "string" || !title.trim() || title.trim().length > 100)
+    return { error: "Enter an election title of up to 100 characters." };
+  if (!(end > start))
+    return { error: "Voting must close after it opens." };
+  if (!Number.isInteger(termDays) || termDays < 1 || termDays > MAX_TERM_DAYS)
+    return { error: `Enter a term of 1 to ${MAX_TERM_DAYS} days.` };
+  return {
+    settings: { title: title.trim(), votingStartsAt: start, votingEndsAt: end, termDays },
+  };
+}
+
 async function currentUser(req) {
   const id = routeUtils.getUserId(req);
   if (!id) return null;
@@ -106,24 +124,62 @@ router.get("/", handle(async (req, res, user) => {
 }));
 
 router.post("/", handle(async (req, res, user) => {
-  const { title, votingStartsAt, votingEndsAt, termDays } = req.body;
-  const start = new Date(typeof votingStartsAt === "string" ? votingStartsAt : NaN);
-  const end = new Date(typeof votingEndsAt === "string" ? votingEndsAt : NaN);
-  if (typeof title !== "string" || !title.trim() || title.trim().length > 100)
-    return errors.badRequest(res, "Enter an election title of up to 100 characters.");
-  if (!(start > new Date() && end > start))
-    return errors.badRequest(res, "Voting must open in the future and close after it opens.");
-  if (!Number.isInteger(termDays) || termDays < 1 || termDays > MAX_TERM_DAYS)
-    return errors.badRequest(res, `Enter a term of 1 to ${MAX_TERM_DAYS} days.`);
-
+  const { settings, error } = readElectionSettings(req.body);
+  if (error) return errors.badRequest(res, error);
+  if (!(settings.votingStartsAt > new Date()))
+    return errors.badRequest(res, "Voting must open in the future.");
   const election = await models.AdminElection.create({
-    title: title.trim(),
+    ...settings,
     createdBy: user.id,
-    votingStartsAt: start,
-    votingEndsAt: end,
-    termDays,
   });
   res.status(201).json({ id: election.id });
+}, { admin: true }));
+
+router.put("/:electionId/settings", handle(async (req, res) => {
+  const { settings, error } = readElectionSettings(req.body);
+  if (error) return errors.badRequest(res, error);
+  const update = await models.AdminElection.updateOne({
+    _id: req.electionId,
+    certifiedAt: null,
+    $expr: { $and: [
+      { $gt: ["$votingStartsAt", "$$NOW"] },
+      { $gt: [settings.votingEndsAt, "$$NOW"] },
+    ] },
+  }, [{
+    $set: {
+      ...settings,
+      title: { $literal: settings.title },
+      votingStartsAt: { $max: [settings.votingStartsAt, "$$NOW"] },
+      revision: { $add: ["$revision", 1] },
+    },
+  }]);
+  if (!update.matchedCount)
+    return errors.conflict(res, "Election settings can only be changed before voting opens, and the closing time must be in the future.");
+  res.status(204).end();
+}, { admin: true }));
+
+router.patch("/:electionId/voting-close", handle(async (req, res) => {
+  const closeNow = req.body.closeNow === true;
+  const end = parseElectionDate(req.body.votingEndsAt);
+  if (!closeNow && Number.isNaN(end.getTime()))
+    return errors.badRequest(res, "Enter a valid closing time.");
+  const update = await models.AdminElection.updateOne({
+    _id: req.electionId,
+    certifiedAt: null,
+    $expr: { $and: [
+      { $lte: ["$votingStartsAt", "$$NOW"] },
+      { $gt: ["$votingEndsAt", "$$NOW"] },
+      ...(closeNow ? [] : [{ $gt: [end, "$$NOW"] }]),
+    ] },
+  }, [{
+    $set: {
+      votingEndsAt: closeNow ? "$$NOW" : end,
+      revision: { $add: ["$revision", 1] },
+    },
+  }]);
+  if (!update.matchedCount)
+    return errors.conflict(res, "Voting is not open, or the new closing time has already passed. Use Close voting now to end voting early.");
+  res.status(204).end();
 }, { admin: true }));
 
 router.post("/:electionId/nominate", handle(async (req, res) => {
