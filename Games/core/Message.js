@@ -24,7 +24,7 @@ module.exports = class Message {
     this.anonymous = info.anonymous;
     this.versions = {};
     this.timeSent = info.timeSent;
-    this.quotable = info.quotable || true;
+    this.quotable = info.quotable ?? true;
     this.modified = false;
   }
 
@@ -51,6 +51,16 @@ module.exports = class Message {
       this.versions["*"] = newVersion;
     }
 
+    this.setMeetingAudience();
+    if (this.replyTo && this.meeting) {
+      const quote = this.meeting.messages.find((entry) => entry.id === this.replyTo && entry.isQuote);
+      if (quote?.sourceMessage && !this.meeting.canShareChatReference(
+        quote.sourceMessage, this.recipients, this.visibleToSpectators
+      )) {
+        this.meeting.refuseChatReference(this.sender);
+        return;
+      }
+    }
     if (this.meeting) this.meeting.messages.push(this);
     else this.game.history.addAlert(this);
 
@@ -59,13 +69,23 @@ module.exports = class Message {
 
     if (
       this.globalAlert ||
-      (this.meeting && this.game.isSpectatorMeeting(this.meeting))
+      this.visibleToSpectators
     )
       this.game.spectatorsHear(this.versions["*"]);
 
     this.game.omniscientSpectatorsHear?.(this);
 
     this.game.events.emit("message", this);
+  }
+
+  setMeetingAudience() {
+    if (!this.meeting) return;
+    const version = this.versions["*"];
+    if (this.sender) {
+      version.recipients = this.meeting.restrictChatRecipients(this.sender, version.recipients);
+    }
+    this.recipients = version.recipients;
+    this.visibleToSpectators = this.meeting.isVisibleToSpectators(version);
   }
 
   getMessageInfo(player) {

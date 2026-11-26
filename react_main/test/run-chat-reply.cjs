@@ -96,6 +96,169 @@ async function main() {
       route.request().url().startsWith(url) ? route.continue() : route.abort(),
     );
 
+    if (process.env.CHAT_MEMBERSHIP_ONLY) {
+      await page.goto(url + "?membership=1&st=0");
+      const row = page.locator('[data-message-id="m1aaaaaa"]');
+      await row.waitFor();
+      await page.waitForFunction(() => window.__ready);
+      check(await page.evaluate(() => window.__typingListenerCount()) === 1,
+        "one subscription supplies the entire roster");
+      await page.evaluate(() => {
+        window.__receiveTyping({ playerId: "pB", meetingId: "v1" });
+        window.__receiveTyping({ playerId: "pC", meetingId: "v1" });
+        window.__receiveTyping({ playerId: "peer", meetingId: "s1" });
+      });
+      const playerTyping = page.locator('[data-player-name="Vinman"] .typing-icon');
+      check(await playerTyping.isVisible(), "spectators see living-player typing");
+      check(await page.locator('[data-player-name="Bob"] .typing-icon').count() === 0, "dead-player typing stays hidden");
+      check(await row.locator('.inline[title="FormerWatcher"]').count() === 1, "departed spectator avatar");
+      check(await row.locator('.inline[title="FormerPlayer"]').count() === 1, "departed player avatar");
+      if (shots) {
+        fs.mkdirSync(shots, { recursive: true });
+        await page.locator(".speech-display").evaluate((element) => element.scrollTo(0, 0));
+        await page.evaluate(() => document.fonts.ready);
+        await page.locator(".typing-icon svg").evaluateAll((icons) => {
+          for (const icon of icons) {
+            icon.pauseAnimations();
+            icon.setCurrentTime(0.65);
+          }
+        });
+        await page.screenshot({ path: path.join(shots, "membership.png"), animations: "disabled" });
+      }
+      const spectatorRow = page.locator(".pregame-spectator").filter({ hasText: "OtherWatcher" });
+      const spectatorTyping = spectatorRow.locator(".typing-icon");
+      check(await spectatorTyping.isVisible(), "spectators see each other typing in the spectator channel");
+      const typingPlacement = (indicator) => indicator.evaluate((node) => {
+          const style = getComputedStyle(node);
+          return {
+            left: style.left,
+            bottom: style.bottom,
+            anchoredToRow: node.offsetParent === node.closest(".player"),
+          };
+      });
+      for (const [indicator, left] of [[playerTyping, "120px"], [spectatorTyping, "45px"]]) {
+        const placement = await typingPlacement(indicator);
+        check(placement.anchoredToRow && placement.left === left && placement.bottom === "-12px",
+          "typing uses the original roster offset, with or without a role column");
+      }
+      await page.evaluate(() => {
+        window.__receiveTyping({ playerId: "peer", meetingId: null });
+        window.__receiveTyping({ playerId: "pC", meetingId: null });
+      });
+      await spectatorTyping.waitFor({ state: "hidden" });
+      await playerTyping.waitFor({ state: "hidden" });
+      await page.evaluate(() => {
+        window.__receiveTyping({ playerId: "pC", meetingId: "another-room" });
+        window.__receiveTyping({ playerId: "peer", meetingId: "another-room" });
+      });
+      check(await page.locator(".typing-icon").count() === 0, "a room outside the visible chat cannot activate a roster bubble");
+      await row.locator(".content").dblclick();
+      check(await page.evaluate(() => window.__quotes[0]?.destination) === "s1", "quote uses spectator chat destination");
+      await row.locator(".content").click();
+      await page.locator(".reply-preview").waitFor();
+      await page.locator("#speechInput").fill("Reply in spectator chat");
+      await page.waitForFunction(() => window.__sent.some(({ type, payload }) =>
+        type === "typing" && payload.meetingId === "s1" && payload.isTyping
+      ));
+      const selfTyping = page.locator('.pregame-spectator[data-player-name="Watcher"] .typing-icon');
+      await page.evaluate(() => window.__receiveTyping({ playerId: "watcher", meetingId: "s1" }));
+      await selfTyping.waitFor({ state: "visible" });
+      check(await selfTyping.isVisible(), "a spectator sees their own typing bubble");
+      await page.locator("#speechInput").press("Enter");
+      await page.waitForFunction(() => window.__sent.some(({ type, payload }) =>
+        type === "typing" && payload.meetingId === "s1" && !payload.isTyping
+      ));
+      await page.evaluate(() => window.__receiveTyping({ playerId: "watcher", meetingId: null }));
+      await selfTyping.waitFor({ state: "hidden" });
+      check(await page.evaluate(() => window.__sent.some(({ type, payload }) =>
+        type === "reply" && payload.quote.fromMeetingId === "v1" && payload.message.meetingId === "s1"
+      )), "reply uses spectator chat destination");
+      await page.goto(url + "?membership=1&st=0&solo=1");
+      await page.waitForFunction(() => window.__ready);
+      check(await page.locator(".pregame-spectator").count() === 1, "solo spectator fixture has no peer");
+      await page.locator("#speechInput").fill("Typing as the only spectator");
+      await page.waitForFunction(() => window.__sent.some(({ type, payload }) =>
+        type === "typing" && payload.meetingId === "s1" && payload.isTyping
+      ));
+      await page.evaluate(() => window.__receiveTyping({ playerId: "watcher", meetingId: "s1" }));
+      await selfTyping.waitFor({ state: "visible" });
+      check(await selfTyping.isVisible(), "a lone spectator sees their own typing bubble");
+      await page.evaluate(() => window.__setViewedPhase(-1));
+      await selfTyping.waitFor({ state: "hidden" });
+      check(await page.evaluate(() => window.__typingListenerCount()) === 1,
+        "viewing history hides typing without adding a listener");
+      await page.evaluate(() => window.__unmount());
+      check(await page.evaluate(() => window.__typingListenerCount()) === 0,
+        "leaving the game removes its typing subscription");
+      await page.goto(url + "?membership=1&st=-1&seated=1");
+      await page.waitForFunction(() => window.__ready);
+      await page.evaluate(() => {
+        window.__receiveTyping({ playerId: "pC", meetingId: "v1" });
+        window.__receiveTyping({ playerId: "peer", meetingId: "v1" });
+      });
+      await playerTyping.waitFor({ state: "visible" });
+      await spectatorTyping.waitFor({ state: "visible" });
+      check(await spectatorTyping.isVisible(), "seated players see spectator typing in pregame");
+      const pregamePlacement = await typingPlacement(playerTyping);
+      check(pregamePlacement.anchoredToRow && pregamePlacement.left === "45px" && pregamePlacement.bottom === "-12px",
+        "pregame players keep their original typing position");
+      await page.goto(url + "?membership=1&st=-2&seated=1");
+      await page.waitForFunction(() => window.__ready);
+      await page.evaluate(() => {
+        window.__receiveTyping({ playerId: "peer", meetingId: "v1" });
+        window.__receiveTyping({ playerId: "pB", meetingId: "v1" });
+      });
+      await spectatorTyping.waitFor({ state: "visible" });
+      check(await spectatorTyping.isVisible(), "seated players see spectator typing in postgame");
+      const deadTyping = page.locator('[data-player-name="Bob"] .typing-icon');
+      check(await deadTyping.isVisible(), "dead players' typing is visible in shared postgame chat");
+      await page.locator('[data-message-id="m1aaaaaa"] .content').click();
+      await page.locator(".reply-preview").waitFor();
+      await page.locator("#speechInput").fill("postgame reply");
+      await page.locator("#speechInput").press("Enter");
+      check(await page.evaluate(() => window.__sent.some(({ type, payload }) =>
+        type === "reply" && payload.quote.fromState === -2 && payload.message.meetingId === "v1"
+      )), "postgame uses the shared room for replies");
+      check(await page.locator(".reply-preview").isVisible() &&
+        await page.locator("#speechInput").inputValue() === "postgame reply",
+        "without server confirmation, the reply and its text stay in the composer");
+      await page.evaluate(() => window.__ackReply());
+      await page.locator(".reply-preview").waitFor({ state: "hidden" });
+      check(await page.locator("#speechInput").inputValue() === "", "server confirmation clears the reply draft");
+      await page.goto(url + "?membership=1&st=-2&seated=1");
+      await page.waitForFunction(() => window.__ready);
+      await page.locator('[data-message-id="m1aaaaaa"] .content').click();
+      await page.locator(".reply-preview").waitFor();
+      await page.locator("#speechInput").fill("first reply");
+      await page.locator("#speechInput").press("Enter");
+      await page.locator("#speechInput").fill("next draft before confirmation");
+      await page.evaluate(() => window.__ackReply());
+      await page.locator(".reply-preview").waitFor({ state: "hidden" });
+      check(await page.locator("#speechInput").inputValue() === "next draft before confirmation",
+        "server confirmation leaves newer text in the composer");
+      await page.goto(url + "?membership=1&st=0&seated=1");
+      await page.waitForFunction(() => window.__ready);
+      await page.evaluate(() => window.__receiveTyping({ playerId: "peer", meetingId: "s1" }));
+      check(await page.locator(".pregame-spectator").count() === 0, "the spectator roster stays hidden from seated players during live play");
+      await page.goto(url + "?membership=1&st=0&seated=1&deadSelf=1");
+      await page.waitForFunction(() => window.__ready);
+      await page.locator("#speechInput").fill("Typing as a dead player");
+      await page.waitForFunction(() => window.__sent.some(({ type, payload }) =>
+        type === "typing" && payload.meetingId === "v1" && payload.isTyping
+      ));
+      await page.evaluate(() => {
+        window.__receiveTyping({ playerId: "pB", meetingId: "v1" });
+        window.__receiveTyping({ playerId: "pA", meetingId: "v1" });
+      });
+      await deadTyping.waitFor({ state: "visible" });
+      check(await deadTyping.isVisible(), "dead players see their own typing while the game is live");
+      check(await page.locator('[data-player-name="AlageRheba10"] .typing-icon').isVisible(),
+        "dead players see each other typing in the same chat");
+      if (failures.length) throw new Error(failures.join("\n"));
+      console.log(`${passes} chat membership browser checks passed`);
+      return;
+    }
+
     // Pin box per row, hovered, with the reply feature off.
     async function hoverRows(query) {
       await page.goto(url + "?" + query);

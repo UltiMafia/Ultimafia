@@ -15,23 +15,23 @@ export function findMessageState(history, message, fallbackState) {
   return fallbackState;
 }
 
-// Payload for the "quote" socket event, or null when the message cannot be
-// quoted (server lines, quotes, unquotable messages, game review).
-export function buildQuotePayload(message, { review, toMeetingId, history, stateViewing }) {
-  if (
-    review ||
-    !message ||
-    message.senderId === "server" ||
-    message.isQuote ||
-    !message.quotable
-  ) {
-    return null;
-  }
+export function canQuoteMessage(message, { review } = {}) {
+  return Boolean(message && !review && message.senderId !== "server" &&
+    message.senderId !== "vote" && !message.isQuote && message.quotable &&
+    message.id != null && message.meetingId != null);
+}
+
+export function quoteReference(message, toMeetingId, fromState) {
   return {
     messageId: message.id,
     toMeetingId,
     fromMeetingId: message.meetingId,
-    fromState: findMessageState(history, message, stateViewing),
-    messageContent: message.content,
+    fromState,
   };
+}
+
+// Both actions use the same rule for source eligibility.
+export function buildQuotePayload(message, { review, toMeetingId, history, stateViewing }) {
+  if (!canQuoteMessage(message, { review })) return null;
+  return quoteReference(message, toMeetingId, findMessageState(history, message, stateViewing));
 }

@@ -4,16 +4,33 @@ const chai = require("chai"),
 const Meeting = require("../../../Games/core/Meeting");
 const Spectator = require("../../../Games/core/Spectator");
 const Player = require("../../../Games/core/Player");
+const ArrayHash = require("../../../Games/core/ArrayHash");
 const { TestSocket } = require("../../../lib/sockets");
 
 function makeMember(hasEffect) {
   return {
     canTalk: true,
     player: {
+      alive: true,
+      exorcised: false,
+      left: false,
+      spectator: false,
       hasEffect,
       seeTyping() {},
     },
   };
+}
+
+// The typing code now lives on Meeting (canSendChat/getPlayers), so build
+// members the way a real meeting stores them.
+function membersFrom(map) {
+  const members = new ArrayHash();
+  for (const id in map) {
+    const member = map[id];
+    if (member.player && member.player.id == null) member.player.id = id;
+    members.push({ id, ...member });
+  }
+  return members;
 }
 
 function makeContext(overrides = {}) {
@@ -26,23 +43,20 @@ function makeContext(overrides = {}) {
   const game = {
     spectators: [spec],
     isSpectatorMeeting: (m) => m.name === "Village",
-    spectatorsSeeTyping(info) {
-      for (const s of this.spectators) s.seeTyping(info);
-    },
   };
-  const ctx = {
+  const ctx = Object.assign(Object.create(Meeting.prototype), {
     id: "m1",
     name: "Village",
     speech: true,
     anonymous: false,
-    members: {
+    members: membersFrom({
       p1: makeMember(() => false),
       p2: makeMember(() => false),
       silenced: makeMember((e) => e === "Silenced"),
-    },
+    }),
     game,
     ...overrides,
-  };
+  });
 
   return { ctx, spec };
 }
@@ -59,9 +73,13 @@ describe("Spectator typing", function () {
   it("clears the indicator when typing stops", function () {
     const { ctx, spec } = makeContext();
 
+    ctx.typing("p1", true);
     Meeting.prototype.typing.call(ctx, "p1", false);
 
-    spec.seen.should.deep.equal([{ playerId: "p1", meetingId: null }]);
+    spec.seen.should.deep.equal([
+      { playerId: "p1", meetingId: "m1" },
+      { playerId: "p1", meetingId: null },
+    ]);
   });
 
   it("hides typing in a Mafia meeting", function () {
@@ -108,6 +126,9 @@ describe("Spectator typing", function () {
     person.id = id;
     person.socket = new TestSocket();
     person.spectator = spectator;
+    person.alive = true;
+    person.exorcised = false;
+    person.left = false;
     person.role = null;
     person.ExtraRoles = null;
     person.effects = [];
@@ -125,24 +146,21 @@ describe("Spectator typing", function () {
       return {
         spectators,
         isSpectatorMeeting: () => visible,
-        spectatorsSeeTyping(info) {
-          for (const spectator of this.spectators) spectator.seeTyping(info);
-        },
       };
     }
 
-    const pregame = {
+    const pregame = Object.assign(Object.create(Meeting.prototype), {
       id: "pre",
       name: "Pregame",
       speech: true,
       anonymous: false,
-      members: {
+      members: membersFrom({
         p1: { player, canTalk: true },
         // Pregame spectators are members so they can speak.
         s1: { player: pregameSpec, canTalk: true },
-      },
+      }),
       game: broadcastGame([pregameSpec], true),
-    };
+    });
 
     Meeting.prototype.typing.call(pregame, "p1", true);
 
@@ -162,17 +180,17 @@ describe("Spectator typing", function () {
       { eventName: "typing", data: { playerId: "p1", meetingId: null } },
     ]);
 
-    const village = {
+    const village = Object.assign(Object.create(Meeting.prototype), {
       id: "village",
       name: "Village",
       speech: true,
       anonymous: false,
-      members: {
+      members: membersFrom({
         p1: { player, canTalk: true },
         p2: { player: other, canTalk: true },
-      },
+      }),
       game: broadcastGame([inGameSpec], true),
-    };
+    });
 
     player.socket.flushMessages();
     pregameSpec.socket.flushMessages();

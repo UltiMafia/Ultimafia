@@ -60,7 +60,8 @@ async function waitUntil(check, timeoutMs = 2000) {
 
 async function makeGame(extra) {
   extra = extra || {};
-  const game = new Game({
+  const GameType = extra.mafia ? require("../../Games/types/Mafia/Game") : Game;
+  const game = new GameType({
     id: extra.id || nextId("g"),
     hostId: extra.hostId || nextId("h"),
     settings: {
@@ -70,6 +71,7 @@ async function makeGame(extra) {
       competitive: false,
       spectating: extra.spectating !== false,
       readyCheck: extra.readyCheck !== false,
+      ...(extra.mafia ? { pregameWaitLength: 1 } : {}),
       stateLengths: { Day: 1000, Night: 1000 },
     },
     isTest: true,
@@ -116,6 +118,148 @@ describe("Games/SpectateCommands", function () {
     this.currentGame = game;
     return game;
   }
+
+  describe("Disguiser membership", function () {
+    async function disguise(game) {
+      const users = [makeUser(game.hostId, "disguiser"), makeUser(null, "target"), makeUser(null, "other")];
+      await game.userJoin(users[0]);
+      await game.userJoin(users[1]);
+      await game.userJoin(users[2]);
+      await startBare(game);
+      const [disguiser, target, other] = users.map((user) => playerFor(game, user));
+      for (const player of [disguiser, target, other]) {
+        player.role = { player, name: "Test", modifier: "", revealToSelf() {}, revealToPlayer() {}, speak() {}, hear() {} };
+      }
+      const [disguiserSocket, targetSocket] = users.map((user) => user.socket);
+      const [disguiserId, targetId] = users.map((user) => user.id);
+      game.swaps = [[disguiser, target]];
+      disguiser.swapIdentity(target);
+      return { disguiser, target, other, disguiserId, targetId, disguiserSocket, targetSocket };
+    }
+
+    it("leaves by account during a disguise and keeps that connection left when it is undone", async function () {
+      const game = await openGame.call(this);
+      const { disguiser, target, disguiserId, targetId, disguiserSocket, targetSocket } = await disguise(game);
+      game.finished = true;
+
+      // The leaving connection's account, not the seat's displayed user, is
+      // what the push subscription belongs to.
+      const pushNotifications = require("../../modules/pushNotifications");
+      const originalUnregister = pushNotifications.unregisterUser;
+      const unregistered = [];
+      pushNotifications.unregisterUser = (id) => unregistered.push(id);
+      try {
+        await game.userLeave(targetId);
+      } finally {
+        pushNotifications.unregisterUser = originalUnregister;
+      }
+
+      expect(unregistered).to.deep.equal([targetId]);
+      expect(await redis.inGame(targetId)).to.equal(false);
+      expect(await redis.inGame(disguiserId)).to.equal(game.id);
+      expect(events(targetSocket, "left")).to.have.lengthOf(1);
+      expect(events(disguiserSocket, "left")).to.have.lengthOf(0);
+
+      require("../../Games/types/Mafia/Game").prototype.resetIdentities.call(game);
+      expect(target.left).to.equal(true);
+      expect(disguiser.left).not.to.equal(true);
+      await new Promise((resolve) => setTimeout(resolve, 125));
+      expect(events(targetSocket, "terminate")).to.have.lengthOf(1);
+      expect(events(disguiserSocket, "terminate")).to.have.lengthOf(0);
+    });
+
+    it("reconnects to the current disguise, restores the sockets, and clears the final account on leave", async function () {
+      const game = await openGame.call(this);
+      const { disguiser, target, other, targetId } = await disguise(game);
+      const whileDisguised = makeUser(targetId, "target");
+      await game.userJoin(whileDisguised);
+      expect(disguiser.socket === whileDisguised.socket).to.equal(true);
+      require("../../Games/types/Mafia/Game").prototype.resetIdentities.call(game);
+      const reconnected = makeUser(targetId, "target");
+      await game.userJoin(reconnected);
+      expect(target.socket === reconnected.socket).to.equal(true);
+      expect(disguiser.socket === reconnected.socket).to.equal(false);
+
+      game.finished = true;
+      disguiser.left = other.left = true;
+      // This fixture has no real winners or setup record. Verify membership
+      // before and independently of the asynchronous postgame persistence.
+      let cleanupStarted = false;
+      game.endPostgame = () => { cleanupStarted = true; };
+      await game.playerLeave(target);
+      expect(cleanupStarted).to.equal(true);
+      expect(await redis.inGame(targetId)).to.equal(false);
+
+      await redis.joinGame(targetId, "next-game", false, false);
+      await redis.leaveGame(targetId, game.id);
+      expect(await redis.inGame(targetId)).to.equal("next-game");
+    });
+
+    it("keeps an exorcised connection spectating when the disguise is undone", async function () {
+      const game = await openGame.call(this);
+      const { disguiser, target, targetId, targetSocket, disguiserSocket } = await disguise(game);
+      disguiser.alive = false;
+      game.exorcisePlayer(disguiser);
+      const [watcher] = game.spectators;
+
+      require("../../Games/types/Mafia/Game").prototype.resetIdentities.call(game);
+      expect(watcher.exorcisedPlayer === target).to.equal(true);
+      expect(target.exorcised).to.equal(true);
+      expect(disguiser.exorcised).to.equal(false);
+      targetSocket.flushMessages();
+      disguiserSocket.flushMessages();
+      say(watcher, "still in spectator chat", game.spectatorMeeting.id);
+      expect(chatTexts(targetSocket)).to.include("still in spectator chat");
+      expect(chatTexts(disguiserSocket)).not.to.include("still in spectator chat");
+      game.finished = true;
+      game.currentState = -2;
+      game.addStateToHistories("Postgame");
+      game.openPostgameMeeting();
+      expect(game.postgame.getPlayers()).not.to.include(target);
+      targetSocket.flushMessages();
+      say(disguiser, "shared postgame chat", game.postgame.id);
+      expect(chatTexts(targetSocket)).to.deep.equal(["shared postgame chat"]);
+      await game.userLeave(targetId);
+      expect(game.spectators).to.have.lengthOf(0);
+      expect(await redis.inGame(targetId)).to.equal(false);
+    });
+
+    it("updates the out-of-game chat lock for the account controlling the seat", async function () {
+      const game = await openGame.call(this);
+      const { disguiser, targetId } = await disguise(game);
+      disguiser.alive = false;
+      await game.syncDeadForDms(disguiser);
+      expect(await redis.getDeadPlayers(game.id)).to.deep.equal([targetId]);
+
+      disguiser.alive = true;
+      await game.syncDeadForDms(disguiser);
+      expect(await redis.getDeadPlayers(game.id)).to.deep.equal([]);
+    });
+  });
+
+  describe("leaving", function () {
+    it("tells everyone when a dead participant leaves a graveyard game", async function () {
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const watch = makeUser(null, "watch");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+
+      const dead = playerFor(game, other);
+      dead.alive = false;
+      game.graveyardParticipation = true;
+      host.socket.flushMessages();
+      watch.socket.flushMessages();
+
+      game.announcePlayerLeave(dead);
+
+      expect(chatTexts(host.socket)).to.include("other has left.");
+      expect(chatTexts(watch.socket)).to.include("other has left.");
+    });
+  });
 
   describe("parsing", function () {
     it("/join and /spectate are commands, not text effects", function () {
@@ -1100,6 +1244,198 @@ describe("Games/SpectateCommands", function () {
       heard(other.socket).should.deep.equal(["village talk", `quote:${vm.id}`]);
     });
 
+    it("blocks faction references in Village but allows the same references in a later faction chat", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this, { mafia: true });
+      const sender = makeUser(game.hostId, "sender");
+      const teammate = makeUser(null, "teammate");
+      const outsider = makeUser(null, "outsider");
+      for (const user of [sender, teammate, outsider]) await game.userJoin(user);
+      await startBare(game);
+
+      game.currentState = 0;
+      game.addStateToHistories("Night");
+      const faction = game.createMeeting(Meeting, "Mafia Meeting");
+      faction.speech = true;
+      for (const user of [sender, teammate]) faction.join(playerFor(game, user));
+      const fromState = game.currentState;
+      say(playerFor(game, sender), "private original", faction.id);
+      const [original] = faction.messages;
+      expect(chatTexts(teammate.socket)).to.include("private original");
+      expect(chatTexts(outsider.socket)).not.to.include("private original");
+
+      game.currentState = 1;
+      game.addStateToHistories("Day");
+      const village = game.createMeeting(Meeting, "Village");
+      village.speech = true;
+      for (const player of game.players) village.join(player);
+      const reference = { messageId: original.id, fromMeetingId: faction.id, fromState, toMeetingId: village.id };
+      for (const user of [sender, teammate, outsider]) user.socket.flushMessages();
+
+      teammate.socket.sendToServer("quote", { ...reference });
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      teammate.socket.sendToServer("reply", {
+        quote: { ...reference },
+        message: { content: "a private draft", meetingId: village.id },
+      });
+      expect(chatTexts(teammate.socket).filter((text) => text.includes("private to a different audience"))).to.have.lengthOf(2);
+      expect(heard(outsider.socket)).to.deep.equal([]);
+      expect(village.messages).to.have.lengthOf(0);
+      outsider.socket.sendToServer("reply", {
+        quote: { ...reference },
+        message: { content: "reply without the original", meetingId: village.id },
+      });
+      expect(heard(outsider.socket)).to.deep.equal([]);
+
+      const separate = game.createMeeting(Meeting, "Separate private chat");
+      separate.speech = true;
+      for (const user of [sender, teammate]) separate.join(playerFor(game, user));
+      sender.socket.sendToServer("reply", {
+        quote: { ...reference, toMeetingId: separate.id },
+        message: { content: "cross-room reply", meetingId: separate.id },
+      });
+      expect(separate.messages).to.have.lengthOf(0);
+      expect(chatTexts(sender.socket).some((text) => text.includes("private to a different audience")))
+        .to.equal(true);
+
+      game.currentState = 2;
+      game.addStateToHistories("Night");
+      const laterFaction = game.createMeeting(Meeting, "Mafia Meeting");
+      laterFaction.speech = true;
+      for (const user of [sender, teammate]) laterFaction.join(playerFor(game, user));
+      await new Promise((resolve) => setTimeout(resolve, 160));
+      teammate.socket.flushMessages();
+      teammate.socket.sendToServer("reply", {
+        quote: { ...reference, toMeetingId: laterFaction.id },
+        message: { content: "reply to the faction", meetingId: laterFaction.id },
+      });
+      expect(heard(teammate.socket)).to.deep.equal([`quote:${original.id}`, "reply to the faction"]);
+      expect(heard(outsider.socket)).to.deep.equal([]);
+    });
+
+    it("blocks both quote and reply from private non-Mafia chat to a public day", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this, { mafia: true });
+      const host = makeUser(game.hostId, "host");
+      const member = makeUser(null, "cult member");
+      const town = makeUser(null, "town");
+      const watch = makeUser(null, "watch");
+      for (const user of [host, member, town]) await game.userJoin(user);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+
+      game.currentState = 0;
+      game.addStateToHistories("Night");
+      const cult = game.createMeeting(Meeting, "Cult Meeting");
+      cult.speech = true;
+      for (const user of [host, member]) cult.join(playerFor(game, user));
+      cult.speak({ sender: playerFor(game, host), content: "private cult line" });
+      const [original] = cult.messages;
+
+      game.currentState = 1;
+      game.addStateToHistories("Day");
+      const village = game.createMeeting(Meeting, "Village");
+      village.speech = true;
+      for (const player of game.players) village.join(player);
+      for (const user of [host, member, town, watch]) user.socket.flushMessages();
+      const reference = {
+        messageId: original.id, fromMeetingId: cult.id, fromState: 0, toMeetingId: village.id,
+      };
+      host.socket.sendToServer("quote", { ...reference });
+      member.socket.sendToServer("reply", {
+        quote: { ...reference },
+        message: { content: "should stay in the draft", meetingId: village.id },
+      });
+
+      expect(village.messages).to.have.lengthOf(0);
+      for (const user of [host, member])
+        expect(chatTexts(user.socket).filter((text) => text.includes("private to a different audience")))
+          .to.have.lengthOf(1);
+      for (const user of [town, watch]) expect(heard(user.socket)).to.deep.equal([]);
+    });
+
+    it("allows quotes and replies to a previous public day", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this, { mafia: true });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const watch = makeUser(null, "watch");
+      for (const user of [host, other]) await game.userJoin(user);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+
+      const makeDay = (state) => {
+        game.currentState = state;
+        game.addStateToHistories("Day");
+        const room = game.createMeeting(Meeting, "Village");
+        room.speech = true;
+        for (const player of game.players) room.join(player);
+        return room;
+      };
+      const first = makeDay(0);
+      say(host, "previous day public line", first.id);
+      const [original] = first.messages;
+      const second = makeDay(1);
+      const reference = {
+        messageId: original.id, fromMeetingId: first.id, fromState: 0, toMeetingId: second.id,
+      };
+      for (const user of [host, other, watch]) user.socket.flushMessages();
+      quoteInto(second, playerFor(game, host), original, first, 0);
+      other.socket.sendToServer("reply", {
+        quote: { ...reference },
+        message: { content: "reply from later day", meetingId: second.id },
+      });
+      for (const user of [host, other, watch]) {
+        expect(heard(user.socket)).to.deep.equal([
+          `quote:${original.id}`, `quote:${original.id}`, "reply from later day",
+        ]);
+      }
+    });
+
+    it("shows a leaked whisper to spectators but not a private one", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this, { total: 3 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const third = makeUser(null, "third");
+      const watch = makeUser(null, "watch");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(third);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+
+      const room = game.createMeeting(Meeting, "Village");
+      room.group = true;
+      room.speech = true;
+      for (const player of game.players) room.join(player);
+      const [sender, recipient] = game.players.array();
+      const watcher = game.spectators[0];
+      game.isWhispers = () => true;
+      for (const user of [host, other, third, watch]) user.socket.flushMessages();
+
+      game.getWhisperLeakChance = () => 0;
+      room.speak({
+        sender,
+        content: "private line",
+        abilityName: "Whisper",
+        abilityTarget: recipient.id,
+      });
+      game.getWhisperLeakChance = () => 100;
+      room.speak({
+        sender,
+        content: "leaked line",
+        abilityName: "Whisper",
+        abilityTarget: recipient.id,
+        forceLeak: true,
+      });
+
+      heard(recipient.socket).should.deep.equal(["private line", "leaked line"]);
+      // The private whisper reached two of three members, so spectators do
+      // not see it. The leaked one reached the whole meeting.
+      heard(watcher.socket).should.deep.equal(["leaked line"]);
+    });
+
     it("pregame chat stays shared between players and spectators", async function () {
       const game = await openGame.call(this, { total: 3 });
       const host = makeUser(game.hostId, "host");
@@ -1115,6 +1451,386 @@ describe("Games/SpectateCommands", function () {
       chatTexts(host.socket).should.include("pregame hello");
       chatTexts(watcher.socket).should.include("host hello");
       should.not.exist(game.spectatorMeeting);
+    });
+
+    it("shares live dead-player typing with dead chat members only, including the sender", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this, { total: 4 });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const peer = makeUser(null, "dead peer");
+      const outside = makeUser(null, "dead outside room");
+      const watch = makeUser(null, "watch");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(peer);
+      await game.userJoin(outside);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+      const live = playerFor(game, host);
+      const dead = playerFor(game, other);
+      const deadPeer = playerFor(game, peer);
+      dead.alive = false;
+      deadPeer.alive = false;
+      playerFor(game, outside).alive = false;
+      const room = game.createMeeting(Meeting, "Village");
+      room.speech = true;
+      room.join(live);
+      room.join(dead, { speakDead: true });
+      room.join(deadPeer, { speakDead: true });
+      for (const user of [host, other, peer, outside, watch]) user.socket.flushMessages();
+
+      const type = (person, meeting, isTyping = true) => person.socket.sendToServer("typing", {
+        meetingId: meeting.id, isTyping,
+      });
+      type(live, room);
+      type(dead, room);
+      type(dead, room, false);
+      type(live, room, false);
+      for (const user of [host, watch]) {
+        expect(events(user.socket, "typing").map((e) => e.data)).to.deep.equal([
+          { playerId: live.id, meetingId: room.id },
+          { playerId: live.id, meetingId: null },
+        ]);
+      }
+      for (const user of [other, peer]) {
+        expect(events(user.socket, "typing").map((e) => e.data)).to.deep.equal([
+          { playerId: live.id, meetingId: room.id },
+          { playerId: dead.id, meetingId: room.id },
+          { playerId: dead.id, meetingId: null },
+          { playerId: live.id, meetingId: null },
+        ]);
+      }
+      expect(events(outside.socket, "typing")).to.have.lengthOf(0);
+      watch.socket.flushMessages();
+      game.spectatorMeetFilter[room.name] = false;
+      type(live, room);
+      expect(events(watch.socket, "typing")).to.have.lengthOf(0);
+    });
+
+    it("keeps live faction typing inside the meeting except for the authorized developer view", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const game = await openGame.call(this, { total: 4, mafia: true });
+      const host = makeUser(game.hostId, "faction sender");
+      const teammate = makeUser(null, "faction teammate");
+      const livingOutsider = makeUser(null, "living outsider");
+      const deadOutsider = makeUser(null, "dead outsider");
+      const watch = makeUser(null, "normal spectator");
+      const developer = makeUser(null, "developer spectator");
+      for (const user of [host, teammate, livingOutsider, deadOutsider]) await game.userJoin(user);
+      await game.userJoin(watch, { spectate: true });
+      await game.userJoin(developer, { spectate: true });
+      await startBare(game);
+      playerFor(game, deadOutsider).alive = false;
+      // Eligibility for the developer view is covered separately. Check that
+      // the privileged receiver is the only spectator receiving these events.
+      game.findSpectator(developer).omniscient = true;
+
+      const sender = playerFor(game, host);
+      for (const name of ["Mafia Meeting", "Cult Meeting"]) {
+        const room = game.createMeeting(Meeting, name);
+        room.speech = true;
+        room.join(sender);
+        room.join(playerFor(game, teammate));
+        expect(game.isSpectatorMeeting(room)).not.to.equal(true);
+        for (const user of [host, teammate, livingOutsider, deadOutsider, watch, developer])
+          user.socket.flushMessages();
+
+        host.socket.sendToServer("typing", { meetingId: room.id, isTyping: true });
+        host.socket.sendToServer("typing", { meetingId: room.id, isTyping: false });
+        const line = `private night line in ${name}`;
+        room.speak({ sender, content: line });
+        const expected = [
+          { playerId: sender.id, meetingId: room.id },
+          { playerId: sender.id, meetingId: null },
+        ];
+        for (const user of [host, teammate, developer]) {
+          expect(events(user.socket, "typing").map(({ data }) => data)).to.deep.equal(expected);
+          expect(chatTexts(user.socket)).to.include(line);
+        }
+        for (const user of [livingOutsider, deadOutsider, watch]) {
+          expect(events(user.socket, "typing"), user.name).to.have.lengthOf(0);
+          expect(chatTexts(user.socket)).not.to.include(line);
+        }
+      }
+    });
+
+    it("shares spectator typing in pregame and postgame but keeps it private during live play", async function () {
+      const game = await openGame.call(this);
+      const host = makeUser(game.hostId, "host");
+      const watch = makeUser(null, "watch");
+      const peer = makeUser(null, "peer");
+      await game.userJoin(host);
+      await game.userJoin(watch, { spectate: true });
+      await game.userJoin(peer, { spectate: true });
+      const watcher = game.spectators[0];
+      const packets = (user) => events(user.socket, "typing").map((e) => e.data);
+      const type = (meeting, isTyping) => watch.socket.sendToServer("typing", {
+        meetingId: meeting.id, isTyping,
+      });
+      const checkAudience = (meeting, visibleToPlayers = false) => {
+        for (const user of [host, watch, peer]) user.socket.flushMessages();
+        type(meeting, true);
+        type(meeting, false);
+        const expected = [
+          { playerId: watcher.id, meetingId: meeting.id },
+          { playerId: watcher.id, meetingId: null },
+        ];
+        expect(packets(peer)).to.deep.equal(expected);
+        expect(packets(watch)).to.deep.equal(expected);
+        expect(packets(host)).to.deep.equal(visibleToPlayers ? expected : []);
+      };
+
+      checkAudience(game.pregame, true);
+      await startBare(game);
+      checkAudience(game.spectatorMeeting);
+      peer.socket.flushMessages();
+      type(game.pregame, true);
+      expect(packets(peer)).to.deep.equal([]);
+
+      game.finished = true;
+      game.currentState = -2;
+      game.addStateToHistories("Postgame");
+      game.openPostgameMeeting();
+      checkAudience(game.postgame, true);
+    });
+
+    it("shows typing to a lone spectator during live play", async function () {
+      const game = await openGame.call(this);
+      const host = makeUser(game.hostId, "host");
+      const watch = makeUser(null, "watch");
+      await game.userJoin(host);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+
+      host.socket.flushMessages();
+      watch.socket.flushMessages();
+      const [watcher] = game.spectators;
+      const meetingId = game.spectatorMeeting.id;
+      watch.socket.sendToServer("typing", { meetingId, isTyping: true });
+      expect(events(watch.socket, "typing").map(({ data }) => data))
+        .to.deep.equal([{ playerId: watcher.id, meetingId }]);
+      expect(events(host.socket, "typing")).to.have.lengthOf(0);
+    });
+
+    it("clears a spectator’s typing when their socket disconnects", async function () {
+      const game = await openGame.call(this);
+      const host = makeUser(game.hostId, "host");
+      const watch = makeUser(null, "watch");
+      const peer = makeUser(null, "peer");
+      await game.userJoin(host);
+      await game.userJoin(watch, { spectate: true });
+      await game.userJoin(peer, { spectate: true });
+      await startBare(game);
+
+      const [watcher] = game.spectators;
+      const meetingId = game.spectatorMeeting.id;
+      peer.socket.flushMessages();
+      watch.socket.sendToServer("typing", { meetingId, isTyping: true });
+      watch.socket.sendToServer("disconnected");
+      expect(events(peer.socket, "typing").map(({ data }) => data)).to.deep.equal([
+        { playerId: watcher.id, meetingId },
+        { playerId: watcher.id, meetingId: null },
+      ]);
+    });
+
+    it("keeps an exorcised player in spectator chat when they reconnect", async function () {
+      const game = await openGame.call(this);
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await startBare(game);
+
+      const player = playerFor(game, other);
+      player.alive = false;
+      // An anonymous seat keeps its account id on the connection, not in its
+      // visible profile. The conversion must preserve the visible name.
+      const accountId = other.id;
+      player.name = "Masked";
+      player.anonId = "deck-profile";
+      delete player.user.id;
+      game.exorcisePlayer(player);
+      const [spectator] = game.spectators;
+      expect(spectator.getPlayerInfo().name).to.equal("Masked");
+      expect(spectator.getPlayerInfo().userId).to.equal(undefined);
+      const refreshed = makeUser(accountId, "other");
+      await game.userJoin(refreshed, { spectate: true });
+      expect(spectator.socket === refreshed.socket).to.equal(true);
+      expect(game.spectators).to.have.lengthOf(1);
+      expect(events(refreshed.socket, "isSpectator")).to.have.lengthOf(1);
+      expect(spectator.getPlayerInfo().name).to.equal("Masked");
+
+      const meetingId = game.spectatorMeeting.id;
+      say(spectator, "still spectating", meetingId);
+      expect(chatTexts(refreshed.socket)).to.include("still spectating");
+      expect(chatTexts(host.socket)).not.to.include("still spectating");
+
+      // Also cover reconnects after the old spectator entry has expired.
+      game.removeSpectator(spectator, { forget: false });
+      const rejoined = makeUser(accountId, "other");
+      await game.userJoin(rejoined);
+      expect(game.spectators).to.have.lengthOf(1);
+      expect(game.spectators[0].id).to.equal(spectator.id);
+      expect(game.spectators[0].socket === rejoined.socket).to.equal(true);
+      expect(game.spectators[0].getPlayerInfo().name).to.equal("Masked");
+      expect(events(rejoined.socket, "isSpectator")).to.have.lengthOf(1);
+
+      await game.userLeave(accountId);
+      expect(game.spectators).to.have.lengthOf(0);
+      expect(await redis.inGame(accountId)).to.equal(false);
+      expect(events(rejoined.socket, "left")).to.have.lengthOf(1);
+    });
+
+    it("updates postgame chat membership on a late join, reconnect, and leave", async function () {
+      const game = await openGame.call(this);
+      const host = makeUser(game.hostId, "host");
+      await game.userJoin(host);
+      await startBare(game);
+      game.finished = true;
+      game.currentState = -2;
+      game.addStateToHistories("Postgame");
+      game.openPostgameMeeting();
+
+      const rosterUpdates = (user) => events(user.socket, "members")
+        .filter(({ data }) => data.meetingId === game.postgame.id)
+        .map(({ data }) => data.members.map(({ id }) => id));
+      const hostId = playerFor(game, host).id;
+      host.socket.flushMessages();
+      const watcher = makeUser(null, "watcher");
+      await game.userJoin(watcher, { spectate: true });
+      const spectatorId = game.spectators[0].id;
+      expect(rosterUpdates(host)).to.deep.equal([[hostId, spectatorId]]);
+
+      const refreshed = makeUser(watcher.id, "watcher");
+      await game.userJoin(refreshed, { spectate: true });
+      const meeting = events(refreshed.socket, "meeting").find(({ data }) => data.id === game.postgame.id);
+      expect(meeting?.data.canTalk).to.equal(true);
+      expect(rosterUpdates(host)).to.deep.equal([[hostId, spectatorId]]);
+
+      const peer = makeUser(null, "peer");
+      await game.userJoin(peer, { spectate: true });
+      const peerId = game.spectators[1].id;
+      host.socket.flushMessages();
+      game.spectators[1].leaveGame();
+      expect(rosterUpdates(host)).to.deep.equal([[hostId, spectatorId]]);
+      expect(game.postgame.members[peerId]).to.equal(undefined);
+
+      game.endPostgame = () => {};
+      await game.playerLeave(playerFor(game, host));
+      expect(rosterUpdates(refreshed).at(-1)).to.deep.equal([spectatorId]);
+    });
+
+    it("preserves a private postgame whisper on refresh without sharing its reference", async function () {
+      const game = await openGame.call(this);
+      const host = makeUser(game.hostId, "host");
+      const watch = makeUser(null, "recipient");
+      const other = makeUser(null, "other spectator");
+      await game.userJoin(host);
+      await game.userJoin(watch, { spectate: true });
+      await game.userJoin(other, { spectate: true });
+      await startBare(game);
+      game.finished = true;
+      game.currentState = -2;
+      game.addStateToHistories("Postgame");
+      game.openPostgameMeeting();
+      game.isWhispers = () => true;
+      const [recipient] = game.spectators;
+      game.postgame.speak({
+        sender: playerFor(game, host), content: "private postgame whisper",
+        abilityName: "Whisper", abilityTarget: recipient.id,
+      });
+      expect(chatTexts(watch.socket)).to.include("private postgame whisper");
+      expect(chatTexts(other.socket)).not.to.include("private postgame whisper");
+
+      const refreshed = makeUser(watch.id, "recipient");
+      await game.userJoin(refreshed, { spectate: true });
+      const postgame = events(refreshed.socket, "meeting").find(({ data }) => data.id === game.postgame.id);
+      const original = postgame?.data.messages.find(({ content }) => content === "private postgame whisper");
+      expect(original).to.exist;
+      const reference = {
+        messageId: original.id, fromMeetingId: game.postgame.id,
+        fromState: -2, toMeetingId: game.postgame.id,
+      };
+      refreshed.socket.sendToServer("reply", {
+        quote: reference,
+        message: { content: "postgame response", meetingId: game.postgame.id },
+      });
+      expect(events(refreshed.socket, "quote")).to.have.lengthOf(0);
+      expect(chatTexts(refreshed.socket).some((text) => text.includes("private to a different audience"))).to.equal(true);
+      expect(chatTexts(other.socket)).not.to.include("postgame response");
+      expect(chatTexts(other.socket)).not.to.include("private postgame whisper");
+    });
+
+    it("keeps dead and spectator communication in its audience, and shares postgame", async function () {
+      const Meeting = require("../../Games/core/Meeting");
+      const VillageCore = require("../../Games/types/Mafia/roles/cards/VillageCore");
+      const game = await openGame.call(this, { mafia: true });
+      const host = makeUser(game.hostId, "host");
+      const other = makeUser(null, "other");
+      const watch = makeUser(null, "watch");
+      await game.userJoin(host);
+      await game.userJoin(other);
+      await game.userJoin(watch, { spectate: true });
+      await startBare(game);
+      const live = playerFor(game, host);
+      const dead = playerFor(game, other);
+      const watcher = game.spectators[0];
+      const room = game.createMeeting(Meeting, "Village");
+      room.speech = true;
+      room.join(live);
+      dead.alive = false;
+      room.join(dead, new VillageCore({}).meetings.Village);
+      for (const user of [host, other, watch]) user.socket.flushMessages();
+
+      room.speak({ sender: live, content: "public original" });
+      const original = room.messages[0];
+      const payload = {
+        messageId: original.id, fromMeetingId: room.id, fromState: game.currentState,
+        toMeetingId: room.id, messageContent: "not the original",
+      };
+      room.speak({ sender: dead, content: "dead chat" });
+      dead.socket.sendToServer("reply", { quote: payload, message: { content: "dead reply", meetingId: room.id } });
+      say(watcher, "/diceroll 1", room.id);
+      watcher.socket.sendToServer("reply", {
+        quote: { ...payload, toMeetingId: game.spectatorMeeting.id },
+        message: { content: "spectator reply", meetingId: game.spectatorMeeting.id },
+      });
+      expect(heard(host.socket)).to.deep.equal(["public original"]);
+      expect(heard(other.socket)).to.deep.equal(["public original", "dead chat", `quote:${original.id}`, "dead reply"]);
+      const spectatorChat = heard(watch.socket);
+      expect(spectatorChat.filter((text) => text.startsWith("watch rolled"))).to.have.lengthOf(1);
+      expect(spectatorChat.filter((text) => !text.startsWith("watch rolled")))
+        .to.deep.equal(["public original", `quote:${original.id}`, "spectator reply"]);
+      expect(room.messages.find((message) => message.isQuote).messageContent).to.equal("public original");
+      expect(room.getPlayerMessages("spectator").map((message) => message.content)).to.deep.equal(["public original"]);
+
+      game.isTalkingDead = () => true;
+      room.speak({ sender: dead, content: "allowed by the meeting mechanic" });
+      expect(chatTexts(host.socket)).to.include("allowed by the meeting mechanic");
+      expect(chatTexts(watch.socket)).not.to.include("allowed by the meeting mechanic");
+
+      game.finished = true;
+      game.currentState = -2;
+      game.addStateToHistories("Postgame");
+      game.openPostgameMeeting();
+      game.postgame.speak({ sender: dead, content: "dead in postgame" });
+      game.postgame.speak({ sender: watcher, content: "spectator in postgame" });
+      game.postgame.speak({ sender: live, content: "living in postgame" });
+      for (const user of [host, other, watch])
+        expect(chatTexts(user.socket)).to.include.members([
+          "dead in postgame", "spectator in postgame", "living in postgame",
+        ]);
+
+      for (const user of [host, other, watch]) user.socket.flushMessages();
+      dead.socket.sendToServer("typing", { meetingId: game.postgame.id, isTyping: true });
+      dead.socket.sendToServer("typing", { meetingId: game.postgame.id, isTyping: false });
+      for (const user of [host, other, watch]) {
+        expect(events(user.socket, "typing").map(({ data }) => data)).to.deep.equal([
+          { playerId: dead.id, meetingId: game.postgame.id },
+          { playerId: dead.id, meetingId: null },
+        ]);
+      }
     });
   });
 

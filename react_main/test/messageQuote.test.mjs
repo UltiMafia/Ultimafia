@@ -52,7 +52,6 @@ test("a pinned day 1 message quoted on day 3 points at day 1, not the state on s
     toMeetingId: "village3",
     fromMeetingId: "village1",
     fromState: "1",
-    messageContent: "I am the cop",
   });
 });
 

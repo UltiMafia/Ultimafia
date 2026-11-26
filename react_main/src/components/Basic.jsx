@@ -16,6 +16,7 @@ import {
   gameFormattedPlainText,
 } from "./gameInlineFormatting";
 import { useAvatarImageUrl, AvatarPhoto } from "utils/avatarUrl";
+import { findChatIdentity } from "shared/chatIdentity";
 
 export function ItemList(props) {
   const itemRows = props.items.map(props.map);
@@ -181,6 +182,8 @@ function roleifySegments(text, siteInfo) {
 export function UserText(props) {
   const siteInfo = useContext(SiteInfoContext);
   const [content, setContent] = useState(props.text);
+  const avatarPlayers = props.iconUsername ? props.players : undefined;
+  const avatarSpectators = props.iconUsername ? props.spectators : undefined;
 
   useEffect(() => {
     if (props.text == null) return;
@@ -226,7 +229,8 @@ export function UserText(props) {
           displayEmoji: props.terminologyEmoticons,
         });
       if (props.iconUsername)
-        text = iconUsername(text, props.players, {
+        text = iconUsername(text, avatarPlayers, {
+          spectators: avatarSpectators,
           compact: props.compactAvatars,
         });
 
@@ -264,7 +268,7 @@ export function UserText(props) {
     if (props.splitLetters) text = splitIntoLetters(text);
 
     setContent(text);
-  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage, props.splitLetters, props.gameFormatting]);
+  }, [props.text, props.terminologyEmoticons, props.customEmotes, props.customStickers, props.systemMessage, props.splitLetters, props.gameFormatting, props.iconUsername, props.compactAvatars, avatarPlayers, avatarSpectators]);
 
   return content ?? "";
 }
@@ -403,22 +407,26 @@ export function iconUsername(text, players, options) {
 
     for (let j in words) {
       const word = words[j];
-      if (/^\s+$/.test(word) || word.length <= 1 || word.charAt(0) !== "%")
-        continue;
+      if (word.length <= 1 || word.charAt(0) !== "%") continue;
 
-      const checkName = word.substring(1);
-      const matchedPlayer = Object.values(players).find((curPlayer) => {
-        return curPlayer.name === checkName;
-      });
-      if (!matchedPlayer) continue;
+      const name = word.slice(1);
+      const bareName = name.replace(/[.,!?;:)]+$/, "");
+      const exact = findChatIdentity(name, players, options?.spectators);
+      const person = exact || (bareName !== name
+        ? findChatIdentity(bareName, players, options?.spectators)
+        : null);
+      if (!person) continue;
 
       words[j] = (
-        <InlineAvatar
-          key={matchedPlayer.userId || matchedPlayer.name}
-          userId={matchedPlayer.avatar ? matchedPlayer.userId : undefined}
-          username={matchedPlayer.name}
-          compact={Boolean(options && options.compact)}
-        />
+        <React.Fragment key={j}>
+          <InlineAvatar
+            userId={person.avatar && person.anonId == null ? person.userId : undefined}
+            avatar={person.avatar}
+            username={person.name}
+            compact={Boolean(options?.compact)}
+          />
+          {!exact && name.slice(bareName.length)}
+        </React.Fragment>
       );
     }
 
@@ -431,9 +439,14 @@ export function iconUsername(text, players, options) {
 
 function InlineAvatar(props) {
   const siteInfo = useContext(SiteInfoContext);
-  const photoSrc = useAvatarImageUrl(props.userId, {
+  const avatar = typeof props.avatar === "string" ? props.avatar : "";
+  const staticAvatar = avatar.startsWith("/decks/")
+    ? `/uploads${avatar}?t=${siteInfo?.cacheVal}`
+    : avatar.startsWith("/images/") ? avatar : undefined;
+  const userPhoto = useAvatarImageUrl(staticAvatar ? undefined : props.userId, {
     cacheVal: siteInfo?.cacheVal,
   });
+  const photoSrc = staticAvatar || userPhoto;
   let style = {
     position: "relative",
   };
@@ -449,7 +462,7 @@ function InlineAvatar(props) {
     style.verticalAlign = "-0.2em";
   }
   let src = photoSrc;
-  if (props.userId && photoSrc) {
+  if (photoSrc) {
     style.backgroundImage = "none";
   } else if (props.url) {
     src = null;

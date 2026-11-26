@@ -12,7 +12,7 @@ import React, {
 import { useParams, Navigate, Link, useLocation, useNavigate } from "react-router-dom";
 import update from "immutability-helper";
 import axios from "axios";
-import ReactLoading from "react-loading";
+import { RosterRow, RosterTypingProvider } from "./RosterTyping";
 
 import { UserText } from "../../components/Basic";
 import {
@@ -26,7 +26,7 @@ import {
   findSpectatorChatMeeting,
   mergeSpectatorChat,
   pickSpeechTarget,
-  pregameSpectatorList,
+  visibleSpectatorList,
 } from "shared/spectatorChat";
 import { cyclePlayerName, tabCompleteNames } from "shared/tabComplete";
 import { isSpectatorPing } from "shared/spectatorPing";
@@ -646,16 +646,15 @@ export default function Game(props) {
   const replyTargetRef = useRef(replyTarget);
   replyTargetRef.current = replyTarget;
 
-  const replyMeetingId = history.states[stateViewing]?.selTab;
+  const replyMeetingId = getCurrentSpeechTarget(history, isSpectator).meetingId;
   useEffect(() => {
     setReplyTarget((target) => {
-      if (!target || !target.protectMeeting) return target;
-      return target.selectedMeetingId === replyMeetingId &&
-        target.selectedState === stateViewing &&
+      if (!target) return target;
+      return target.deliveryMeetingId === replyMeetingId &&
         target.currentState === history.currentState
         ? target : null;
     });
-  }, [replyMeetingId, history.currentState, stateViewing]);
+  }, [replyMeetingId, history.currentState]);
 
   useEffect(() => {
     // Only the visible session reacts to Escape. A session retained while the
@@ -1277,6 +1276,13 @@ export default function Game(props) {
       });
     });
 
+    socket.on("exorcised", (info) => {
+      const playerId = typeof info === "string" ? info : info?.playerId;
+      if (playerId) {
+        updateHistory({ type: "exorcised", playerId, exorcised: info.exorcised !== false });
+      }
+    });
+
     socket.on("meeting", (meeting) => {
       updateHistory({
         type: "addMeeting",
@@ -1585,33 +1591,34 @@ export default function Game(props) {
     setLeave(true);
   }
 
-  const quoteMeetingId = history.states[history.currentState]?.selTab;
   const onMessageReply = useCallback((message, deliveryMeetingId) => {
-    if (!canReplyTo(message, { review, stateViewing })) return;
+    if (!canReplyTo(message, { review })) return;
+    const current = historyRef.current;
+    const meetingId = deliveryMeetingId || getCurrentSpeechTarget(current, isSpectator).meetingId;
+    if (!meetingId) return;
+    if (stateViewing !== current.currentState) updateStateViewing({ type: "current" });
+    setSelectedPanel("chat");
     setReplyTarget({
-      ...makeReplyTarget(message, stateViewing),
-      selectedMeetingId: history.states[stateViewing]?.selTab,
-      deliveryMeetingId,
-      selectedState: stateViewing,
-      currentState: history.currentState,
-      protectMeeting: !isSpectator && gameType === "Mafia" &&
-        !["Village", "Pregame"].includes(
-          history.states[stateViewing]?.meetings[message.meetingId]?.name
-        ),
+      ...makeReplyTarget(message, findMessageState(current, message, stateViewing)),
+      deliveryMeetingId: meetingId,
+      currentState: current.currentState,
     });
     document.getElementById("speechInput")?.focus();
-  }, [review, stateViewing, history, gameType, isSpectator]);
+  }, [review, stateViewing, isSpectator, updateStateViewing]);
   // Pinned rows show a stored copy while the current state is on screen, so
   // the quote has to find the state the original was sent in.
-  const onMessageQuote = useCallback((message) => {
+  const onMessageQuote = useCallback((message, deliveryMeetingId) => {
+    const current = historyRef.current;
+    const quoteMeetingId = deliveryMeetingId || getCurrentSpeechTarget(current, isSpectator).meetingId;
+    if (!quoteMeetingId) return;
     const quote = buildQuotePayload(message, {
       review,
       toMeetingId: quoteMeetingId,
-      history: historyRef.current,
+      history: current,
       stateViewing,
     });
     if (quote) socket.send("quote", quote);
-  }, [review, socket, quoteMeetingId, stateViewing]);
+  }, [review, socket, isSpectator, stateViewing]);
 
   function getSetupGameSetting(gameSetting) {
     if (setup && setup.gameSettings && gameSetting in setup.gameSettings) {
@@ -1724,24 +1731,26 @@ export default function Game(props) {
               showModal={active && showFirstGameModal}
               setShowModal={setShowFirstGameModal}
             />
-            {gameType === "Mafia" && <MafiaGame />}
-            {gameType === "Jotto" && <JottoGame />}
-            {gameType === "Acrotopia" && <AcrotopiaGame />}
-            {gameType === "Secret Dictator" && <SecretDictatorGame />}
-            {gameType === "Wacky Words" && <WackyWordsGame />}
-            {gameType === "Draw It" && <DrawItGame />}
-            {gameType === "Liars Dice" && <LiarsDiceGame />}
-            {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
-            {gameType === "Cheat" && <CheatGame />}
-            {gameType === "Ratscrew" && <RatscrewGame />}
-            {gameType === "Battlesnakes" && <BattlesnakesGame />}
-            {(gameType === "Dice Wars" || gameType === "DiceWars") && (
-              <DiceWarsGame />
-            )}
-            {gameType === "Connect Four" && <ConnectFourGame />}
-            {gameType === "Spot It" && <SpotItGame />}
-            {gameType === "Battleship" && <BattleshipGame />}
-            {gameType === "Chess" && <ChessGame />}
+            <RosterTypingProvider>
+              {gameType === "Mafia" && <MafiaGame />}
+              {gameType === "Jotto" && <JottoGame />}
+              {gameType === "Acrotopia" && <AcrotopiaGame />}
+              {gameType === "Secret Dictator" && <SecretDictatorGame />}
+              {gameType === "Wacky Words" && <WackyWordsGame />}
+              {gameType === "Draw It" && <DrawItGame />}
+              {gameType === "Liars Dice" && <LiarsDiceGame />}
+              {gameType === "Texas Hold Em" && <TexasHoldEmGame />}
+              {gameType === "Cheat" && <CheatGame />}
+              {gameType === "Ratscrew" && <RatscrewGame />}
+              {gameType === "Battlesnakes" && <BattlesnakesGame />}
+              {(gameType === "Dice Wars" || gameType === "DiceWars") && (
+                <DiceWarsGame />
+              )}
+              {gameType === "Connect Four" && <ConnectFourGame />}
+              {gameType === "Spot It" && <SpotItGame />}
+              {gameType === "Battleship" && <BattleshipGame />}
+              {gameType === "Chess" && <ChessGame />}
+            </RosterTypingProvider>
           </Box>
         </Stack>
         <UrgencyOverlay hidden={!isUrgent} />
@@ -2311,6 +2320,17 @@ function getDefaultSpeechMeetingId(speechMeetings) {
   return speechMeetings[0]?.id;
 }
 
+function getCurrentSpeechTarget(history, isSpectator) {
+  const state = history.states[history.currentState];
+  const meetings = state?.meetings;
+  const tab = state?.selTab || getDefaultSpeechMeetingId(getSpeechMeetings(meetings));
+  return pickSpeechTarget({
+    activeMeeting: meetings?.[tab],
+    spectatorMeeting: findSpectatorChatMeeting(meetings, isSpectator),
+    isPregame: history.currentState === -1,
+  });
+}
+
 const EMPTY_CHAT_STATE = { meetings: {}, alerts: [], obituaries: {} };
 
 // Pregame seat actions ("Join open seat" and "Spectate") which sits
@@ -2597,6 +2617,9 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   });
   const canSpeak =
     !!speechTarget.meetingId && stateViewing === history.currentState;
+  const referenceDestination = stateViewing === history.currentState
+    ? speechTarget.meetingId
+    : getCurrentSpeechTarget(history, isSpectator).meetingId;
 
   const messages = useMemo(() => {
     var messageData;
@@ -2653,9 +2676,10 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           sourceState={singleState ? message.fromState : stateViewing}
           onQuoteJump={onQuoteJump}
           key={message.id || message.messageId + message.time || i}
-          onMessageQuote={game.onMessageQuote}
-          onMessageReply={canSpeak && typeof game.onMessageReply === "function"
-            ? (message) => game.onMessageReply(message, speechTarget.meetingId)
+          onMessageQuote={referenceDestination && game.onMessageQuote
+            ? (message) => game.onMessageQuote(message, referenceDestination) : undefined}
+          onMessageReply={referenceDestination && typeof game.onMessageReply === "function"
+            ? (message) => game.onMessageReply(message, referenceDestination)
             : undefined}
           onPinMessage={game.onPinMessage}
           isMessagePinned={game.isMessagePinned}
@@ -2687,8 +2711,7 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     game.onMessageQuote,
     onQuoteJump,
     game.onMessageReply,
-    speechTarget.meetingId,
-    canSpeak,
+    referenceDestination,
     game.onPinMessage,
     game.isMessagePinned,
     game.self,
@@ -3208,6 +3231,7 @@ function Message(props) {
       iWasPinged={iWasPinged}
       pinned={isMessagePinned(message)}
       replyPreview={replyPreview || undefined}
+      replyReferenceQuote={replyPreview ? replyQuote : undefined}
       replyMerged={!!replyPreview && !!replyMerged}
       meetingName={history.states[nameState]?.meetings?.[message.meetingId]?.name}
       quoteState={message.isQuote ? history.states[message.fromState] : undefined}
@@ -3305,7 +3329,8 @@ function ReplyReference(props) {
     e.stopPropagation();
     const row = findMessageRow(e.currentTarget.closest(".message"), reply.messageId);
     if (!row) {
-      e.currentTarget.closest(".speech-display")?.dispatchEvent(
+      if (props.onJump) props.onJump();
+      else e.currentTarget.closest(".speech-display")?.dispatchEvent(
         new CustomEvent("transcript-jump", { detail: { messageId: reply.messageId } })
       );
       return;
@@ -3511,35 +3536,10 @@ const MessageRow = React.memo(function MessageRow(props) {
     message.customStickers || (player && player.customStickers) || null;
 
   if (message.isQuote) {
-    var state = props.quoteState;
-
-    if (!state) return <></>;
-
-    var meeting = state.meetings[message.fromMeetingId];
-
-    if (!meeting) return <></>;
-
-    for (let msg of meeting.messages) {
-      if (msg.id === message.messageId) {
-        const senderPlayer = players[msg.senderId] || spectators[msg.senderId];
-
-        let senderName = "Anonymous";
-        if (senderPlayer && msg.senderId !== "anonymous") {
-          senderName = senderPlayer.name;
-        }
-
-        quotedMessage = { ...msg };
-        quotedMessage.senderName = senderName;
-        quotedMessage.meetingName = meeting.name;
-        quotedMessage.fromStateName = state.name;
-        customEmotes = msg.customEmotes; // allow players to use other players' custom emotes if they quote them
-        customStickers = msg.customStickers;
-        break;
-      }
-    }
+    quotedMessage = describeQuotedMessage(message, props.quoteState, players, spectators);
+    customEmotes = quotedMessage?.customEmotes;
+    customStickers = quotedMessage?.customStickers;
   }
-
-  if (message.isQuote && !quotedMessage) return <></>;
 
   if (!message.isQuote && message.content?.indexOf("/me ") === 0) {
     message = { ...message };
@@ -3745,7 +3745,7 @@ const MessageRow = React.memo(function MessageRow(props) {
       aria-keyshortcuts={clickToReply ? "Enter" : undefined}
       onDoubleClick={() => {
         cancelReplyClick();
-        props.onMessageQuote(message);
+        props.onMessageQuote?.(message);
       }}
       style={messageStyle}
       onMouseEnter={messageOnMouseEnter}
@@ -3761,6 +3761,7 @@ const MessageRow = React.memo(function MessageRow(props) {
             players={players}
             spectators={spectators}
             roleMentions={props.settings.roleMentions}
+            onJump={props.onQuoteJump && (() => props.onQuoteJump(props.replyReferenceQuote))}
           />
         )}
         {(!chainToPrevious || denseMessages || isRightAligned) && (
@@ -3829,7 +3830,7 @@ const MessageRow = React.memo(function MessageRow(props) {
               {message.replyTo && !props.replyPreview && (
                 <i
                   className="fas fa-reply fa-rotate-180 reply-marker"
-                  title="Reply to the quote above"
+                  title="The original message is not available in your history."
                 />
               )}
               {message.spectatorChat && (
@@ -3873,7 +3874,10 @@ const MessageRow = React.memo(function MessageRow(props) {
               </TextEffect>
             </>
           )}
-          {message.isQuote && (
+          {message.isQuote && !quotedMessage && (
+            <span className="quote-info">The original message is not available in your history.</span>
+          )}
+          {message.isQuote && quotedMessage && (
             <QuoteJumpTarget message={message} onJump={props.onQuoteJump}>
               {message.spectatorChat && (
                 <span
@@ -4054,6 +4058,7 @@ export function Timestamp(props) {
 
 function SpeechInput(props) {
   const game = useContext(GameContext);
+  const siteInfo = useContext(SiteInfoContext);
   const socket = props.socket;
   const meetings = props.meetings;
   const selTab = props.selTab;
@@ -4062,7 +4067,12 @@ function SpeechInput(props) {
   const spectatorChat = !!props.spectatorChat;
 
   const speechInput = props.speechInput;
-  const setSpeechInput = props.setSpeechInput;
+  const updateSpeechInput = props.setSpeechInput;
+  const draftRevision = useRef(0);
+  const setSpeechInput = useCallback((value) => {
+    draftRevision.current++;
+    updateSpeechInput(value);
+  }, [updateSpeechInput]);
   const pendingSpeechRef = useRef(null);
   const completionRef = useRef(null);
   const speechInputRef = useRef(null);
@@ -4082,8 +4092,6 @@ function SpeechInput(props) {
   const [speechDropdownOptions, setSpeechDropdownOptions] = useState([]);
   const [speechDropdownValue, setSpeechDropdownValue] = useState("Say");
   const [lastTyped, setLastTyped] = useState(0);
-  const [typingIn, setTypingIn] = useState();
-  const [clearTyping, setClearTyping] = useState();
   const [checkboxOptions, setCheckboxOptions] = useState({});
   const [isDisconnected, setIsDisconnected] = useState(false);
   const [speakCooldown, setSpeakCooldown] = useState({
@@ -4144,23 +4152,18 @@ function SpeechInput(props) {
   }, [selTab, spectatorChat]);
 
   useEffect(() => {
-    if (lastTyped > 0) {
-      clearTimeout(clearTyping);
-      setClearTyping(setTimeout(() => setLastTyped(0), 1000));
-
-      if (typingIn !== selTab) {
-        setTypingIn(selTab);
-
-        if (typingIn != null)
-          socket.send("typing", { meetingId: typingIn, isTyping: false });
-
-        socket.send("typing", { meetingId: selTab, isTyping: true });
-      }
-    } else if (typingIn != null) {
-      setTypingIn(null);
-      socket.send("typing", { meetingId: typingIn, isTyping: false });
-    }
+    if (!lastTyped) return;
+    const timeout = setTimeout(() => setLastTyped(0), 1000);
+    return () => clearTimeout(timeout);
   }, [lastTyped]);
+
+  const isTyping = Boolean(lastTyped && isCurrentState && selTab &&
+    !meetings[selTab]?.anonymous && speechDropdownValue === "Say");
+  useEffect(() => {
+    if (!isTyping) return;
+    socket.send("typing", { meetingId: selTab, isTyping: true });
+    return () => socket.send("typing", { meetingId: selTab, isTyping: false });
+  }, [isTyping, selTab, socket]);
 
   useEffect(() => {
     if (
@@ -4182,14 +4185,20 @@ function SpeechInput(props) {
       (pending.anonymous && lastMessage.senderId === "anonymous");
 
     if (
+      pending.meetingId === selTab &&
       !lastMessage.isQuote &&
+      lastMessage.id !== pending.previousMessageId &&
       lastMessage.content === pending.content &&
+      (!pending.replyTarget || lastMessage.replyTo) &&
       matchesSender
     ) {
-      setSpeechInput("");
+      if (pending.draftRevision === draftRevision.current) setSpeechInput("");
+      if (pending.replyTarget) {
+        game.setReplyTarget((target) => target === pending.replyTarget ? null : target);
+      }
       pendingSpeechRef.current = null;
     }
-  }, [game.history, game.self, selTab, isCurrentState, meetings, setSpeechInput]);
+  }, [game.history, game.self, game.setReplyTarget, selTab, isCurrentState, meetings, setSpeechInput]);
 
   useEffect(() => {
     if (!socket.on) return;
@@ -4312,17 +4321,29 @@ function SpeechInput(props) {
       speechDropdownValue === "Say"
     ) {
       setLastTyped(Date.now());
+    } else {
+      setLastTyped(0);
     }
   }
 
   const replyTarget = game.replyTarget;
   const setReplyTarget = game.setReplyTarget;
+  useEffect(() => {
+    if (replyTarget) document.getElementById("speechInput")?.focus();
+  }, [replyTarget]);
 
   function onSpeechSubmit(e) {
     if (e.key !== "Tab" || e.shiftKey) completionRef.current = null;
     if (isSpeakCooldownActive) return;
 
     if (e.key === "Enter" && selTab && speechInput.length) {
+      setLastTyped(0);
+      if (replyTarget?.deliveryMeetingId != null &&
+          (replyTarget.deliveryMeetingId !== selTab ||
+            replyTarget.currentState !== game.history.currentState)) {
+        setReplyTarget(null);
+        return;
+      }
       // Holding Enter, or pressing it again before the first send comes back,
       // would send the same line twice. Allow it again after a few seconds in
       // case the first was never delivered.
@@ -4357,29 +4378,28 @@ function SpeechInput(props) {
         } else {
           pendingSpeechRef.current = {
             content: speechInput,
+            draftRevision: draftRevision.current,
             meetingId: selTab,
+            previousMessageId: meetings[selTab]?.messages?.at(-1)?.id,
             sentAt: Date.now(),
             anonymous:
               Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
           };
         }
 
-        const isCurrentReply = replyTarget &&
-          (!replyTarget.protectMeeting || (
-            replyTarget.selectedMeetingId === game.history.states[game.stateViewing]?.selTab &&
-            replyTarget.deliveryMeetingId === selTab &&
-            replyTarget.selectedState === game.stateViewing &&
-            replyTarget.currentState === game.history.currentState
-          ));
-        if (replyTarget && !isCurrentReply) setReplyTarget(null);
-        const reply = buildReplyPayload(isCurrentReply ? replyTarget : null, {
+        const reply = buildReplyPayload(replyTarget, {
           meetingId: selTab,
           content: speechInput,
           abilityName,
         });
+        if (replyTarget && !reply) {
+          pendingSpeechRef.current = null;
+          siteInfo.showAlert("Cancel your reply before sending a command or using a speech ability.", "warning");
+          return;
+        }
         if (reply) {
+          pendingSpeechRef.current.replyTarget = replyTarget;
           socket.send("reply", reply);
-          setReplyTarget(null);
         } else {
           socket.send("speak", {
             content: speechInput,
@@ -4649,18 +4669,11 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
   const user = useContext(UserContext);
   const theme = useTheme();
   const accessibleNameColors = user.settings?.accessibleNameColors;
-  const [activity, updateActivity] = useActivity();
-  const [visibleTyping, setVisibleTyping] = useState({});
-  const typingTimeoutsRef = useRef({});
-  const lastStateChangeTimeRef = useRef(0);
-  const activityUpdateTimeRef = useRef({});
 
   const {
     gameType,
-    socket,
     history,
     setup,
-    self,
     stateViewing,
     rolePredictions,
     toggleRolePrediction,
@@ -4672,127 +4685,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
   } = game;
   const kudosIds = kudosAwardedIds(kudos);
 
-  const prevStateRef = useRef(history?.currentState);
-
-  // Track when the current state changes (not stateViewing, but the actual game state)
-  useEffect(() => {
-    if (!history || history.currentState === undefined) {
-      return;
-    }
-
-    const currentState = history.currentState;
-
-    if (prevStateRef.current !== currentState) {
-      lastStateChangeTimeRef.current = Date.now();
-      prevStateRef.current = currentState;
-      // Clear all visible typing indicators when state changes
-      setVisibleTyping({});
-      // Clear all pending timeouts
-      Object.values(typingTimeoutsRef.current).forEach((timeout) => {
-        clearTimeout(timeout);
-      });
-      typingTimeoutsRef.current = {};
-    }
-  }, [history?.currentState]);
-
-  useEffect(() => {
-    if (socket && socket.on) {
-      socket.on("typing", (info) => {
-        const now = Date.now();
-        activityUpdateTimeRef.current[info.playerId] = now;
-
-        updateActivity({
-          type: "typing",
-          playerId: info.playerId,
-          meetingId: info.meetingId,
-        });
-      });
-    }
-  }, [socket, updateActivity]);
-
-  // Handle typing indicator visibility - only delay if within 2s of state change
-  useEffect(() => {
-    const now = Date.now();
-    const stateChangeWindow = 2000; // 2 seconds
-    const lastStateChangeTime = lastStateChangeTimeRef.current;
-
-    // Only apply delay logic if we've had at least one state change
-    const isWithinStateChangeWindow =
-      lastStateChangeTime > 0 && now - lastStateChangeTime < stateChangeWindow;
-
-    // Clear existing timeouts and visible indicators for players that are no longer typing
-    Object.keys(typingTimeoutsRef.current).forEach((playerId) => {
-      if (!activity.typing[playerId]) {
-        clearTimeout(typingTimeoutsRef.current[playerId]);
-        delete typingTimeoutsRef.current[playerId];
-        setVisibleTyping((prev) => {
-          const next = { ...prev };
-          delete next[playerId];
-          return next;
-        });
-        delete activityUpdateTimeRef.current[playerId];
-      }
-    });
-
-    // Set visibility for players who are typing
-    Object.keys(activity.typing).forEach((playerId) => {
-      const meetingId = activity.typing[playerId];
-
-      // If player is already visible and still typing, keep them visible
-      if (visibleTyping[playerId] === meetingId) {
-        return;
-      }
-
-      // If there's already a timeout for this player, don't create a new one
-      if (typingTimeoutsRef.current[playerId]) {
-        return;
-      }
-
-      // Only delay if we're currently within 1.5 seconds of a state change
-      if (isWithinStateChangeWindow) {
-        // Calculate remaining delay needed
-        const timeSinceStateChange = now - lastStateChangeTime;
-        const remainingDelay = stateChangeWindow - timeSinceStateChange;
-
-        // Set timeout to show typing indicator after remaining delay
-        typingTimeoutsRef.current[playerId] = setTimeout(() => {
-          setVisibleTyping((prev) => ({
-            ...prev,
-            [playerId]: meetingId,
-          }));
-          delete typingTimeoutsRef.current[playerId];
-        }, remainingDelay);
-      } else {
-        // Show immediately if not within state change window
-        setVisibleTyping((prev) => ({
-          ...prev,
-          [playerId]: meetingId,
-        }));
-      }
-    });
-
-    // Cleanup function to clear all timeouts
-    return () => {
-      Object.values(typingTimeoutsRef.current).forEach((timeout) => {
-        clearTimeout(timeout);
-      });
-      typingTimeoutsRef.current = {};
-    };
-  }, [activity.typing, visibleTyping]);
-
   const stateViewingInfo = history.states[stateViewing];
-  const selTab = stateViewingInfo && stateViewingInfo.selTab;
-
-  // Clear visible typing indicators when viewing state or meeting changes
-  useEffect(() => {
-    // Clear all visible typing indicators when viewing state changes
-    setVisibleTyping({});
-    // Clear all pending timeouts
-    Object.values(typingTimeoutsRef.current).forEach((timeout) => {
-      clearTimeout(timeout);
-    });
-    typingTimeoutsRef.current = {};
-  }, [stateViewing, selTab]);
 
   const isPlayerIsolated = (playerId) => isolatedPlayers.has(playerId);
 
@@ -4810,38 +4703,15 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
       ? rolePrediction
       : stateViewingInfo.roles[player.id];
 
-    var showBubbles =
-      (Object.keys(history.states[history.currentState].dead).includes(self) && Object.keys(history.states[history.currentState].dead)[self] == true) ||
-      players.find((x) => x.id === self) !== undefined;
-    var colorAutoScheme = false;
-    var bubbleColor = "black";
-    if (document.documentElement.classList.length === 0) {
-      colorAutoScheme = true;
-    } else {
-      if (!document.documentElement.classList.contains("light-mode")) {
-        if (!document.documentElement.classList.contains("dark-mode")) {
-          colorAutoScheme = true;
-        } else {
-          bubbleColor = "white";
-        }
-      } else {
-        bubbleColor = "black";
-      }
-    }
-
-    if (colorAutoScheme) {
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        bubbleColor = "white";
-      }
-    }
-
     const readyCheck = readyCheckInfo?.active;
     const isReady = readyCheck && readyCheckInfo.readyPlayers[player.id];
 
     return (
-      <div 
-        className={`player ${className ? className : ""}`} data-player-name={player.name} 
+      <RosterRow
+        className={className}
         key={player.id}
+        participant={player}
+        hasRoleColumn={stateViewing !== -1}
         style={readyCheck ? {
           boxShadow: isReady ? "inset 4px 0 0 #4caf50" : "inset 4px 0 0 #e02626",
           backgroundColor: isReady ? "#4caf500c" : "#e026260c",
@@ -4883,7 +4753,6 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
                 square: true,
               })}
               dead={className === "dead"}
-              active={activity.speaking[player.id]}
               noLink={stateViewing >= 0 && game.options.anonymousGame}
               includeMiniprofile
             />
@@ -4915,15 +4784,6 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
             </Box>
           );
         })()}
-        {selTab && showBubbles && visibleTyping[player.id] === selTab && (
-          <ReactLoading
-            className={`typing-icon ${stateViewing != -1 ? "has-role" : ""}`}
-            type="bubbles"
-            color={bubbleColor}
-            width="20"
-            height="20"
-          />
-        )}
         {readyCheck && (
           <Box sx={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
             {isReady ?
@@ -4941,7 +4801,7 @@ export function PlayerRows({ players, className = "", renderMarker, renderRowEnd
             {renderRowEnd(player)}
           </Box>
         )}
-      </div>
+      </RosterRow>
     );
   });
 
@@ -4957,7 +4817,7 @@ export function PlayerList(props) {
   const stateViewingInfo = history.states[game.stateViewing];
   const orderedPlayers = getOrderedPlayers(game.players);
   const alivePlayers = orderedPlayers.filter(
-    (p) => !stateViewingInfo.dead[p.id] && !p.left
+    (p) => !stateViewingInfo.dead[p.id] && !stateViewingInfo.exorcised[p.id] && !p.left
   );
   const deadPlayers = orderedPlayers.filter(
     (p) =>
@@ -5044,7 +4904,7 @@ export function PlayerList(props) {
             renderMarker={renderMarker}
             renderRowEnd={renderRowEnd}
           />
-          <PregameSpectatorRows />
+          <SpectatorRows />
           <RehostInvite priority={2} />
         </div>
       }
@@ -5052,14 +4912,11 @@ export function PlayerList(props) {
   );
 }
 
-// Who is spectating. Everyone sees it in pregame; once the game starts only
-// spectators do (players keep the eye count in the header).
-function PregameSpectatorRows() {
+export function SpectatorRows() {
   const game = useContext(GameContext);
   const user = useContext(UserContext);
   const theme = useTheme();
-
-  const watching = pregameSpectatorList(game.spectators, {
+  const watching = visibleSpectatorList(game.spectators, {
     currentState: game.history?.currentState,
     stateViewing: game.stateViewing,
     review: game.review,
@@ -5074,7 +4931,7 @@ function PregameSpectatorRows() {
         Spectators
       </div>
       {watching.map((spectator) => (
-        <div className="player pregame-spectator" key={spectator.id}>
+        <RosterRow participant={spectator} className="pregame-spectator" key={spectator.id}>
           <NameWithAvatar
             {...playerNameWithAvatarProps(spectator, {
               user,
@@ -5083,7 +4940,7 @@ function PregameSpectatorRows() {
             })}
             includeMiniprofile
           />
-        </div>
+        </RosterRow>
       ))}
     </div>
   );
@@ -7187,6 +7044,7 @@ export function PinnedMessages() {
   const sortedPinnedMessages = Object.values(game.pinnedMessages).sort(
     sortMessagesByTimestamp
   );
+  const referenceDestination = getCurrentSpeechTarget(game.history, game.isSpectator).meetingId;
 
   const pinnedMessages = sortedPinnedMessages.map((message, i) => {
     return (
@@ -7200,7 +7058,8 @@ export function PinnedMessages() {
         spectators={game.spectators}
         stateViewing={game.stateViewing}
         key={message.id || message.messageId + message.time || i}
-        onMessageQuote={game.onMessageQuote}
+        onMessageQuote={referenceDestination && game.onMessageQuote}
+        onMessageReply={referenceDestination && game.onMessageReply}
         onPinMessage={game.onPinMessage}
         isMessagePinned={game.isMessagePinned}
         settings={game.settings}
@@ -7672,6 +7531,20 @@ export function useHistoryReducer() {
           }
           break;
         }
+        case "exorcised": {
+          if (history.states[history.currentState]) {
+            return update(history, {
+              states: {
+                [history.currentState]: {
+                  exorcised: {
+                    [action.playerId]: { $set: action.exorcised },
+                  },
+                },
+              },
+            });
+          }
+          break;
+        }
         case "death": {
           if (history.states[history.currentState]) {
             return update(history, {
@@ -7947,42 +7820,4 @@ export function useSettingsReducer() {
 
     return newSettings || settings;
   }, defaultSettings);
-}
-
-export function useActivity() {
-  // const volumeThreshold = 0.001;
-  const [activity, updateActivity] = useReducer(
-    (activity, action) => {
-      var newActivity;
-
-      switch (action.type) {
-        case "typing":
-          newActivity = update(activity, {
-            typing: {
-              [action.playerId]: {
-                $set: action.meetingId,
-              },
-            },
-          });
-          break;
-        case "speaking":
-          var newSpeaking = action.players.reduce((speaking, playerId) => {
-            speaking[playerId] = true;
-            return speaking;
-          }, {});
-
-          newActivity = update(activity, {
-            speaking: {
-              $set: newSpeaking,
-            },
-          });
-          break;
-      }
-
-      return newActivity || activity;
-    },
-    { typing: {}, speaking: {} }
-  );
-
-  return [activity, updateActivity];
 }

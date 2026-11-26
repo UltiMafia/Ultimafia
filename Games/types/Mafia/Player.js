@@ -16,6 +16,12 @@ const {
   FACTION_KILL,
 } = require("./const/FactionList");
 
+// These rooms use a separate dead audience even when the meeting joins both
+// living and dead players with speech enabled.
+const roomsWithDeadAudience = new Set([
+  "Village", "Village Dusk", "Room 1", "Room 2", "Leaders", "Graveyard", "Party!",
+]);
+
 module.exports = class MafiaPlayer extends Player {
   constructor(user, game, isBot) {
     super(user, game, isBot);
@@ -381,76 +387,31 @@ module.exports = class MafiaPlayer extends Player {
     this.queuedGraveyardParticipationMessage = true;
   }
 
-  speak(message) {
-    let deadPlayers = this.game.players.filter(
-      (p) =>
-        (!p.alive || p.hasEffect("CanSeeDead")) &&
-        !(p.hasEffect("CanSpeakToLiving") && !p.hasEffect("CanSeeDead"))
-    );
-    if (this.hasEffect("CanSpeakToLiving")) {
-      return super.speak(message);
-    }
-    if (
-      !this.alive &&
-      this.game.isTalkingDead() != true &&
-      (message.meeting.name == "Village" ||
-       message.meeting.name == "Village Dusk" ||
-        message.meeting.name == "Room 1" ||
-        message.meeting.name == "Room 2" ||
-        message.meeting.name == "Leaders" ||
-        message.meeting.name == "Graveyard" ||
-        message.meeting.name == "Party!")
-    ) {
-      message.recipients = deadPlayers;
-      message.modified = true;
-    }
+  canSpeakToLivingIn(meeting) {
+    if (!roomsWithDeadAudience.has(meeting.name)) return super.canSpeakToLivingIn(meeting);
+    return this.hasEffect("CanSpeakToLiving") || this.game.isTalkingDead();
+  }
 
+  useDeadChatAudience(message) {
+    if (this.alive || !this.game.started || this.game.finished ||
+        !roomsWithDeadAudience.has(message.meeting?.name) ||
+        this.canSpeakToLivingIn(message.meeting) || message.abilityName === "Whisper") return;
+
+    message.recipients = this.game.players.filter((player) => {
+      const canSeeDead = player.hasEffect("CanSeeDead");
+      return canSeeDead || (!player.alive && !player.hasEffect("CanSpeakToLiving"));
+    });
+    message.modified = true;
+  }
+
+  speak(message) {
+    this.useDeadChatAudience(message);
     return super.speak(message);
   }
 
   speakQuote(quote) {
-    let deadPlayers = this.game.players.filter(
-      (p) =>
-        (!p.alive || p.hasEffect("CanSeeDead")) &&
-        !(p.hasEffect("CanSpeakToLiving") && !p.hasEffect("CanSeeDead"))
-    );
-    if (this.hasEffect("CanSpeakToLiving")) {
-      return super.speak(quote);
-    }
-    if (
-      !this.alive &&
-      this.game.isTalkingDead() != true &&
-      (quote.meeting.name == "Village" ||
-       quote.meeting.name == "Village Dusk" ||
-        quote.meeting.name == "Room 1" ||
-        quote.meeting.name == "Room 2" ||
-        quote.meeting.name == "Leaders" ||
-        quote.meeting.name == "Graveyard" ||
-        quote.meeting.name == "Party!")
-    ) {
-      quote.recipients = deadPlayers;
-      quote.modified = true;
-    }
-
-    quote = super.speakQuote(quote);
-    if (!quote) {
-      return;
-    }
-
-    let sourceMeeting = this.game.getMeeting(
-      quote.fromMeetingId,
-      quote.fromState
-    );
-    if (
-      sourceMeeting.name === "Village" ||
-      sourceMeeting.name === "Pregame" ||
-      sourceMeeting.name === quote.meeting.name
-    ) {
-      return quote;
-    }
-
-    quote.cancel = true;
-    return;
+    this.useDeadChatAudience(quote);
+    return super.speakQuote(quote);
   }
 
   joinMeetings(meetings, extraRole) {

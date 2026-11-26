@@ -11,6 +11,7 @@ module.exports = class Quote extends Message {
     this.quotable = false;
     this.cancel = false;
     this.messageContent = info.messageContent;
+    this.sourceMessage = info.sourceMessage;
   }
 
   send() {
@@ -32,12 +33,19 @@ module.exports = class Quote extends Message {
       this.versions["*"] = newVersion;
     }
 
+    this.setMeetingAudience();
+    if (this.sourceMessage && !this.meeting.canShareChatReference(
+      this.sourceMessage, this.recipients, this.visibleToSpectators
+    )) {
+      this.meeting.refuseChatReference(this.sender);
+      return false;
+    }
     this.meeting.messages.push(this);
 
     for (let player of this.versions["*"].recipients)
       player.hearQuote(this.versions["*"], this);
 
-    if (this.game.isSpectatorMeeting(this.meeting))
+    if (this.visibleToSpectators)
       this.game.spectatorsHearQuote(this.versions["*"]);
 
     this.game.omniscientSpectatorsHear?.(this);

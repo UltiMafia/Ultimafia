@@ -193,7 +193,6 @@ module.exports = class Game {
     this.anonymousGame = options.settings.anonymousGame;
     this.anonymousDeck = options.settings.anonymousDeck;
     this.beforeAnonPlayerInfo = [];
-    this.anonPlayerMapping = {};
     this.pointsEarnedByPlayers = {};
     /** @type {Record<string, string>} playerId -> starting faction key for stats/payouts */
     this.startingFactions = {};
@@ -527,8 +526,10 @@ module.exports = class Game {
     for (let item of this.exorciseQueue) {
       this.recordExorcised(item.player, item.exorcised);
 
-      if (item.exorcised && !item.player.alive)
-        this.broadcast("exorcised", item.player.id);
+      this.broadcast("exorcised", {
+        playerId: item.player.id,
+        exorcised: item.exorcised,
+      });
     }
 
     this.exorciseQueue.empty();
@@ -538,12 +539,13 @@ module.exports = class Game {
   // dead player (DMs allowed) from an alive one (DMs locked in ranked and
   // competitive games). See modules/dmGate.js.
   syncDeadForDms(player) {
-    const userId = player && player.user && player.user.id;
+    const userId = player.connectionAccountId;
     if (!userId) return;
-    redis.setPlayerDead(this.id, userId, !player.alive).catch(() => {});
+    return redis.setPlayerDead(this.id, userId, !player.alive).catch(() => {});
   }
 
   queueDeath(player) {
+    player.stopTyping();
     player.alive = false;
     this.deathQueue.enqueue({ player, dead: true });
   }
@@ -627,6 +629,22 @@ module.exports = class Game {
       }
 
       var player = this.findJoinedPlayer(user, isBot);
+
+      // The seat stays in game history after exorcism, but its connection
+      // belongs to the spectator now, even if the old watcher entry expired.
+      if (player?.exorcised && !player.left) {
+        const omniscient = await this.canSpectateOmnisciently(user);
+        if (player.left) return;
+        const watcher = this.findSpectator(user);
+        if (watcher) {
+          this.reconnectSpectator(watcher, user, omniscient);
+          player.socket = watcher.socket;
+        } else {
+          player.socket = player.user.socket = user.socket;
+          this.addSpectator(player.user, omniscient, player);
+        }
+        return;
+      }
 
       // A seated player opening ?spectate=true during pregame gives up the
       // seat through the same path as /spectate and the spectate event
@@ -777,18 +795,9 @@ module.exports = class Game {
   }
 
   findJoinedPlayer(user, isBot) {
-    if (!isBot && (!this.started || !this.anonymousGame)) {
-      for (let p of this.players) {
-        if (p.user.id == user.id) return p;
-      }
-    } else if (!isBot && this.started && this.anonymousGame) {
-      if (this.anonPlayerMapping[user.id]) return this.anonPlayerMapping[user.id];
-    } else {
-      for (let p of this.players) {
-        if (user.guestId && p.user.guestId && p.user.guestId == user.guestId) {
-          return p;
-        }
-      }
+    for (const player of this.players) {
+      if (!isBot && user.id && player.connectionAccountId === user.id) return player;
+      if (isBot && user.guestId && player.connectionGuestId === user.guestId) return player;
     }
 
     return null;
@@ -819,11 +828,10 @@ module.exports = class Game {
 
   findSpectator(user) {
     for (let s of this.spectators) {
-      if (user.id && s.user.id == user.id) return s;
+      if (user.id && s.connectionAccountId === user.id) return s;
       if (
         user.guestId &&
-        s.user.guestId &&
-        s.user.guestId == user.guestId
+        s.connectionGuestId === user.guestId
       ) {
         return s;
       }
@@ -993,8 +1001,15 @@ module.exports = class Game {
     return player;
   }
 
-  addSpectator(user, omniscient) {
+  addSpectator(user, omniscient, exorcisedPlayer) {
     const spectator = new Spectator(user, this);
+    if (exorcisedPlayer) {
+      spectator.exorcisedPlayer = exorcisedPlayer;
+      spectator.connectionAccountId = exorcisedPlayer.connectionAccountId;
+      spectator.connectionGuestId = exorcisedPlayer.connectionGuestId;
+      spectator.name = exorcisedPlayer.name;
+      spectator.anonId = exorcisedPlayer.anonId;
+    }
     this.reusePastSpectatorId(spectator);
     spectator.omniscient = !!omniscient;
     spectator.init();
@@ -1006,8 +1021,7 @@ module.exports = class Game {
 
     // Pregame spectators can speak and read in Pregame. The spectator meeting
     // does not exist until the game starts.
-    if (!this.started && this.pregame) this.pregame.join(spectator);
-    if (this.spectatorMeeting) this.spectatorMeeting.join(spectator);
+    this.restoreSpectatorMeetings(spectator);
 
     this.sendAllGameInfo(spectator);
     spectator.sendMeetings();
@@ -1022,8 +1036,14 @@ module.exports = class Game {
   // A reconnecting spectator talks where a new one would: Pregame before the
   // start, the spectator meeting after it.
   restoreSpectatorMeetings(spectator) {
+    if (this.finished) {
+      if (this.postgame && !this.postgame.finished && !this.postgame.members[spectator.id])
+        this.postgame.join(spectator, this.postgame);
+      return;
+    }
     if (
       !this.started &&
+      !this.starting &&
       this.pregame &&
       !this.pregame.finished &&
       !this.pregame.members[spectator.id]
@@ -1042,15 +1062,14 @@ module.exports = class Game {
   // grace time, or back from a seat) keeps their old spectator id, so the
   // spectators map has one entry per user and old chat still names them.
   reusePastSpectatorId(spectator) {
-    const userId = spectator.user && spectator.user.id;
+    const userId = spectator.connectionAccountId;
     if (!userId) return;
 
     const past = this.spectatorsOld.filter(
       (s) =>
         s.spectator &&
         s !== spectator &&
-        s.user &&
-        s.user.id == userId &&
+        s.connectionAccountId === userId &&
         this.spectators.indexOf(s) == -1
     )[0];
     if (!past) return;
@@ -1103,6 +1122,7 @@ module.exports = class Game {
   dropPregameMember(person) {
     if (!this.pregame || !person || !this.pregame.members[person.id]) return;
 
+    person.stopTyping();
     delete this.pregame.members[person.id];
 
     // Spectator history is shared. leftMeeting() would delete Pregame for
@@ -1368,14 +1388,7 @@ module.exports = class Game {
   }
 
   async userLeave(userId) {
-    var player;
-
-    for (let p of this.players) {
-      if (p.user.id == userId) {
-        player = p;
-        break;
-      }
-    }
+    const player = this.findJoinedPlayer({ id: userId }, false);
 
     if (this.tutorial && player && userId == this.hostId) {
       await this.endTutorialEarly(player);
@@ -1384,7 +1397,7 @@ module.exports = class Game {
 
     if (!player && userId != this.hostId) return;
     else if (!player) {
-      await redis.leaveGame(userId);
+      await redis.leaveGame(userId, this.id);
 
       if (this.players.length == 0) {
         gameEventLog.close(this);
@@ -1394,13 +1407,23 @@ module.exports = class Game {
 
       return;
     }
-    //this.sendAlert(`Alive ${player.alive} Grave Part ${this.graveyardParticipation} Exorcised ${player.exorcised} Player Grave Part ${player.requiresGraveyardParticipation()}`);
-    if (player.alive || (this.graveyardParticipation == true && player.exorcised == false) || (this.type == "Mafia" && player.requiresGraveyardParticipation())){
-      this.sendAlert(`${player.name} has left.`, undefined, undefined, [
-        "info",
-      ]);
+    this.announcePlayerLeave(player);
+    await this.playerLeave(player);
+  }
+
+  announcePlayerLeave(player) {
+    if (player.spectator) return;
+
+    // Everyone hears that a living player left. A dead player's departure is
+    // only news while their participation still matters (a graveyard game),
+    // but when it is, it is still news to the whole game, not just the dead.
+    if (
+      player.alive ||
+      (this.graveyardParticipation == true && player.exorcised === false) ||
+      (this.type === "Mafia" && player.requiresGraveyardParticipation())
+    ) {
+      this.sendAlert(`${player.name} has left.`, undefined, undefined, ["info"]);
     }
-    this.playerLeave(player);
   }
 
   async playerLeave(player) {
@@ -1410,29 +1433,39 @@ module.exports = class Game {
       await this.endTutorialEarly(player);
       return;
     }
-    // The subscription goes as soon as the player does, so nobody is pushed a
-    // game they are no longer in. Note this is driven by leaving, not by the
-    // socket closing: a player who backgrounds or closes their browser stays in
-    // the game, and covering exactly that case is the point of the push.
-    if (player.user && player.user.id) {
-      pushNotifications.unregisterUser(player.user.id);
+    // Leave removes push subscriptions; disconnect alone does not. Use the
+    // connection account because a Disguiser swap can move it to another seat.
+    const userId = player.connectionAccountId;
+    if (userId) {
+      pushNotifications.unregisterUser(userId);
     }
 
     // player.leaveReason: why the server removed them, shown on their page.
     const reason = player.leaveReason;
-    player.send("left", reason ? { reason } : undefined);
+    const socket = player.socket;
+    player.stopTyping();
     player.left = true;
+    const watcher = this.spectators.find((spectator) => spectator.exorcisedPlayer === player);
+    if (watcher) this.removeSpectator(watcher);
+    this.dropChatMember(this.postgame, player);
 
     this.kudosVoterLeft(player);
-    // Delay disconnect so "left" can flush before the socket is torn down.
-    // Immediate terminate() races the client receive path (esp. iOS Safari).
-    setTimeout(() => {
+    const releaseConnection = async () => {
       try {
-        if (player.user) player.user.disconnect();
-      } catch (e) {
-        // Socket may already be closed by the client navigating away
+        if (userId) await redis.leaveGame(userId, this.id);
+      } finally {
+        socket.send("left", reason ? { reason } : undefined);
+        // Let "left" flush before closing the captured socket; the disguise may
+        // be undone before this callback runs.
+        setTimeout(() => {
+          try {
+            socket.terminate();
+          } catch (e) {
+            // Socket may already be closed by the client navigating away.
+          }
+        }, 100);
       }
-    }, 100);
+    };
 
     if (!this.started && this.players[player.id]) {
       this.cancelReadyCheck();
@@ -1443,6 +1476,7 @@ module.exports = class Game {
 
       delete this.players[player.id];
       this.playersGone[player.user.id] = this.createPlayerGoneObj(player);
+      await releaseConnection();
 
       if (this.players.length == 0) {
         await this.cancel();
@@ -1464,7 +1498,6 @@ module.exports = class Game {
         if (this.breakIntegrity(player)) {
           this.queueIntegrityRefund(wasRanked, wasCompetitive);
           if (!player.isBot) {
-            const userId = player.userId || player.user.id;
             this.penalizePlayerForLeaving(userId);
           }
         } else {
@@ -1474,6 +1507,9 @@ module.exports = class Game {
         await this.settleIntegrityBreak();
       }
 
+      // Release even the last player, whose path starts postgame cleanup and
+      // returns before that asynchronous work finishes.
+      await releaseConnection();
       if (!this.postgameOver && this.players[player.id]) {
         var remainingPlayer = false;
 
@@ -1490,15 +1526,6 @@ module.exports = class Game {
         }
       }
     }
-
-    // In the event of a guiser swap, the userId that is needed to leave is
-    // the target. However, the `player` in this game is the still alive disguiser
-    // Therefore, if the swapped user is not null, then we need to use that person's ID
-    let userIdToLeave = player.user.id;
-    if (player.user.swapped) {
-      userIdToLeave = player.user.swapped.id;
-    }
-    await redis.leaveGame(userIdToLeave);
   }
 
   async onAllPlayersLeft() {
@@ -1537,25 +1564,14 @@ module.exports = class Game {
   }
 
   exorcisePlayer(player) {
+    if (player.exorcised) return;
+    player.stopTyping();
     player.exorcised = true;
     this.events.emit("exorcise", player);
     this.exorciseQueue.enqueue({ player, exorcised: true });
     this.spectatorLimit = this.spectatorLimit + 1;
-    var spectator = new Spectator(player.user, this);
-    spectator.init();
-
-    this.spectators.push(spectator);
-    this.spectatorsOld.push(spectator);
-    // Out of the game, so they read and write spectator chat from now on.
-    if (this.spectatorMeeting && !this.spectatorMeeting.finished) {
-      this.spectatorMeeting.join(spectator);
-    }
-    this.sendAllGameInfo(spectator);
-    spectator.send("loaded");
-
-    this.broadcast("spectatorCount", this.spectators.length);
-    redis.setSpectatorCount(this.id, this.spectators.length);
-    this.broadcastSpectators();
+    player.socket.clearListeners();
+    this.addSpectator(player.user, false, player);
   }
 
   // Returns if the integrity of the game was broken for the first time or not
@@ -1768,8 +1784,11 @@ module.exports = class Game {
       spectator.reconnectTimer = null;
     }
 
+    spectator.stopTyping();
     this.spectators.splice(index, 1);
     this.dropPregameMember(spectator);
+    this.dropChatMember(this.spectatorMeeting, spectator);
+    this.dropChatMember(this.postgame, spectator);
 
     if (options.forget !== false && spectator.user && spectator.user.id) {
       this.pregameSpectatorUserIds.delete(spectator.user.id);
@@ -1779,6 +1798,13 @@ module.exports = class Game {
     this.broadcast("spectatorCount", this.spectators.length);
     redis.setSpectatorCount(this.id, this.spectators.length);
     this.broadcastSpectators();
+  }
+
+  dropChatMember(meeting, player) {
+    if (meeting?.members[player.id]?.player !== player) return;
+    // Keep the shared transcript; only remove the departing chat member.
+    delete meeting.members[player.id];
+    for (const member of meeting.getPlayers()) member.sendMeetingMembers(meeting);
   }
 
   async kickPlayer(player, permanent) {
@@ -2766,7 +2792,6 @@ module.exports = class Game {
 
       p.makeAnonymous(chosen);
       this.players[p.id] = p;
-      this.anonPlayerMapping[p.originalProfile.userId] = p;
     }
 
     // shuffle player order
@@ -4120,35 +4145,21 @@ module.exports = class Game {
   }
 
   spectatorsHear(message) {
-    if (
-      message.meeting &&
-      message.meeting.members &&
-      message.recipients.length < message.meeting.members.length
-    ) {
-      return;
-    }
-    if (message.abilityName != "Whisper") {
-      for (let spectator of this.spectators) {
-        // Omniscient spectators get every message via omniscientSpectatorsHear.
-        if (spectator.omniscient) continue;
+    for (let spectator of this.spectators) {
+      // Omniscient spectators get every message via omniscientSpectatorsHear.
+      if (spectator.omniscient) continue;
 
-        // Members already heard this as recipients. A second copy doubles chat.
-        if (message.recipients && message.recipients.indexOf(spectator) != -1)
-          continue;
+      // Members already heard this as recipients. A second copy doubles chat.
+      if (message.recipients && message.recipients.indexOf(spectator) != -1)
+        continue;
 
-        spectator.hear(message);
-      }
+      // A whisper only reaches here once it has leaked to the whole meeting;
+      // isVisibleToSpectators keeps the private ones out.
+      spectator.hear(message);
     }
   }
 
   spectatorsHearQuote(quote) {
-    if (
-      quote.meeting &&
-      quote.meeting.members &&
-      quote.recipients.length < quote.meeting.members.length
-    ) {
-      return;
-    }
     for (let spectator of this.spectators) {
       // Omniscient spectators get every message via omniscientSpectatorsHear.
       if (spectator.omniscient) continue;
@@ -4174,11 +4185,6 @@ module.exports = class Game {
   spectatorsSeeUnvote(info) {
     for (let spectator of this.spectators)
         if (!spectator.omniscient) spectator.seeUnvote(info);
-  }
-
-  spectatorsSeeTyping(info) {
-    for (let spectator of this.spectators)
-        if (!spectator.omniscient) spectator.seeTyping(info);
   }
 
   queueAction(action, instant) {
@@ -5020,15 +5026,7 @@ module.exports = class Game {
       }
 
       // Start postgame meeting
-      this.postgame = this.createMeeting(PostgameMeeting);
-
-      for (let player of this.players)
-        if (!player.left) this.postgame.join(player, this.postgame);
-
-      this.postgame.init();
-
-      for (let player of this.players)
-        if (!player.left) player.sendMeeting(this.postgame);
+      this.openPostgameMeeting();
 
       this.startKudosVote();
 
@@ -5049,16 +5047,7 @@ module.exports = class Game {
 
     try {
       if (!this.postgame) {
-        this.postgame = this.createMeeting(PostgameMeeting);
-
-        for (let player of this.players)
-          if (!player.left) this.postgame.join(player, this.postgame);
-
-        this.postgame.init();
-
-        for (let player of this.players)
-          if (!player.left) player.sendMeeting(this.postgame);
-
+        this.openPostgameMeeting();
         this.startKudosVote();
       }
 
@@ -5070,6 +5059,16 @@ module.exports = class Game {
         `ensurePostgameTimer failed for game ${this.id}: ${e.message}`
       );
     }
+  }
+
+  openPostgameMeeting() {
+    this.postgame = this.createMeeting(PostgameMeeting);
+    for (const player of this.players)
+      if (!player.left && !player.exorcised) this.postgame.join(player, this.postgame);
+    for (const spectator of this.spectators) this.restoreSpectatorMeetings(spectator);
+    this.postgame.init();
+    for (const player of this.postgame.getPlayers()) player.sendMeeting(this.postgame);
+    this.broadcastSpectators();
   }
 
   async penalizePlayerForLeaving(userId) {
