@@ -114,8 +114,6 @@ async function onlyModsBesides(memberIds, userId) {
 
 (async function () {
   try {
-    await db.promise;
-
     process
       .on("unhandledRejection", (err) => logger.error(err))
       .on("uncaughtException", (err) => logger.error(err))
@@ -642,6 +640,12 @@ async function onlyModsBesides(memberIds, userId) {
         logger.error(e);
       }
     });
+
+    // The socket server is already accepting connections when this module is
+    // loaded. Registering the handler above is synchronous; wait for the
+    // database after it so a client that connects during the handshake still
+    // receives "connected" instead of hanging on a socket nobody listens to.
+    await db.promise;
   } catch (e) {
     logger.log(e);
   }

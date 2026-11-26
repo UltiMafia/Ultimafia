@@ -48,6 +48,16 @@ function settle() {
   return new Promise((resolve) => setTimeout(resolve, 50));
 }
 
+// Poll for the effect of a command when the machine is loaded; the fixed
+// settle() above is only a heuristic.
+async function waitUntil(check, timeoutMs = 2000) {
+  const started = Date.now();
+  while (!check()) {
+    if (Date.now() - started > timeoutMs) return;
+    await new Promise((resolve) => setTimeout(resolve, 10));
+  }
+}
+
 async function makeGame(extra) {
   extra = extra || {};
   const game = new Game({
@@ -135,7 +145,7 @@ describe("Games/SpectateCommands", function () {
 
       watcher.socket.flushMessages();
       say(game.spectators[0], "/join", game.pregame.id);
-      await settle();
+      await waitUntil(() => game.players.length === 2);
 
       game.spectators.should.have.lengthOf(0);
       game.players.should.have.lengthOf(2);

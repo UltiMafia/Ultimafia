@@ -169,11 +169,12 @@ describe("Chat server DM previews and group DMs", function () {
     a.clear();
     await sleep(600);
     a.send("sendMessage", "one");
-    // Typed and sent right after the first (the limit is 1 per 500ms).
-    await sleep(150);
+    // Wait until the first message is actually saved: the rate limit is
+    // checked server-side, and sending the second before the first completes
+    // lets both pass the check.
+    await a.waitFor("message", (m) => m.content === "one");
     a.send("sendMessage", "two");
     expect(await a.waitFor("error")).to.match(/too quickly/);
-    await a.waitFor("message", (m) => m.content === "one");
     await sleep(300);
     expect(a.events.find(([e, m]) => e === "message" && m.content === "two")).to.equal(undefined);
   });

@@ -2,7 +2,13 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
-const ts = require("../react_main/node_modules/typescript");
+// TypeScript lives with the client packages. The backend CI job installs only
+// the root dependencies, so skip this file there instead of failing to load.
+let ts = null;
+try {
+  ts = require("../react_main/node_modules/typescript");
+} catch (e) {}
+const describeWithClientDeps = ts ? describe : describe.skip;
 
 function deferred() {
   let resolve;
@@ -63,7 +69,7 @@ function harness() {
   return { Sound, Manager, ctx, sources, gains, requests, respond, listeners };
 }
 
-describe("Web Audio game playback", function () {
+describeWithClientDeps("Web Audio game playback", function () {
   it("cancels a stopped sound while decoding and never starts it late", async function () {
     const h = harness();
     const decode = deferred();
