@@ -27,6 +27,10 @@ module.exports = class ConvertToChosenRoleOnDeath extends Card {
           labels: ["convert", "role"],
           priority: PRIORITY_CONVERT_DEFAULT,
           run: function () {
+            if (this.target == "None") {
+              delete this.role.data.targetPlayer;
+              return;
+            }
             let targetPlayer = this.role.data.targetPlayer;
             if (targetPlayer) {
               if (this.dominates(targetPlayer)) {

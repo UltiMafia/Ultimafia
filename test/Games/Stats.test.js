@@ -191,6 +191,10 @@ async function seedSetupAndVersion(setupConfig, { ranked, competitive } = {}) {
 }
 
 describe("Stats recording", function () {
+  // A few of these tests do several Mongo round-trips; the default 2s
+  // timeout is not always enough on a loaded CI runner.
+  this.timeout(10000);
+
   before(async function () {
     await db.promise;
   });
@@ -266,20 +270,24 @@ describe("Stats recording", function () {
     });
 
     it("recordStat tolerates incomplete legacy buckets without crashing", async function () {
+      // The incomplete bucket must exist before the game ends: recordStat
+      // fills it in at endPostgame. Installing it after makeGame returns is
+      // too late, because the auto-vote has already finished the game.
       const { game } = await makeGame(mafiaSetup(), {
-        preJoinHook: autoVillageWin(),
+        preJoinHook: (ctx) => {
+          autoVillageWin()(ctx);
+          for (const user of ctx.users) {
+            user.stats.Mafia = {
+              all: {
+                totalGames: 0,
+                wins: { count: 0, total: 0 },
+                abandons: { count: 0, total: 0 },
+              },
+              unranked: { totalGames: 1 },
+            };
+          }
+        },
       });
-
-      for (const player of game.players) {
-        player.user.stats.Mafia = {
-          all: {
-            totalGames: 0,
-            wins: { count: 0, total: 0 },
-            abandons: { count: 0, total: 0 },
-          },
-          unranked: { totalGames: 1 },
-        };
-      }
 
       await waitForGameEnd(game);
       game.finished.should.equal(true);
@@ -641,11 +649,11 @@ describe("Stats recording", function () {
   });
 
   describe("Setup stats — SetupVersion writes", function () {
-    // recordSetupStats writes alignmentRows/roleRows/gameLengthRows tagged
-    // with "unranked" | "ranked" | "competitive", and short-circuits on
-    // hadVegKill (only incrementing totalVegs). endPostgame is skipped in
-    // isTest mode, so we invoke recordSetupStats directly against a seeded
-    // Setup + SetupVersion.
+    // recordSetupStats writes per-faction and per-role aggregates tagged
+    // with "unranked" | "ranked" | "competitive" (alignmentAgg/roleAgg),
+    // plus lengthAgg and played, and short-circuits on hadVegKill (only
+    // incrementing totalVegs). endPostgame is skipped in isTest mode, so we
+    // invoke recordSetupStats directly against a seeded Setup + SetupVersion.
 
     async function runCompletedAndRecord(gameOpts) {
       const setup = mafiaSetup({ id: `stats-${shortid.generate()}` });
@@ -664,67 +672,57 @@ describe("Stats recording", function () {
       return models.SetupVersion.findOne({ setup: setupDoc._id }).lean();
     }
 
-    it("unranked completed: alignment/role rows tagged 'unranked'", async function () {
+    function expectAggregatesForTag(sv, tag) {
+      // Village wins the auto-voted game; Mafia has no wins entry.
+      const village = sv.setupStats.alignmentAgg.Village[tag];
+      village.games.should.equal(1);
+      village.wins.should.equal(1);
+
+      const mafia = sv.setupStats.alignmentAgg.Mafia[tag];
+      mafia.games.should.equal(1);
+      expect(mafia.wins).to.equal(undefined);
+
+      // Two Villagers and one Mafioso played this game.
+      sv.setupStats.roleAgg.Villager[tag].games.should.equal(2);
+      sv.setupStats.roleAgg.Mafioso[tag].games.should.equal(1);
+      sv.setupStats.lengthAgg[tag].count.should.equal(1);
+      sv.setupStats.lengthAgg[tag].sumMs.should.be.at.least(0);
+    }
+
+    it("unranked completed: aggregates tagged 'unranked'", async function () {
       const { setupDoc } = await runCompletedAndRecord({});
       const sv = await fetchSv(setupDoc);
 
       sv.played.should.equal(1);
       sv.setupStats.totalVegs.should.equal(0);
-      sv.setupStats.alignmentRows.length.should.be.greaterThan(0);
-      for (const row of sv.setupStats.alignmentRows) {
-        row[1].should.equal("unranked");
-      }
-      for (const row of sv.setupStats.roleRows) {
-        row[1].should.equal("unranked");
-      }
-      for (const row of sv.setupStats.gameLengthRows) {
-        row[0].should.equal("unranked");
-      }
+      expectAggregatesForTag(sv, "unranked");
     });
 
-    it("ranked completed: alignment/role rows tagged 'ranked'", async function () {
+    it("ranked completed: aggregates tagged 'ranked'", async function () {
       const { setupDoc } = await runCompletedAndRecord({ ranked: true });
       const sv = await fetchSv(setupDoc);
 
       sv.played.should.equal(1);
       sv.setupStats.totalVegs.should.equal(0);
-      sv.setupStats.alignmentRows.length.should.be.greaterThan(0);
-      for (const row of sv.setupStats.alignmentRows) {
-        row[1].should.equal("ranked");
-      }
-      for (const row of sv.setupStats.roleRows) {
-        row[1].should.equal("ranked");
-      }
-      for (const row of sv.setupStats.gameLengthRows) {
-        row[0].should.equal("ranked");
-      }
+      expectAggregatesForTag(sv, "ranked");
     });
 
-    it("competitive completed: alignment/role rows tagged 'competitive'", async function () {
+    it("competitive completed: aggregates tagged 'competitive'", async function () {
       const { setupDoc } = await runCompletedAndRecord({ competitive: true });
       const sv = await fetchSv(setupDoc);
 
       sv.played.should.equal(1);
       sv.setupStats.totalVegs.should.equal(0);
-      sv.setupStats.alignmentRows.length.should.be.greaterThan(0);
-      for (const row of sv.setupStats.alignmentRows) {
-        row[1].should.equal("competitive");
-      }
-      for (const row of sv.setupStats.roleRows) {
-        row[1].should.equal("competitive");
-      }
-      for (const row of sv.setupStats.gameLengthRows) {
-        row[0].should.equal("competitive");
-      }
+      expectAggregatesForTag(sv, "competitive");
     });
 
     it("conversion: villager converted to Mafia, Mafia wins → Village win rate is 0%", async function () {
       // 3 Villager + 1 Yakuza. Yakuza converts a Villager to Mafioso, then
       // Mafia wins (Yakuza + converted Villager). The pre-fix behaviour
       // bucketed every player by their starting role, so this game would
-      // record [Village, true] in alignmentRows — a Village "win" the
-      // Village never actually earned. After the fix, final roles are used
-      // and Village registers as [Village, false] (0%) while Mafia is true.
+      // credit Village with a win in alignmentAgg — a "win" the Village
+      // never actually earned. After the fix, final roles are used and
+      // Village registers no win while Mafia registers one.
       const setupConfig = {
         id: `stats-${shortid.generate()}`,
         total: 4,
@@ -762,17 +760,14 @@ describe("Stats recording", function () {
       const sv = await fetchSv(setupDoc);
 
       // Two Village starters remain Village at game end (the third one was
-      // converted), so alignmentRows for Village must be tagged false.
-      const villageRows = sv.setupStats.alignmentRows.filter(
-        (r) => r[0] === "Village"
-      );
-      const mafiaRows = sv.setupStats.alignmentRows.filter(
-        (r) => r[0] === "Mafia"
-      );
-      villageRows.length.should.equal(1);
-      villageRows[0][2].should.equal(false);
-      mafiaRows.length.should.equal(1);
-      mafiaRows[0][2].should.equal(true);
+      // converted), so the Village faction is recorded as a played game with
+      // no win; Mafia records the win.
+      const villageAgg = sv.setupStats.alignmentAgg.Village.unranked;
+      villageAgg.games.should.equal(1);
+      expect(villageAgg.wins).to.equal(undefined);
+      const mafiaAgg = sv.setupStats.alignmentAgg.Mafia.unranked;
+      mafiaAgg.games.should.equal(1);
+      mafiaAgg.wins.should.equal(1);
 
       // Aggregate maps reflect final roles too. Mongoose Map fields come
       // back as plain objects via .lean().
@@ -784,7 +779,7 @@ describe("Stats recording", function () {
       wins.Mafia.should.equal(2);
     });
 
-    it("vegged game: totalVegs incremented; played/alignmentRows NOT touched", async function () {
+    it("vegged game: totalVegs incremented; played/aggregates NOT touched", async function () {
       const setup = mafiaSetup({ id: `stats-${shortid.generate()}` });
       await seedSetupAndVersion(setup, { ranked: true });
 
@@ -804,9 +799,9 @@ describe("Stats recording", function () {
       const sv = await fetchSv(setupDoc);
       sv.setupStats.totalVegs.should.equal(1);
       sv.played.should.equal(0);
-      sv.setupStats.alignmentRows.length.should.equal(0);
-      sv.setupStats.roleRows.length.should.equal(0);
-      sv.setupStats.gameLengthRows.length.should.equal(0);
+      expect(sv.setupStats.alignmentAgg?.Village).to.equal(undefined);
+      expect(sv.setupStats.roleAgg?.Villager).to.equal(undefined);
+      expect(sv.setupStats.lengthAgg?.unranked).to.equal(undefined);
     });
   });
 });

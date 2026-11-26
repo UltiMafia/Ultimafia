@@ -229,6 +229,7 @@ module.exports = class MagusGame extends Card {
             labels: ["kill"],
             actor: this.player,
             target: this.player.role.MagusKillTarget,
+            game: this.game,
             run: function () {
               if (!this.actor.role.data.FakeKill) return;
               if (this.actor.role.data.FakeClean) {
@@ -251,6 +252,7 @@ module.exports = class MagusGame extends Card {
             labels: ["kill"],
             actor: this.player,
             target: this.player.role.MagusExtraKillTarget,
+            game: this.game,
             run: function () {
               if (!this.actor.role.data.FakeKill) return;
               if (

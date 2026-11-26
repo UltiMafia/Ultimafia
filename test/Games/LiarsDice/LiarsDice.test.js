@@ -18,7 +18,16 @@ async function startGame(options = {}) {
       spotOn: options.spotOn ?? true,
     },
   });
-  await waitFor(() => made.game.started && made.game.getStateName() == "Guess Dice");
+  // getStateName() flips to "Guess Dice" before makeMeetings() has created
+  // the chat room, so seedChat() can otherwise run against no meeting on a
+  // loaded machine. The room is occasionally named "The Flying Dutchman"
+  // (3% of games), so match the game's own chatName instead of "Casino".
+  await waitFor(
+    () =>
+      made.game.started &&
+      made.game.getStateName() == "Guess Dice" &&
+      made.game.getMeetings().some((m) => m.name == made.game.chatName)
+  );
   return made;
 }
 
@@ -41,7 +50,7 @@ function alertsSince(game, from) {
 }
 
 function casino(game) {
-  return game.history.getMeetings().find((m) => m.name == "Casino");
+  return game.history.getMeetings().find((m) => m.name == game.chatName);
 }
 
 const tick = () => new Promise((r) => setTimeout(r, 20));
@@ -182,7 +191,7 @@ describe("Games/LiarsDice engine", function () {
     const perBid = {};
     for (const n of [50, 500]) {
       const { game, meter } = await startGame();
-      seedChat(game, "Casino", n);
+      seedChat(game, game.chatName, n);
       meter.reset();
       for (let i = 1; i <= 4; i++) await bid(game, i, 6);
       perBid[n] = meter.snapshot();
