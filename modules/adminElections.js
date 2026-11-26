@@ -1,4 +1,5 @@
 const models = require("../db/models");
+const { accountLinkEvidenceKeys } = require("./accountLinkage");
 
 const ADMIN_GROUP = "Admin";
 const ADMIN_GROUPS = ["Owner", ADMIN_GROUP];
@@ -35,6 +36,28 @@ function electionPhase(election, now) {
   if (now < election.votingStartsAt) return "nominations";
   if (now < election.votingEndsAt) return "voting";
   return "awaitingCertification";
+}
+
+async function countableRankings(ballots, ballotOrder) {
+  const voterIds = Object.keys(ballots);
+  if (voterIds.length === 0) return [];
+  const voters = await models.User.find({ _id: { $in: voterIds } })
+    .select("ip fingerprints").lean();
+  const evidenceByVoter = new Map(voters.map((user) => [
+    user._id.toString(), accountLinkEvidenceKeys(user),
+  ]));
+  // Vote order is fixed on the first save. Ballots from before order was
+  // tracked precede new ballots, with a deterministic order among themselves.
+  voterIds.sort((a, b) => (ballotOrder[a] ?? 0) - (ballotOrder[b] ?? 0) || a.localeCompare(b));
+  const countedEvidence = new Set();
+  const rankings = [];
+  for (const voterId of voterIds) {
+    const evidence = evidenceByVoter.get(voterId) || [];
+    if (evidence.some((key) => countedEvidence.has(key))) continue;
+    for (const key of evidence) countedEvidence.add(key);
+    rankings.push(ballots[voterId]);
+  }
+  return rankings;
 }
 
 function countRankedBallots(nomineeIds, ballots) {
@@ -76,5 +99,6 @@ module.exports = {
   activeElectedAdminIds,
   isElectionAdmin,
   electionPhase,
+  countableRankings,
   countRankedBallots,
 };

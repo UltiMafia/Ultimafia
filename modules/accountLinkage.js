@@ -17,6 +17,14 @@ function fingerprintKey(fingerprint) {
   return JSON.stringify([fingerprint.platform, fingerprint.stable, fingerprint.unstable]);
 }
 
+function accountLinkEvidenceKeys(user) {
+  const ips = Array.isArray(user.ip) ? user.ip : [];
+  return [
+    ...ips.map((ip) => `ip:${ip}`),
+    ...normalizedFingerprints(user.fingerprints).map((fingerprint) => `fingerprint:${fingerprintKey(fingerprint)}`),
+  ];
+}
+
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -56,13 +64,9 @@ async function getDirectLinkedAccountIds(userId) {
 
   if (clauses.length === 0) return [userId];
   const linkedUsers = await models.User.find({ $or: clauses }).select("id ip fingerprints -_id").lean();
-  const sourceFingerprints = new Set(normalizedFingerprints(user.fingerprints).map(fingerprintKey));
-  const sourceIps = new Set(Array.isArray(user.ip) ? user.ip : []);
+  const sourceEvidence = new Set(accountLinkEvidenceKeys(user));
   const ids = new Set(linkedUsers
-    .filter((linkedUser) =>
-      (Array.isArray(linkedUser.ip) && linkedUser.ip.some((ip) => sourceIps.has(ip))) ||
-      normalizedFingerprints(linkedUser.fingerprints).some((fingerprint) => sourceFingerprints.has(fingerprintKey(fingerprint)))
-    )
+    .filter((linkedUser) => accountLinkEvidenceKeys(linkedUser).some((key) => sourceEvidence.has(key)))
     .map((linkedUser) => linkedUser.id)
     .filter(Boolean));
   ids.add(userId);
@@ -111,6 +115,7 @@ async function clearAllLinkEvidence() {
 
 module.exports = {
   getDirectLinkedAccountIds,
+  accountLinkEvidenceKeys,
   normalizedFingerprints,
   removeSharedLinkEvidence,
   clearAllLinkEvidence,

@@ -171,7 +171,8 @@ function RankedBallot({ election, onChange }) {
     <Stack component="form" onSubmit={submit} spacing={1.5} sx={{ maxWidth: 520 }}>
       <Typography component="h3" variant="subtitle1">Your private ballot</Typography>
       <Typography variant="body2" color="text.secondary">
-        Put your favorite first. Rank as many nominees as you like and update your ballot before voting closes.
+        Put your favorite first and rank as many nominees as you like. Linked accounts share one ballot:
+        use the account you originally voted with to make changes before voting closes.
       </Typography>
       {error && <Alert severity="error">{error}</Alert>}
       {ranking.length > 0 && (

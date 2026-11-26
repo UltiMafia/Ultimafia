@@ -1818,6 +1818,7 @@ schemas.AdminElection = new mongoose.Schema({
   nominees: [electionNominee],
   // Election-local voter keys, never selected by the public listing.
   ballots: { type: Map, of: [String], select: false },
+  ballotOrder: { type: Map, of: Number, select: false },
   revision: { type: Number, default: 0 },
   certifiedBy: String,
   certifiedAt: Date,

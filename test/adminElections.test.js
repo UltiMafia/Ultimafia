@@ -73,11 +73,12 @@ describe("Admin elections API and permissions", function () {
     const users = [];
     try {
       users.push(...await models.User.create(
-        ["Admin", "A", "B", "C", "D", "E", "F", "G"].map((name) => ({
+        ["Admin", "A", "B", "C", "D", "E", "F", "G", "Alt", "Device1", "Device2", "Late1", "Late2"].map((name) => ({
           id: `${fixtureId}_${name}`, name, deleted: false,
         }))
       ));
-      const [admin, a, b, c, d, e, f, g] = users.map((user) => user.id);
+      const [admin, a, b, c, d, e, f, g, alt, device1, device2, late1, late2] =
+        users.map((user) => user.id);
       const group = await models.Group.create({
         name: "Admin", rank: 10, permissions: ["seeModPanel", "giveGroup"],
       });
@@ -141,14 +142,38 @@ describe("Admin elections API and permissions", function () {
       await vote(401, null, [a]);
       await vote(400, a, [a, a]);
       await vote(409, a, [d]);
+      const linkedIp = "192.0.2.10";
+      await models.User.updateMany({ id: { $in: [g, alt] } }, { $set: { ip: [linkedIp] } });
       await vote(204, g, [a]);
-      await Promise.all([[a, [a]], [b, [b]], [c, [a]], [d, [a]], [e, [b]], [f, [b]], [g, [c, b]]]
+      assert.match(await vote(409, alt, [a]), /one ballot is allowed across linked accounts/);
+      assert.equal((await listing(alt)).elections[0].myBallot, undefined);
+
+      const fingerprint = { platform: "web", stable: "same-device", unstable: "" };
+      await models.User.updateMany({ id: { $in: [device1, device2] } }, {
+        $set: { fingerprints: [fingerprint] },
+      });
+      const simultaneousVotes = await Promise.all([device1, device2].map(async (voter) => {
+        const response = await request(`${path}/ballot`, voter, "PUT", { ranking: [b] });
+        await response.text();
+        return response.status;
+      }));
+      assert.deepEqual(simultaneousVotes.sort(), [204, 409]);
+
+      await Promise.all([[a, [a]], [b, [b]], [c, [a]], [d, [a]], [e, [b]], [f, [b]],
+        [late1, [a]], [late2, [a]]]
         .map(([voter, ranking]) => vote(204, voter, ranking)));
+      // The links are discovered after both duplicate ballots were filed. The
+      // first account can still edit without losing its priority in the tally.
+      await models.User.updateMany({ id: { $in: [late1, late2] } }, {
+        $set: { ip: [linkedIp] },
+      });
+      await vote(204, g, [c, b]);
       assert.deepEqual((await listing(g)).elections[0].myBallot, [c, b]);
       for (const viewer of [null, admin]) {
         const election = (await listing(viewer)).elections[0];
         assert.equal(election.myBallot, undefined);
         assert.equal(election.ballots, undefined);
+        assert.equal(election.ballotOrder, undefined);
         assert.equal(election.winnerId, undefined);
       }
 
@@ -166,7 +191,9 @@ describe("Admin elections API and permissions", function () {
       assert.equal(result.winnerId, b);
       assert.equal(result.phase, "certified");
       assert.equal(Date.parse(result.termEndsAt) - Date.parse(result.certifiedAt), 90 * DAY);
-      assert.equal((await models.AdminElection.findById(id).select("+ballots").lean()).ballots, undefined);
+      const certified = await models.AdminElection.findById(id).select("+ballots +ballotOrder").lean();
+      assert.equal(certified.ballots, undefined);
+      assert.equal(certified.ballotOrder, undefined);
       assert.equal((await listing(b)).canManage, true);
       assert.equal(await redis.hasPermission(b, "seeModPanel", 10), true);
       assert.equal(await redis.hasPermission(b, "giveGroup"), false);

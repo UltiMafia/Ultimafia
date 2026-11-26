@@ -11,6 +11,7 @@ const {
   DAY,
   isElectionAdmin,
   electionPhase,
+  countableRankings,
   countRankedBallots,
 } = require("../modules/adminElections");
 
@@ -156,20 +157,39 @@ router.put("/:electionId/ballot", handle(async (req, res, user) => {
       new Set(ranking).size !== ranking.length)
     return errors.badRequest(res, "Rank at least one nominee, and rank each nominee only once.");
 
+  const linkedIds = (await routeUtils.getAltAccountIds(user.id)).filter((id) => id !== user.id);
+  const linkedVoters = linkedIds.length ? await models.User.find({ id: { $in: linkedIds } })
+    .select("_id").lean() : [];
+  const ballotPath = `ballots.${user._id}`;
+  const orderPath = `ballotOrder.${user._id}`;
   const update = await models.AdminElection.updateOne({
     _id: req.electionId,
     certifiedAt: null,
     "nominees.id": { $all: ranking },
+    // Check and write in one operation, including concurrent submissions from
+    // different linked accounts. Edits stay with the original account.
+    ...(linkedVoters.length && {
+      $or: [
+        { [ballotPath]: { $exists: true } },
+        { $nor: linkedVoters.map(({ _id }) => ({ [`ballots.${_id}`]: { $exists: true } })) },
+      ],
+    }),
     $expr: { $and: [
       { $lte: ["$votingStartsAt", "$$NOW"] },
       { $gt: ["$votingEndsAt", "$$NOW"] },
     ] },
-  }, {
-    $set: { [`ballots.${user._id}`]: ranking },
-    $inc: { revision: 1 },
-  });
+  }, [{
+    $set: {
+      [ballotPath]: { $literal: ranking },
+      [orderPath]: { $ifNull: [
+        `$${orderPath}`,
+        { $cond: [{ $eq: [{ $type: `$${ballotPath}` }, "missing"] }, { $add: ["$revision", 1] }, 0] },
+      ] },
+      revision: { $add: ["$revision", 1] },
+    },
+  }]);
   if (!update.matchedCount)
-    return errors.conflict(res, "Voting is closed or your ballot includes an invalid nominee.");
+    return errors.conflict(res, "Voting must be open, all choices must be nominees, and only one ballot is allowed across linked accounts.");
   res.status(204).end();
 }, { login: true }));
 
@@ -180,7 +200,7 @@ router.post("/:electionId/certify", handle(async (req, res, user) => {
     certifiedAt: null,
     $expr: { $lte: ["$votingEndsAt", "$$NOW"] },
   };
-  const election = await models.AdminElection.findOne(closed).select("+ballots").lean();
+  const election = await models.AdminElection.findOne(closed).select("+ballots +ballotOrder").lean();
   if (!election)
     return errors.conflict(res, "This election is still open or has already been certified.");
 
@@ -188,7 +208,8 @@ router.post("/:electionId/certify", handle(async (req, res, user) => {
     id: { $in: election.nominees.map(({ id }) => id) },
     deleted: false,
   }).distinct("id");
-  const result = countRankedBallots(nominees, Object.values(election.ballots || {}));
+  const rankings = await countableRankings(election.ballots || {}, election.ballotOrder || {});
+  const result = countRankedBallots(nominees, rankings);
   if (result.winnerId && !(await models.Group.exists({ name: ADMIN_GROUP })))
     return errors.conflict(res, "The Admin group must exist before certifying a winner.");
 
@@ -207,7 +228,7 @@ router.post("/:electionId/certify", handle(async (req, res, user) => {
     revision: election.revision,
   }, [
     { $set: fields },
-    { $unset: "ballots" },
+    { $unset: ["ballots", "ballotOrder"] },
   ]);
   if (!update.modifiedCount)
     return errors.conflict(res, "The election changed. Refresh before trying to certify again.");
