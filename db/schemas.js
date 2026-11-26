@@ -1804,4 +1804,29 @@ schemas.CryptoInvoice.index({
 });
 schemas.CryptoInvoice.index({ txSignature: 1 }, { unique: true, sparse: true });
 
+const electionNominee = new mongoose.Schema(
+  { id: String, name: String },
+  { _id: false }
+);
+
+schemas.AdminElection = new mongoose.Schema({
+  title: { type: String, required: true },
+  createdBy: { type: String, required: true },
+  votingStartsAt: { type: Date, required: true },
+  votingEndsAt: { type: Date, required: true },
+  termDays: { type: Number, required: true },
+  nominees: [electionNominee],
+  // Election-local voter keys, never selected by the public listing.
+  ballots: { type: Map, of: [String], select: false },
+  revision: { type: Number, default: 0 },
+  certifiedBy: String,
+  certifiedAt: Date,
+  outcome: { type: String, enum: ["elected", "tie", "noVotes"] },
+  winnerId: String,
+  termEndsAt: Date,
+});
+schemas.AdminElection.index({ winnerId: 1, termEndsAt: 1 });
+schemas.AdminElection.index({ termEndsAt: 1 });
+schemas.AdminElection.index({ votingEndsAt: -1, _id: -1 });
+
 module.exports = schemas;

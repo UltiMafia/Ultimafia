@@ -111,7 +111,8 @@ export function GroupPanels({ user }) {
             avatar={member.avatar}
           />
           <StatusIcon status={member.status} />
-          {canManageGroup && (
+          {member.electedOnly && <Typography variant="caption">Elected</Typography>}
+          {canManageGroup && !member.electedOnly && (
             <IconButton
               size="small"
               onClick={() => removeMember(group.name, member.id)}

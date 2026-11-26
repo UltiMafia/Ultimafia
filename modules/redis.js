@@ -7,6 +7,12 @@ const constants = require("../data/constants");
 const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
+const { ADMIN_GROUP, hasActiveTerm } = require("./adminElections");
+
+const permanentMembershipPermissions = new Set([
+  "createGroup", "deleteGroup", "giveGroup", "removeFromGroup",
+  "updateGroupPerms", "givePermissions",
+]);
 
 var client = redis.createClient({
   url: process.env.REDIS_URL || "redis://redis:6379",
@@ -1601,7 +1607,18 @@ async function getAllLastActive() {
 async function cacheUserPermissions(userId) {
   const permKey = `user:${userId}:perms`;
   const rankKey = `user:${userId}:rank`;
+  const permissionInfo = await loadUserPermissions(userId);
+  if (permissionInfo.noUser) return permissionInfo;
 
+  client.set(permKey, JSON.stringify(permissionInfo.perms));
+  client.expire(permKey, 3600);
+  client.set(rankKey, permissionInfo.rank);
+  client.expire(rankKey, 3600);
+
+  return permissionInfo;
+}
+
+async function loadUserPermissions(userId, electedAdminGroup) {
   var user = await models.User.findOne({ id: userId, deleted: false }).select(
     "rank permissions"
   );
@@ -1614,7 +1631,13 @@ async function cacheUserPermissions(userId) {
     "group",
     "rank permissions"
   );
-  var groups = inGroups.map((inGroup) => inGroup.toJSON().group);
+  var groups = inGroups.map((inGroup) => inGroup.toJSON().group).filter(Boolean);
+  if (electedAdminGroup) groups.push({
+    rank: electedAdminGroup.rank,
+    permissions: electedAdminGroup.permissions.filter(
+      (permission) => !permanentMembershipPermissions.has(permission)
+    ),
+  });
 
   var bans = await models.Ban.find({
     userId: userId,
@@ -1636,16 +1659,20 @@ async function cacheUserPermissions(userId) {
 
   for (let ban of bans) for (let perm of ban.permissions) delete perms[perm];
 
-  client.set(permKey, JSON.stringify(perms));
-  client.expire(permKey, 3600);
-
-  client.set(rankKey, maxRank);
-  client.expire(rankKey, 3600);
-
   return { perms, rank: maxRank };
 }
 
-async function getUserPermissions(userId) {
+async function getUserPermissions(userId, { includeElectedTerm = true } = {}) {
+  // Elected permissions are an overlay, never written to the sliding Redis
+  // cache. Certification takes effect without invalidation or a cleanup job.
+  if (includeElectedTerm && userId && (await hasActiveTerm(userId))) {
+    const group = await models.Group.findOne({ name: ADMIN_GROUP })
+      .select("rank permissions").lean();
+    if (group) {
+      const permissionInfo = await loadUserPermissions(userId, group);
+      if (await hasActiveTerm(userId)) return permissionInfo;
+    }
+  }
   const permKey = `user:${userId}:perms`;
   const rankKey = `user:${userId}:rank`;
   const exists =
@@ -1674,7 +1701,9 @@ async function getUserRank(userId) {
 async function hasPermissions(userId, perms, rank) {
   if (!userId) return false;
 
-  const permInfo = await getUserPermissions(userId);
+  // A temporary rank must not raise the ceiling for permanent grants.
+  const includeElectedTerm = !perms.some((perm) => permanentMembershipPermissions.has(perm));
+  const permInfo = await getUserPermissions(userId, { includeElectedTerm });
 
   if (permInfo.rank < rank) return false;
 

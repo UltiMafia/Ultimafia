@@ -27,6 +27,7 @@ const errors = require("../lib/errors");
 const skillRating = require("../modules/skillRating");
 const blocks = require("../modules/blocks");
 const banAppeals = require("../modules/banAppeals");
+const { ADMIN_GROUP, activeElectedAdminIds, hasActiveTerm } = require("../modules/adminElections");
 const plotArmor = require("../modules/plotArmor");
 const router = express.Router();
 
@@ -45,6 +46,17 @@ router.get("/groups", async function (req, res) {
       group.members = group.members
         .map((member) => member.toJSON().user)
         .filter((member) => member !== null);
+
+      if (group.name === ADMIN_GROUP) {
+        const electedIds = await activeElectedAdminIds();
+        if (electedIds.length) {
+          const electedMembers = await models.User.find({
+            id: { $in: electedIds, $nin: group.members.map(({ id }) => id) },
+            deleted: false,
+          }).select("id name avatar -_id").lean();
+          group.members.push(...electedMembers.map((member) => ({ ...member, electedOnly: true })));
+        }
+      }
 
       for (let member of group.members)
         member.status = await redis.getUserStatus(member.id);
@@ -238,7 +250,7 @@ router.post("/groupPerms", async function (req, res) {
       .map((perm) => String(perm))
       .filter((p) => p.length > 0);
 
-    var userPermissionInfo = await redis.getUserPermissions(userId);
+    var userPermissionInfo = await redis.getUserPermissions(userId, { includeElectedTerm: false });
     var userPermissions = userPermissionInfo.perms;
     var userRank = userPermissionInfo.rank;
 
@@ -393,10 +405,12 @@ router.post("/removeFromGroup", async function (req, res) {
       return;
     }
 
-    await models.InGroup.deleteOne({
+    const removed = await models.InGroup.deleteOne({
       user: userToRemove._id,
       group: group._id,
     }).exec();
+    if (!removed.deletedCount && groupName === ADMIN_GROUP && await hasActiveTerm(userIdToRemove))
+      return errors.conflict(res, "This admin is serving an elected term and has no permanent membership to remove.");
     if (groupName == "Developer")
       await devApiKeys.revokeKeys({ userId: userIdToRemove }, userId);
     await redis.cacheUserInfo(userIdToRemove, true);
