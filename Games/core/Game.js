@@ -688,6 +688,8 @@ module.exports = class Game {
       }
 
       const omniscient = await this.canSpectateOmnisciently(user);
+      // A kick may close the socket while an earlier join is awaiting I/O.
+      if (user.socket.readyState > 1) return;
 
       // Reconnect if already a spectator. Do this before seating so a refresh
       // during pregame cannot take an open seat.
@@ -734,6 +736,8 @@ module.exports = class Game {
         // invent a spectator for an account that just won a seat.
         if (this.findJoinedPlayer(user, isBot)) return;
 
+        // Do not restore membership after a kick during the awaits above.
+        if (user.socket.readyState > 1) return;
         const raced = this.findSpectator(user);
         if (raced) {
           this.reconnectSpectator(raced, user, omniscient);
@@ -765,6 +769,8 @@ module.exports = class Game {
         return;
       }
 
+      // spectatorJoinRefusal also awaits permission checks.
+      if (user.socket.readyState > 1) return;
       await this.sendSpectatorJoinHint(this.addSpectator(user, omniscient));
     } catch (e) {
       logger.error(e);
@@ -1788,7 +1794,13 @@ module.exports = class Game {
   kickSpectator(spectator, permanent) {
     if (permanent && spectator.user.id) this.banned[spectator.user.id] = true;
 
+    const socket = spectator.socket;
     spectator.leaveGame();
+    // "left" only removes membership; it does not revoke the cached User in
+    // the worker's join listener. Ignore queued requests and close this exact
+    // connection so a kicked, signed-out user cannot rejoin without new auth.
+    socket.clearListeners();
+    socket.terminate();
   }
 
   async reassignHost() {
