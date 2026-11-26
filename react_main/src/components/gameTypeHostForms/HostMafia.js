@@ -108,13 +108,13 @@ export default function HostMafia() {
       ref: "configureDuration",
       type: "boolean",
       value: defaults.configureDuration,
-      showIf: ["!competitive"],
+      showIf: ["!ranked", "!competitive"],
     },
     {
       label: "Day Length (minutes)",
       ref: "dayLength",
       type: "number",
-      showIf: ["configureDuration", "!competitive"],
+      showIf: ["configureDuration", "!ranked", "!competitive"],
       value: defaults.dayLength,
       min: 1,
       max: 30,
@@ -123,7 +123,7 @@ export default function HostMafia() {
       label: "Night Length (minutes)",
       ref: "nightLength",
       type: "number",
-      showIf: ["configureDuration", "!competitive"],
+      showIf: ["configureDuration", "!ranked", "!competitive"],
       value: defaults.nightLength,
       min: 1,
       max: 10,
@@ -132,7 +132,12 @@ export default function HostMafia() {
       label: "Pregame Wait (hours)",
       ref: "pregameWaitLength",
       type: "number",
-      showIf: ["configureDuration", "!competitive"],
+      showIf: (_, fields) =>
+        fields.some(
+          (field) =>
+            ["ranked", "competitive", "configureDuration"].includes(field.ref) &&
+            field.value === true
+        ),
       value: defaults.pregameWaitLength || 1,
       min: 1,
       max: 6,
@@ -141,7 +146,7 @@ export default function HostMafia() {
       label: "Extension Length (minutes)",
       ref: "extendLength",
       type: "number",
-      showIf: ["configureDuration", "!competitive"],
+      showIf: ["configureDuration", "!ranked", "!competitive"],
       value: defaults.extendLength,
       min: 0,
       max: 5,
@@ -157,6 +162,8 @@ export default function HostMafia() {
     if (lobby === "All") lobby = "Main";
 
     if (setupId) {
+      const restrictedDuration =
+        getFormFieldValue("ranked") || getFormFieldValue("competitive");
       const hostPromise = axios.post("/api/game/host", {
         gameType,
         lobby,
@@ -170,12 +177,17 @@ export default function HostMafia() {
         // scheduled: scheduled && (new Date(getFormFieldValue("startDate"))).getTime(),
         readyCheck: getFormFieldValue("readyCheck"),
         noVeg: getFormFieldValue("noVeg"),
-        stateLengths: {
-          Day: getFormFieldValue("dayLength"),
-          Night: getFormFieldValue("nightLength"),
-        },
+        // Hidden values may remain after changing modes; do not submit them.
+        ...(restrictedDuration
+          ? {}
+          : {
+              stateLengths: {
+                Day: getFormFieldValue("dayLength"),
+                Night: getFormFieldValue("nightLength"),
+              },
+              extendLength: getFormFieldValue("extendLength"),
+            }),
         pregameWaitLength: getFormFieldValue("pregameWaitLength"),
-        extendLength: getFormFieldValue("extendLength"),
         anonymousGame: getFormFieldValue("anonymousGame"),
         anonymousDeckId: getFormFieldValue("anonymousDeckId"),
         advancedHosting: getFormFieldValue("advancedHosting"),
