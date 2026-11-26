@@ -58,7 +58,7 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
     const message = error?.response?.data || error?.message || error;
     return typeof message === "string" && message.length <= 200
       ? message
-      : "Could not host game. Please try again.";
+      : "Unable to host the game right now. Try again in a moment.";
   }
   const isPhoneDevice = useIsPhoneDevice();
   const navigate = useNavigate();
