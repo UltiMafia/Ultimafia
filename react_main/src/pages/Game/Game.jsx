@@ -484,6 +484,19 @@ export default function Game(props) {
     if (!active) navigate(`/game/${gameId}`);
   }
 
+  // A seated player may watch instead of playing. The server gives up the seat
+  // and cancels the running ready check for everyone (Game.spectateFromSeat);
+  // refusals arrive as "spectateFailed", which is already shown as an alert.
+  function onReadyCheckSpectate() {
+    socket.send("spectate");
+  }
+
+  // Spectating has to be allowed for the lobby, and the tutorial's one human
+  // has to keep the seat; the server refuses both, so do not offer the button.
+  const canSpectateFromReadyCheck =
+    (options.spectating === true || options.spectating === "true") &&
+    !tutorialGameRef.current;
+
   // "Rehost?": leave this postgame lobby, then ask for a new lobby with the
   // same settings. The server lets only the first click create it; anyone
   // whose click lands after that gets the existing lobby back and joins it.
@@ -1713,6 +1726,9 @@ export default function Game(props) {
           timeLeft={readyCheckInfo.timeLeft}
           onReady={onReadyCheckVerify}
           onLeave={leaveGame}
+          onSpectate={
+            canSpectateFromReadyCheck ? onReadyCheckSpectate : undefined
+          }
         />
         <LeaveGameDialog
           open={active && leaveDialogOpen}
