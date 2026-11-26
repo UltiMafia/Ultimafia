@@ -2404,12 +2404,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
   const hasMouse = useMediaQuery("(pointer:fine)");
   const [quoteJump, setQuoteJump] = useState(null);
   const quoteJumpRef = useRef(null);
-  const [quoteJumpNotice, setQuoteJumpNotice] = useState("");
-  useEffect(() => {
-    if (!quoteJumpNotice) return;
-    const timer = setTimeout(() => setQuoteJumpNotice(""), 4000);
-    return () => clearTimeout(timer);
-  }, [quoteJumpNotice]);
   const onQuoteJump = useCallback((quote) => {
     const sourceState = history.states[quote.fromState];
     const sourceMeeting = sourceState?.meetings?.[quote.fromMeetingId];
@@ -2419,7 +2413,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     // Only navigate history already delivered to this viewer. Never fetch or
     // infer a hidden meeting or an anonymous sender.
     if (!sourceMessage) {
-      setQuoteJumpNotice("The original message is not available in your history.");
       return;
     }
     const sourceTabs = getSpeechMeetings(sourceState.meetings);
@@ -2427,7 +2420,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     const sourceTab = sourceTabs.find((meeting) => meeting.id === quote.fromMeetingId);
     const spectatorSource = sourceSpectatorChat?.id === quote.fromMeetingId;
     if (!singleState && !sourceTab && !spectatorSource) {
-      setQuoteJumpNotice("The original message is not available in this chat view.");
       return;
     }
     const target = {
@@ -2438,7 +2430,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
     };
     quoteJumpRef.current = target;
     setQuoteJump(target);
-    setQuoteJumpNotice("");
     setAutoScroll(false);
     if (!singleState) {
       updateHistory({ type: "selTab", state: quote.fromState, meetingId: target.tab });
@@ -2701,26 +2692,45 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
         (String(stateViewing) !== quoteJump.state || selTab !== quoteJump.tab)) return;
     setAutoScroll(false);
     const container = speechDisplayRef.current;
-    const row = container && Array.from(
+    const findRow = () => container && Array.from(
       container.querySelectorAll(".message[data-message-id]")
     ).find((element) =>
       element.dataset.messageId === quoteJump.message &&
       element.dataset.messageState === quoteJump.state &&
       element.dataset.messageMeeting === quoteJump.meeting
     );
-    if (row) {
-      row.scrollIntoView({ block: "center", behavior: "auto" });
-      row.classList.remove("reply-jump-highlight");
-      void row.offsetWidth;
-      row.classList.add("reply-jump-highlight");
-      setTimeout(() => row.classList.remove("reply-jump-highlight"), 1600);
-      setQuoteJumpNotice("Jumped to the original message.");
-    } else {
-      setQuoteJumpNotice("The original message is not shown with the current chat filters.");
+    let frame;
+    const deadline = performance.now() + 1500;
+    // Delivered rows outside the virtual window are not missing history. Ask
+    // the transcript to materialize the exact source, as reply references do.
+    if (windowed && container && !findRow()) {
+      container.dispatchEvent(new CustomEvent("transcript-jump", {
+        detail: {
+          messageId: quoteJump.message,
+          state: quoteJump.state,
+          meeting: quoteJump.meeting,
+        },
+      }));
     }
-    quoteJumpRef.current = null;
-    setQuoteJump(null);
-  }, [quoteJump, singleState, stateViewing, selTab, messages]);
+    const finish = () => {
+      const row = findRow();
+      if (!row && windowed && container && performance.now() < deadline) {
+        frame = requestAnimationFrame(finish);
+        return;
+      }
+      if (row) {
+        row.scrollIntoView({ block: "center", behavior: "auto" });
+        row.classList.remove("reply-jump-highlight");
+        void row.offsetWidth;
+        row.classList.add("reply-jump-highlight");
+        setTimeout(() => row.classList.remove("reply-jump-highlight"), 1600);
+      }
+      quoteJumpRef.current = null;
+      setQuoteJump(null);
+    };
+    finish();
+    return () => cancelAnimationFrame(frame);
+  }, [quoteJump, singleState, stateViewing, selTab, messages, windowed]);
 
   // Typing and unrelated game updates must not repeatedly measure the entire
   // transcript. Cancel pending work when the user scrolls away or changes tabs.
@@ -2843,7 +2853,6 @@ export function TextMeetingLayout({ seatActions = true } = {}) {
           {messages}
         </div>}
         <div className="speech-footer">
-          <span role="status" aria-live="polite">{quoteJumpNotice}</span>
           {newMessageCount > 0 && (
             <button
               type="button"
