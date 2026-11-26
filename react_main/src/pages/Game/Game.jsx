@@ -225,6 +225,7 @@ export const GameTypeContext = createContext({
 // urgent.mp3 does not loop (~15s). Repeat it until the failed player leaves,
 // takes a seat, refreshes, or a new ready check starts.
 const READY_CHECK_BELL_REPEAT_MS = 15000;
+const PENDING_SPEECH_RESEND_MS = 5000;
 
 export default function Game(props) {
   const user = useContext(UserContext);
@@ -4278,6 +4279,21 @@ function SpeechInput(props) {
     if (isSpeakCooldownActive) return;
 
     if (e.key === "Enter" && selTab && speechInput.length) {
+      // Holding Enter, or pressing it again before the first send comes back,
+      // would send the same line twice. Allow it again after a few seconds in
+      // case the first was never delivered.
+      const pending = pendingSpeechRef.current;
+      if (
+        e.repeat ||
+        (pending &&
+          pending.content === speechInput &&
+          pending.meetingId === selTab &&
+          Date.now() - pending.sentAt < PENDING_SPEECH_RESEND_MS)
+      ) {
+        e.preventDefault();
+        return;
+      }
+
       const abilityInfo = speechDropdownValue.split(":");
       var abilityName = abilityInfo[0];
       var abilityTarget = abilityInfo[1];
@@ -4297,6 +4313,8 @@ function SpeechInput(props) {
         } else {
           pendingSpeechRef.current = {
             content: speechInput,
+            meetingId: selTab,
+            sentAt: Date.now(),
             anonymous:
               Boolean(abilityName) || Boolean(meetings[selTab]?.anonymous),
           };
