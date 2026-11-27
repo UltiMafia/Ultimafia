@@ -1,7 +1,7 @@
 import { useContext, useEffect, useReducer, useState } from "react";
 import ChangeHead from "components/gameComponents/ChangeHead";
 import { GameContext } from "Contexts";
-import { Box } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { hasActivePushSubscription } from "utils/pushNotifications";
 import {
   canApplyTimerTime,
@@ -10,6 +10,8 @@ import {
   timerRemainingMs,
   timerTimeAction,
 } from "utils/timerSync";
+
+const LOBBY_EXTEND_WINDOW_MS = 60 * 1000;
 
 function useTimersReducer() {
   return useReducer((timers, action) => {
@@ -266,16 +268,36 @@ export function Timer(props) {
   const isVegKickCountdown = timerName === "vegKickCountdown";
   const isVegKick = timerName === "vegKick";
 
+  const canExtendLobby =
+    !game.review &&
+    timerName === "pregameWait" &&
+    remaining != null &&
+    remaining > 0 &&
+    remaining <= LOBBY_EXTEND_WINDOW_MS &&
+    game.options?.pregameExtensionsLeft > 0 &&
+    game.players[game.self]?.userId === game.hostId;
+
   return (
     <>
       {HeadChanges}
-      <Box className="state-timer" sx={{
-        borderWidth: "1px",
-        borderColor: isVegKick || isVegKickCountdown ? "error.main" : isSecondary ? "warning.main" : "divider",
-        borderStyle: isVegKick ? "solid" : isSecondary || isVegKickCountdown ? "dashed solid" : "solid",
-      }}>
-        {timerContent}
-      </Box>
+      <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+        {canExtendLobby && (
+          <Button
+            size="small"
+            onClick={() => socket.send("extendPregameWait")}
+            sx={{ whiteSpace: "nowrap" }}
+          >
+            +60 min
+          </Button>
+        )}
+        <Box className="state-timer" sx={{
+          borderWidth: "1px",
+          borderColor: isVegKick || isVegKickCountdown ? "error.main" : isSecondary ? "warning.main" : "divider",
+          borderStyle: isVegKick ? "solid" : isSecondary || isVegKickCountdown ? "dashed solid" : "solid",
+        }}>
+          {timerContent}
+        </Box>
+      </Stack>
     </>
   );
 }
