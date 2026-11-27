@@ -26,5 +26,14 @@ EXPOSE 9232
 # Copy the content of the local src directory to the working directory
 COPY . .
 
+# The backend writes into logs/ and uploads/. Create them in the image and run
+# the process as the unprivileged node user (uid 1000) instead of root. In dev
+# and production these paths are bind mounts, so the host directories must be
+# writable by that uid too; scripts/check-deploy-ownership.sh reports that.
+RUN mkdir -p logs/chat logs/games uploads \
+    && chown -R node:node logs uploads
+
+USER node
+
 # Specify the command to run on container start
 CMD ["pm2-runtime", "start", "pm2.json"]
