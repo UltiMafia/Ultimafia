@@ -322,6 +322,7 @@ export default function Game(props) {
   const [changeSetupDialogOpen, setChangeSetupDialogOpen] = useState(false);
   const [kudos, setKudos] = useState(null);
   const tutorialGameRef = useRef(false);
+  const [tutorialGameId, setTutorialGameId] = useState(null);
   // The tutorial's storyline, so Rehost can start it again (like Play again).
   const tutorialStorylineRef = useRef(null);
   // Set when a participant rehosts this finished game:
@@ -1144,6 +1145,7 @@ export default function Game(props) {
     });
     socket.on("tutorial", (data) => {
       tutorialGameRef.current = true;
+      setTutorialGameId(gameId);
       if (data && data.storyline) tutorialStorylineRef.current = data.storyline;
       setKudos(null);
     });
@@ -1663,6 +1665,7 @@ export default function Game(props) {
       players: players,
       updatePlayers: updatePlayers,
       options: options,
+      isTutorial: tutorialGameId === gameId,
       spectatorCount: spectatorCount,
       lastWill: lastWill,
       emojis: emojis,
@@ -5777,6 +5780,24 @@ function ActionSelect(props) {
     onVote(sel);
   }
 
+  // A hidden target is still a vote. Unvoting a single-target meeting does
+  // not require revealing or reselecting that target in the dropdown.
+  // This per-player flag is computed before anonymous vote IDs are serialized.
+  const hasOwnVote = meeting.playerHasVoted;
+  const showUnvote = !meeting.multi && hasOwnVote;
+  const canUnvote =
+    showUnvote &&
+    !notClickable &&
+    meeting.canUnvote &&
+    !meeting.noUnvote &&
+    !(meeting.instant && !meeting.instantButChangeable) &&
+    !game.isTutorial;
+
+  function onUnvote() {
+    if (!canUnvote) return;
+    props.socket.send("unvote", { meetingId: meeting.id });
+  }
+
   useEffect(() => {
     if (notClickable && meeting.hideAfterVote) {
       setSelectVisible(false);
@@ -5951,6 +5972,18 @@ function ActionSelect(props) {
           anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
           transformOrigin={{ vertical: "top", horizontal: "left" }}
         />
+        {showUnvote && (
+          <Button
+            type="button"
+            size="small"
+            disabled={!canUnvote}
+            onClick={onUnvote}
+            aria-label={`Unvote ${meeting.actionName}`}
+            sx={{ ml: 1, flexShrink: 0 }}
+          >
+            Unvote
+          </Button>
+        )}
       </Box>
 
       <Box className="votes" sx={{ width: "100%" }}>
