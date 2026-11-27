@@ -11,6 +11,7 @@ const gameLoadBalancer = require("../modules/gameLoadBalancer");
 const rehost = require("../modules/rehost");
 const { defaultLobbyName, isCustomLobbyName } = require("../modules/lobbyName");
 const { reviewPlayerSettings } = require("../modules/reviewPlayerSettings");
+const { competitiveEntryError } = require("../modules/competitiveSettings");
 const blocks = require("../modules/blocks");
 const logger = require("../modules/logging")(".");
 const router = express.Router();
@@ -72,7 +73,7 @@ async function userCanPlayCompetitive(userId) {
     return "You cannot play competitive games because your Gold Hearts are depleted.";
   }
 
-  return null;
+  return await competitiveEntryError(user);
 }
 
 router.post("/leave", async function (req, res) {

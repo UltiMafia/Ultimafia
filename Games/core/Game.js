@@ -40,6 +40,7 @@ const { isTestBotPlayer } = require("./botPlayers");
 const kicksReminder = require("./kicksReminder");
 const devControls = require("./devControls");
 const gameEventLog = require("../../modules/gameEventLog");
+const { competitiveEntryError } = require("../../modules/competitiveSettings");
 const KUDOS_DISCONNECT_GRACE_MS = 20000;
 const VegKickMeeting = require("./VegKickMeeting");
 const mongo = require("mongodb");
@@ -909,6 +910,9 @@ module.exports = class Game {
       if (!info || info.goldHearts <= 0) {
         return "You cannot play competitive games because your Gold Hearts are depleted.";
       }
+
+      const entryError = await competitiveEntryError(info);
+      if (entryError) return entryError;
     }
 
     return null;
@@ -2076,7 +2080,7 @@ module.exports = class Game {
       if (!this.isTest) {
         if (this.readyCheck) this.startReadyCheck();
         else this.startPregameCountdown();
-      } else this.start();
+      } else this.startIfAllowed();
     }
   }
 
@@ -2264,7 +2268,7 @@ module.exports = class Game {
     }
     
     this.createTimer("pregameCountdown", this.pregameCountdownLength, () =>
-      this.start()
+      this.startIfAllowed()
     );
   }
 
@@ -2319,6 +2323,36 @@ module.exports = class Game {
       await redis.cacheUserInfo(userId, true);
     }
     this.heartsRefundedUserIds = new Set();
+  }
+
+  async startIfAllowed() {
+    if (this.started || this.starting || this.checkingCompetitiveStart) return;
+    if (!this.competitive) return this.start();
+    this.checkingCompetitiveStart = true;
+    try {
+      // Check before dispatching to the game-type override: some overrides mutate
+      // their game before calling the common start method.
+      const season = await models.CompetitiveSeason.findOne({ completed: false })
+        .sort({ number: -1 }).select("paused").lean();
+      if (!season || season.paused) {
+        this.clearTimer("pregameCountdown");
+        this.isReadyCheckActive = false;
+        this.readyPlayers = {};
+        this.sendReadyCheckCancel();
+        this.sendAlert("Competitive play is paused or there is no active season.");
+        return;
+      }
+      if (!this.tableIsFull()) {
+        await this.abortStart();
+        return;
+      }
+      return await this.start();
+    } catch (error) {
+      logger.error(error);
+      this.sendAlert("Could not start competitive play. Please try again.");
+    } finally {
+      this.checkingCompetitiveStart = false;
+    }
   }
 
   async start() {

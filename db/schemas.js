@@ -1136,6 +1136,15 @@ var schemas = {
     paused: { type: Boolean, default: false },
     completed: { type: Boolean, default: false },
     numRounds: { type: Number },
+    openDays: { type: Number },
+    reviewDays: { type: Number },
+    dailyHearts: { type: Number },
+    finishLinePoints: { type: Number }, // null turns off the finish line
+    finishAtNextDay: { type: Boolean },
+    graceHours: { type: Number },
+    breakDays: { type: Number },
+    roundIntervalDays: { type: Number },
+    entryMinimumPoints: { type: Number },
   }),
   CompetitiveRound: new mongoose.Schema({
     season: { type: Number },
@@ -1145,6 +1154,10 @@ var schemas = {
     accounted: { type: Boolean, default: false },
     startDate: { type: String }, // YYYY-MM-DD (inclusive)
     dateCompleted: { type: String }, // YYYY-MM-DD (inclusive)
+    clockBaseAt: { type: Number }, // alternate deadline origin after an explicit restart
+    clockRestarts: [{ requestId: String, at: Number, openDays: Number, clockBaseAt: Number }],
+    /** UTC millis when the finish line was reached, for seasons that finish at the next day. */
+    finishLineReachedAt: { type: Number, default: null },
     remainingOpenDays: { type: Number, required: true },
     remainingReviewDays: { type: Number, required: true },
     /** UTC millis when daily hearts stopped; grace period follows before review. */
