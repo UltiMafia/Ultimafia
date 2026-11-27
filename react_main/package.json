@@ -59,6 +59,7 @@
     "test:lobby-spectate:browser": "rsbuild build --config rsbuild.lobby-spectate-test.config.ts && node test/run-lobby-spectate.cjs",
     "test:mobile-reply:browser": "rsbuild build --config rsbuild.chat-reply-test.config.ts && node test/run-mobile-reply.cjs",
     "test:chat-reply:browser": "rsbuild build --config rsbuild.chat-reply-test.config.ts && node test/run-chat-reply.cjs",
+    "test:speech-filters:browser": "rsbuild build --config rsbuild.speech-filters-test.config.ts && node test/run-speech-filters.cjs",
     "test:dm-panel-site:browser": "rsbuild build --config rsbuild.dm-panel-site-test.config.ts && node test/run-dm-panel-site.cjs",
     "test:lobby-count:browser": "rsbuild build --config rsbuild.lobby-count-test.config.ts && node test/run-lobby-count.cjs",
     "test:mobile-header:browser": "rsbuild build --config rsbuild.mobile-header-test.config.ts && node test/run-mobile-header.cjs",

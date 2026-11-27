@@ -354,7 +354,7 @@ function ObituaryFixture({ review = false, singleState = false }) {
     gameId: "obituary-fixture", gameType: "Mafia", review,
     history: { ...obituaryHistory, currentState: review ? 2 : 1 },
     stateViewing: 1, players: {}, spectators: {},
-    settings, updateSettings, filters: {}, options: {}, kudos: null,
+    settings, updateSettings, speechFilters: {}, options: {}, kudos: null,
     updateHistory: ignore, getSetupGameSetting: () => false,
     onMessageQuote: ignore, onPinMessage: ignore, isMessagePinned: () => false,
   };

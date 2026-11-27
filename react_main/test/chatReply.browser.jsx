@@ -12,7 +12,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
 import { Box, createTheme, ThemeProvider } from "@mui/material";
-import { GameTypeContext, IsPhoneDeviceContext, SpeechFilter, TextMeetingLayout } from "../src/pages/Game/Game";
+import { GameTypeContext, IsPhoneDeviceContext, TextMeetingLayout } from "../src/pages/Game/Game";
 import { GameContext, SiteInfoContext, UserContext } from "../src/Contexts";
 import { filterProfanity } from "../src/components/Basic";
 import { slurs } from "../src/constants/filteredStrings";
@@ -349,7 +349,6 @@ const decodeRot13 = (value) =>
 const slurSample = decodeRot13(slurs.find((word) => word === "avttre"));
 window.__filteredSlur = filterProfanity(slurSample, { disablePg13Censor: true }, "*");
 window.__slurWasMasked = window.__filteredSlur !== slurSample;
-const showSpeechFilter = params.get("speech") === "1";
 function FixtureGame({ children }) {
   const [replyTarget, setReplyTarget] = React.useState(null);
   const [speechFilters, setSpeechFilters] = React.useState({ from: "", contains: "" });
@@ -402,7 +401,6 @@ ReactDOM.render(
                   flexDirection: "column",
                 }}
               >
-                {showSpeechFilter && <SpeechFilter />}
                 <TextMeetingLayout seatActions={false} />
               </Box>
             </GameTypeContext.Provider>

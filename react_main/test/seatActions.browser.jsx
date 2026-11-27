@@ -58,7 +58,7 @@ function makeGame(selectedPanel, setSelectedPanel) {
     players: {},
     spectators: [],
     settings: {},
-    filters: {},
+    speechFilters: {},
     setup: { total: 8 },
     spectatorCount: 0,
     socket: { on: () => {}, send: (...args) => window.__sent.push(args) },

@@ -1152,15 +1152,56 @@ html[data-keyboard="open"] .game .meeting-tabs {
   flex-flow: column;
   align-items: stretch;
   justify-content: flex-start;
+  gap: 10px;
 
   padding: 10px 15px;
 }
 
-.game .speech-filters input {
-  padding: 5px;
+.game .speech-filters > input {
+  padding: 7px 8px;
   border: none;
+  border-radius: 4px;
 
   background-color: var(--scheme-color-sec);
+  color: var(--scheme-color-text);
+}
+
+.game .speech-filters > input::placeholder {
+  color: var(--scheme-color-text);
+  opacity: 0.55;
+}
+
+.game .speech-filters .MuiInputBase-input {
+  color: var(--scheme-color-text);
+}
+
+.game .speech-filters .MuiInputBase-input::placeholder {
+  color: var(--scheme-color-text);
+  opacity: 0.55;
+}
+
+/* Active state on the accordion header, so a collapsed panel still says a
+   filter is narrowing the transcript. */
+.game .speech-filter-status {
+  margin-left: 6px;
+
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+/* Says why a filtered transcript has no speech rows, while the game log below
+   stays readable. */
+.game .speech-filter-empty-note {
+  flex-shrink: 0;
+
+  padding: 8px 12px;
+
+  background-color: var(--scheme-color-sec);
+  color: var(--scheme-color-text);
+  text-align: center;
 }
 
 /*
