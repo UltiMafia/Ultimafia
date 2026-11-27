@@ -76,11 +76,14 @@ If you want to perform your setup manually, follow these setups:
    ```
    Use `docker compose -f docker-compose-core.yml -f docker-compose-dev.yml build` if you wish to build without running.
 
-There is a clean-up script you can run from the root project directory to remove all build files:
+There is a clean-up script you can run from the root project directory to remove this checkout's build output (`node_modules`, `react_main/node_modules`, `react_main/build_public`):
 
 ```bash
-$ bash cleanup.sh
+$ bash cleanup.sh --dry-run   # show what would be deleted
+$ bash cleanup.sh             # confirm, then delete
 ```
+
+It is scoped to this directory: it does not stop containers, remove images, or touch Docker volumes or the tracked `package-lock.json` files. If you also want to clear Docker's own leftovers, `bash cleanup.sh --docker-garbage` removes dangling images and unused anonymous volumes only — named volumes such as `ultimafia_mongodb` are never candidates.
 
 **NOTE**: do NOT use `sudo` when running any scripts or commands unless you are sure you know what you're doing. Running `sudo` is linked to many issues including permission problems.
 
