@@ -7,6 +7,13 @@ import {
   Typography,
   IconButton,
   Popover,
+  Alert,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 
 import { useErrorAlert } from "components/Alerts";
@@ -34,6 +41,9 @@ export function GroupPanels({ user }) {
   const [addAnchor, setAddAnchor] = useState(null);
   const [addingToGroup, setAddingToGroup] = useState(null);
   const [addSelectKey, setAddSelectKey] = useState(0);
+  const [adminToRemove, setAdminToRemove] = useState(null);
+  const [removingAdmin, setRemovingAdmin] = useState(false);
+  const [removalError, setRemovalError] = useState("");
 
   const errorAlert = useErrorAlert();
   const siteInfo = useContext(SiteInfoContext);
@@ -82,18 +92,33 @@ export function GroupPanels({ user }) {
   }
 
   function removeMember(groupName, userId) {
-    axios
+    return axios
       .post("/api/mod/removeFromGroup", { groupName, userId })
       .then(() => {
         siteInfo.showAlert("User removed from group.", "success");
-        fetchGroups();
-      })
-      .catch(errorAlert);
+        return fetchGroups();
+      });
+  }
+
+  async function confirmAdminRemoval() {
+    setRemovingAdmin(true);
+    setRemovalError("");
+    try {
+      await removeMember("Admin", adminToRemove.id);
+      setAdminToRemove(null);
+    } catch (error) {
+      const message = error.response?.data;
+      setRemovalError(typeof message === "string" && message.length < 200
+        ? message : "Could not remove the admin. Try again.");
+    } finally {
+      setRemovingAdmin(false);
+    }
   }
 
   if (!loaded) return <Loading small />;
 
   const panels = groups.map((group) => {
+    const canManageThisGroup = canManageGroup && (group.name !== "Admin" || user.rank > group.rank);
     const members = group.members.map((member) => (
       <Grid item xs={12} md={6} key={member.id}>
         <Stack
@@ -111,10 +136,18 @@ export function GroupPanels({ user }) {
             avatar={member.avatar}
           />
           <StatusIcon status={member.status} />
-          {canManageGroup && (
+          {member.elected && <Typography variant="caption">Elected</Typography>}
+          {canManageThisGroup && (
             <IconButton
               size="small"
-              onClick={() => removeMember(group.name, member.id)}
+              onClick={() => {
+                if (group.name === "Admin") {
+                  setRemovalError("");
+                  setAdminToRemove(member);
+                } else {
+                  removeMember(group.name, member.id).catch(errorAlert);
+                }
+              }}
               sx={{ color: "error.main", ml: "auto" }}
               title={`Remove from ${group.name}`}
               aria-label={`Remove ${member.name} from ${group.name}`}
@@ -142,7 +175,7 @@ export function GroupPanels({ user }) {
               name={group.name}
             />
           )}
-          {canManageGroup && (
+          {canManageThisGroup && (
             <IconButton
               size="small"
               onClick={(e) => openAddPopover(e, group.name)}
@@ -164,6 +197,23 @@ export function GroupPanels({ user }) {
   return (
     <>
       {panels}
+      <Dialog open={!!adminToRemove} onClose={removingAdmin ? undefined : () => setAdminToRemove(null)}
+        aria-labelledby="remove-admin-title" maxWidth="xs" fullWidth>
+        <DialogTitle id="remove-admin-title">Remove {adminToRemove?.name} from Admin?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This removes their Admin membership and ends any active elected terms.
+            Certified election results stay on record.
+          </DialogContentText>
+          {removalError && <Alert severity="error" sx={{ mt: 2 }}>{removalError}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setAdminToRemove(null)} disabled={removingAdmin}>Cancel</Button>
+          <Button variant="contained" color="error" onClick={confirmAdminRemoval} disabled={removingAdmin}>
+            {removingAdmin ? "Removing…" : "Remove from Admin"}
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Popover
         open={Boolean(addAnchor)}
         anchorEl={addAnchor}

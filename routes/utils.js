@@ -6,6 +6,7 @@ const constants = require("../data/constants");
 const names = require("../json/names");
 const errors = require("../lib/errors");
 const { getDirectLinkedAccountIds } = require("../modules/accountLinkage");
+const { activeMemberships } = require("../modules/groupMemberships");
 
 const alphaNumRegex = /[\w\s]/g;
 const nonAlphaNumRegex = /[^\w\s]/g;
@@ -302,9 +303,7 @@ async function getModIds() {
   }).select("_id");
   groups = groups.map((group) => group._id);
 
-  var inGroups = await models.InGroup.find({ group: { $in: groups } }).select(
-    "user"
-  );
+  var inGroups = await activeMemberships({ group: { $in: groups } });
   var users = inGroups.map((inGroup) => inGroup.user);
 
   var mods = await models.User.find({ _id: { $in: users } }).select("id");

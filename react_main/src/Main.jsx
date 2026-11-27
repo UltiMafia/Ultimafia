@@ -418,6 +418,7 @@ export function Header({ setShowAnnouncementTemporarily }) {
                   { text: "Users", path: "/community/users" },
                   { text: "Families", path: "/community/families" },
                   { text: "Feedback", path: "/community/feedback" },
+                  { text: "Elections", path: "/community/elections" },
                 ],
               },
               {
@@ -505,6 +506,7 @@ export function Header({ setShowAnnouncementTemporarily }) {
                 { text: "Users", path: "/community/users" },
                 { text: "Families", path: "/community/families" },
                 { text: "Feedback", path: "/community/feedback" },
+                { text: "Elections", path: "/community/elections" },
               ]}
             />
             <NavDropdown

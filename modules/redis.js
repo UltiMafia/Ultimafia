@@ -2,11 +2,18 @@ const bluebird = require("bluebird");
 const redis = bluebird.promisifyAll(require("redis"));
 const shortid = require("shortid");
 const sha1 = require("sha1");
+const { Types } = require("mongoose");
 const models = require("../db/models");
 const constants = require("../data/constants");
 const Random = require("./../lib/Random");
 const utils = require("../lib/Utils");
 const dateOnly = require("../lib/dateOnly");
+const { activeMemberships, electedMemberships } = require("./groupMemberships");
+
+const permanentMembershipPermissions = new Set([
+  "createGroup", "deleteGroup", "giveGroup", "removeFromGroup",
+  "updateGroupPerms", "givePermissions",
+]);
 
 var client = redis.createClient({
   url: process.env.REDIS_URL || "redis://redis:6379",
@@ -19,18 +26,12 @@ client.select(process.env.REDIS_DB || 0);
 
 async function getUserDbId(userId) {
   const key = `user:${userId}:dbId`;
-  const exists = await client.existsAsync(key);
-
-  if (!exists) {
-    const user = await models.User.findOne({ id: userId }).select("_id");
-
-    if (user) {
-      client.set(key, user._id);
-      client.expire(key, 3600);
-    }
-
-    return user._id;
-  } else return await client.get(key);
+  const cached = await client.getAsync(key);
+  if (cached) return new Types.ObjectId(cached);
+  const user = await models.User.findOne({ id: userId, deleted: false }).select("_id").lean();
+  if (!user) return null;
+  await client.setAsync(key, user._id.toString(), "EX", 3600);
+  return user._id;
 }
 
 async function cacheSetups(userId) {
@@ -295,7 +296,7 @@ async function cacheUserInfo(userId, reset) {
       JSON.stringify(user.itemsOwned)
     );
 
-    var inGroups = await models.InGroup.find({ user: user._id }).populate(
+    var inGroups = await models.InGroup.find({ user: user._id, election: null }).populate(
       "group",
       "id name rank badge badgeColor -_id"
     );
@@ -1601,7 +1602,18 @@ async function getAllLastActive() {
 async function cacheUserPermissions(userId) {
   const permKey = `user:${userId}:perms`;
   const rankKey = `user:${userId}:rank`;
+  const permissionInfo = await loadUserPermissions(userId);
+  if (permissionInfo.noUser) return permissionInfo;
 
+  await Promise.all([
+    client.setAsync(permKey, JSON.stringify(permissionInfo.perms), "EX", 3600),
+    client.setAsync(rankKey, permissionInfo.rank, "EX", 3600),
+  ]);
+
+  return permissionInfo;
+}
+
+async function loadUserPermissions(userId, { includeElected = false } = {}) {
   var user = await models.User.findOne({ id: userId, deleted: false }).select(
     "rank permissions"
   );
@@ -1610,16 +1622,16 @@ async function cacheUserPermissions(userId) {
 
   user = user.toJSON();
 
-  var inGroups = await models.InGroup.find({ user: user._id }).populate(
-    "group",
-    "rank permissions"
-  );
-  var groups = inGroups.map((inGroup) => inGroup.toJSON().group);
-
   var bans = await models.Ban.find({
     userId: userId,
     $or: [{ expires: 0 }, { expires: { $gt: Date.now() } }],
   }).select("permissions");
+  const memberships = await activeMemberships({ user: user._id }, { includeElected });
+  const permanentGroups = new Set(memberships.filter((membership) => !membership.election)
+    .map((membership) => membership.group?.toString()));
+  const groups = await models.Group.find({
+    _id: { $in: memberships.map((membership) => membership.group).filter(Boolean) },
+  }).select("rank permissions").lean();
 
   var perms = {};
   var maxRank = user.rank || 0;
@@ -1629,23 +1641,25 @@ async function cacheUserPermissions(userId) {
   for (let perm of user.permissions) perms[perm] = true;
 
   for (let group of groups) {
-    for (let perm of group.permissions) perms[perm] = true;
+    const permanent = permanentGroups.has(group._id.toString());
+    for (const perm of group.permissions)
+      if (permanent || !permanentMembershipPermissions.has(perm)) perms[perm] = true;
 
     if (group.rank > maxRank) maxRank = group.rank;
   }
 
   for (let ban of bans) for (let perm of ban.permissions) delete perms[perm];
 
-  client.set(permKey, JSON.stringify(perms));
-  client.expire(permKey, 3600);
-
-  client.set(rankKey, maxRank);
-  client.expire(rankKey, 3600);
-
   return { perms, rank: maxRank };
 }
 
-async function getUserPermissions(userId) {
+async function getUserPermissions(userId, { includeElectedTerm = true } = {}) {
+  // Term memberships are checked live, never written to the permanent cache.
+  if (includeElectedTerm && userId) {
+    const user = await getUserDbId(userId);
+    if (user && (await electedMemberships({ user })).length)
+      return loadUserPermissions(userId, { includeElected: true });
+  }
   const permKey = `user:${userId}:perms`;
   const rankKey = `user:${userId}:rank`;
   const exists =
@@ -1674,7 +1688,9 @@ async function getUserRank(userId) {
 async function hasPermissions(userId, perms, rank) {
   if (!userId) return false;
 
-  const permInfo = await getUserPermissions(userId);
+  // A temporary rank must not raise the ceiling for permanent grants.
+  const includeElectedTerm = !perms.some((perm) => permanentMembershipPermissions.has(perm));
+  const permInfo = await getUserPermissions(userId, { includeElectedTerm });
 
   if (permInfo.rank < rank) return false;
 

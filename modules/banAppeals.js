@@ -263,6 +263,7 @@ async function getAdminIds(allowlist = VOTER_ALLOWLIST) {
   if (groups.length === 0) return [];
   const inGroups = await models.InGroup.find({
     group: { $in: groups.map((group) => group._id) },
+    election: null,
   }).select("user");
   const users = await models.User.find({
     _id: { $in: inGroups.map((inGroup) => inGroup.user) },

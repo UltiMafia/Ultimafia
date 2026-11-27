@@ -911,6 +911,9 @@ var schemas = {
   InGroup: new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
     group: { type: mongoose.Schema.Types.ObjectId, ref: "Group", index: true },
+    election: { type: mongoose.Schema.Types.ObjectId, ref: "AdminElection" },
+    revokedAt: Date,
+    revokedBy: String,
   }),
   ModAction: new mongoose.Schema(
     {
@@ -1803,5 +1806,34 @@ schemas.CryptoInvoice.index({
   status: 1,
 });
 schemas.CryptoInvoice.index({ txSignature: 1 }, { unique: true, sparse: true });
+
+const electionNominee = new mongoose.Schema(
+  { id: String, name: String },
+  { _id: false }
+);
+
+schemas.AdminElection = new mongoose.Schema({
+  title: { type: String, required: true },
+  createdBy: { type: String, required: true },
+  votingStartsAt: { type: Date, required: true },
+  votingEndsAt: { type: Date, required: true },
+  termDays: { type: Number, required: true },
+  nominees: [electionNominee],
+  // Election-local voter keys, never selected by the public listing.
+  ballots: { type: Map, of: [String], select: false },
+  ballotOrder: { type: Map, of: Number, select: false },
+  revision: { type: Number, default: 0 },
+  certifiedBy: String,
+  certifiedAt: Date,
+  outcome: { type: String, enum: ["elected", "tie", "noVotes"] },
+  winnerId: String,
+  adminMembership: { type: mongoose.Schema.Types.ObjectId, ref: "InGroup" },
+  termEndsAt: Date,
+});
+schemas.AdminElection.index({ votingEndsAt: -1, _id: -1 });
+schemas.InGroup.index(
+  { election: 1, user: 1 },
+  { unique: true, partialFilterExpression: { election: { $type: "objectId" } } }
+);
 
 module.exports = schemas;

@@ -8,6 +8,7 @@ import Forums from "./Forums/Forums";
 import UserSearch from "./UserSearch";
 import Feedback from "./Feedback";
 import FamilyDiscovery from "./FamilyDiscovery";
+import Elections from "./Elections";
 import { UserContext } from "../../Contexts";
 
 export default function Community() {
@@ -24,6 +25,7 @@ export default function Community() {
             <Route path="users" element={<UserSearch />} />
             <Route path="families" element={<FamilyDiscovery />} />
             <Route path="feedback" element={<Feedback />} />
+            <Route path="elections" element={<Elections />} />
             <Route path="*" element={<Navigate to="forums" />} />
           </Routes>
         </Card>
