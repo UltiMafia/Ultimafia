@@ -155,3 +155,15 @@ Now, run the init-letsencrypt.sh script from the top level directory:
    ```bash
    $ d up -d
    ```
+
+### Updating an existing install
+
+Run the update script from the repository root:
+
+```bash
+$ bash update_site.sh
+```
+
+It pulls the latest code, checks that the running backend can write `logs/` and `uploads/`, rebuilds the frontend and restarts the services. If the check prints `STOP`, the script exits before restarting anything. Run the `sudo mkdir` / `sudo chown` commands it prints, then rerun `bash update_site.sh`.
+
+The backend writes into both directories (`modules/logging.js`, `routes/user.js`, `routes/family.js`). While it runs as root that works regardless of ownership. If `dockerfile` declares a non-root `USER`, the backend must own those directories, and the update script warns about it before the change takes effect. That warning matters because `update_site.sh` does not rebuild the backend image; a rebuild happens only when you run `docker compose -f docker-compose-core.yml -f docker-compose-prod.yml build backend` followed by `up -d backend`.
