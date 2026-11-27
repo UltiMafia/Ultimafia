@@ -53,14 +53,14 @@ export default function HostMafia() {
       ref: "ranked",
       type: "boolean",
       value: defaults.ranked,
-      showIf: ["!private", "!guests", "!competitive", "!advancedHosting"],
+      showIf: ["!private", "!guests", "!advancedHosting"],
     },
     {
       label: "Competitive",
       ref: "competitive",
       type: "boolean",
       value: defaults.competitive,
-      showIf: ["!private", "!guests", "!ranked", "!advancedHosting"],
+      showIf: ["!private", "!guests", "!advancedHosting"],
     },
     {
       label: "Spectating",

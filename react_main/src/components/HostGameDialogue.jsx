@@ -170,15 +170,34 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
   const isRanked = getFormFieldValue("ranked");
   const isCompetitive = getFormFieldValue("competitive");
 
+  const previousModes = useRef({ ranked: isRanked, competitive: isCompetitive });
   useEffect(() => {
+    const previous = previousModes.current;
+    previousModes.current = { ranked: isRanked, competitive: isCompetitive };
+
+    if (isRanked && isCompetitive) {
+      updateFormFields({
+        ref: previous.ranked ? "ranked" : "competitive",
+        prop: "value",
+        value: false,
+      });
+      return;
+    }
+
     if (isCompetitive) {
       updateFormFields({
         ref: "lobby",
         prop: "value",
         value: "Competitive",
       });
+    } else if (previous.competitive && lobby === "Competitive") {
+      updateFormFields({
+        ref: "lobby",
+        prop: "value",
+        value: defaultLobby && defaultLobby !== "Competitive" ? defaultLobby : "Main",
+      });
     }
-  }, [isCompetitive]);
+  }, [isRanked, isCompetitive]);
 
   var alertText = "";
 
