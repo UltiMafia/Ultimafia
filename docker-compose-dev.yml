@@ -1,10 +1,20 @@
 services:
+  # Local dev only: do not start these when Docker starts. Docker's
+  # "unless-stopped" policy is what made the site come back after boot.
+  # Production uses docker-compose-core.yml + docker-compose-prod.yml and is
+  # unaffected.
+  mongodb:
+    restart: "no"
+
+  redis:
+    restart: "no"
+
   # frontend service via npm start
   web:
     depends_on:
       - backend
     container_name: "web"
-    restart: unless-stopped
+    restart: "no"
     build:
       context: react_main
       dockerfile: dockerfile
@@ -27,6 +37,7 @@ services:
 
   # Overrides for exposing backend ports
   backend:
+    restart: "no"
     expose:
       - 2999
       - 3000
