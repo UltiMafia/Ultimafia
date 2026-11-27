@@ -50,15 +50,18 @@ export default function CompetitiveFaq() {
       </Stack>
       <Typography paragraph>
         All players receive 4 gold hearts per UTC/GMT day while a round is in
-        its open phase. The open phase ends when either someone reaches 1,500
-        fortune points in the round, or the round&apos;s scheduled open days run
-        out—whichever happens first. Gold hearts are consumed when a
+        its open phase. The open phase ends after the round&apos;s last open
+        day, or after the day someone reaches the finish line (1,500 fortune
+        points in the round unless the season sets another), whichever comes
+        first. The day the finish line is reached plays out as normal. Gold
+        hearts are consumed when a
         competitive game finishes (they are not spent if you leave early).
         Hearts roll over between open days, but not into the next round.
       </Typography>
       <Typography paragraph>
-        When the open phase ends, everyone has 24 hours to spend any remaining
-        gold hearts on competitive games. After that grace period, all gold
+        When the open phase ends, an extra 24-hour grace day begins. No new
+        gold hearts are given out, and everyone can spend any remaining gold
+        hearts on competitive games. After that grace period, all gold
         hearts reset to 0 and the round moves into review days (no new
         competitive games until the next round).
       </Typography>
@@ -67,8 +70,8 @@ export default function CompetitiveFaq() {
       </Typography>
       <Typography paragraph>
         A competitive season is divided into multiple rounds. Each round has up
-        to eight open days (or fewer if someone hits 1,500 fortune first), then
-        a 24-hour grace period to finish hearts, then four review days, followed
+        to eight open days (or fewer if someone reaches the finish line first),
+        then a 24-hour grace day to finish hearts, then four review days, followed
         by a one day break before the next round begins. During open days and
         the grace period, players can play competitive games and earn fortune
         points. During review days, players cannot play competitive games, and
@@ -132,8 +135,11 @@ export default function CompetitiveFaq() {
         </Typography>
       </Stack>
       <Typography paragraph>
-        The top 10 players with the most fortune points at the end of a round
-        are awarded prestige points according to a table. Ties are resolved by
+        The players with the most fortune points at the end of a round are
+        awarded prestige points according to the table below. To place at all,
+        you need at least the season&apos;s point minimum in the round (500
+        fortune points unless the season sets another); players below it are
+        listed without a rank and earn no prestige. Ties are resolved by
         treating both players as having achieved the higher ranking position.
         For example, if two players tie for 2nd place, both players receive the
         prestige points for 2nd place.

@@ -1136,6 +1136,12 @@ var schemas = {
     paused: { type: Boolean, default: false },
     completed: { type: Boolean, default: false },
     numRounds: { type: Number },
+    // Round rules chosen when the season is created. Unset on older seasons,
+    // which keep the global finish line and no point minimum.
+    /** Round points that end a round's open days at the next day boundary. */
+    finishLinePoints: { type: Number },
+    /** Round points a player needs to be ranked and earn prestige. */
+    minimumPointsToPlace: { type: Number },
   }),
   CompetitiveRound: new mongoose.Schema({
     season: { type: Number },
@@ -1149,6 +1155,8 @@ var schemas = {
     remainingReviewDays: { type: Number, required: true },
     /** UTC millis when daily hearts stopped; grace period follows before review. */
     openPhaseEndedAt: { type: Number, default: null },
+    /** UTC millis when a player first reached the finish line; hearts stop at the next day boundary. */
+    finishLineReachedAt: { type: Number, default: null },
   }),
   CompetitiveGameCompletion: new mongoose.Schema({
     userId: { type: String },

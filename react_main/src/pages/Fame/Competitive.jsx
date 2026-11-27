@@ -205,6 +205,17 @@ function Overview({ roundInfo, seasonInfo }) {
                   onNav={(val) => setPageNumRound(val)}
                 />
               </Stack>
+              {(roundInfo.minimumPointsToPlace > 0 || roundInfo.finishLinePoints) && (
+                <Typography variant="caption" sx={{ color: "text.secondary" }}>
+                  {roundInfo.minimumPointsToPlace > 0 &&
+                    `${roundInfo.minimumPointsToPlace} points needed to place. `}
+                  {roundInfo.finishLinePoints &&
+                    `Finish line: ${roundInfo.finishLinePoints} points.`}
+                  {roundInfo.round.finishLineReachedAt &&
+                    !roundInfo.round.openPhaseEndedAt &&
+                    " Reached: today is the last day with new hearts."}
+                </Typography>
+              )}
               {userStandingsRound.map((roundStanding) => {
                 const userId = roundStanding.userId;
                 const user = roundInfo.users[userId].user || {};
@@ -219,11 +230,24 @@ function Overview({ roundInfo, seasonInfo }) {
                     alignItems: "center",
                     textAlign: "right",
                   }}>
-                    <Typography variant="h4" sx={{
-                      textAlign: "left",
-                    }}>
-                      {roundStanding.ranking+1}.
-                    </Typography>
+                    {roundStanding.qualified === false ? (
+                      <Tooltip
+                        title={`Needs ${roundInfo.minimumPointsToPlace} points to place`}
+                      >
+                        <Typography variant="h4" sx={{
+                          textAlign: "left",
+                          color: "text.secondary",
+                        }}>
+                          –
+                        </Typography>
+                      </Tooltip>
+                    ) : (
+                      <Typography variant="h4" sx={{
+                        textAlign: "left",
+                      }}>
+                        {roundStanding.ranking+1}.
+                      </Typography>
+                    )}
                     <Box sx={{ overflowX: "clip" }}>
                       <NameWithAvatar
                         id={user.id}
