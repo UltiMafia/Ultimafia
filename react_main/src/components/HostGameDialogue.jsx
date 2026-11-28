@@ -18,6 +18,7 @@ import {
   Typography,
 } from "@mui/material";
 import { UserContext } from "Contexts";
+import { COMPETITIVE_FORTUNE_REQUIREMENT } from "Constants";
 import { useErrorAlert } from "components/Alerts";
 import Form from "components/Form";
 import { useForm } from "components/Form";
@@ -182,10 +183,17 @@ export default function HostGameDialogue({ open, setOpen, setup, preSelectedDeck
 
   var alertText = "";
 
+  const fortune = Number(user.points) || 0;
+
   if (user.perms && !user.perms.playRanked && isRanked) {
     alertText = `You are unable to play ranked games. Please contact an admin if this is in error.`;
   } else if (user.perms && !user.perms.playCompetitive && isCompetitive) {
     alertText = `You are unable to play competitive games. Please contact an admin if this is in error.`;
+  } else if (
+    isCompetitive &&
+    fortune < COMPETITIVE_FORTUNE_REQUIREMENT
+  ) {
+    alertText = `You need at least ${COMPETITIVE_FORTUNE_REQUIREMENT} fortune to play competitive games. You have ${fortune}.`;
   }
 
   return (

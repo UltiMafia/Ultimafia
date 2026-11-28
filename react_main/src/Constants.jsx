@@ -109,6 +109,10 @@ export const RequiredTotalForStats = 1;
 // Hall of Fame; keep this in sync with MIN_RATED_GAMES in modules/skillRating.js.
 export const MIN_RATED_GAMES = 25;
 
+// Fallback for the fortune needed to play competitive games. The server is
+// authoritative; keep this in sync with constants.competitiveFortuneRequirement.
+export const COMPETITIVE_FORTUNE_REQUIREMENT = 500;
+
 export const MaxGameMessageLength = 240;
 export const MaxTextInputLength = 100;
 export const MaxWillLength = 100;

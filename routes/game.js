@@ -72,6 +72,11 @@ async function userCanPlayCompetitive(userId) {
     return "You cannot play competitive games because your Gold Hearts are depleted.";
   }
 
+  const fortune = Number(user.points) || 0;
+  if (fortune < constants.competitiveFortuneRequirement) {
+    return `You need at least ${constants.competitiveFortuneRequirement} fortune to play competitive games.`;
+  }
+
   return null;
 }
 
