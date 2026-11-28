@@ -104,6 +104,11 @@ export default function CompetitiveFaq() {
         Fortune points may also be earned during ranked games, but they will not
         contribute to your competitive standing.
       </Typography>
+      <Typography paragraph>
+        You need at least 500 fortune on your account before you can play
+        competitive games. Fortune earned in ranked games counts toward that
+        total.
+      </Typography>
       <Typography variant="h3" gutterBottom>
         How are payouts calculated?
       </Typography>

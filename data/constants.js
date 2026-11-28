@@ -487,6 +487,8 @@ module.exports = {
   reviewDaysPerCompetitiveRound: 4,
   /** Round open phase ends when any player reaches this many fortune points in the round. */
   competitiveRoundFortuneHammer: 1500,
+  /** Total fortune a player must have on their account before playing competitive games. */
+  competitiveFortuneRequirement: 500,
   /** After open phase ends, players have this long to spend remaining gold hearts before they reset. */
   competitiveHeartGracePeriodMillis: 24 * 60 * 60 * 1000,
   goldHeartsPerCompetitiveDay: 4,

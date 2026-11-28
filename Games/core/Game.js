@@ -909,6 +909,11 @@ module.exports = class Game {
       if (!info || info.goldHearts <= 0) {
         return "You cannot play competitive games because your Gold Hearts are depleted.";
       }
+
+      const fortune = Number(info.points) || 0;
+      if (fortune < constants.competitiveFortuneRequirement) {
+        return `You need at least ${constants.competitiveFortuneRequirement} fortune to play competitive games.`;
+      }
     }
 
     return null;

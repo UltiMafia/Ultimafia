@@ -50,7 +50,7 @@ function fixture() {
     User: { findOne: () => query({ _id: "host-db", id: "host", name: "Fixture" }) },
   };
   const redis = {
-    getUserInfo: async () => ({ name: "Fixture", redHearts: 5, goldHearts: 5 }),
+    getUserInfo: async () => ({ name: "Fixture", redHearts: 5, goldHearts: 5, points: 500 }),
     getCompRoundInfo: async () => ({ round: { completed: false }, seasonPaused: false, allowedSetups: [{ id: setup.id }] }),
     getSetCreatingGame: async () => false, unsetCreatingGame: async () => {},
     inGame: async () => null, hostingScheduled: async () => false,
